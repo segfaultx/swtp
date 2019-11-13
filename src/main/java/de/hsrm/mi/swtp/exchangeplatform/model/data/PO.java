@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
 
@@ -9,21 +10,18 @@ import java.util.List;
 
 @Entity
 @Data
-@Getter
 public class PO {
     @Id
     @GeneratedValue
     private Long id;
 
+    @JsonProperty("valid_since_year")
+    private String validSinceYear;
 
-    private LocalTime year;
+    private String major;
 
-
-    private String study;
-
-    public PO(LocalTime year, String study){
-        this.year = year;
-        this.study = study;
+    public PO(String major){
+        this.major = major;
     }
     @OneToMany(
             mappedBy = "po",

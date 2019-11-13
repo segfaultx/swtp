@@ -1,9 +1,12 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
+@Data
 public class Student {
 
     @Id

@@ -1,10 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalTime;
@@ -12,8 +9,6 @@ import java.util.List;
 
 @Entity
 @Data
-@Setter
-@Getter
 public class Timeslot {
 
     @Id
@@ -24,16 +19,16 @@ public class Timeslot {
     @Column(name ="weekday")
     private Integer day;
 
-    private enum Type { LECTURE, LESSON }
+    private enum Type { VORLESUNG, PRAKTIKUM, UEBUNG }
 
     @Column(name ="type")
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    @Column(name ="start")
+    @Column(name ="time_start")
     private LocalTime timeStart;
 
-    @Column(name="end")
+    @Column(name="time_end")
     private LocalTime timeEnd;
 
     @ManyToOne
@@ -54,8 +49,9 @@ public class Timeslot {
     @JoinColumn(name ="courseplan")
     private TimeTable timeTable;
 
-
-
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    private List<Student> attendees;
 
     public Timeslot(Integer day, LocalTime timeStart, LocalTime timeEnd, int capacity){
         this.day = day;
@@ -63,12 +59,5 @@ public class Timeslot {
         this.timeEnd = timeEnd;
         this.capacity = capacity;
     }
-
-//Foreign-Keys:
-
-
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
-    private List<Student> attendees;
 
 }
