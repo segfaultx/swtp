@@ -10,16 +10,15 @@ import javax.persistence.Id;
  * ExampleDataClass gives an example for a basic model class
  * TODO: Change this for a real data class
  */
-@Entity
-@Data
+//@Entity
+//@Data
 /*
 @Data is a Lombok feature to generate boilerplate code. See Documentation for Details.
 You might need to get the Lombok Plugin and enable Annotation Processing in your IDE
  */
 public class ExampleDataClass {
 
-    @Id
-    @GeneratedValue
+
     private Long id;
     private String example;
 

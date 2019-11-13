@@ -18,15 +18,14 @@ import java.util.List;
 @RequestMapping("/api/v1/")
 public class ExampleRestController {
 
-    private final ExampleService service;
 
-    public ExampleRestController(ExampleService service) {
-        this.service = service;
+    public ExampleRestController() {
+
     }
 
     @GetMapping
     public ResponseEntity<List<ExampleDataClass>> getExamples() {
-        return new ResponseEntity<>(service.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(null, HttpStatus.OK);
     }
 
 }

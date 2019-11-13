@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
  * Example gives an example for a basic JPA Repository interface
  * TODO: Change this for a real interface
  */
-@Repository
-public interface ExampleRepository extends JpaRepository<ExampleDataClass, Long> {
+//@Repository
+public interface ExampleRepository {
 }

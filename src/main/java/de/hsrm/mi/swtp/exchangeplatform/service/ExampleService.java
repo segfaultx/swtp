@@ -11,7 +11,6 @@ import java.util.List;
  * ExampleService gives an example for a basic service class
  * TODO: Change this for a real service class
  */
-@Service
 public class ExampleService {
 
     private final ExampleRepository repository;
@@ -22,6 +21,6 @@ public class ExampleService {
     }
 
     public List<ExampleDataClass> findAll() {
-        return repository.findAll();
+        return null;
     }
 }
