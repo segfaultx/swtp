@@ -1,11 +1,14 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import lombok.Data;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Data
 public class TimeTable {
 
     @Id @GeneratedValue
@@ -17,16 +20,16 @@ public class TimeTable {
     @Column(name = "end")
     private LocalDate dateEnd;
 
-    public TimeTable(LocalDate dateStart, LocalDate dateEnd){
-        this.dateStart = dateStart;
-        this.dateEnd = dateEnd;
-    }
-
     @OneToMany(
             mappedBy = "timeTable",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
     private List<Timeslot> timeslots = new ArrayList<>();
+
+    public TimeTable(LocalDate dateStart, LocalDate dateEnd){
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+    }
 
 }
