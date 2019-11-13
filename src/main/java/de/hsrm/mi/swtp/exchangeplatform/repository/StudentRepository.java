@@ -1,6 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.repository;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.Student;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

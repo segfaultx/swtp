@@ -1,25 +1,22 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
-@Data
 public class Student {
 
-    @Id @GeneratedValue
+    @Id
+    @Column(name = "matr_nr")
     private Long matriculationNumber;
 
-    private String fullName;
+    private String username;
 
-    @JsonIgnore
-    @ManyToMany
-    private List<Appointment> appointments;
+    @ManyToMany(mappedBy = "attendees")
+    private List<Timeslot> timeslots;
+
+    public Student(Long matriculationNumber){
+        this.matriculationNumber = matriculationNumber;
+    }
 
 }
