@@ -1,31 +1,32 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
 public class TimeTable {
 
     @Id @GeneratedValue
     private Long id;
 
-    @JsonProperty("date_start")
+    @Column(name = "start")
     private LocalDate dateStart;
 
-    @JsonProperty("date_end")
+    @Column(name = "end")
     private LocalDate dateEnd;
+
+    public TimeTable(LocalDate dateStart, LocalDate dateEnd){
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+    }
 
     @OneToMany(
             mappedBy = "timeTable",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Module> modules = new ArrayList<>();
+    private List<Timeslot> timeslots = new ArrayList<>();
 
 }
