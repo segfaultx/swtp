@@ -1,190 +1,88 @@
 {
-    "term": 1,
-    "date_start": "2019-10-16",
-    "date_end": "2020-02-20",
-    "modules":[
+    "id": 1,
+    "start": "2019-15-10",
+    "end": "2020-15-02",
+    "timeslots": [
         {
-            "name": "Analysis",
-            "appointments": [
-                {
-                    "room": "D14",
-                    "day": "wednesday",
-                    "time_start": "8:00",
-                    "time_end": "9:45",
-                    "lecturer": "Reichenauer",
-                    "type":"lecture"
-                },
-                {
-                    "room": "D14",
-                    "day": "wednesday",
-                    "time_start": "10:00",
-                    "time_end": "11:30",
-                    "lecturer": "Reichenauer",
-                    "type": "lesson",
-                    "attendees": [
-                        1,2,3,4,5
-                    ]
-                },
-                {
-                    "room": "D14",
-                    "day": "wednesday",
-                    "time_start": "11:45",
-                    "time_end": "13:15",
-                    "lecturer": "Reichenauer",
-                    "type": "lesson",
-                    "attendees":[
-                        6,7,8,9,10
-                    ]
+            "id": 123,
+            "day": 2,
+            "type": "VORLESUNG",
+            "time_start": "08:15",
+            "time_end": "09:45",
+            "lecturer": {
+                "username": "jbiff001",
+                "email": "joendhard.biffel@student.hs-rm.de",
+                "first_name": "Joendhard",
+                "last_name": "Biffel"
+            },
+            "max_capacity": 100,
+            "room": {
+                "id": 1234,
+                "room_number": "D14",
+                "location": "Unter den Eichen Gebäude D"
+            },
+            "module": {
+                "id": 145,
+                "name": "Wichtige Zahlen (17) für Informatiker",
+                "po": {
+                    "id": 125,
+                    "valid_since_year": "2016"
                 }
-            ]
+            }
         },
         {
-            "name": "Einführung in die Medieninformatik",
-            "appointments": [
-                {
-                    "room": "D11",
-                    "day": "monday",
-                    "time_start": "10:00",
-                    "time_end": "11:30",
-                    "lecturer": "Schaible",
-                    "type": "lecture"
-                },
-                {
-                    "room": "D12",
-                    "day": "monday",
-                    "time_start": "11:30",
-                    "time_end": "13:15",
-                    "lecturer": "Schaible",
-                    "type": "practical exercise",
-                    "attendees": [
-                        1,2,3,4,5
-                    ]
-                },
-                {
-                    "room": "D12",
-                    "day": "monday",
-                    "time_start": "14:15",
-                    "time_end": "15:45",
-                    "lecturer": "Schaible",
-                    "type": "practical exercise",
-                    "attendees":[
-                        6,7,8,9,10
-                    ]
+            "id": 1123,
+            "day": 2,
+            "type": "PRAKTIKUM",
+            "time_start": "10:00",
+            "time_end": "11:30",
+            "lecturer": {
+                "username": "jbiff001",
+                "email": "joendhard.biffel@student.hs-rm.de",
+                "first_name": "Joendhard",
+                "last_name": "Biffel"
+            },
+            "max_capacity": 100,
+            "room": {
+                "id": 1234,
+                "room_number": "D14",
+                "location": "Unter den Eichen Gebäude D"
+            },
+            "module": {
+                "id": 145,
+                "name": "Wichtige Zahlen (17) für Informatiker",
+                "po": {
+                    "id": 125,
+                    "valid_since_year": "2016"
                 }
-            ]
+            }
         },
         {
-            "name": "Programmieren 1",
-            "appointments": [
-                {
-                    "room": "D11",
-                    "day": "tuesday",
-                    "time_start": "10:00",
-                    "time_end": "11:30",
-                    "lecturer": "Berdux",
-                    "type": "lecture"
-                },
-                {
-                    "room": "D12",
-                    "day": "tuesday",
-                    "time_start": "11:30",
-                    "time_end": "13:15",
-                    "lecturer": "Berdux",
-                    "type": "practical exercise",
-                    "attendees": [
-                        1,2,3,4,5
-                    ]
-                },
-                {
-                    "room": "D12",
-                    "day": "wednesday",
-                    "time_start": "14:15",
-                    "time_end": "15:45",
-                    "lecturer": "Berdux",
-                    "type": "practical exercise",
-                    "attendees":[
-                        6,7,8,9,10
-                    ]
+            "id": 423,
+            "day": 3,
+            "type": "PRAKTIKUM",
+            "time_start": "10:00",
+            "time_end": "11:30",
+            "lecturer": {
+                "username": "jbiff001",
+                "email": "joendhard.biffel@student.hs-rm.de",
+                "first_name": "Joendhard",
+                "last_name": "Biffel"
+            },
+            "max_capacity": 100,
+            "room": {
+                "id": 1234,
+                "room_number": "D14",
+                "location": "Unter den Eichen Gebäude D"
+            },
+            "module": {
+                "id": 145,
+                "name": "Wichtige Zahlen (17) für Informatiker",
+                "po": {
+                    "id": 125,
+                    "valid_since_year": "2016"
                 }
-            ]
-        },
-        {
-            "name": "Einführung in die Gestaltung",
-            "appointments": [
-                {
-                    "room": "D14",
-                    "day": "thursday",
-                    "time_start": "10:00",
-                    "time_end": "11:30",
-                    "lecturer": "Pedersen",
-                    "type": "lecture"
-                },
-                {
-                    "room": "D15",
-                    "day": "thursday",
-                    "time_start": "11:30",
-                    "time_end": "13:15",
-                    "lecturer": "Pedersen",
-                    "type": "lesson"
-                },
-                {
-                    "room": "D15",
-                    "day": "thursday",
-                    "time_start": "14:15",
-                    "time_end": "15:45",
-                    "lecturer": "Pedersen",
-                    "type": "practical exercise",
-                    "attendees": [
-                        1,2,3,4,5
-                    ]
-                },
-                {
-                    "room": "D15",
-                    "day": "thursday",
-                    "time_start": "15:45",
-                    "time_end": "17:30",
-                    "lecturer": "Pedersen",
-                    "type": "practical exercise",
-                    "attendees":[
-                        6,7,8,9,10
-                    ]
-                }
-            ]
-        },
-        {
-            "name": "Grundlagen der Betriebswirtschaftslehre",
-            "appointments": [
-                {
-                    "room": "D11",
-                    "day": "friday",
-                    "time_start": "10:00",
-                    "time_end": "11:30",
-                    "lecturer": "Hünemor",
-                    "type": "lecture"
-                },
-                {
-                    "room": "D11",
-                    "day": "friday",
-                    "time_start": "11:45",
-                    "time_end": "13:15",
-                    "lecturer": "Hünemor",
-                    "type": "lesson",
-                    "attendees": [
-                        1,2,3,4,5
-                    ]
-                },
-                {
-                    "room": "D11",
-                    "day": "friday",
-                    "time_start": "14:15",
-                    "time_end": "15:45",
-                    "lecturer": "Hünemor",
-                    "type": "lesson",
-                    "attendees": [
-                        1,2,3,4,5
-                    ]
-                }
-            ]
+            }
         }
     ]
 }
