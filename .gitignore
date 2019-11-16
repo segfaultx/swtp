@@ -34,4 +34,4 @@ out/
 ### In Memory Development Database ###
 *.db
 
-out/
+bin/
