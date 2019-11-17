@@ -2,6 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Entity
 @Data
+@NoArgsConstructor
 public class Lecturer {
 
     @Id

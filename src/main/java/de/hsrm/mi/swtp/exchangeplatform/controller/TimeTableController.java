@@ -36,9 +36,9 @@ public class TimeTableController {
     public ResponseEntity<TimeTable> postTimeTable(@RequestBody TimeTable timeTable, BindingResult result) {
         if(result.hasErrors()){
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        } else {
-            timeTableService.save(timeTable);
-            return new ResponseEntity<>(timeTable, HttpStatus.OK);
         }
+
+        timeTableService.save(timeTable);
+        return new ResponseEntity<>(timeTable, HttpStatus.OK);
     }
 }

@@ -11,7 +11,8 @@ import java.util.List;
 @Data
 public class TimeTable {
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue
     private Long id;
 
     @Column(name = "start")

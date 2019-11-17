@@ -4,23 +4,30 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.AppointmentRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.service.AppointmentService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
 
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
+@Component
+@Setter
 @RestController
 @RequestMapping("/api/v1/appointment")
 public class AppointmentRestController {
 
-    private final AppointmentService appointmentService;
-
-    public AppointmentRestController(AppointmentService appointmentService) {
-        this.appointmentService = appointmentService;
-    }
+    AppointmentService appointmentService;
+    JmsTemplate jmsTemplate;
 
     @GetMapping("")
     public ResponseEntity<List<Appointment>> getAllAppointments() {
@@ -42,15 +49,12 @@ public class AppointmentRestController {
         if (appointmentFound.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         Appointment appointment = appointmentFound.get();
+        jmsTemplate.convertAndSend("AppointmentTopic", appointmentRequestBody.toString());
 
-        if (appointmentService.checkCapacity(appointment)) {
-            Appointment appointmentUpd = appointmentService
-                    .findById(appointment.getId())
-                    .orElseThrow(NotFoundException::new);
-            appointmentUpd.getAttendees().add(appointmentRequestBody.getStudent());
-            appointmentService.save(appointmentUpd);
-            return new ResponseEntity<>(appointmentUpd, HttpStatus.OK);
-        } else {
+        try {
+            appointmentService.addAttendeeToAppointment(appointmentRequestBody.getAppointmentId(), appointmentRequestBody.getStudent());
+            return new ResponseEntity<>(appointment, HttpStatus.OK);
+        } catch (NotFoundException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
