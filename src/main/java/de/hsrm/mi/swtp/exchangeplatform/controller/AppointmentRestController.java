@@ -6,7 +6,6 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.AppointmentRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.service.AppointmentService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
