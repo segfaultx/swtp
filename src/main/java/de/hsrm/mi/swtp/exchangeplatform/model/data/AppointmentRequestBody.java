@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class AppointmentRequestBody implements RequestBody {
+public class AppointmentRequestBody {
 
     @JsonProperty("appointment_id")
     Long appointmentId;
