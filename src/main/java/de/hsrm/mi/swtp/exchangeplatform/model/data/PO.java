@@ -2,10 +2,8 @@ package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
-import lombok.Getter;
 
 import javax.persistence.*;
-import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -20,9 +18,6 @@ public class PO {
 
     private String major;
 
-    public PO(String major){
-        this.major = major;
-    }
     @OneToMany(
             mappedBy = "po",
             cascade = CascadeType.ALL,

@@ -27,9 +27,4 @@ public class TimeTable {
     )
     private List<Timeslot> timeslots = new ArrayList<>();
 
-    public TimeTable(LocalDate dateStart, LocalDate dateEnd){
-        this.dateStart = dateStart;
-        this.dateEnd = dateEnd;
-    }
-
 }

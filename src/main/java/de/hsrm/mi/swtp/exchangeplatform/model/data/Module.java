@@ -25,8 +25,4 @@ public class Module {
     @ManyToOne(fetch = FetchType.LAZY)
     private PO po;
 
-    public Module(String name){
-        this.name = name;
-    }
-
 }

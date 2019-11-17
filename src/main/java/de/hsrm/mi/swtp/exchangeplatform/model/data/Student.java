@@ -2,7 +2,10 @@ package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import java.util.List;
 
 @Entity
@@ -17,9 +20,5 @@ public class Student {
 
     @ManyToMany(mappedBy = "attendees")
     private List<Timeslot> timeslots;
-
-    public Student(Long matriculationNumber){
-        this.matriculationNumber = matriculationNumber;
-    }
 
 }

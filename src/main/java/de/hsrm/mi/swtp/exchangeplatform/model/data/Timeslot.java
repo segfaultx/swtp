@@ -53,11 +53,4 @@ public class Timeslot {
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Student> attendees;
 
-    public Timeslot(Integer day, LocalTime timeStart, LocalTime timeEnd, int capacity){
-        this.day = day;
-        this.timeStart = timeStart;
-        this.timeEnd = timeEnd;
-        this.capacity = capacity;
-    }
-
 }

@@ -28,9 +28,4 @@ public class Room {
     )
     private List<Timeslot> timeslots;
 
-    public Room(String roomNumber, String location){
-        this.roomNumber = roomNumber;
-        this.location = location;
-    }
-
 }

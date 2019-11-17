@@ -32,8 +32,4 @@ public class Lecturer {
     )
     private List<Timeslot> timeslots = new ArrayList<>();
 
-
-
-    public Lecturer(){
-    }
 }
