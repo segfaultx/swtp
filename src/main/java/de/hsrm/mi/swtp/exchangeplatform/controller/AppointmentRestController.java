@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.AppointmentMessageConverter;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.AppointmentRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.service.AppointmentService;
@@ -8,13 +9,19 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +33,9 @@ import java.util.Optional;
 @RequestMapping("/api/v1/appointment")
 public class AppointmentRestController {
 
+    @Autowired
     AppointmentService appointmentService;
+    @Autowired
     JmsTemplate jmsTemplate;
 
     @GetMapping("")
@@ -49,7 +58,7 @@ public class AppointmentRestController {
         if (appointmentFound.isEmpty()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
         Appointment appointment = appointmentFound.get();
-        jmsTemplate.convertAndSend("AppointmentTopic", appointmentRequestBody.toString());
+        jmsTemplate.convertAndSend("AppointmentQueue", appointment);
 
         try {
             appointmentService.addAttendeeToAppointment(appointmentRequestBody.getAppointmentId(), appointmentRequestBody.getStudent());

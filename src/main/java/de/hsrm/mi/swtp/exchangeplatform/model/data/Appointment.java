@@ -1,8 +1,15 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalTime;
@@ -11,6 +18,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Data
+@RequiredArgsConstructor
 public class Appointment {
 
     @Id
@@ -22,10 +30,10 @@ public class Appointment {
     private String day;
 
     @JsonProperty("time_start")
-    private LocalTime timeStart;
+    private String timeStart;  // string nur weil aktuell in lokalen DB ein falscher Eintrag war
 
     @JsonProperty("time_end")
-    private LocalTime timeEnd;
+    private String timeEnd;  // string nur weil aktuell in lokalen DB ein falscher Eintrag war
 
     private String lecturer;
 
@@ -48,5 +56,5 @@ public class Appointment {
                 .collect(Collectors.toList());
         return !(attendees.size() > 0) && this.attendees.add(student);
     }
-    
+
 }

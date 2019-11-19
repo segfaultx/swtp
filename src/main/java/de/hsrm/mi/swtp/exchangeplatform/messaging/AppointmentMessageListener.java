@@ -1,39 +1,46 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging;
 
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.command.ActiveMQTopic;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.jms.Message;
-import javax.jms.MessageListener;
-
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Component
-public class AppointmentMessageListener implements MessageListener {
+@EnableJms
+public class AppointmentMessageListener {
 
     final String TOPICNAME = "AppointmentTopic";
+    final String QUEUENAME = "AppointmentQueue";
     ActiveMQTopic activeMQTopic = new ActiveMQTopic(TOPICNAME);
 
+    @Autowired
     @NonFinal
-    JmsTemplate jmsTemplate;
+    private JmsTemplate jmsTemplate;
 
     @JmsListener(
             destination = TOPICNAME,
-            containerFactory = "myFactory"
+            containerFactory = "myTopicFactory"
     )
     public void onReceiveMessage(String message) {
-        log.info("========== Received <" + message + ">");
-        System.out.println("========== Received <" + message + ">");
+        log.info("Received <" + message + ">");
     }
 
-    @Override
-    public void onMessage(Message message) {
-
+    @JmsListener(
+            destination = QUEUENAME,
+            containerFactory = "myQueueFactory"
+    )
+    public void onReceiveAoppointmentMessage(Appointment appointment) {
+        log.info("Es kam ein neuer Termin rein: " + appointment.toString());
+        jmsTemplate.send(activeMQTopic, session -> session.createTextMessage("Es kam ein neuer Termin rein: " + appointment.toString()));
     }
+
 }

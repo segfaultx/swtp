@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Data
+@RequiredArgsConstructor
 public class Student {
 
     @Id

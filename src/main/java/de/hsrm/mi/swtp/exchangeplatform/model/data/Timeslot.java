@@ -2,6 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalTime;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Data
+@RequiredArgsConstructor
 public class Timeslot {
 
     @Id
