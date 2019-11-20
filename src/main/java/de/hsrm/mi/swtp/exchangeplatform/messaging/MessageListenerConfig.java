@@ -4,23 +4,16 @@ import de.hsrm.mi.swtp.exchangeplatform.service.JmsErrorHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.broker.BrokerService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.stereotype.Component;
 
 import javax.jms.ConnectionFactory;
 
 @Slf4j
 @EnableJms
 @Configuration
-@Component
-@ComponentScan
-@EnableAutoConfiguration
 public class MessageListenerConfig {
 
     @Autowired
@@ -34,22 +27,20 @@ public class MessageListenerConfig {
         return broker;
     }
 
-    @Bean(name="myTopicFactory")
+    @Bean(name = "myTopicFactory")
     public DefaultJmsListenerContainerFactory makeTopicFactory() {
         log.info("DefaultJmsListenerContainerFactory myTopicFactory() gezogen");
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
-        // pub-sub = Publish-Subscribe = Topic-Kommunikationsmodell
         factory.setPubSubDomain(true);
         return factory;
     }
 
-    @Bean(name="myQueueFactory")
+    @Bean(name = "myQueueFactory")
     public DefaultJmsListenerContainerFactory makeQueueFactory() {
         log.info("DefaultJmsListenerContainerFactory myQueueFactory() gezogen");
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
-        // pub-sub=false = Queue-Kommunikationsmodell
         factory.setPubSubDomain(false);
         factory.setMessageConverter(new AppointmentMessageConverter());
         factory.setErrorHandler(new JmsErrorHandler());

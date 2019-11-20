@@ -34,7 +34,7 @@ public class TimeTableController {
 
     @PostMapping
     public ResponseEntity<TimeTable> postTimeTable(@RequestBody TimeTable timeTable, BindingResult result) {
-        if(result.hasErrors()){
+        if (result.hasErrors()) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
 

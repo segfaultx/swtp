@@ -9,7 +9,7 @@ public class AppointmentRequestBody {
     @JsonProperty("appointment_id")
     Long appointmentId;
 
-    @JsonProperty("student")
-    Student student;
+    @JsonProperty("matr_nr")
+    Long matrimatriculationNumber;
 
 }

@@ -12,7 +12,9 @@ import java.util.List;
 @RequiredArgsConstructor
 public class Module {
 
-    @Id @GeneratedValue private Long id;
+    @Id
+    @GeneratedValue
+    private Long id;
 
     private String name;
 
