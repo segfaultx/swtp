@@ -17,15 +17,15 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableJms
 public class AppointmentMessageListener {
-
+    
     final String TOPICNAME = "AppointmentTopic";
     final String QUEUENAME = "AppointmentQueue";
     ActiveMQTopic activeMQTopic = new ActiveMQTopic(TOPICNAME);
-
+    
     @Autowired
     @NonFinal
     private JmsTemplate jmsTemplate;
-
+    
     @JmsListener(
             destination = TOPICNAME,
             containerFactory = "myTopicFactory"
@@ -33,7 +33,7 @@ public class AppointmentMessageListener {
     public void onReceiveMessage(String message) {
         log.info("Received <" + message + ">");
     }
-
+    
     @JmsListener(
             destination = QUEUENAME,
             containerFactory = "myQueueFactory"
@@ -42,5 +42,5 @@ public class AppointmentMessageListener {
         log.info("Es kam ein neuer Termin rein: " + appointment.toString());
         jmsTemplate.send(activeMQTopic, session -> session.createTextMessage("Es kam ein neuer Termin rein: " + appointment.toString()));
     }
-
+    
 }

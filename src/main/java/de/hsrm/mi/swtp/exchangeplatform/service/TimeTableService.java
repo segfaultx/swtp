@@ -21,32 +21,32 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TimeTableService {
-
+    
     @Autowired
     TimeTableRepository repository;
-
+    
     public List<TimeTable> findAll() {
         return repository.findAll();
     }
-
+    
     public Optional<TimeTable> findById(Long id) {
-
+        
         // This is just a Mock implementation
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         File jsonInput = new File(classLoader.getResource("data.json").getFile());
-
+        
         try {
             return Optional.of(mapper.readValue(jsonInput, new TypeReference<TimeTable>() {
             }));
         } catch (IOException e) {
             return Optional.empty();
         }
-
+        
     }
-
+    
     public void save(TimeTable timeTable) {
         repository.save(timeTable);
     }

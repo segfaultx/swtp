@@ -13,31 +13,31 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/student")
 public class StudentController {
-
+    
     private final StudentService studentService;
-
+    
     public StudentController(StudentService studentService) {
         this.studentService = studentService;
     }
-
+    
     @GetMapping
     public ResponseEntity<List<Student>> getAllTimeTables() {
         return new ResponseEntity<>(studentService.findAll(), HttpStatus.OK);
     }
-
+    
     @GetMapping("/{id}")
     public ResponseEntity<Student> getTimeTableById(@PathVariable Long id) {
         Student found = studentService.findById(id)
                 .orElseThrow(NotFoundException::new);
         return new ResponseEntity<>(found, HttpStatus.OK);
     }
-
+    
     @PostMapping
     public ResponseEntity<Student> postTimeTable(@RequestBody Student student, BindingResult result) {
         if (result.hasErrors()) {
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         }
-
+        
         studentService.save(student);
         return new ResponseEntity<>(student, HttpStatus.OK);
     }

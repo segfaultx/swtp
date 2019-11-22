@@ -13,14 +13,14 @@ import java.util.List;
 @Data
 @RequiredArgsConstructor
 public class Student {
-
+    
     @Id
     @Column(name = "matr_nr")
     private Long matriculationNumber;
-
+    
     private String username;
-
+    
     @ManyToMany(mappedBy = "attendees")
     private List<Timeslot> timeslots;
-
+    
 }

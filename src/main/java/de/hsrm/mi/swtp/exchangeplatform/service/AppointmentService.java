@@ -23,48 +23,48 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppointmentService {
-
+    
     @Autowired
     final JmsTemplate jmsTemplate;
     @Autowired
     final AppointmentRepository repository;
-
+    
     @NonFinal
     private Integer attendeeCount = 0; // TODO: remove; is just for testing
-
+    
     public List<Appointment> findAll() {
         return repository.findAll();
     }
-
+    
     public Optional<Appointment> findById(Long id) {
         return repository.findById(id);
     }
-
+    
     public void save(Appointment appointment) {
         attendeeCount++;
         repository.save(appointment);
     }
-
+    
     public boolean checkCapacity(Appointment appointment) {
         return attendeeCount < appointment.getCapacity();
     }
-
+    
     public void addAttendeeToAppointment(Long appointmentId, Optional<Student> studentOptional) {
         Optional<Appointment> appointmentFound = this.findById(appointmentId);
-
+        
         if (appointmentFound.isEmpty()) throw new AppointmentNotFoundException();
         if (studentOptional.isEmpty()) throw new StudentNotFoundException();
-
+        
         Appointment appointment = appointmentFound.get();
         jmsTemplate.convertAndSend("AppointmentQueue", appointment);
-
+        
         if (!this.checkCapacity(appointment) && !appointment.addAttendee(studentOptional.get())) {
             throw new NotFoundException();
         }
-
+        
         log.info("========================");
         log.info("===== ADD STUDENT ======");
         log.info("========================");
     }
-
+    
 }

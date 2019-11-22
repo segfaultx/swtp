@@ -5,11 +5,11 @@ import lombok.Data;
 
 @Data
 public class AppointmentRequestBody {
-
+    
     @JsonProperty("appointment_id")
     Long appointmentId;
-
+    
     @JsonProperty("matr_nr")
     Long matrimatriculationNumber;
-
+    
 }

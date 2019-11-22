@@ -25,28 +25,28 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/appointment")
 public class AppointmentRestController {
-
+    
     @Autowired
     AppointmentService appointmentService;
     @Autowired
     StudentService studentService;
-
+    
     @GetMapping("")
     public ResponseEntity<List<Appointment>> getAllAppointments() {
         return new ResponseEntity<>(appointmentService.findAll(), HttpStatus.OK);
     }
-
+    
     @GetMapping("/{id}")
     public ResponseEntity<Appointment> getTimeTableById(@PathVariable Long id) {
         Appointment found = appointmentService.findById(id)
                 .orElseThrow(NotFoundException::new);
         return new ResponseEntity<>(found, HttpStatus.OK);
     }
-
+    
     @PostMapping
     public ResponseEntity<Appointment> postStudentAppointment(@RequestBody AppointmentRequestBody appointmentRequestBody, BindingResult result) {
         if (result.hasErrors()) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-
+        
         try {
             appointmentService.addAttendeeToAppointment(
                     appointmentRequestBody.getAppointmentId(),

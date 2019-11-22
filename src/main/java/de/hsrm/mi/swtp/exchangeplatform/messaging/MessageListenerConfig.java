@@ -15,10 +15,10 @@ import javax.jms.ConnectionFactory;
 @EnableJms
 @Configuration
 public class MessageListenerConfig {
-
+    
     @Autowired
     private ConnectionFactory connectionFactory;
-
+    
     @Bean
     public BrokerService broker() throws Exception {
         log.info("BrokerService broker() gezogen");
@@ -26,7 +26,7 @@ public class MessageListenerConfig {
         broker.addConnector("tcp://0.0.0.0:4242");
         return broker;
     }
-
+    
     @Bean(name = "myTopicFactory")
     public DefaultJmsListenerContainerFactory makeTopicFactory() {
         log.info("DefaultJmsListenerContainerFactory myTopicFactory() gezogen");
@@ -35,7 +35,7 @@ public class MessageListenerConfig {
         factory.setPubSubDomain(true);
         return factory;
     }
-
+    
     @Bean(name = "myQueueFactory")
     public DefaultJmsListenerContainerFactory makeQueueFactory() {
         log.info("DefaultJmsListenerContainerFactory myQueueFactory() gezogen");

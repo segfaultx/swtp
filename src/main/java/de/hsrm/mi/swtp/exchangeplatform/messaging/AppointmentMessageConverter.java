@@ -18,9 +18,9 @@ import javax.jms.TextMessage;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Component
 public class AppointmentMessageConverter implements MessageConverter {
-
+    
     ObjectMapper mapper = new ObjectMapper();
-
+    
     @Override
     public Message toMessage(Object object, Session session) throws JMSException {
         Appointment appointment = (Appointment) object;
@@ -33,12 +33,12 @@ public class AppointmentMessageConverter implements MessageConverter {
         TextMessage message = session.createTextMessage(jsontext);
         return message;
     }
-
+    
     @Override
     public Object fromMessage(Message message) throws JMSException {
         TextMessage textMessage = (TextMessage) message;
         String jsontext = textMessage.getText();
-
+        
         Appointment appointment = null;
         try {
             appointment = mapper.readValue(jsontext, Appointment.class);

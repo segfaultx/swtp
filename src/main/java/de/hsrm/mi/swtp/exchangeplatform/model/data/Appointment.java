@@ -15,46 +15,46 @@ import java.util.stream.Collectors;
 @Data
 @RequiredArgsConstructor
 public class Appointment {
-
+    
     @JsonIgnore
     @Id
     @GeneratedValue
     private Long id;
-
+    
     @JsonIgnore
     private String room;
-
+    
     @JsonIgnore
     private String day;
-
+    
     @JsonIgnore
     @JsonProperty("time_start")
     @JsonSerialize(using = LocalTimeSerializer.class)
     private String timeStart;  // string nur weil aktuell in lokalen DB ein falscher Eintrag war
-
+    
     @JsonIgnore
     @JsonProperty("time_end")
     @JsonSerialize(using = LocalTimeSerializer.class)
     private String timeEnd;  // string nur weil aktuell in lokalen DB ein falscher Eintrag war
-
+    
     @JsonIgnore
     private String lecturer;
-
+    
     @JsonIgnore
     private String type;
-
+    
     @JsonIgnore
     private int capacity;
-
+    
     @JsonIgnore
     @ManyToMany
     private List<Student> attendees;
-
+    
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "module_id")
     private Module module;
-
+    
     public boolean addAttendee(Student student) {
         List<Student> attendees = this.attendees
                 .stream()
@@ -62,5 +62,5 @@ public class Appointment {
                 .collect(Collectors.toList());
         return !(attendees.size() > 0) && this.attendees.add(student);
     }
-
+    
 }
