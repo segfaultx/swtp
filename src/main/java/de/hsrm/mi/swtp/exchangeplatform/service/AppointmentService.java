@@ -41,7 +41,6 @@ public class AppointmentService {
     }
     
     public void save(Appointment appointment) {
-        attendeeCount++;
         repository.save(appointment);
     }
     
@@ -61,7 +60,7 @@ public class AppointmentService {
         if (!this.checkCapacity(appointment) && !appointment.addAttendee(studentOptional.get())) {
             throw new NotFoundException();
         }
-        
+        attendeeCount++;
         log.info("========================");
         log.info("===== ADD STUDENT ======");
         log.info("========================");

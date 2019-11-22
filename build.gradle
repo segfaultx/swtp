@@ -50,6 +50,7 @@ dependencies {
     compile 'org.apache.activemq:activemq-broker'
     compile 'org.springframework:spring-jms'
     compile 'org.springframework.boot:spring-boot-devtools'
+    compile 'org.springdoc:springdoc-openapi-core:1.1.44'
 }
 
 test {

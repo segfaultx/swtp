@@ -43,8 +43,8 @@ public class AppointmentRestController {
         return new ResponseEntity<>(found, HttpStatus.OK);
     }
     
-    @PostMapping
-    public ResponseEntity<Appointment> postStudentAppointment(@RequestBody AppointmentRequestBody appointmentRequestBody, BindingResult result) {
+    @PostMapping("/join")
+    public ResponseEntity<Appointment> joinAnAppointment(@RequestBody AppointmentRequestBody appointmentRequestBody, BindingResult result) {
         if (result.hasErrors()) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         
         try {
@@ -52,6 +52,18 @@ public class AppointmentRestController {
                     appointmentRequestBody.getAppointmentId(),
                     this.studentService.findById(appointmentRequestBody.getMatrimatriculationNumber())
             );
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (NotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+    
+    @PostMapping
+    public ResponseEntity<Appointment> createNewAppointment(@RequestBody Appointment appointment, BindingResult result) {
+        if (result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        
+        try {
+            appointmentService.save(appointment);
             return new ResponseEntity<>(HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
