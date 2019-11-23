@@ -10,7 +10,7 @@ import org.springframework.util.ErrorHandler;
 @Slf4j
 @Service
 public class JmsErrorHandler implements ErrorHandler {
-
+    
     @Override
     public void handleError(Throwable t) {
         log.warn("In default jms error handler...");

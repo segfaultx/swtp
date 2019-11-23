@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import lombok.Data;
@@ -24,9 +25,11 @@ public class Appointment {
 
     private String day;
 
+    @JsonProperty("time_start")
     @JsonSerialize(using = LocalTimeSerializer.class)
     private LocalTime timeStart;  // string nur weil aktuell in lokalen DB ein falscher Eintrag war
 
+    @JsonProperty("time_end")
     @JsonSerialize(using = LocalTimeSerializer.class)
     private LocalTime timeEnd;  // string nur weil aktuell in lokalen DB ein falscher Eintrag war
 
@@ -42,7 +45,7 @@ public class Appointment {
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "module_id")
-    private Module module = new Module();
+    private Module module;
 
     public boolean addAttendee(Student student) {
         List<Student> attendees = this.attendees

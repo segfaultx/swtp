@@ -50,7 +50,6 @@ dependencies {
     compile 'org.springframework:spring-jms'
     compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.4.'
     compile 'org.springframework.boot:spring-boot-devtools'
-    compile 'org.springframework.boot:spring-boot-starter-data-rest'
 }
 
 test {
