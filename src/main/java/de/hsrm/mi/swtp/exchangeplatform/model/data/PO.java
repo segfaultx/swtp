@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Data
 @RequiredArgsConstructor
-public class PO {
+public class PO implements Model {
     @Id
     @GeneratedValue
     private Long id;

@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Data
 @RequiredArgsConstructor
-public class Timeslot {
+public class Timeslot implements Model {
 
     @Id
     @GeneratedValue

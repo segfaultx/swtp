@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Data
 @RequiredArgsConstructor
-public class Module {
+public class Module implements Model {
 
     @Id
     @GeneratedValue

@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Data
 @RequiredArgsConstructor
-public class TimeTable {
+public class TimeTable implements Model {
     
     @Id
     @GeneratedValue

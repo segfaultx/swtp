@@ -11,7 +11,7 @@ import java.util.List;
 @Entity
 @Data
 @RequiredArgsConstructor
-public class Room {
+public class Room implements Model {
 
     @Id
     @GeneratedValue

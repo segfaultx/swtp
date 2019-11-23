@@ -1,8 +1,8 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
-import de.hsrm.mi.swtp.exchangeplatform.service.TimeTableService;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,15 +25,13 @@ public class TimeTableController {
 
     @GetMapping
     public ResponseEntity<List<TimeTable>> getAllTimeTables() {
-        return new ResponseEntity<>(timeTableService.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(timeTableService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<TimeTable> getTimeTableById(@PathVariable Long id) {
         try {
-            TimeTable found = timeTableService.findById(id)
-                    .orElseThrow(NotFoundException::new);
-            return new ResponseEntity<>(found, HttpStatus.OK);
+            return new ResponseEntity<>(timeTableService.getById(id), HttpStatus.OK);
         } catch (NotFoundException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.model.data;
+package de.hsrm.mi.swtp.exchangeplatform.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -10,6 +10,6 @@ public class AppointmentRequestBody {
     Long appointmentId;
     
     @JsonProperty("matr_nr")
-    Long matrimatriculationNumber;
+    Long matriculationNumber;
     
 }

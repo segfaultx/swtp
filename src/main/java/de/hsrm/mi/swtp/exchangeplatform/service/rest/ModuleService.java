@@ -1,6 +1,6 @@
-package de.hsrm.mi.swtp.exchangeplatform.service;
+package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.ModuleNotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import lombok.AccessLevel;
@@ -18,32 +18,37 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ModuleService {
+public class ModuleService implements RestService<Module, Long> {
 
     @Autowired(required = false)
     final JmsTemplate jmsTemplate;
     @Autowired
     final ModuleRepository repository;
 
-    public List<Module> findAll() {
+    @Override
+    public List<Module> getAll() {
         return repository.findAll();
     }
 
-    public Optional<Module> findById(Long moduleId) {
-        return repository.findById(moduleId);
-    }
-
-    public Module getModuleById(Long moduleId) {
-        Optional<Module> moduleOptional = this.findById(moduleId);
-        if (!moduleOptional.isPresent()) throw new ModuleNotFoundException(moduleId);
+    @Override
+    public Module getById(Long moduleId) {
+        Optional<Module> moduleOptional = this.repository.findById(moduleId);
+        if (!moduleOptional.isPresent()) throw new NotFoundException(moduleId);
         return moduleOptional.get();
     }
 
+    @Override
     public void save(Module module) {
         repository.save(module);
     }
 
-    public void delete(Long moduleId) {
-        repository.delete(this.getModuleById(moduleId));
+    @Override
+    public void delete(Long moduleId) throws IllegalArgumentException {
+        repository.delete(this.getById(moduleId));
+    }
+
+    @Override
+    public boolean update(Long aLong, Module update) throws IllegalArgumentException {
+        return true;
     }
 }

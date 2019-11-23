@@ -1,10 +1,10 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
-import de.hsrm.mi.swtp.exchangeplatform.service.ModuleService;
-import de.hsrm.mi.swtp.exchangeplatform.service.TimeTableService;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,12 +37,12 @@ public class ModuleRestController {
 
     @GetMapping
     public ResponseEntity<List<Module>> getAllModules() {
-        return new ResponseEntity<>(moduleService.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{timetableId}") // TODO
     public ResponseEntity<List<Module>> getAllModulesFromTimetable(@PathVariable Long timetableId) {
-        return new ResponseEntity<>(moduleService.findAll(), HttpStatus.OK);
+        return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
     }
 
     @GetMapping("/{moduleId}")
@@ -50,10 +50,9 @@ public class ModuleRestController {
         log.info(String.format("GET // " + BASEURL + "/%s", moduleId));
         try {
             return new ResponseEntity<>(
-                    moduleService.getModuleById(moduleId),
+                    moduleService.getById(moduleId),
                     HttpStatus.OK);
         } catch (NotFoundException e) {
-            log.info(e.getMessage());
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
@@ -67,15 +66,15 @@ public class ModuleRestController {
         return new ResponseEntity<>(module, HttpStatus.OK);
     }
 
-    @DeleteMapping("/{moduleId}")
+    @DeleteMapping("/admin/{moduleId}")
     public ResponseEntity<Module> deleteAppointment(@PathVariable Long moduleId) {
         log.info(String.format("DELETE // " + BASEURL + "/s", moduleId));
 
         try {
             moduleService.delete(moduleId);
             return new ResponseEntity<>(HttpStatus.OK);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
 }
