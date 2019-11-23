@@ -3,13 +3,15 @@ package de.hsrm.mi.swtp.exchangeplatform.model.data;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Data
-public class Room {
+@RequiredArgsConstructor
+public class Room implements Model {
 
     @Id
     @GeneratedValue
