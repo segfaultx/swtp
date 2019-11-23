@@ -26,6 +26,7 @@ public class Module {
     private List<Timeslot> timeslots;
 
     @JsonIgnore
+    @JoinColumn(name = "po_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private PO po;
 

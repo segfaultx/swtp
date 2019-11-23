@@ -30,7 +30,6 @@ public class TimeTableService {
     }
 
     public Optional<TimeTable> findById(Long id) {
-
         // This is just a Mock implementation
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
@@ -44,10 +43,14 @@ public class TimeTableService {
         } catch (IOException e) {
             return Optional.empty();
         }
+    }
 
+    public TimeTable findTimetableId(Long id) {
+        return this.findById(id).get();
     }
 
     public void save(TimeTable timeTable) {
         repository.save(timeTable);
     }
+
 }

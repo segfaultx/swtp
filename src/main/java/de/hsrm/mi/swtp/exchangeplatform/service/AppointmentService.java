@@ -1,8 +1,8 @@
 package de.hsrm.mi.swtp.exchangeplatform.service;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.AppointmentNotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.StudentNotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.NoAppointmentCapacityException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.StudentIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AppointmentRepository;
@@ -24,7 +24,7 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AppointmentService {
 
-    @Autowired
+    @Autowired(required = false)
     final JmsTemplate jmsTemplate;
     @Autowired
     final AppointmentRepository repository;
@@ -36,8 +36,14 @@ public class AppointmentService {
         return repository.findAll();
     }
 
-    public Optional<Appointment> findById(Long id) {
-        return repository.findById(id);
+    public Optional<Appointment> findById(Long appointmentId) {
+        return repository.findById(appointmentId);
+    }
+
+    public Appointment getAppointmentById(Long appointmentId) {
+        Optional<Appointment> appointmentOptional = this.findById(appointmentId);
+        if (!appointmentOptional.isPresent()) throw new AppointmentNotFoundException(appointmentId);
+        return appointmentOptional.get();
     }
 
     public void save(Appointment appointment) {
@@ -49,17 +55,21 @@ public class AppointmentService {
         return attendeeCount < appointment.getCapacity();
     }
 
-    public void addAttendeeToAppointment(Long appointmentId, Optional<Student> studentOptional) {
+    public void addAttendeeToAppointment(Long appointmentId, Student student) {
         Optional<Appointment> appointmentFound = this.findById(appointmentId);
 
-        if (appointmentFound.isEmpty()) throw new AppointmentNotFoundException();
-        if (studentOptional.isEmpty()) throw new StudentNotFoundException();
+        if (appointmentFound.isEmpty()) throw new AppointmentNotFoundException(appointmentId);
 
         Appointment appointment = appointmentFound.get();
+
+        if (appointment.getAttendees().contains(student)) {
+            throw new StudentIsAlreadyAttendeeException(student);
+        }
+
         jmsTemplate.convertAndSend("AppointmentQueue", appointment);
 
-        if (!this.checkCapacity(appointment) && !appointment.addAttendee(studentOptional.get())) {
-            throw new NotFoundException();
+        if (!this.checkCapacity(appointment) && !appointment.addAttendee(student)) {
+            throw new NoAppointmentCapacityException(appointment);
         }
 
         log.info("========================");

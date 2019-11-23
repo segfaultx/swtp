@@ -2,11 +2,10 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.command.ActiveMQTopic;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
@@ -16,15 +15,14 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Component
 @EnableJms
+@RequiredArgsConstructor
 public class AppointmentMessageListener {
 
-    final String TOPICNAME = "AppointmentTopic";
-    final String QUEUENAME = "AppointmentQueue";
+    final static String TOPICNAME = "AppointmentTopic";
+    final static String QUEUENAME = "AppointmentQueue";
     ActiveMQTopic activeMQTopic = new ActiveMQTopic(TOPICNAME);
 
-    @Autowired
-    @NonFinal
-    private JmsTemplate jmsTemplate;
+    JmsTemplate jmsTemplate;
 
     @JmsListener(
             destination = TOPICNAME,

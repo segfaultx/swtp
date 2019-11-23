@@ -20,6 +20,10 @@ public class Student {
 
     private String username;
 
+    private String firstName;
+
+    private String lastName;
+
     @ManyToMany(mappedBy = "attendees")
     private List<Timeslot> timeslots;
 

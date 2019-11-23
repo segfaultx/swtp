@@ -4,6 +4,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ErrorHandler;
 
+/**
+ * An ErrorHandler class specifically for handling error concerning JMS-messaging.
+ */
 @Slf4j
 @Service
 public class JmsErrorHandler implements ErrorHandler {
