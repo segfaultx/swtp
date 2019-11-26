@@ -69,6 +69,4 @@ public class Timeslot implements Model {
     @ManyToMany(fetch = FetchType.LAZY)
     private List<Student> attendees;
 
-    private enum Type {VORLESUNG, PRAKTIKUM, UEBUNG}
-
 }
