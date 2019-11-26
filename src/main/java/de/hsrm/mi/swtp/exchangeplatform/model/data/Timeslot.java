@@ -24,7 +24,9 @@ public class Timeslot implements Model {
     @Column(name = "weekday")
     private Integer day;
 
-    @Column(name = "type")
+    private enum Type { VORLESUNG, PRAKTIKUM, UEBUNG }
+
+    @Column(name ="timeslot_type")
     @Enumerated(EnumType.STRING)
     private Type type;
 
