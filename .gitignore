@@ -33,3 +33,7 @@ out/
 
 ### In Memory Development Database ###
 *.db
+
+### Compiled Files and Logs ###
+bin/
+activemq-data/
