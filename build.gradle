@@ -48,7 +48,6 @@ dependencies {
     compile 'org.springframework.boot:spring-boot-starter'
     compile 'org.apache.activemq:activemq-broker'
     compile 'org.springframework:spring-jms'
-    compile 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.4.'
     compile 'org.springframework.boot:spring-boot-devtools'
 }
 
