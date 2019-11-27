@@ -9,6 +9,7 @@ import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +20,7 @@ import java.util.Map;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class TradeOfferService {
+public class TradeOfferService implements RestService<TradeOffer, Long> {
     @Autowired
     private TradeOfferRepository tradeOfferRepository;
 
@@ -37,12 +38,18 @@ public class TradeOfferService {
         return timeslotTradeOffers; //TODO: use filter module here
     }
 
-    public Timeslot tradeTimeslots(TradeOffer offerer) {
-        return null; //TODO real trade method
-    }
+    public boolean tradeTimeslots(long requesterId, long tradeId) throws RuntimeException {
+        log.info(String.format("Performing Trade for requester: %d, trade: %d", requesterId, tradeId));
+        var requester = studentRepository.findById(requesterId).orElseThrow(() -> {
+            log.info(String.format("Error fetching Student from repository with ID: %d", requesterId));
+            throw new NotFoundException(requesterId);
+        });
+        var trade = tradeOfferRepository.findById(tradeId).orElseThrow(() -> {
+            log.info(String.format("Error fetching Tradeoffer with ID: %d", tradeId));
+            throw new NotFoundException(tradeId);
+        });
 
-    public List<TradeOffer> getTrades() {
-        return tradeOfferRepository.findAll();
+        return true; //TODO real trade method
     }
 
     public boolean deleteTradeOffer(long studentId, long tradeId) throws RuntimeException {
@@ -58,10 +65,54 @@ public class TradeOfferService {
     }
 
     public TradeOffer createTradeOffer(long studentId, long offerId, long seekId) throws NotFoundException {
+        log.info(String.format("Creating new Tradeoffer for Student: %d with offer/request: %d/%d", studentId, offerId, seekId));
         TradeOffer tradeoffer = new TradeOffer();
-        tradeoffer.setOfferer(studentRepository.findById(studentId).orElseThrow(() -> new NotFoundException(studentId)));
-        tradeoffer.setOffer(timeSlotRepository.findById(offerId).orElseThrow(()-> new NotFoundException(offerId)));
-        tradeoffer.setSeek(timeSlotRepository.findById(seekId).orElseThrow(() -> new NotFoundException(seekId)));
+        tradeoffer.setOfferer(studentRepository.findById(studentId).orElseThrow(() -> {
+            log.info(String.format("ERROR while creating Tradeoffer: StudentId not found: %d", studentId));
+            throw new NotFoundException(studentId);
+        }));
+        tradeoffer.setOffer(timeSlotRepository.findById(offerId).orElseThrow(() -> {
+            log.info(String.format("ERROR while creating Tradeoffer: offerId not found: %d", offerId));
+            throw new NotFoundException(offerId);
+        }));
+        tradeoffer.setSeek(timeSlotRepository.findById(seekId).orElseThrow(() -> {
+            log.info(String.format("ERROR while creating Tradeoffer: seekId not found: %d", seekId));
+            throw new NotFoundException(seekId);
+        }));
+        log.info(String.format("Successfully created new Tradeoffer for Student: %d with offer/seek: %d/%d", studentId, offerId, seekId));
         return tradeOfferRepository.save(tradeoffer);
+    }
+
+    @Override
+    public List<TradeOffer> getAll() {
+        return null;
+    }
+
+    @Override
+    public TradeOffer getById(Long aLong) throws NotFoundException {
+        return tradeOfferRepository.findById(aLong).orElseThrow(() -> new NotFoundException(aLong));
+    }
+
+    @Override
+    public void save(TradeOffer item) throws IllegalArgumentException {
+        var dbItem = tradeOfferRepository.save(item);
+        log.info(String.format("Successfully saved Tradeoffer with ID: %d", dbItem.getId()));
+    }
+
+    @Override
+    public void delete(Long aLong) throws IllegalArgumentException {
+        tradeOfferRepository.delete(tradeOfferRepository.findById(aLong).orElseThrow());
+    }
+
+    @Override
+    public boolean update(Long aLong, TradeOffer update) throws IllegalArgumentException {
+        log.info(String.format("Updating TradeOffer: %d", aLong));
+        var dbItem = tradeOfferRepository.findById(aLong).orElseThrow(() -> {
+            log.info(String.format("ERROR Updating TradeOffer: %d", aLong));
+            throw new IllegalArgumentException();
+        });
+        BeanUtils.copyProperties(update, dbItem, "id");
+        log.info(String.format("Successfully updated Tradeoffer: %d", aLong));
+        return true;
     }
 }
