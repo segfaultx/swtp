@@ -16,11 +16,11 @@ public class TimeTable implements Model {
     @Id
     @GeneratedValue
     private Long id;
-    
-    @Column(name = "start")
+
+    @Column(name = "date_start")
     private LocalDate dateStart;
-    
-    @Column(name = "end")
+
+    @Column(name = "date_end")
     private LocalDate dateEnd;
     
     @OneToMany(

@@ -1,13 +1,11 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.command.ActiveMQTopic;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
@@ -38,9 +36,9 @@ public class AppointmentMessageListener {
             destination = QUEUENAME,
             containerFactory = "myQueueFactory"
     )
-    public void onReceiveAoppointmentMessage(Appointment appointment) {
-        log.info("Es kam ein neuer Termin rein: " + appointment.toString());
-        jmsTemplate.send(activeMQTopic, session -> session.createTextMessage("Es kam ein neuer Termin rein: " + appointment.toString()));
+    public void onReceiveAoppointmentMessage(Timeslot timeslot) {
+        log.info("Es kam ein neuer Termin rein: " + timeslot.toString());
+        jmsTemplate.send(activeMQTopic, session -> session.createTextMessage("Es kam ein neuer Termin rein: " + timeslot.toString()));
     }
 
 }
