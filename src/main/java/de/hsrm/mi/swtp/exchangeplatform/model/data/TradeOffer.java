@@ -29,4 +29,6 @@ public class TradeOffer implements Model {
     private Timeslot seek;
 
     private boolean instantTrade = false;
+
+    private boolean accepted = false;
 }
