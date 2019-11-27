@@ -1,24 +1,20 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.TradeOfferNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.repository.StudentRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TimeSlotRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.Null;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -28,7 +24,7 @@ public class TradeOfferService {
     private TradeOfferRepository tradeOfferRepository;
 
     @Autowired
-    private TimeSlotRepository timeSlotRepository;
+    private TimeslotRepository timeSlotRepository;
 
     @Autowired
     private StudentRepository studentRepository;

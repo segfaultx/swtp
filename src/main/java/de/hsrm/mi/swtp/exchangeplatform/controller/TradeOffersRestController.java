@@ -20,12 +20,6 @@ public class TradeOffersRestController {
     @Autowired
     private TradeOfferService tradeOfferService;
 
-
-    @GetMapping
-    public List<TradeOffer> getTradeOffers() {
-        return tradeOfferService.getTrades();
-    }
-
     /**
      * DELETE request handler.
      * provides an endpoint to {@code '/api/v1/trades/<id>/<id>'} through which an {student} may delete his {@link TradeOffer}.
