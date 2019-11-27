@@ -36,7 +36,10 @@ public class StudentService implements RestService<Student, Long> {
     @Override
     public Student getById(Long matriculationNumber) {
         Optional<Student> studentOptional = this.repository.findById(matriculationNumber);
-        if (!studentOptional.isPresent()) throw new NotFoundException(matriculationNumber);
+        if (!studentOptional.isPresent()) {
+            log.info(String.format("FAIL: Student %s not found", matriculationNumber));
+            throw new NotFoundException(matriculationNumber);
+        }
         return studentOptional.get();
     }
 
@@ -61,6 +64,7 @@ public class StudentService implements RestService<Student, Long> {
         Student student = this.getById(matriculationNumber);
 
         if (!Objects.equals(student.getMatriculationNumber(), update.getMatriculationNumber())) {
+            log.info(String.format("FAIL: Something went wrong. Student %s not found.", matriculationNumber));
             throw new StudentNotUpdatedException();
         }
 

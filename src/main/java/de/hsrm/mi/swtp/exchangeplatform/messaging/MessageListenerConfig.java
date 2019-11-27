@@ -27,12 +27,12 @@ public class MessageListenerConfig {
         return broker;
     }
 
-    @Bean(name = "appointmentTopicFactory")
-    public DefaultJmsListenerContainerFactory appointmentTopicFactory() {
+    @Bean(name = "timeslotTopicFactory")
+    public DefaultJmsListenerContainerFactory timeslotTopicFactory() {
         log.info("DefaultJmsListenerContainerFactory::defaultTopicFactory bean created");
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
-        factory.setMessageConverter(new AppointmentMessageConverter());
+        factory.setMessageConverter(new TimeslotMessageConverter());
         factory.setErrorHandler(new JmsErrorHandler());
         factory.setPubSubDomain(true);
         return factory;
@@ -49,13 +49,13 @@ public class MessageListenerConfig {
         return factory;
     }
 
-    @Bean(name = "appointmentQueueFactory")
-    public DefaultJmsListenerContainerFactory appointmentQueueFactory() {
+    @Bean(name = "timeslotQueueFactory")
+    public DefaultJmsListenerContainerFactory timeslotQueueFactory() {
         log.info("DefaultJmsListenerContainerFactory myQueueFactory() gezogen");
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
         factory.setPubSubDomain(false);
-        factory.setMessageConverter(new AppointmentMessageConverter());
+        factory.setMessageConverter(new TimeslotMessageConverter());
         factory.setErrorHandler(new JmsErrorHandler());
         return factory;
     }

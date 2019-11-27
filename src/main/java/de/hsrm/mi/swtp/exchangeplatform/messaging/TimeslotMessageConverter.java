@@ -2,7 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -17,18 +17,18 @@ import javax.jms.TextMessage;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Component
-public class AppointmentMessageConverter implements MessageConverter {
+public class TimeslotMessageConverter implements MessageConverter {
     
     ObjectMapper mapper = new ObjectMapper();
     
     @Override
     public Message toMessage(Object object, Session session) throws JMSException {
-        Appointment appointment = (Appointment) object;
+        Timeslot timeslot = (Timeslot) object;
         String jsontext = null;
         try {
-            jsontext = mapper.writeValueAsString(appointment);
+            jsontext = mapper.writeValueAsString(timeslot);
         } catch (JsonProcessingException e) {
-            log.error("FEHLER toMessage '{}' -> JSON: {}", appointment.toString(), e.getMessage());
+            log.error("FEHLER toMessage '{}' -> JSON: {}", timeslot.toString(), e.getMessage());
         }
         TextMessage message = session.createTextMessage(jsontext);
         return message;
@@ -38,13 +38,13 @@ public class AppointmentMessageConverter implements MessageConverter {
     public Object fromMessage(Message message) throws JMSException {
         TextMessage textMessage = (TextMessage) message;
         String jsontext = textMessage.getText();
-        
-        Appointment appointment = null;
+
+        Timeslot timeslot = null;
         try {
-            appointment = mapper.readValue(jsontext, Appointment.class);
+            timeslot = mapper.readValue(jsontext, Timeslot.class);
         } catch (JsonProcessingException e) {
-            log.error("FEHLER fromMessage JSON '{}' -> Appointment", jsontext, e.getMessage());
+            log.error("FEHLER fromMessage JSON '{}' -> Timeslot", jsontext, e.getMessage());
         }
-        return appointment;
+        return timeslot;
     }
 }

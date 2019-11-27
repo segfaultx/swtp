@@ -7,6 +7,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public interface TimeSlotRepository extends JpaRepository<Timeslot, Long> {
+public interface TimeslotRepository extends JpaRepository<Timeslot, Long> {
     List<Timeslot> findAllByModule(Module module);
 }
