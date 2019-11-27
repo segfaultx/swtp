@@ -146,11 +146,11 @@ public class StudentController {
      * Provides an endpoint to {@code '/api/v1/student/<id>/personalizedTimetable'} through which an student
      * may get his personalized timetable.
      *
-     * @param studentid studentId to fetch timetable for
+     * @param studentId studentId to fetch timetable for
      * @return {@link HttpStatus#OK}
      */
     @GetMapping("/{studentId}/personalizedTimetable")
-    public TimeTable getPersonalizedTimeTable(@PathVariable("studentId") long studentid){
+    public TimeTable getPersonalizedTimeTable(@PathVariable("studentId") long studentId){
         TimeTable timeTable = new TimeTable();
         return  null;
     }

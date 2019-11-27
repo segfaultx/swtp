@@ -1,5 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.TradeOfferNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
@@ -59,11 +61,11 @@ public class TradeOfferService {
         return true;
     }
 
-    public TradeOffer createTradeOffer(long studentId, long offerId, long seekId) {
+    public TradeOffer createTradeOffer(long studentId, long offerId, long seekId) throws NotFoundException {
         TradeOffer tradeoffer = new TradeOffer();
-        tradeoffer.setOfferer(studentRepository.findById(studentId).get());
-        tradeoffer.setOffer(timeSlotRepository.findById(offerId).get());
-        tradeoffer.setSeek(timeSlotRepository.findById(seekId).get());
+        tradeoffer.setOfferer(studentRepository.findById(studentId).orElseThrow(() -> new NotFoundException(studentId)));
+        tradeoffer.setOffer(timeSlotRepository.findById(offerId).orElseThrow(()-> new NotFoundException(offerId)));
+        tradeoffer.setSeek(timeSlotRepository.findById(seekId).orElseThrow(() -> new NotFoundException(seekId)));
         return tradeOfferRepository.save(tradeoffer);
     }
 }
