@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,8 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StudentService implements RestService<Student, Long> {
 
+    @Autowired
+    JmsTemplate jmsTemplate;
     @Autowired
     StudentRepository repository;
 
@@ -40,11 +43,12 @@ public class StudentService implements RestService<Student, Long> {
     @Override
     public void save(Student student) throws IllegalArgumentException {
         if (this.repository.existsById(student.getMatriculationNumber())) {
-            log.info(String.format("FAIL: Student %s not created", student));
+            log.info(String.format("FAIL: Student %s not created. Student already exists", student));
             throw new NotCreatedException(student);
         }
         repository.save(student);
         log.info(String.format("SUCCESS: Student %s created", student));
+        jmsTemplate.convertAndSend("studentQueueFactory", student);
     }
 
     @Override

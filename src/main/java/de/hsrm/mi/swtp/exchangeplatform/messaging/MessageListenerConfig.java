@@ -26,18 +26,31 @@ public class MessageListenerConfig {
         broker.addConnector("tcp://0.0.0.0:4242");
         return broker;
     }
-    
-    @Bean(name = "myTopicFactory")
-    public DefaultJmsListenerContainerFactory makeTopicFactory() {
-        log.info("DefaultJmsListenerContainerFactory myTopicFactory() gezogen");
+
+    @Bean(name = "appointmentTopicFactory")
+    public DefaultJmsListenerContainerFactory appointmentTopicFactory() {
+        log.info("DefaultJmsListenerContainerFactory::defaultTopicFactory bean created");
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
+        factory.setMessageConverter(new AppointmentMessageConverter());
+        factory.setErrorHandler(new JmsErrorHandler());
         factory.setPubSubDomain(true);
         return factory;
     }
-    
-    @Bean(name = "myQueueFactory")
-    public DefaultJmsListenerContainerFactory makeQueueFactory() {
+
+    @Bean(name = "studentTopicFactory")
+    public DefaultJmsListenerContainerFactory studentTopicFactory() {
+        log.info("DefaultJmsListenerContainerFactory::defaultTopicFactory bean created");
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setMessageConverter(new StudentMessageConverter());
+        factory.setErrorHandler(new JmsErrorHandler());
+        factory.setPubSubDomain(true);
+        return factory;
+    }
+
+    @Bean(name = "appointmentQueueFactory")
+    public DefaultJmsListenerContainerFactory appointmentQueueFactory() {
         log.info("DefaultJmsListenerContainerFactory myQueueFactory() gezogen");
         DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
         factory.setConnectionFactory(connectionFactory);
@@ -46,4 +59,16 @@ public class MessageListenerConfig {
         factory.setErrorHandler(new JmsErrorHandler());
         return factory;
     }
+
+    @Bean(name = "studentQueueFactory")
+    public DefaultJmsListenerContainerFactory studentQueueFactory() {
+        log.info("DefaultJmsListenerContainerFactory myQueueFactory() gezogen");
+        DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+        factory.setConnectionFactory(connectionFactory);
+        factory.setPubSubDomain(false);
+        factory.setMessageConverter(new StudentMessageConverter());
+        factory.setErrorHandler(new JmsErrorHandler());
+        return factory;
+    }
+
 }

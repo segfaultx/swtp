@@ -99,7 +99,7 @@ public class AppointmentService implements RestService<Appointment, Long> {
             throw new StudentIsAlreadyAttendeeException(student);
         }
 
-        jmsTemplate.convertAndSend("AppointmentQueue", appointment);
+        jmsTemplate.convertAndSend("appointmentQueueFactory", appointment);
 
         if (!this.checkCapacity(appointment) && !appointment.addAttendee(student)) {
             log.info(String.format(

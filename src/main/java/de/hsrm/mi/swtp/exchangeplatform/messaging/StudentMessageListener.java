@@ -1,6 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,17 +16,17 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableJms
 @RequiredArgsConstructor
-public class AppointmentMessageListener {
+public class StudentMessageListener {
 
-    final static String TOPICNAME = "AppointmentTopic";
-    final static String QUEUENAME = "AppointmentQueue";
+    final static String TOPICNAME = "StudentTopic";
+    final static String QUEUENAME = "StudentQueue";
     ActiveMQTopic activeMQTopic = new ActiveMQTopic(TOPICNAME);
 
     JmsTemplate jmsTemplate;
 
     @JmsListener(
             destination = TOPICNAME,
-            containerFactory = "appointmentTopicFactory"
+            containerFactory = "studentTopicFactory"
     )
     public void onReceiveMessage(String message) {
         log.info("Received <" + message + ">");
@@ -34,11 +34,11 @@ public class AppointmentMessageListener {
 
     @JmsListener(
             destination = QUEUENAME,
-            containerFactory = "appointmentQueueFactory"
+            containerFactory = "studentQueueFactory"
     )
-    public void onReceiveAoppointmentMessage(Appointment appointment) {
-        log.info("Es kam ein neuer Termin rein: " + appointment.toString());
-        jmsTemplate.send(activeMQTopic, session -> session.createTextMessage("Es kam ein neuer Termin rein: " + appointment.toString()));
+    public void onReceiveStudentMessage(Student student) {
+        log.info("Änderung Student: " + student.toString());
+        jmsTemplate.send(activeMQTopic, session -> session.createTextMessage("Änderung an Student kam rein: " + student.toString()));
     }
 
 }
