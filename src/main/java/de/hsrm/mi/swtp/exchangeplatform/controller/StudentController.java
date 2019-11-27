@@ -4,8 +4,11 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.NotUpdatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,7 @@ public class StudentController {
 
     String BASEURL = "/api/v1/student";
     StudentService studentService;
+    TradeOfferService tradeOfferService;
 
     /**
      * GET request handler.
@@ -135,5 +139,19 @@ public class StudentController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    /**
+     * GET request handler.
+     * Provides an endpoint to {@code '/api/v1/student/<id>/personalizedTimetable'} through which an student
+     * may get his personalized timetable.
+     *
+     * @param studentid studentId to fetch timetable for
+     * @return {@link HttpStatus#OK}
+     */
+    @GetMapping("/{studentId}/personalizedTimetable")
+    public TimeTable getPersonalizedTimeTable(@PathVariable("studentId") long studentid){
+        TimeTable timeTable = new TimeTable();
+        return  null;
     }
 }
