@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import org.springframework.beans.factory.annotation.Autowired;

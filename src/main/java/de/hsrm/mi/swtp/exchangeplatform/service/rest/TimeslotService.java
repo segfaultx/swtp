@@ -6,9 +6,9 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.StudentIsAlreadyAttendeeExcep
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.AppointmentNotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
-import de.hsrm.mi.swtp.exchangeplatform.repository.AppointmentRepository;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,36 +26,36 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AppointmentService implements RestService<Appointment, Long> {
+public class TimeslotService implements RestService<Timeslot, Long> {
 
     @Autowired
     final JmsTemplate jmsTemplate;
     @Autowired
-    final AppointmentRepository repository;
+    final TimeslotRepository repository;
 
     @NonFinal
     private Integer attendeeCount = 0; // TODO: remove; is just for testing
 
     @Override
-    public List<Appointment> getAll() {
+    public List<Timeslot> getAll() {
         return repository.findAll();
     }
 
     @Override
-    public Appointment getById(Long appointmentId) {
-        Optional<Appointment> appointmentOptional = this.repository.findById(appointmentId);
+    public Timeslot getById(Long appointmentId) {
+        Optional<Timeslot> appointmentOptional = this.repository.findById(appointmentId);
         if (!appointmentOptional.isPresent()) throw new NotFoundException(appointmentId);
         return appointmentOptional.get();
     }
 
     @Override
-    public void save(Appointment appointment) {
-        if (this.repository.existsById(appointment.getId())) {
-            log.info(String.format("FAIL: Appointment %s not created", appointment));
-            throw new AppointmentNotCreatedException(appointment);
+    public void save(Timeslot timeslot) {
+        if (this.repository.existsById(timeslot.getId())) {
+            log.info(String.format("FAIL: Appointment %s not created", timeslot));
+            throw new AppointmentNotCreatedException(timeslot);
         }
-        repository.save(appointment);
-        log.info(String.format("SUCCESS: Appointment %s created", appointment));
+        repository.save(timeslot);
+        log.info(String.format("SUCCESS: Appointment %s created", timeslot));
     }
 
     @Override
@@ -65,48 +65,48 @@ public class AppointmentService implements RestService<Appointment, Long> {
     }
 
     @Override
-    public boolean update(Long appointmentId, Appointment update) throws IllegalArgumentException {
-        Appointment appointment = this.getById(appointmentId);
+    public boolean update(Long appointmentId, Timeslot update) throws IllegalArgumentException {
+        Timeslot timeslot = this.getById(appointmentId);
 
-        if (!Objects.equals(appointment.getId(), update.getId())) throw new NotUpdatedException();
+        if (!Objects.equals(timeslot.getId(), update.getId())) throw new NotUpdatedException();
 
         log.info("Updating appointment..");
-        log.info(appointment.toString() + " -> " + update.toString());
-        appointment.setCapacity(update.getCapacity());
-        appointment.setDay(update.getDay());
-        appointment.setLecturer(update.getLecturer());
-        appointment.setModule(update.getModule());
-        appointment.setRoom(update.getRoom());
-        appointment.setTimeStart(update.getTimeStart());
-        appointment.setTimeEnd(update.getTimeEnd());
-        appointment.setType(update.getType());
+        log.info(timeslot.toString() + " -> " + update.toString());
+        timeslot.setCapacity(update.getCapacity());
+        timeslot.setDay(update.getDay());
+        timeslot.setLecturer(update.getLecturer());
+        timeslot.setModule(update.getModule());
+        timeslot.setRoom(update.getRoom());
+        timeslot.setTimeStart(update.getTimeStart());
+        timeslot.setTimeEnd(update.getTimeEnd());
+        timeslot.setType(update.getType());
 
-        this.save(appointment);
+        this.save(timeslot);
 
         return true;
     }
 
-    public boolean checkCapacity(Appointment appointment) {
-        return attendeeCount < appointment.getCapacity();
+    public boolean checkCapacity(Timeslot timeslot) {
+        return attendeeCount < timeslot.getCapacity();
     }
 
     public void addAttendeeToAppointment(Long appointmentId, Student student) {
-        Appointment appointment = this.getById(appointmentId);
+        Timeslot timeslot = this.getById(appointmentId);
 
-        if (appointment.getAttendees().contains(student)) {
+        if (timeslot.getAttendees().contains(student)) {
             log.info(String.format("FAIL: Student %s is already an attendee",
                     student.getMatriculationNumber()));
             throw new StudentIsAlreadyAttendeeException(student);
         }
 
-        jmsTemplate.convertAndSend("AppointmentQueue", appointment);
+        jmsTemplate.convertAndSend("AppointmentQueue", timeslot);
 
-        if (!this.checkCapacity(appointment) && !appointment.addAttendee(student)) {
+        if (!this.checkCapacity(timeslot) && !timeslot.addAttendee(student)) {
             log.info(String.format(
                     "FAIL: Student %s not added to appointment %s",
                     student.getMatriculationNumber(),
                     appointmentId));
-            throw new NoAppointmentCapacityException(appointment);
+            throw new NoAppointmentCapacityException(timeslot);
         }
         attendeeCount++;
         log.info(String.format(
@@ -116,11 +116,11 @@ public class AppointmentService implements RestService<Appointment, Long> {
     }
 
     public void removeAttendeeFromAppointment(Long appointmentId, Student student) {
-        Appointment appointment = this.getById(appointmentId);
+        Timeslot timeslot = this.getById(appointmentId);
 
-        jmsTemplate.convertAndSend("AppointmentQueue", appointment);
+        jmsTemplate.convertAndSend("AppointmentQueue", timeslot);
 
-        if (!appointment.removeAttendee(student)) {
+        if (!timeslot.removeAttendee(student)) {
             log.info(String.format(
                     "FAIL: Student %s not removed", student.getMatriculationNumber()));
             throw new ModelNotFoundException(student);

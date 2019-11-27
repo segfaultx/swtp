@@ -1,7 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 /**
- * A simple rest-controller which will handle any rest calls concerning {@link Appointment Appointments}.
+ * A simple rest-controller which will handle any rest calls concerning {@link Timeslot Appointments}.
  * Its base url is {@code '/api/v1/appointment'}.
  * <p>
  * All fields will have

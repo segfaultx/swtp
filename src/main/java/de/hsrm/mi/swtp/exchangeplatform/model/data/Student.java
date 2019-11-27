@@ -20,15 +20,13 @@ public class Student implements Model {
     @Column(unique = true)
     private String username;
 
-    @Transient
-    @JsonIgnore
+    @JsonProperty("first_name")
     private String firstName;
 
-    @Transient
-    @JsonIgnore
+    @JsonProperty("last_name")
     private String lastName;
 
-    @JsonProperty("timeslots")
+    @JsonIgnore
     @ManyToMany(mappedBy = "attendees")
     private List<Timeslot> timeslots;
 

@@ -1,6 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.exceptions;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 
 public class NoAppointmentCapacityException extends RuntimeException {
 
@@ -8,10 +8,10 @@ public class NoAppointmentCapacityException extends RuntimeException {
         super("There is no more capacity available in given appointment.");
     }
 
-    public NoAppointmentCapacityException(Appointment appointment) {
+    public NoAppointmentCapacityException(Timeslot timeslot) {
         super(String.format(
                 "There is no more capacity available in given appointment.\nAppointment: %s",
-                appointment
+                timeslot
         ));
     }
 }

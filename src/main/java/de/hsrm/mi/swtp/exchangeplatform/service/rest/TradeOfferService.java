@@ -1,8 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TimeSlotRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ public class TradeOfferService {
     private TradeOfferRepository tradeOfferRepository;
 
     @Autowired
-    private TimeSlotRepository timeSlotRepository;
+    private TimeslotRepository timeSlotRepository;
 
 
     public Map<String, List<Timeslot>> getTradeOffersForTimeSlot(Timeslot offer, Module module){
