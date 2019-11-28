@@ -36,10 +36,13 @@ dependencies {
 	implementation 'org.postgresql:postgresql'
 	implementation 'com.h2database:h2'
 	implementation 'io.hawt:hawtio-springboot:2.8.0'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	compileOnly 'org.projectlombok:lombok'
 
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    runtimeOnly 'com.h2database:h2'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
 	annotationProcessor 'org.projectlombok:lombok'
 
