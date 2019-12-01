@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.support.converter.MessageConverter;
-import org.springframework.stereotype.Component;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -16,7 +15,6 @@ import javax.jms.TextMessage;
 
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Component
 public class StudentMessageConverter implements MessageConverter {
 
     ObjectMapper mapper = new ObjectMapper();
@@ -26,7 +24,9 @@ public class StudentMessageConverter implements MessageConverter {
         Student student = (Student) object;
         String jsontext = null;
         try {
+            log.info("TO MESSAGE::" + student.toString());
             jsontext = mapper.writeValueAsString(student);
+            log.info("TEXT::" + jsontext);
         } catch (JsonProcessingException e) {
             log.error("FEHLER toMessage '{}' -> JSON: {}", student.toString(), e.getMessage());
         }
@@ -46,4 +46,5 @@ public class StudentMessageConverter implements MessageConverter {
         }
         return student;
     }
+
 }

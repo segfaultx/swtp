@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.command.ActiveMQTopic;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
@@ -18,10 +19,11 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class StudentMessageListener {
 
-    final static String TOPICNAME = "StudentTopic";
-    final static String QUEUENAME = "StudentQueue";
+    public final static String TOPICNAME = "StudentTopic";
+    public final static String QUEUENAME = "StudentQueue";
     ActiveMQTopic activeMQTopic = new ActiveMQTopic(TOPICNAME);
 
+    @Autowired
     JmsTemplate jmsTemplate;
 
     @JmsListener(
@@ -39,6 +41,7 @@ public class StudentMessageListener {
     public void onReceiveStudentMessage(Student student) {
         log.info("Änderung Student: " + student.toString());
         jmsTemplate.send(activeMQTopic, session -> session.createTextMessage("Änderung an Student kam rein: " + student.toString()));
+        jmsTemplate.convertAndSend(TOPICNAME, student);
     }
 
 }

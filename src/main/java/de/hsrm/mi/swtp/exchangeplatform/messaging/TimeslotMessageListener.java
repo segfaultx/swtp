@@ -11,18 +11,21 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.jms.Message;
+import javax.jms.MessageListener;
+
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Component
 @EnableJms
 @RequiredArgsConstructor
-public class TimeslotMessageListener {
+public class TimeslotMessageListener implements MessageListener {
 
-    final static String TOPICNAME = "TimeslotTopic";
-    final static String QUEUENAME = "TimeslotQueue";
+    public final static String TOPICNAME = "TimeslotTopic";
+    public final static String QUEUENAME = "TimeslotQueue";
     ActiveMQTopic activeMQTopic = new ActiveMQTopic(TOPICNAME);
 
-    JmsTemplate jmsTemplate;
+    JmsTemplate timeslotJmsTemplate;
 
     @JmsListener(
             destination = TOPICNAME,
@@ -37,8 +40,11 @@ public class TimeslotMessageListener {
             containerFactory = "timeslotQueueFactory"
     )
     public void onReceiveAoppointmentMessage(Timeslot timeslot) {
-        log.info("Es kam ein neuer Termin rein: " + timeslot.toString());
-        jmsTemplate.send(activeMQTopic, session -> session.createTextMessage("Es kam ein neuer Termin rein: " + timeslot.toString()));
     }
 
+    @Override
+    public void onMessage(Message message) {
+        log.info("Es kam ein neuer Termin rein: " + message.toString());
+        timeslotJmsTemplate.send(activeMQTopic, session -> message);
+    }
 }

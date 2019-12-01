@@ -1,18 +1,23 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import java.util.List;
 
 @Entity
 @Data
+@JsonAutoDetect
 public class Student implements Model {
 
     @Id
-    @JsonProperty(value = "matriculationNumber", required = true)
+    @JsonProperty(value = "matriculation_number", required = true)
     @Column(name = "matr_nr", unique = true, updatable = false, insertable = false)
     private Long matriculationNumber;
 
@@ -20,15 +25,13 @@ public class Student implements Model {
     @Column(unique = true)
     private String username;
 
-    @Transient
-    @JsonIgnore
+    @JsonProperty("first_name")
     private String firstName;
 
-    @Transient
-    @JsonIgnore
+    @JsonProperty("last_name")
     private String lastName;
 
-    @JsonProperty("timeslots")
+    @JsonIgnore
     @ManyToMany(mappedBy = "attendees")
     private List<Timeslot> timeslots;
 

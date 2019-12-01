@@ -51,7 +51,7 @@ public class StudentService implements RestService<Student, Long> {
         }
         repository.save(student);
         log.info(String.format("SUCCESS: Student %s created", student));
-        jmsTemplate.convertAndSend("studentQueueFactory", student);
+        jmsTemplate.convertAndSend(student);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class Lecturer {
     @JsonProperty("last_name")
     private String lastName;
 
+    @JsonIgnore
     @OneToMany(
             mappedBy = "lecturer",
             cascade = CascadeType.ALL,

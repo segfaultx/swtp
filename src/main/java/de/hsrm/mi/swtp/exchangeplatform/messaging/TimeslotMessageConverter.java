@@ -43,7 +43,7 @@ public class TimeslotMessageConverter implements MessageConverter {
         try {
             timeslot = mapper.readValue(jsontext, Timeslot.class);
         } catch (JsonProcessingException e) {
-            log.error("FEHLER fromMessage JSON '{}' -> Timeslot", jsontext, e.getMessage());
+            log.error("FEHLER fromMessage JSON '{}' -> Appointment", jsontext, e.getMessage());
         }
         return timeslot;
     }

@@ -16,75 +16,57 @@ import java.util.stream.Collectors;
 @Entity
 @Data
 @RequiredArgsConstructor
+@Table(name = "timeslot")
 public class Timeslot implements Model {
 
-    /** A unique identifier of an timeslot by which it can be found. */
+    /** A unique identifier of an appointment by which it can be found. */
     @Id
     @GeneratedValue
-    @Column(name = "id")
     private Long id;
 
-    /** The day on which the timeslot is scheduled for. */
-    @JsonProperty
-    @Column(name = "weekday")
-    private Integer day;
-
-    /**
-     * The type of the timeslot. Is of type {@link}.
-     */
-    @JsonProperty
-    @Column(name ="timeslot_type")
-    @Enumerated(EnumType.STRING)
-    private Type type;
-
-    /** The scheduled beginning of the timeslot. */
+    /** The room in which the appointment will take place. */
     @JsonIgnore
-    @JsonProperty("time_start")
-    @JsonSerialize(using = LocalTimeSerializer.class)
-    @Column(name = "time_start")
-    private LocalTime timeStart;
-
-    /** The scheduled end time of the timeslot. */
-    @JsonIgnore
-    @JsonProperty("time_end")
-    @JsonSerialize(using = LocalTimeSerializer.class)
-    @Column(name = "time_end")
-    private LocalTime timeEnd;
-
-    /** The lecturer of the timeslot. */
-    @JsonIgnore
-    @ManyToOne
-    private Lecturer lecturer;
-
-    /** The maximum amount of {@link Student Students} which can join an timeslot. */
-    @JsonIgnore
-    @Column(name = "max_capacity")
-    private int capacity;
-
-    /** The room in which the timeslot will take place. */
-    @JsonIgnore
-    @ManyToOne
-    @JsonProperty
-    @JoinColumn(name = "room")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Room room;
 
-    //    @JsonIgnore
-    @ManyToOne
-    @JsonProperty
-    @JoinColumn(name = "module")
+    /** The day on which the appointment is scheduled for. */
+    private String day;
+
+    /** The scheduled beginning of the appointment. */
+    @JsonProperty("time_start")
+    @JsonSerialize(using = LocalTimeSerializer.class)
+    private LocalTime timeStart;  // string nur weil aktuell in lokalen DB ein falscher Eintrag war
+
+    /** The scheduled end time of the appointment. */
+    @JsonProperty("time_end")
+    @JsonSerialize(using = LocalTimeSerializer.class)
+    private LocalTime timeEnd;  // string nur weil aktuell in lokalen DB ein falscher Eintrag war
+
+    /** The lecturer of the appointment. */
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Lecturer lecturer;
+
+    /**
+     * The type of the appointment. Is of type {@link}.
+     */
+    private String type;
+
+    /** The maximum amount of {@link Student Students} which can join an appointment. */
+    private int capacity;
+
+    /** A list of {@link Student Students} which have joined an appointment. */
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Student> attendees;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "module_id")
     private Module module;
 
     @JsonIgnore
-    @ManyToOne
-    @JsonProperty
-    @JoinColumn(name = "courseplan")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private TimeTable timeTable;
-
-    /** A list of {@link Student Students} which have joined an timeslot. */
-    @JsonIgnore
-    @JsonProperty
-    @ManyToMany(fetch = FetchType.LAZY)
-    private List<Student> attendees;
 
     /**
      * A small filter which searches {@link #attendees}.
@@ -109,9 +91,9 @@ public class Timeslot implements Model {
     }
 
     /**
-     * Removes a student from the list of {@link #attendees} of an timeslot.
+     * Removes a student from the list of {@link #attendees} of an appointment.
      *
-     * @param student the {@link Student} which leaves an timeslot.
+     * @param student the {@link Student} which leaves an appointment.
      * @return a boolean which indicated whether the student was removed successfully.
      * @throws ModelNotFoundException if the given student was not found in the list of {@link #attendees}.
      */
@@ -122,7 +104,5 @@ public class Timeslot implements Model {
         }
         return this.attendees.remove(student);
     }
-
-    private enum Type {VORLESUNG, PRAKTIKUM, UEBUNG}
 
 }

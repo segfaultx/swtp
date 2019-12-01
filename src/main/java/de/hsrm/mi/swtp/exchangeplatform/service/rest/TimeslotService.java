@@ -3,7 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.NoTimeslotCapacityException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.NotUpdatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.StudentIsAlreadyAttendeeException;
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.TimeslotNotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
@@ -15,12 +15,16 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.jms.Destination;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+
+import static de.hsrm.mi.swtp.exchangeplatform.messaging.TimeslotMessageListener.QUEUENAME;
 
 @Slf4j
 @Service
@@ -32,6 +36,9 @@ public class TimeslotService implements RestService<Timeslot, Long> {
     final JmsTemplate jmsTemplate;
     @Autowired
     final TimeslotRepository repository;
+    @Autowired
+    @Qualifier("timeslotDestination")
+    Destination timeslotDestination;
 
     @NonFinal
     private Integer attendeeCount = 0; // TODO: remove; is just for testing
@@ -44,39 +51,35 @@ public class TimeslotService implements RestService<Timeslot, Long> {
     @Override
     public Timeslot getById(Long timeslotId) {
         Optional<Timeslot> timeslotOptional = this.repository.findById(timeslotId);
-        if (!timeslotOptional.isPresent()) {
-            log.info(String.format("FAIL: Timeslot %s not found", timeslotId));
-            throw new NotFoundException(timeslotId);
-        }
+        if (!timeslotOptional.isPresent()) throw new NotFoundException(timeslotId);
+        log.info("Create message::" + timeslotOptional.get().toString());
+        jmsTemplate.send(timeslotDestination, session -> session.createTextMessage(timeslotOptional.get().toString()));
         return timeslotOptional.get();
     }
 
     @Override
     public void save(Timeslot timeslot) {
         if (this.repository.existsById(timeslot.getId())) {
-            log.info(String.format("FAIL: Timeslot %s not created", timeslot));
-            throw new NotCreatedException(timeslot);
+            log.info(String.format("FAIL: Appointment %s not created", timeslot));
+            throw new TimeslotNotCreatedException(timeslot);
         }
         repository.save(timeslot);
-        log.info(String.format("SUCCESS: Timeslot %s created", timeslot));
+        log.info(String.format("SUCCESS: Appointment %s created", timeslot));
     }
 
     @Override
     public void delete(Long id) throws IllegalArgumentException {
         this.repository.delete(this.getById(id));
-        log.info(String.format("SUCCESS: Timeslot %s deleted", id));
+        log.info(String.format("SUCCESS: Appointment %s deleted", id));
     }
 
     @Override
     public boolean update(Long timeslotId, Timeslot update) throws IllegalArgumentException {
         Timeslot timeslot = this.getById(timeslotId);
 
-        if (!Objects.equals(timeslot.getId(), update.getId())) {
-            log.info(String.format("FAIL: Something went wrong during update of timeslot %s", timeslotId));
-            throw new NotUpdatedException();
-        }
+        if (!Objects.equals(timeslot.getId(), update.getId())) throw new NotUpdatedException();
 
-        log.info("Updating timeslot..");
+        log.info("Updating appointment..");
         log.info(timeslot.toString() + " -> " + update.toString());
         timeslot.setCapacity(update.getCapacity());
         timeslot.setDay(update.getDay());
@@ -105,18 +108,18 @@ public class TimeslotService implements RestService<Timeslot, Long> {
             throw new StudentIsAlreadyAttendeeException(student);
         }
 
-        jmsTemplate.convertAndSend("timeslotQueueFactory", timeslot);
-
         if (!this.checkCapacity(timeslot) && !timeslot.addAttendee(student)) {
             log.info(String.format(
-                    "FAIL: Student %s not added to timeslot %s",
+                    "FAIL: Student %s not added to appointment %s",
                     student.getMatriculationNumber(),
                     timeslotId));
             throw new NoTimeslotCapacityException(timeslot);
         }
         attendeeCount++;
+        this.save(timeslot);
+        jmsTemplate.convertAndSend(QUEUENAME, timeslot);
         log.info(String.format(
-                "SUCCESS: Student %s added to timeslot %s",
+                "SUCCESS: Student %s added to appointment %s",
                 student.getMatriculationNumber(),
                 timeslotId));
     }
@@ -124,7 +127,7 @@ public class TimeslotService implements RestService<Timeslot, Long> {
     public void removeAttendeeFromTimeslot(Long timeslotId, Student student) {
         Timeslot timeslot = this.getById(timeslotId);
 
-        jmsTemplate.convertAndSend("TimeslotQueue", timeslot);
+        jmsTemplate.convertAndSend(QUEUENAME, timeslot);
 
         if (!timeslot.removeAttendee(student)) {
             log.info(String.format(
@@ -133,7 +136,7 @@ public class TimeslotService implements RestService<Timeslot, Long> {
         }
         attendeeCount--;
         log.info(String.format(
-                "SUCCESS: Student %s removed from timeslot %s",
+                "SUCCESS: Student %s removed from appointment %s",
                 student.getMatriculationNumber(),
                 timeslotId));
     }

@@ -10,6 +10,7 @@ import java.util.List;
 @Entity
 @Data
 @RequiredArgsConstructor
+@Table(name = "my_module")
 public class Module implements Model {
 
     @Id
@@ -18,6 +19,7 @@ public class Module implements Model {
 
     private String name;
 
+    @JsonIgnore
     @OneToMany(
             mappedBy = "module",
             cascade = CascadeType.ALL,
@@ -27,7 +29,7 @@ public class Module implements Model {
 
     @JsonIgnore
     @JoinColumn(name = "po_id")
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private PO po;
 
 }
