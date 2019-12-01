@@ -63,6 +63,7 @@ public class TimeslotService implements RestService<Timeslot, Long> {
         }
         repository.save(timeslot);
         log.info(String.format("SUCCESS: Appointment %s created", timeslot));
+        timeslotMessageSender.send(timeslot);
     }
 
     @Override
@@ -115,7 +116,6 @@ public class TimeslotService implements RestService<Timeslot, Long> {
         }
         attendeeCount++;
         this.save(timeslot);
-        jmsTemplate.convertAndSend(QUEUENAME, timeslot);
         log.info(String.format(
                 "SUCCESS: Student %s added to appointment %s",
                 student.getMatriculationNumber(),
@@ -137,6 +137,7 @@ public class TimeslotService implements RestService<Timeslot, Long> {
                 "SUCCESS: Student %s removed from appointment %s",
                 student.getMatriculationNumber(),
                 timeslotId));
+        timeslotMessageSender.send(timeslot);
     }
 
 }
