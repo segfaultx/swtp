@@ -47,9 +47,7 @@ public class Timeslot implements Model {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private Lecturer lecturer;
 
-    /**
-     * The type of the appointment. Is of type {@link}.
-     */
+    /** The type of the appointment. Is of type {@link}. */
     private String type;
 
     /** The maximum amount of {@link Student Students} which can join an appointment. */

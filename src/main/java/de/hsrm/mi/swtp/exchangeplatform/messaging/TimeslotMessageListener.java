@@ -1,6 +1,5 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -11,8 +10,10 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
+import javax.jms.TextMessage;
 
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -25,7 +26,7 @@ public class TimeslotMessageListener implements MessageListener {
     public final static String QUEUENAME = "TimeslotQueue";
     ActiveMQTopic activeMQTopic = new ActiveMQTopic(TOPICNAME);
 
-    JmsTemplate timeslotJmsTemplate;
+    JmsTemplate jmsTemplate;
 
     @JmsListener(
             destination = TOPICNAME,
@@ -39,12 +40,16 @@ public class TimeslotMessageListener implements MessageListener {
             destination = QUEUENAME,
             containerFactory = "timeslotQueueFactory"
     )
-    public void onReceiveAoppointmentMessage(Timeslot timeslot) {
-    }
-
     @Override
     public void onMessage(Message message) {
-        log.info("Es kam ein neuer Termin rein: " + message.toString());
-        timeslotJmsTemplate.send(activeMQTopic, session -> message);
+        try {
+            log.info("Es kam ein neuer Termin rein: " + ((TextMessage) message).getText());
+        } catch (JMSException e) {
+            log.info("ERROR: " + message);
+        }
+        jmsTemplate.send(activeMQTopic, session -> session.createTextMessage(
+                "Erhaltene interne Server-Nachricht: " + ((TextMessage) message).getText() + "\n" +
+                        "Timeslot-Änderungen erkannt. Implementierung noch nicht abgeschlossen!"
+        ));
     }
 }

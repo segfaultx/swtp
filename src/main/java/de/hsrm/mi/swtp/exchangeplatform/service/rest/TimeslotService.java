@@ -6,6 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.StudentIsAlreadyAttendeeExcep
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.TimeslotNotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.TimeslotMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
@@ -15,11 +16,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
-import javax.jms.Destination;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -37,8 +36,8 @@ public class TimeslotService implements RestService<Timeslot, Long> {
     @Autowired
     final TimeslotRepository repository;
     @Autowired
-    @Qualifier("timeslotDestination")
-    Destination timeslotDestination;
+    final TimeslotMessageSender timeslotMessageSender;
+
 
     @NonFinal
     private Integer attendeeCount = 0; // TODO: remove; is just for testing
@@ -52,8 +51,7 @@ public class TimeslotService implements RestService<Timeslot, Long> {
     public Timeslot getById(Long timeslotId) {
         Optional<Timeslot> timeslotOptional = this.repository.findById(timeslotId);
         if (!timeslotOptional.isPresent()) throw new NotFoundException(timeslotId);
-        log.info("Create message::" + timeslotOptional.get().toString());
-        jmsTemplate.send(timeslotDestination, session -> session.createTextMessage(timeslotOptional.get().toString()));
+        timeslotMessageSender.send();
         return timeslotOptional.get();
     }
 
