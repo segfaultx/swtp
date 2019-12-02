@@ -3,9 +3,11 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.TradeOfferNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeRequest;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -56,14 +58,16 @@ public class TradeOffersRestController {
      * {@link HttpStatus#INTERNAL_SERVER_ERROR} if the server encountered an error.
      */
     @PostMapping("/{studentId}/{offer}/{seek}")
-    public ResponseEntity<TradeOffer> createTradeOffer(@PathVariable("studentId") long studentId,
-                                                       @PathVariable("offer") long offerId,
-                                                       @PathVariable("seek") long seekId) {
+    public ResponseEntity<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer> createTradeOffer(@PathVariable("studentId") long studentId,
+                                                                                                          @PathVariable("offer") long offerId,
+                                                                                                          @PathVariable("seek") long seekId) {
         log.info(String.format("POST Request Student: %d with Offer/Seek: %d/%d", studentId, offerId, seekId));
         try {
             var tradeoffer = tradeOfferService.createTradeOffer(studentId, offerId, seekId);
+            de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer();
+            BeanUtils.copyProperties(tradeoffer, restAnswer);
             log.info(String.format("SUCCESS POST Request Student: %d with Offer/Seek: %d/%d - insert successful", studentId, offerId, seekId));
-            return new ResponseEntity<>(tradeoffer, HttpStatus.OK);
+            return new ResponseEntity<>(restAnswer, HttpStatus.OK);
         } catch (NotFoundException ex) {
             log.info(String.format("ERROR POST Request Student: %d with Offer/Seek: %d/%d - error while creating entity", studentId, offerId, seekId));
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -75,30 +79,34 @@ public class TradeOffersRestController {
      * provides an endpoint to {@code '/api/v1/trades/<id>/<id>/accept} through which an student may accept a given {@link TradeOffer}
      *
      * @param studentId id of requester
-     * @param tradeId id of trade which requester wants to accept
+     * @param tradeId   id of trade which requester wants to accept
      * @return {@link HttpStatus#OK} if successful, {@link HttpStatus#BAD_REQUEST} if trade transaction failed,
      * {@link HttpStatus#INTERNAL_SERVER_ERROR} if an runtime exception was thrown by the service
      */
     @PostMapping("/{studentId}/{tradeId}/accept")
-    public ResponseEntity acceptTrade(@PathVariable("studentId") long studentId,
-                                      @PathVariable("tradeId") long tradeId,
-                                      @RequestBody TradeRequest tradeRequest,
-                                      BindingResult result) {
+    public ResponseEntity<Timeslot> acceptTrade(@PathVariable("studentId") long studentId,
+                                                @PathVariable("tradeId") long tradeId,
+                                                @RequestBody TradeRequest tradeRequest,
+                                                BindingResult result) {
         log.info(String.format("POST Request Accept Trade: %d Requester: %d", tradeId, studentId));
-        if(result.hasErrors()){
+        if (result.hasErrors()) {
             log.info(String.format("Post Request error, trade: %d from requester: %d failed", tradeId, studentId));
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
         try {
-            if (tradeOfferService.tradeTimeslots(studentId, tradeId)) {
+            var answer = tradeOfferService.tradeTimeslots(studentId, tradeId);
+
+            if (answer != null) {
                 log.info(String.format("POST Request successful, performed trade: %d Requester: %d", tradeId, studentId));
-                return new ResponseEntity(HttpStatus.OK);
+                de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();
+                BeanUtils.copyProperties(answer, restAnswer);
+                return new ResponseEntity<>(restAnswer, HttpStatus.OK);
             }
             log.info(String.format("Post Request error, trade: %d from requester: %d failed", tradeId, studentId));
-            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         } catch (RuntimeException ex) {
             log.info(String.format("POST Request error, trade: %d from requester: %d - internal error", tradeId, studentId));
-            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }

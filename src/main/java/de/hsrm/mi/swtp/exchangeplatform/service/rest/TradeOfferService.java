@@ -7,6 +7,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.repository.StudentRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -14,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,18 +33,24 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
     @Autowired
     private StudentRepository studentRepository;
 
+    @Autowired
+    private TradeFilter filterService;
+
     /**
      * Method to get personalized {@link TradeOffer}s for a students timetable
      * @param timeslots timetable of student
      * @return map containing tradeoffers for each timeslot
      */
-    public Map<Timeslot, List<TradeOffer>> getTradeOffersForTimeSlots(List<Timeslot> timeslots) {
+    public Map<Timeslot, Map<String, List<TradeOffer>>> getTradeOffersForTimeSlots(List<Timeslot> timeslots) {
         log.info("Creating unfiltered Map of tradeoffers");
         Map<Timeslot, List<TradeOffer>> timeslotTradeOffers = new HashMap<>();
         timeslots.forEach(timeslot -> timeslotTradeOffers
                 .put(timeslot, tradeOfferRepository.findAllBySeek(timeslot)));
-        log.info("Returning filtered Map of tradeoffers");
-        return timeslotTradeOffers; //TODO: use filter module here
+        List<Filter> filters = new ArrayList<>();
+        filters.add(new OfferFilter());
+        filters.add(new CapacityFilter());
+        filters.add(new CollisionFilter());
+        return filterService.applyFilter(timeslotTradeOffers, filters);
     }
 
     /**

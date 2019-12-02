@@ -4,13 +4,17 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.NotUpdatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timetable;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -30,6 +34,7 @@ public class StudentController {
     String BASEURL = "/api/v1/student";
     StudentService studentService;
     TradeOfferService tradeOfferService;
+    TimeslotRepository timeslotRepository;
 
     /**
      * GET request handler.
@@ -149,8 +154,24 @@ public class StudentController {
      * @return {@link HttpStatus#OK}
      */
     @GetMapping("/{studentId}/personalizedTimetable")
-    public TimeTable getPersonalizedTimeTable(@PathVariable("studentId") long studentId){
-        TimeTable timeTable = new TimeTable();
-        return  null;
+    public ResponseEntity<Timetable> getPersonalizedTimeTable(@PathVariable("studentId") long studentId) {
+        log.info(String.format("Getting personalized Timetable for student: %d", studentId));
+        Timetable timeTable = new Timetable();
+        var student = studentService.getById(studentId);
+        log.info(String.format("Looking up possible Tradeoffers for student: %d", studentId));
+        var tradeoffers = tradeOfferService.getTradeOffersForTimeSlots(student.getTimeslots());
+        for (Timeslot timeslot : tradeoffers.keySet()) {
+            de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot restTimeSlot = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();
+            BeanUtils.copyProperties(timeslot, restTimeSlot);
+            for (String key : tradeoffers.get(timeslot).keySet()) {
+                tradeoffers.get(timeslot).get(key).forEach(tradeOffer -> {
+                    TradeOffer restOffer = new TradeOffer();
+                    BeanUtils.copyProperties(tradeOffer, restOffer);
+                    restTimeSlot.addPossibleTradesItem(restOffer);
+                });
+            }
+            timeTable.addTimeslotsItem(restTimeSlot);
+        }
+        return new ResponseEntity<>(timeTable, HttpStatus.OK);
     }
 }
