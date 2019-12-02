@@ -41,7 +41,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
      * @param timeslots timetable of student
      * @return map containing tradeoffers for each timeslot
      */
-    public Map<Timeslot, Map<String, List<TradeOffer>>> getTradeOffersForTimeSlots(List<Timeslot> timeslots) {
+    public Map<Timeslot, Map<String, List<TradeOffer>>> getTradeOffersForTimeSlots(List<Timeslot> timeslots) throws RuntimeException {
         log.info("Creating unfiltered Map of tradeoffers");
         Map<Timeslot, List<TradeOffer>> timeslotTradeOffers = new HashMap<>();
         timeslots.forEach(timeslot -> timeslotTradeOffers

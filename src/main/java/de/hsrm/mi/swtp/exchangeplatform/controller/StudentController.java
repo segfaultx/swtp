@@ -34,7 +34,6 @@ public class StudentController {
     String BASEURL = "/api/v1/student";
     StudentService studentService;
     TradeOfferService tradeOfferService;
-    TimeslotRepository timeslotRepository;
 
     /**
      * GET request handler.
@@ -159,19 +158,24 @@ public class StudentController {
         Timetable timeTable = new Timetable();
         var student = studentService.getById(studentId);
         log.info(String.format("Looking up possible Tradeoffers for student: %d", studentId));
-        var tradeoffers = tradeOfferService.getTradeOffersForTimeSlots(student.getTimeslots());
-        for (Timeslot timeslot : tradeoffers.keySet()) {
-            de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot restTimeSlot = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();
-            BeanUtils.copyProperties(timeslot, restTimeSlot);
-            for (String key : tradeoffers.get(timeslot).keySet()) {
-                tradeoffers.get(timeslot).get(key).forEach(tradeOffer -> {
-                    TradeOffer restOffer = new TradeOffer();
-                    BeanUtils.copyProperties(tradeOffer, restOffer);
-                    restTimeSlot.addPossibleTradesItem(restOffer);
-                });
+        try {
+            var tradeoffers = tradeOfferService.getTradeOffersForTimeSlots(student.getTimeslots());
+            for (Timeslot timeslot : tradeoffers.keySet()) {
+                de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot restTimeSlot = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();
+                BeanUtils.copyProperties(timeslot, restTimeSlot);
+                for (String key : tradeoffers.get(timeslot).keySet()) {
+                    tradeoffers.get(timeslot).get(key).forEach(tradeOffer -> {
+                        TradeOffer restOffer = new TradeOffer();
+                        BeanUtils.copyProperties(tradeOffer, restOffer);
+                        restTimeSlot.addPossibleTradesItem(restOffer);
+                    });
+                }
+                timeTable.addTimeslotsItem(restTimeSlot);
             }
-            timeTable.addTimeslotsItem(restTimeSlot);
+            return new ResponseEntity<>(timeTable, HttpStatus.OK);
+        } catch (RuntimeException ex) {
+            log.info(String.format("Error creating dersonalized timetable for student: %d", studentId));
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return new ResponseEntity<>(timeTable, HttpStatus.OK);
     }
 }
