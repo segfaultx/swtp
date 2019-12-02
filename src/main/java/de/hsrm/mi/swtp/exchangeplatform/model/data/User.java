@@ -12,7 +12,6 @@ public class User implements Model {
         @Id
         @JsonProperty(value = "matriculationNumber", required = true)
         @Column(name = "matr_nr", unique = true, updatable = false, insertable = false)
-        @OneToOne
         private Long matriculationNumber; //student{matrikelnummer = id}
 
         @Column(name="username", nullable = false, unique = true)

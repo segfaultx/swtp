@@ -13,14 +13,13 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Configuration @EnableWebSecurity
+@Configuration
+@EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
-    UserService userService;
+    @Autowired UserService userService;
 
-    @Bean
-    PasswordEncoder getPasswordEncoder() {
+    @Bean PasswordEncoder getPasswordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
     }
 
@@ -37,7 +36,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .withUser("Student")
                 .password(pwenc.encode("geheim"))
                 .roles("STUDENT")
-                .and()
+        .and()
                 .withUser("admin")
                 .password(pwenc.encode("admin"))
                 .roles("STUDENT", "ADMIN");
