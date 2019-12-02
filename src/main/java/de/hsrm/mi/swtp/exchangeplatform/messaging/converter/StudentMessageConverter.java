@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.messaging;
+package de.hsrm.mi.swtp.exchangeplatform.messaging.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

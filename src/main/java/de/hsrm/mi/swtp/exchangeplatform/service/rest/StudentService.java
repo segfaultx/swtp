@@ -3,14 +3,13 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.StudentNotUpdatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.StudentMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
 import de.hsrm.mi.swtp.exchangeplatform.repository.StudentRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,10 +22,8 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StudentService implements RestService<Student, Long> {
 
-    @Autowired
-    JmsTemplate jmsTemplate;
-    @Autowired
     StudentRepository repository;
+    StudentMessageSender messageSender;
 
     @Override
     public List<Student> getAll() {
@@ -51,7 +48,7 @@ public class StudentService implements RestService<Student, Long> {
         }
         repository.save(student);
         log.info(String.format("SUCCESS: Student %s created", student));
-        jmsTemplate.convertAndSend(student);
+        messageSender.send(student);
     }
 
     @Override

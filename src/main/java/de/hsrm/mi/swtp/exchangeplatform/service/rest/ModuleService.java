@@ -2,14 +2,13 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.ModuleMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,10 +20,8 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ModuleService implements RestService<Module, Long> {
 
-    @Autowired(required = false)
-    final JmsTemplate jmsTemplate;
-    @Autowired
-    final ModuleRepository repository;
+    ModuleRepository repository;
+    ModuleMessageSender messageSender;
 
     @Override
     public List<Module> getAll() {
@@ -48,12 +45,14 @@ public class ModuleService implements RestService<Module, Long> {
             throw new NotCreatedException(module);
         }
         repository.save(module);
+        messageSender.send(String.format("SUCCESS: Module %s created", module));
         log.info(String.format("SUCCESS: Module %s created", module));
     }
 
     @Override
     public void delete(Long moduleId) throws IllegalArgumentException {
         this.repository.delete(this.getById(moduleId));
+        messageSender.send(String.format("SUCCESS: Module %s deleted", moduleId));
         log.info(String.format("SUCCESS: Module %s deleted", moduleId));
     }
 

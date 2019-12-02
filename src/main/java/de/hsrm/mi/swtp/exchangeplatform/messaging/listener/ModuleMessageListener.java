@@ -1,9 +1,10 @@
-package de.hsrm.mi.swtp.exchangeplatform.messaging;
+package de.hsrm.mi.swtp.exchangeplatform.messaging.listener;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.annotation.JmsListener;
@@ -20,17 +21,18 @@ import javax.jms.TextMessage;
 @Component
 @EnableJms
 @RequiredArgsConstructor
-public class TimeslotMessageListener implements MessageListener {
+public class ModuleMessageListener implements MessageListener {
 
-    public final static String TOPICNAME = "TimeslotTopic";
-    public final static String QUEUENAME = "TimeslotQueue";
-    ActiveMQTopic activeMQTopic = new ActiveMQTopic(TOPICNAME);
+    public final static String TOPICNAME = "ModuleTopic";
+    public final static String QUEUENAME = "ModuleQueue";
+    ActiveMQQueue moduleQueue;
+    ActiveMQTopic moduleTopic;
 
     JmsTemplate jmsTemplate;
 
     @JmsListener(
             destination = TOPICNAME,
-            containerFactory = "timeslotTopicFactory"
+            containerFactory = "moduleTopicFactory"
     )
     public void onReceiveMessage(String message) {
         log.info("Received <" + message + ">");
@@ -38,7 +40,7 @@ public class TimeslotMessageListener implements MessageListener {
 
     @JmsListener(
             destination = QUEUENAME,
-            containerFactory = "timeslotQueueFactory"
+            containerFactory = "moduleQueueFactory"
     )
     @Override
     public void onMessage(Message message) {
@@ -47,9 +49,9 @@ public class TimeslotMessageListener implements MessageListener {
         } catch (JMSException e) {
             log.info("ERROR: " + message);
         }
-        jmsTemplate.send(activeMQTopic, session -> session.createTextMessage(
+        jmsTemplate.send(moduleTopic, session -> session.createTextMessage(
                 "Erhaltene interne Server-Nachricht: " + ((TextMessage) message).getText() + "\n" +
-                        "Timeslot-Änderungen erkannt. Implementierung noch nicht abgeschlossen!"
+                        "Module-Änderungen erkannt. Implementierung noch nicht abgeschlossen!"
         ));
     }
 }

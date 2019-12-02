@@ -6,7 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.StudentIsAlreadyAttendeeExcep
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.TimeslotNotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.TimeslotMessageSender;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.TimeslotMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
@@ -15,15 +15,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-import static de.hsrm.mi.swtp.exchangeplatform.messaging.TimeslotMessageListener.QUEUENAME;
 
 @Slf4j
 @Service
@@ -31,13 +27,8 @@ import static de.hsrm.mi.swtp.exchangeplatform.messaging.TimeslotMessageListener
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TimeslotService implements RestService<Timeslot, Long> {
 
-    @Autowired
-    final JmsTemplate jmsTemplate;
-    @Autowired
-    final TimeslotRepository repository;
-    @Autowired
-    final TimeslotMessageSender timeslotMessageSender;
-
+    TimeslotRepository repository;
+    TimeslotMessageSender messageSender;
 
     @NonFinal
     private Integer attendeeCount = 0; // TODO: remove; is just for testing
@@ -51,7 +42,6 @@ public class TimeslotService implements RestService<Timeslot, Long> {
     public Timeslot getById(Long timeslotId) {
         Optional<Timeslot> timeslotOptional = this.repository.findById(timeslotId);
         if (!timeslotOptional.isPresent()) throw new NotFoundException(timeslotId);
-        timeslotMessageSender.send();
         return timeslotOptional.get();
     }
 
@@ -63,7 +53,7 @@ public class TimeslotService implements RestService<Timeslot, Long> {
         }
         repository.save(timeslot);
         log.info(String.format("SUCCESS: Appointment %s created", timeslot));
-        timeslotMessageSender.send(timeslot);
+        messageSender.send(timeslot);
     }
 
     @Override
@@ -125,19 +115,17 @@ public class TimeslotService implements RestService<Timeslot, Long> {
     public void removeAttendeeFromTimeslot(Long timeslotId, Student student) {
         Timeslot timeslot = this.getById(timeslotId);
 
-        jmsTemplate.convertAndSend(QUEUENAME, timeslot);
-
         if (!timeslot.removeAttendee(student)) {
             log.info(String.format(
                     "FAIL: Student %s not removed", student.getMatriculationNumber()));
             throw new ModelNotFoundException(student);
         }
         attendeeCount--;
+        messageSender.send(timeslot);
         log.info(String.format(
                 "SUCCESS: Student %s removed from appointment %s",
                 student.getMatriculationNumber(),
                 timeslotId));
-        timeslotMessageSender.send(timeslot);
     }
 
 }
