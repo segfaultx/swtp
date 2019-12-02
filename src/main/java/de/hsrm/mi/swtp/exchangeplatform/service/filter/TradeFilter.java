@@ -47,14 +47,15 @@ public class TradeFilter {
      * @param filters Student looking for a diffrent timeslot
      * @return map of list of timeslots for each category
      */
-    public Map<Timeslot,Map<String, TradeOffer>> applyFilter(Map<Timeslot, List<TradeOffer>> tradeMap,Filter...filters) {
-        Map<Timeslot, Map<String, TradeOffer>> trades = new HashMap<>();
+    public Map<Timeslot,Map<String, List<TradeOffer>>> applyFilter(Map<Timeslot, List<TradeOffer>> tradeMap,List<Filter> filters) {
+        Map<Timeslot, Map<String, List<TradeOffer>>> trades = new HashMap<>();
+        Map<String,List<TradeOffer>> filteredMap = new HashMap<>();
 
         tradeMap.forEach((timeslot, tradeoffers) -> {
                 for (Filter subFilter : filters){
-                    Map<String,List<TradeOffer>> filteredMap = new HashMap<>();
                     filteredMap.put(subFilter.getClass().getName(),subFilter.filter(tradeoffers));
                 }
+                trades.put(timeslot,filteredMap);
         });
 
         return trades;
