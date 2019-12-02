@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,15 +31,30 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
     @Autowired
     private StudentRepository studentRepository;
 
-
+    /**
+     * Method to get personalized {@link TradeOffer}s for a students timetable
+     * @param timeslots timetable of student
+     * @return map containing tradeoffers for each timeslot
+     */
     public Map<Timeslot, List<TradeOffer>> getTradeOffersForTimeSlots(List<Timeslot> timeslots) {
+        log.info("Creating unfiltered Map of tradeoffers");
         Map<Timeslot, List<TradeOffer>> timeslotTradeOffers = new HashMap<>();
         timeslots.forEach(timeslot -> timeslotTradeOffers
                 .put(timeslot, tradeOfferRepository.findAllBySeek(timeslot)));
+        log.info("Returning filtered Map of tradeoffers");
         return timeslotTradeOffers; //TODO: use filter module here
     }
 
-    public boolean tradeTimeslots(long requesterId, long tradeId) throws RuntimeException {
+    /**
+     * Method to process a requested trade transaction, transaction info is gathered from {@link TradeOffer}'s id
+     *
+     * @param requesterId id of requester
+     * @param tradeId accepted trade
+     * @return new Timeslot of requester
+     * @throws RuntimeException if either requesterId or tradeId cant be found
+     */
+    @Transactional
+    public Timeslot tradeTimeslots(long requesterId, long tradeId) throws RuntimeException {
         log.info(String.format("Performing Trade for requester: %d, trade: %d", requesterId, tradeId));
         var requester = studentRepository.findById(requesterId).orElseThrow(() -> {
             log.info(String.format("Error fetching Student from repository with ID: %d", requesterId));
@@ -48,22 +64,46 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
             log.info(String.format("Error fetching Tradeoffer with ID: %d", tradeId));
             throw new NotFoundException(tradeId);
         });
-
-        return true; //TODO real trade method
+        requester.getTimeslots().remove(trade.getSeek());
+        requester.getTimeslots().add(trade.getOffer());
+        var tradePartner = trade.getOfferer();
+        tradePartner.getTimeslots().remove(trade.getOffer());
+        tradePartner.getTimeslots().add(trade.getSeek());
+        return trade.getOffer();
     }
 
+    /**
+     * Method to delete a given {@link TradeOffer} by id of a student
+     * @param studentId delete requester's id
+     * @param tradeId tradeId of item which is supposed to be deleted
+     * @return true if successful
+     * @throws RuntimeException if tradeoffer cannot be looked up or requester isnt owner of the requested trade
+     */
     public boolean deleteTradeOffer(long studentId, long tradeId) throws RuntimeException {
+        log.info(String.format("Looking up Tradeoffer with id: %d. Requester: %d", tradeId, studentId));
         tradeOfferRepository.findById(tradeId).ifPresentOrElse(tradeOffer -> {
-                    if (tradeOffer.getOfferer().getMatriculationNumber() != studentId)
+                    if (tradeOffer.getOfferer().getMatriculationNumber() != studentId) {
+                        log.info(String.format("Error: Requester is not owner of trade with id: %d, requester: %d", tradeId, studentId));
                         throw new RuntimeException("not your tradeoffer");
+                    }
+                    log.info(String.format("Successfully deleted tradeoffer with id: %d of student: %d", tradeId, studentId));
                     tradeOfferRepository.delete(tradeOffer);
                 },
                 () -> {
+                    log.info(String.format("Error: could not find tradeoffer with id: %d of student: %d", tradeId, studentId));
                     throw new TradeOfferNotFoundException(tradeId);
                 });
         return true;
     }
 
+    /**
+     * Method to create a tradeoffer of student requeste
+     * @param studentId requesters id
+     * @param offerId requesters offered timeslot
+     * @param seekId requesters sought timeslot
+     * @return new tradeoffer instance if successful
+     * @throws NotFoundException thrown if could not lookup any of the given id's
+     */
     public TradeOffer createTradeOffer(long studentId, long offerId, long seekId) throws NotFoundException {
         log.info(String.format("Creating new Tradeoffer for Student: %d with offer/request: %d/%d", studentId, offerId, seekId));
         TradeOffer tradeoffer = new TradeOffer();
@@ -83,27 +123,54 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
         return tradeOfferRepository.save(tradeoffer);
     }
 
+    /**
+     * Method to get all tradeoffers
+     * @return list of all tradeoffers
+     */
     @Override
     public List<TradeOffer> getAll() {
-        return null;
+        return tradeOfferRepository.findAll();
     }
 
+    /**
+     * Method to lookup a {@link TradeOffer} by id
+     * @param aLong id of item to lookup
+     * @return requested tradeoffer
+     * @throws NotFoundException if item cant be looked up
+     */
     @Override
     public TradeOffer getById(Long aLong) throws NotFoundException {
         return tradeOfferRepository.findById(aLong).orElseThrow(() -> new NotFoundException(aLong));
     }
 
+    /**
+     * Method to save a given {@link TradeOffer}
+     * @param item item to be saved
+     * @throws IllegalArgumentException if item is malformed
+     */
     @Override
     public void save(TradeOffer item) throws IllegalArgumentException {
         var dbItem = tradeOfferRepository.save(item);
         log.info(String.format("Successfully saved Tradeoffer with ID: %d", dbItem.getId()));
     }
 
+    /**
+     * Method to deleta a {@link TradeOffer} by id
+     * @param aLong id of item to delete
+     * @throws IllegalArgumentException if item couldnt be found
+     */
     @Override
     public void delete(Long aLong) throws IllegalArgumentException {
         tradeOfferRepository.delete(tradeOfferRepository.findById(aLong).orElseThrow());
     }
 
+    /**
+     * Method to update a given {@link TradeOffer}
+     * @param aLong item to lookup (update)
+     * @param update item with updated values
+     * @return true if successful
+     * @throws IllegalArgumentException if item couldnt be looked up
+     */
     @Override
     public boolean update(Long aLong, TradeOffer update) throws IllegalArgumentException {
         log.info(String.format("Updating TradeOffer: %d", aLong));
