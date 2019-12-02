@@ -32,7 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         PasswordEncoder pwenc = getPasswordEncoder();
 
-        authmanagerbuilder.inMemoryAuthentication()
+        authmanagerbuilder.jdbcAuthentication()
                 .withUser("Student")
                 .password(pwenc.encode("geheim"))
                 .roles("STUDENT")
