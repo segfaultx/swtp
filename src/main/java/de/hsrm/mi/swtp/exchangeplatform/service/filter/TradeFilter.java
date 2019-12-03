@@ -1,22 +1,17 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter;
 
 
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
+
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TimeSlotRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.AppointmentService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.sql.Time;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +25,7 @@ public class TradeFilter {
     private StudentService studentService;
 
     @Autowired
-    private TimeSlotRepository timeSlotRepository;
+    private TimeslotRepository timeSlotRepository;
 
     @Autowired
     private TradeOfferRepository tradeOfferRepository;
