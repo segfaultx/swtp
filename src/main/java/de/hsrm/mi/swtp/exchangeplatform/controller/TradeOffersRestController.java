@@ -29,7 +29,7 @@ public class TradeOffersRestController {
      * @param studentId studentId of requester
      * @param tradeId   tradeId of tradeoffer which is to be deleted.
      * @return {@link HttpStatus#OK} if tradeoffer was deleted, {@link HttpStatus#NOT_FOUND} if tradeoffer wasnt found,
-     * {@link HttpStatus#BAD_REQUEST} if requester isnt owner of the tradeoffer.
+     * {@link HttpStatus#FORBIDDEN} if requester isnt owner of the tradeoffer.
      */
     @DeleteMapping("/{studentId}/{tradeId}")
     public ResponseEntity deleteTradeOffer(@PathVariable("studentId") long studentId, @PathVariable("tradeId") long tradeId) {
@@ -37,14 +37,14 @@ public class TradeOffersRestController {
         try {
             if (tradeOfferService.deleteTradeOffer(studentId, tradeId)) {
                 log.info(String.format("DELETE Request successful Student: %d TradeOffer: %d", studentId, tradeId));
-                return new ResponseEntity(HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             }
         } catch (TradeOfferNotFoundException ex) {
             log.info(String.format("ERROR while DELETE Request Student: %d TradeOffer: %d - Entity not found", studentId, tradeId));
-            return new ResponseEntity(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         log.info(String.format("ERROR while DELETE Request Student: %d TradeOffer: %d - Student isn't owner of entity", studentId, tradeId));
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
 
     /**
