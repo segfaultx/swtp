@@ -76,6 +76,33 @@ public class TradeOffersRestController {
 
     /**
      * POST request handler.
+     * proviced an endpoint to {@code '/api/v1/trades} for users to create a {@link TradeOffer}
+     *
+     * @param tradeOffer tradeoffer to create
+     * @param result     binding result
+     * @return {@link HttpStatus#OK} if successful, {@link HttpStatus#BAD_REQUEST} if tradeoffer is malformed
+     */
+    @PostMapping("/trades")
+    public ResponseEntity<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer> createTradeOffer(@RequestBody TradeOffer tradeOffer, BindingResult result) {
+        log.info(String.format("POST Request create new tradeoffer: Requester: %d Offered: %d, Seek: %d", tradeOffer.getOfferer().getMatriculationNumber(),
+                tradeOffer.getOffer().getId(),
+                tradeOffer.getSeek().getId()));
+        if (result.hasErrors()) {
+            log.info(String.format("POST Request error: Malformed tradeoffer of requester: %d", tradeOffer.getOfferer().getMatriculationNumber()));
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        var persistedTradeOffer = tradeOfferService.createTradeOffer(tradeOffer.getOffer().getId()
+                , tradeOffer.getOffer().getId(),
+                tradeOffer.getSeek().getId());
+        de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer();
+        BeanUtils.copyProperties(persistedTradeOffer, restAnswer);
+        log.info(String.format("POST Request successful: created new tradeoffer with id: %d requester: %d", persistedTradeOffer.getId(),
+                persistedTradeOffer.getOfferer().getMatriculationNumber()));
+        return new ResponseEntity<>(restAnswer, HttpStatus.OK);
+    }
+
+    /**
+     * POST request handler.
      * provides an endpoint to {@code '/api/v1/trades/<id>/<id>/accept} through which an student may accept a given {@link TradeOffer}
      *
      * @param studentId id of requester
@@ -88,6 +115,7 @@ public class TradeOffersRestController {
                                                 @PathVariable("tradeId") long tradeId,
                                                 @RequestBody TradeRequest tradeRequest,
                                                 BindingResult result) {
+
         log.info(String.format("POST Request Accept Trade: %d Requester: %d", tradeId, studentId));
         if (result.hasErrors()) {
             log.info(String.format("Post Request error, trade: %d from requester: %d failed", tradeId, studentId));
