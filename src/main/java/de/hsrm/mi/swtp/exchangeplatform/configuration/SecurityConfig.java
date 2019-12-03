@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -32,8 +33,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         PasswordEncoder pwenc = getPasswordEncoder();
 
-        authmanagerbuilder.jdbcAuthentication()
-                .withUser("Student")
+        authmanagerbuilder.inMemoryAuthentication()
+                .withUser("student")
                 .password(pwenc.encode("geheim"))
                 .roles("STUDENT")
         .and()
@@ -47,15 +48,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
                 .antMatchers("auth/admin/*").hasRole("ADMIN")
                 .antMatchers("/auth/*").hasAnyRole("ADMIN", "STUDENT")
+                .antMatchers("/api/**").hasRole("ADMIN")
+                //addfilterbefore
         .and()
-                .formLogin()
-                .loginPage("/login")
-                .defaultSuccessUrl("/usersite")
-                .permitAll()
+                .httpBasic()
+        .and()
+                .headers()
+                .addHeaderWriter(new StaticHeadersWriter("funny","hahaha"))
         .and()
                 .logout()
                 .logoutUrl("/logout")
-                .logoutSuccessUrl("/")
+                .logoutSuccessUrl("/loggedout")
                 .permitAll();
     }
 }
