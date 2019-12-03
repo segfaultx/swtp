@@ -3,8 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.TradeOfferNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeRequest;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.*;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -13,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import java.sql.Timestamp;
 
 @RestController
 @RequestMapping("/api/v1/trades")
@@ -65,7 +66,9 @@ public class TradeOffersRestController {
         try {
             var tradeoffer = tradeOfferService.createTradeOffer(studentId, offerId, seekId);
             de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer();
-            BeanUtils.copyProperties(tradeoffer, restAnswer);
+            restAnswer.setId(tradeoffer.getId().intValue());
+            restAnswer.setOfferedTimeslotId(tradeoffer.getOffer().getId());
+            restAnswer.setWantedTimeslotId(tradeoffer.getSeek().getId());
             log.info(String.format("SUCCESS POST Request Student: %d with Offer/Seek: %d/%d - insert successful", studentId, offerId, seekId));
             return new ResponseEntity<>(restAnswer, HttpStatus.OK);
         } catch (NotFoundException ex) {
@@ -95,7 +98,9 @@ public class TradeOffersRestController {
                 , tradeOffer.getOffer().getId(),
                 tradeOffer.getSeek().getId());
         de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer();
-        BeanUtils.copyProperties(persistedTradeOffer, restAnswer);
+        restAnswer.setWantedTimeslotId(persistedTradeOffer.getSeek().getId());
+        restAnswer.setOfferedTimeslotId(persistedTradeOffer.getOffer().getId());
+        restAnswer.setId(persistedTradeOffer.getId().intValue());
         log.info(String.format("POST Request successful: created new tradeoffer with id: %d requester: %d", persistedTradeOffer.getId(),
                 persistedTradeOffer.getOfferer().getMatriculationNumber()));
         return new ResponseEntity<>(restAnswer, HttpStatus.OK);
@@ -127,7 +132,21 @@ public class TradeOffersRestController {
             if (answer != null) {
                 log.info(String.format("POST Request successful, performed trade: %d Requester: %d", tradeId, studentId));
                 de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();
-                BeanUtils.copyProperties(answer, restAnswer);
+                restAnswer.setId(answer.getId());
+                Lecturer lecturer = new Lecturer();
+                lecturer.setMail(answer.getLecturer().getEmail());
+                lecturer.setName(answer.getLecturer().getUsername());
+                restAnswer.setLecturer(lecturer);
+                restAnswer.setAttendees(answer.getAttendees().size());
+                restAnswer.setCapacity(answer.getCapacity());
+                Room room = new Room();
+                room.setId(answer.getRoom().getId());
+                room.setLocation(answer.getRoom().getLocation());
+                room.setRoomNumber(answer.getRoom().getRoomNumber());
+                restAnswer.setRoom(room);
+                restAnswer.setTimeEnd(Timestamp.valueOf(answer.getTimeEnd().toString()));
+                restAnswer.setTimeStart(Timestamp.valueOf(answer.getTimeStart().toString()));
+                restAnswer.setDay(DayEnum.valueOf(answer.getDay()));
                 return new ResponseEntity<>(restAnswer, HttpStatus.OK);
             }
             log.info(String.format("Post Request error, trade: %d from requester: %d failed", tradeId, studentId));
