@@ -82,7 +82,7 @@ public class TradeOffersRestController {
      * @param result     binding result
      * @return {@link HttpStatus#OK} if successful, {@link HttpStatus#BAD_REQUEST} if tradeoffer is malformed
      */
-    @PostMapping("/trades")
+    @PostMapping
     public ResponseEntity<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer> createTradeOffer(@RequestBody TradeOffer tradeOffer, BindingResult result) {
         log.info(String.format("POST Request create new tradeoffer: Requester: %d Offered: %d, Seek: %d", tradeOffer.getOfferer().getMatriculationNumber(),
                 tradeOffer.getOffer().getId(),
