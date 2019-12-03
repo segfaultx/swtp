@@ -6,7 +6,6 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.*;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -94,7 +93,7 @@ public class TradeOffersRestController {
             log.info(String.format("POST Request error: Malformed tradeoffer of requester: %d", tradeOffer.getOfferer().getMatriculationNumber()));
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        var persistedTradeOffer = tradeOfferService.createTradeOffer(tradeOffer.getOffer().getId()
+        var persistedTradeOffer = tradeOfferService.createTradeOffer(tradeOffer.getOfferer().getMatriculationNumber()
                 , tradeOffer.getOffer().getId(),
                 tradeOffer.getSeek().getId());
         de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer();
