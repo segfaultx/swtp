@@ -1,16 +1,22 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter;
 
 
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.TimeSlotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.AppointmentService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Time;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +30,7 @@ public class TradeFilter {
     private StudentService studentService;
 
     @Autowired
-    private TimeslotRepository timeSlotRepository;
+    private TimeSlotRepository timeSlotRepository;
 
     @Autowired
     private TradeOfferRepository tradeOfferRepository;
@@ -41,14 +47,15 @@ public class TradeFilter {
      * @param filters Student looking for a diffrent timeslot
      * @return map of list of timeslots for each category
      */
-    public Map<Timeslot,Map<String, List<TradeOffer>>> applyFilter(Map<Timeslot, List<TradeOffer>> tradeMap,List <Filter> filters) {
+    public Map<Timeslot,Map<String, List<TradeOffer>>> applyFilter(Map<Timeslot, List<TradeOffer>> tradeMap,List<Filter> filters) {
         Map<Timeslot, Map<String, List<TradeOffer>>> trades = new HashMap<>();
+        Map<String,List<TradeOffer>> filteredMap = new HashMap<>();
 
         tradeMap.forEach((timeslot, tradeoffers) -> {
                 for (Filter subFilter : filters){
-                    Map<String,List<TradeOffer>> filteredMap = new HashMap<>();
                     filteredMap.put(subFilter.getClass().getName(),subFilter.filter(tradeoffers));
                 }
+                trades.put(timeslot,filteredMap);
         });
 
         return trades;
