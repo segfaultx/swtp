@@ -321,7 +321,7 @@ components:
 
     Student:
       properties:
-        matriculationNumber:
+        studentId:
           type: integer
           format: int64
         username:

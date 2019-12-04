@@ -154,7 +154,7 @@ public class TradeOffersRestController implements TradesApi {
         restAnswer.setOfferedTimeslotId(persistedTradeOffer.getOffer().getId());
         restAnswer.setId(persistedTradeOffer.getId().intValue());
         log.info(String.format("POST Request successful: created new tradeoffer with id: %d requester: %d", persistedTradeOffer.getId(),
-                persistedTradeOffer.getOfferer().getMatriculationNumber()));
+                persistedTradeOffer.getOfferer().getStudentId()));
         return new ResponseEntity<>(restAnswer, HttpStatus.OK);
     }
 }

@@ -43,13 +43,13 @@ public class DBInitiator implements ApplicationRunner {
         Student dennis = new Student();
         dennis.setFirstName("Dennis");
         dennis.setLastName("Schad");
-        dennis.setMatriculationNumber(1006351L);
+        dennis.setStudentId(1006351L);
         dennis.setUsername("dscha001");
 
         Student willi = new Student();
         willi.setFirstName("Willi");
         willi.setLastName("Wusel");
-        willi.setMatriculationNumber(1005993L);
+        willi.setStudentId(1005993L);
         willi.setUsername("wwuse001");
 
         Timeslot timeslot2 = new Timeslot();

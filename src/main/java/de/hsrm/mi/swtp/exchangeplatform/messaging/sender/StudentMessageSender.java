@@ -26,7 +26,7 @@ public class StudentMessageSender implements MessageSender<Student> {
 	
 	@Override
 	public void send(Student model) {
-		String message = String.format("Create Student-Event TextMessage::< STUDENT {} WURDE ABGERUFEN/-GEÄNDERT. >", model.getMatriculationNumber());
+		String message = String.format("Create Student-Event TextMessage::< STUDENT {} WURDE ABGERUFEN/-GEÄNDERT. >", model.getStudentId());
 		this.send(message);
 	}
 	

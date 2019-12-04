@@ -42,17 +42,17 @@ public class TimeslotService implements RestService<Timeslot, Long> {
 		Timeslot timeslot = this.getById(timeslotId);
 		
 		if(timeslot.getAttendees().contains(student)) {
-			log.info(String.format("FAIL: Student %s is already an attendee", student.getMatriculationNumber()));
+			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentId()));
 			throw new StudentIsAlreadyAttendeeException(student);
 		}
 		
 		if(!this.checkCapacity(timeslot) && !timeslot.addAttendee(student)) {
-			log.info(String.format("FAIL: Student %s not added to appointment %s", student.getMatriculationNumber(), timeslotId));
+			log.info(String.format("FAIL: Student %s not added to appointment %s", student.getStudentId(), timeslotId));
 			throw new NoTimeslotCapacityException(timeslot);
 		}
 		attendeeCount++;
 		this.save(timeslot);
-		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getMatriculationNumber(), timeslotId));
+		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentId(), timeslotId));
 	}
 	
 	@Override
@@ -105,12 +105,12 @@ public class TimeslotService implements RestService<Timeslot, Long> {
 		Timeslot timeslot = this.getById(timeslotId);
 		
 		if(!timeslot.removeAttendee(student)) {
-			log.info(String.format("FAIL: Student %s not removed", student.getMatriculationNumber()));
+			log.info(String.format("FAIL: Student %s not removed", student.getStudentId()));
 			throw new ModelNotFoundException(student);
 		}
 		attendeeCount--;
 		messageSender.send(timeslot);
-		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getMatriculationNumber(), timeslotId));
+		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentId(), timeslotId));
 	}
 	
 	
