@@ -19,36 +19,36 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ModuleService implements RestService<Module, Long> {
-
-    @Autowired(required = false)
-    final JmsTemplate jmsTemplate;
-    @Autowired
-    final ModuleRepository repository;
-
-    @Override
-    public List<Module> getAll() {
-        return repository.findAll();
-    }
-
-    @Override
-    public Module getById(Long moduleId) {
-        Optional<Module> moduleOptional = this.repository.findById(moduleId);
-        if (!moduleOptional.isPresent()) throw new NotFoundException(moduleId);
-        return moduleOptional.get();
-    }
-
-    @Override
-    public void save(Module module) {
-        repository.save(module);
-    }
-
-    @Override
-    public void delete(Long moduleId) throws IllegalArgumentException {
-        repository.delete(this.getById(moduleId));
-    }
-
-    @Override
-    public boolean update(Long aLong, Module update) throws IllegalArgumentException {
-        return true;
-    }
+	
+	@Autowired(required = false)
+	final JmsTemplate jmsTemplate;
+	@Autowired
+	final ModuleRepository repository;
+	
+	@Override
+	public List<Module> getAll() {
+		return repository.findAll();
+	}
+	
+	@Override
+	public Module getById(Long moduleId) {
+		Optional<Module> moduleOptional = this.repository.findById(moduleId);
+		if(!moduleOptional.isPresent()) throw new NotFoundException(moduleId);
+		return moduleOptional.get();
+	}
+	
+	@Override
+	public void save(Module module) {
+		repository.save(module);
+	}
+	
+	@Override
+	public void delete(Long moduleId) throws IllegalArgumentException {
+		repository.delete(this.getById(moduleId));
+	}
+	
+	@Override
+	public boolean update(Long aLong, Module update) throws IllegalArgumentException {
+		return true;
+	}
 }

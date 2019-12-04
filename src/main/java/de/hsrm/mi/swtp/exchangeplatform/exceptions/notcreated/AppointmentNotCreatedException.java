@@ -6,9 +6,9 @@ import lombok.experimental.FieldDefaults;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AppointmentNotCreatedException extends NotCreatedException {
-
-    public AppointmentNotCreatedException(Timeslot timeslot) {
-        super(timeslot);
-    }
-
+	
+	public AppointmentNotCreatedException(Timeslot timeslot) {
+		super(timeslot);
+	}
+	
 }

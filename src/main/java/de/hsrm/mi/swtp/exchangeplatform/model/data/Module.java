@@ -12,24 +12,20 @@ import java.util.List;
 @RequiredArgsConstructor
 @Table(name = "my_module")
 public class Module implements Model {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    private String name;
-
-    @JsonIgnore
-    @OneToMany(
-            mappedBy = "module",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<Timeslot> timeslots;
-
-    @JsonIgnore
-    @JoinColumn(name = "po_id")
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private PO po;
-
+	
+	@Id
+	@GeneratedValue
+	private Long id;
+	
+	private String name;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Timeslot> timeslots;
+	
+	@JsonIgnore
+	@JoinColumn(name = "po_id")
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private PO po;
+	
 }

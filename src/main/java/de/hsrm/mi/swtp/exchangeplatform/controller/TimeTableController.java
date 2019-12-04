@@ -20,30 +20,30 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/v1/timetable")
 public class TimeTableController {
-
-    TimeTableService timeTableService;
-
-    @GetMapping
-    public ResponseEntity<List<TimeTable>> getAllTimeTables() {
-        return new ResponseEntity<>(timeTableService.getAll(), HttpStatus.OK);
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<TimeTable> getTimeTableById(@PathVariable Long id) {
-        try {
-            return new ResponseEntity<>(timeTableService.getById(id), HttpStatus.OK);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    @PostMapping
-    public ResponseEntity<TimeTable> createTimeTable(@RequestBody TimeTable timeTable, BindingResult result) {
-        if (result.hasErrors()) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
-
-        timeTableService.save(timeTable);
-        return new ResponseEntity<>(timeTable, HttpStatus.OK);
-    }
+	
+	TimeTableService timeTableService;
+	
+	@GetMapping
+	public ResponseEntity<List<TimeTable>> getAllTimeTables() {
+		return new ResponseEntity<>(timeTableService.getAll(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/{id}")
+	public ResponseEntity<TimeTable> getTimeTableById(@PathVariable Long id) {
+		try {
+			return new ResponseEntity<>(timeTableService.getById(id), HttpStatus.OK);
+		} catch(NotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+	}
+	
+	@PostMapping
+	public ResponseEntity<TimeTable> createTimeTable(@RequestBody TimeTable timeTable, BindingResult result) {
+		if(result.hasErrors()) {
+			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		}
+		
+		timeTableService.save(timeTable);
+		return new ResponseEntity<>(timeTable, HttpStatus.OK);
+	}
 }

@@ -11,19 +11,19 @@ import javax.persistence.*;
 @Setter
 @RequiredArgsConstructor
 public class TradeOffer implements Model {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Student offerer;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Timeslot offer;
-
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Timeslot seek;
-
-    private boolean instantTrade = false;
+	
+	@Id
+	@GeneratedValue
+	private Long id;
+	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private Student offerer;
+	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private Timeslot offer;
+	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private Timeslot seek;
+	
+	private boolean instantTrade = false;
 }

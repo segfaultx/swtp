@@ -20,28 +20,27 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 public class TradeOfferService {
-    @Autowired
-    private TradeOfferRepository tradeOfferRepository;
-
-    @Autowired
-    private TimeslotRepository timeSlotRepository;
-
-
-    public Map<String, List<Timeslot>> getTradeOffersForTimeSlot(Timeslot offer, Module module){
-        Map<String,List<Timeslot>> offersMap = new HashMap<>();
-        var tradeoffers = tradeOfferRepository.findAllBySeek(offer);
-        offersMap.put("Trade", tradeoffers.stream().filter(item -> item.getOfferer() != null
-                && !item.isInstantTrade()).map(TradeOffer::getOffer).collect(Collectors.toList()));
-        offersMap.put("Instant", tradeoffers.stream()
-                .filter(TradeOffer::isInstantTrade)
-                .map(TradeOffer::getOffer)
-                .collect(Collectors.toList()));
-        offersMap.put("Remaining", new ArrayList<>());
-        for (Timeslot timeslot: timeSlotRepository.findAllByModule(module) ){
-            if (!offersMap.get("Trade").contains(timeslot) && !offersMap.get("Instand").contains(timeslot)){
-                offersMap.get("Remaining").add(timeslot);
-            }
-        }
-        return offersMap;
-    }
+	@Autowired
+	private TradeOfferRepository tradeOfferRepository;
+	
+	@Autowired
+	private TimeslotRepository timeSlotRepository;
+	
+	
+	public Map<String, List<Timeslot>> getTradeOffersForTimeSlot(Timeslot offer, Module module) {
+		Map<String, List<Timeslot>> offersMap = new HashMap<>();
+		var tradeoffers = tradeOfferRepository.findAllBySeek(offer);
+		offersMap.put("Trade", tradeoffers.stream()
+										  .filter(item -> item.getOfferer() != null && !item.isInstantTrade())
+										  .map(TradeOffer::getOffer)
+										  .collect(Collectors.toList()));
+		offersMap.put("Instant", tradeoffers.stream().filter(TradeOffer::isInstantTrade).map(TradeOffer::getOffer).collect(Collectors.toList()));
+		offersMap.put("Remaining", new ArrayList<>());
+		for(Timeslot timeslot : timeSlotRepository.findAllByModule(module)) {
+			if(!offersMap.get("Trade").contains(timeslot) && !offersMap.get("Instand").contains(timeslot)) {
+				offersMap.get("Remaining").add(timeslot);
+			}
+		}
+		return offersMap;
+	}
 }
