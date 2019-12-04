@@ -22,8 +22,11 @@ public class DBInitiator implements ApplicationRunner {
 
     private final TimeTableRepository timeTableRepository;
 
-    public DBInitiator(TimeTableRepository timeTableRepository) {
+    private final TradeOfferRepository tradeOfferRepository;
+
+    public DBInitiator(TimeTableRepository timeTableRepository, TradeOfferRepository tradeOfferRepository) {
         this.timeTableRepository = timeTableRepository;
+        this.tradeOfferRepository = tradeOfferRepository;
     }
 
     @Override
@@ -43,34 +46,63 @@ public class DBInitiator implements ApplicationRunner {
         dennis.setMatriculationNumber(1006351L);
         dennis.setUsername("dscha001");
 
+        Student willi = new Student();
+        willi.setFirstName("Willi");
+        willi.setLastName("Wusel");
+        willi.setMatriculationNumber(1005993L);
+        willi.setUsername("wwuse001");
+
+        Timeslot timeslot2 = new Timeslot();
+        timeslot2.setCapacity(20);
+        timeslot2.setDay("Montag");
+        timeslot2.setTimeStart(LocalTime.of(8, 15));
+        timeslot2.setTimeEnd(LocalTime.of(9, 45));
+        timeslot2.setType("PRAKTIKUM");
+
         Timeslot timeslot1 = new Timeslot();
         timeslot1.setCapacity(20);
         timeslot1.setDay("Mittwoch");
         timeslot1.setTimeStart(LocalTime.of(8, 15));
         timeslot1.setTimeEnd(LocalTime.of(9, 45));
 
+
         Room d12 = new Room();
         d12.setLocation("Unter den Eichen");
         d12.setRoomNumber("D12");
         timeslot1.setType("PRAKTIKUM");
 
+
         List<Student> attendees = new ArrayList<>();
         attendees.add(dennis);
 
+        List<Student> attendees2 = new ArrayList<>();
+        attendees2.add(willi);
+
         List<Timeslot> timeslots = new ArrayList<>();
         timeslots.add(timeslot1);
+        timeslots.add(timeslot2);
+
+        List<Timeslot> dennisTimeslots = new ArrayList<>();
+        dennisTimeslots.add(timeslot1);
+
+        List<Timeslot> williTimeslots = new ArrayList<>();
+        williTimeslots.add(timeslot2);
 
         Module module = new Module();
         module.setName("Softwaretechnik");
+        List<Module> modules = new ArrayList<>();
+        modules.add(module);
 
         lecturer.setTimeslots(timeslots);
         d12.setTimeslots(timeslots);
 
         timeslot1.setRoom(d12);
+        timeslot2.setRoom(d12);
 
         PO po = new PO();
         po.setMajor("Medieninformatik");
         po.setValidSinceYear("2017");
+        po.setModules(modules);
 
         module.setPo(po);
         module.setTimeslots(timeslots);
@@ -85,11 +117,22 @@ public class DBInitiator implements ApplicationRunner {
         timeslot1.setAttendees(attendees);
         timeslot1.setLecturer(lecturer);
 
+        timeslot2.setTimeTable(timeTable);
+        timeslot2.setModule(module);
+        timeslot2.setAttendees(attendees2);
+        timeslot2.setLecturer(lecturer);
 
-        dennis.setTimeslots(timeslots);
 
+        dennis.setTimeslots(dennisTimeslots);
+        willi.setTimeslots(williTimeslots);
+
+        TradeOffer tradeOffer = new TradeOffer();
+        tradeOffer.setOfferer(willi);
+        tradeOffer.setOffer(timeslot2);
+        tradeOffer.setSeek(timeslot1);
+
+        tradeOfferRepository.save(tradeOffer);
         timeTableRepository.save(timeTable);
-
         log.info("Done saving timeTable...");
 
     }
