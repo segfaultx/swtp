@@ -60,7 +60,7 @@ public class Timeslot implements Model {
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Student> attendees;
 
-    @JsonIgnore
+    @JsonManagedReference
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "module_id")
     private Module module;

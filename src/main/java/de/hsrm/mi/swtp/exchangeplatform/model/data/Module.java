@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +20,7 @@ public class Module implements Model {
 
     private String name;
 
-    @JsonIgnore
+    @JsonBackReference
     @OneToMany(
             mappedBy = "module",
             cascade = CascadeType.ALL,
