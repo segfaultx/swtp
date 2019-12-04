@@ -21,44 +21,43 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TimeTableService implements RestService<TimeTable, Long> {
-
-    @Autowired
-    TimeTableRepository repository;
-
-    @Override
-    public List<TimeTable> getAll() {
-        return repository.findAll();
-    }
-
-    @Override
-    public TimeTable getById(Long id) {
-        // This is just a Mock implementation
-        ObjectMapper mapper = new ObjectMapper();
-        mapper.registerModule(new JavaTimeModule());
-        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        File jsonInput = new File(classLoader.getResource("data.json").getFile());
-
-        try {
-            return mapper.readValue(jsonInput, new TypeReference<TimeTable>() {
-            });
-        } catch (IOException e) {
-            throw new NotFoundException(id);
-        }
-    }
-
-    public void save(TimeTable timeTable) {
-        repository.save(timeTable);
-    }
-
-    @Override
-    public void delete(Long id) throws IllegalArgumentException {
-        this.repository.delete(this.getById(id));
-    }
-
-    @Override
-    public boolean update(Long aLong, TimeTable update) throws IllegalArgumentException {
-        return true;
-    }
-
+	
+	@Autowired
+	TimeTableRepository repository;
+	
+	@Override
+	public List<TimeTable> getAll() {
+		return repository.findAll();
+	}
+	
+	@Override
+	public TimeTable getById(Long id) {
+		// This is just a Mock implementation
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.registerModule(new JavaTimeModule());
+		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+		File jsonInput = new File(classLoader.getResource("data.json").getFile());
+		
+		try {
+			return mapper.readValue(jsonInput, new TypeReference<TimeTable>() {});
+		} catch(IOException e) {
+			throw new NotFoundException(id);
+		}
+	}
+	
+	public void save(TimeTable timeTable) {
+		repository.save(timeTable);
+	}
+	
+	@Override
+	public void delete(Long id) throws IllegalArgumentException {
+		this.repository.delete(this.getById(id));
+	}
+	
+	@Override
+	public boolean update(Long aLong, TimeTable update) throws IllegalArgumentException {
+		return true;
+	}
+	
 }

@@ -12,21 +12,17 @@ import java.util.List;
 @Data
 @RequiredArgsConstructor
 public class PO implements Model {
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @JsonProperty("valid_since_year")
-    private String validSinceYear;
-
-    private String major;
-
-    @JsonIgnore
-    @JsonProperty("modules")
-    @OneToMany(
-            mappedBy = "po",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<Module> modules;
+	@Id
+	@GeneratedValue
+	private Long id;
+	
+	@JsonProperty("valid_since_year")
+	private String validSinceYear;
+	
+	private String major;
+	
+	@JsonIgnore
+	@JsonProperty("modules")
+	@OneToMany(mappedBy = "po", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Module> modules;
 }

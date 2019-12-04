@@ -1,88 +1,88 @@
 {
-    "id": 1,
-    "start": "2019-15-10",
-    "end": "2020-15-02",
-    "timeslots": [
-        {
-            "id": 123,
-            "day": 2,
-            "type": "VORLESUNG",
-            "time_start": "08:15",
-            "time_end": "09:45",
-            "lecturer": {
-                "username": "jbiff001",
-                "email": "joendhard.biffel@student.hs-rm.de",
-                "first_name": "Joendhard",
-                "last_name": "Biffel"
-            },
-            "max_capacity": 100,
-            "room": {
-                "id": 1234,
-                "room_number": "D14",
-                "location": "Unter den Eichen Gebäude D"
-            },
-            "module": {
-                "id": 145,
-                "name": "Wichtige Zahlen (17) für Informatiker",
-                "po": {
-                    "id": 125,
-                    "valid_since_year": "2016"
-                }
-            }
-        },
-        {
-            "id": 1123,
-            "day": 2,
-            "type": "PRAKTIKUM",
-            "time_start": "10:00",
-            "time_end": "11:30",
-            "lecturer": {
-                "username": "jbiff001",
-                "email": "joendhard.biffel@student.hs-rm.de",
-                "first_name": "Joendhard",
-                "last_name": "Biffel"
-            },
-            "max_capacity": 100,
-            "room": {
-                "id": 1234,
-                "room_number": "D14",
-                "location": "Unter den Eichen Gebäude D"
-            },
-            "module": {
-                "id": 145,
-                "name": "Wichtige Zahlen (17) für Informatiker",
-                "po": {
-                    "id": 125,
-                    "valid_since_year": "2016"
-                }
-            }
-        },
-        {
-            "id": 423,
-            "day": 3,
-            "type": "PRAKTIKUM",
-            "time_start": "10:00",
-            "time_end": "11:30",
-            "lecturer": {
-                "username": "jbiff001",
-                "email": "joendhard.biffel@student.hs-rm.de",
-                "first_name": "Joendhard",
-                "last_name": "Biffel"
-            },
-            "max_capacity": 100,
-            "room": {
-                "id": 1234,
-                "room_number": "D14",
-                "location": "Unter den Eichen Gebäude D"
-            },
-            "module": {
-                "id": 145,
-                "name": "Wichtige Zahlen (17) für Informatiker",
-                "po": {
-                    "id": 125,
-                    "valid_since_year": "2016"
-                }
-            }
+  "id": 1,
+  "start": "2019-15-10",
+  "end": "2020-15-02",
+  "timeslots": [
+    {
+      "id": 123,
+      "day": 2,
+      "type": "VORLESUNG",
+      "time_start": "08:15",
+      "time_end": "09:45",
+      "lecturer": {
+        "username": "jbiff001",
+        "email": "joendhard.biffel@student.hs-rm.de",
+        "first_name": "Joendhard",
+        "last_name": "Biffel"
+      },
+      "max_capacity": 100,
+      "room": {
+        "id": 1234,
+        "room_number": "D14",
+        "location": "Unter den Eichen Gebäude D"
+      },
+      "module": {
+        "id": 145,
+        "name": "Wichtige Zahlen (17) für Informatiker",
+        "po": {
+          "id": 125,
+          "valid_since_year": "2016"
         }
-    ]
+      }
+    },
+    {
+      "id": 1123,
+      "day": 2,
+      "type": "PRAKTIKUM",
+      "time_start": "10:00",
+      "time_end": "11:30",
+      "lecturer": {
+        "username": "jbiff001",
+        "email": "joendhard.biffel@student.hs-rm.de",
+        "first_name": "Joendhard",
+        "last_name": "Biffel"
+      },
+      "max_capacity": 100,
+      "room": {
+        "id": 1234,
+        "room_number": "D14",
+        "location": "Unter den Eichen Gebäude D"
+      },
+      "module": {
+        "id": 145,
+        "name": "Wichtige Zahlen (17) für Informatiker",
+        "po": {
+          "id": 125,
+          "valid_since_year": "2016"
+        }
+      }
+    },
+    {
+      "id": 423,
+      "day": 3,
+      "type": "PRAKTIKUM",
+      "time_start": "10:00",
+      "time_end": "11:30",
+      "lecturer": {
+        "username": "jbiff001",
+        "email": "joendhard.biffel@student.hs-rm.de",
+        "first_name": "Joendhard",
+        "last_name": "Biffel"
+      },
+      "max_capacity": 100,
+      "room": {
+        "id": 1234,
+        "room_number": "D14",
+        "location": "Unter den Eichen Gebäude D"
+      },
+      "module": {
+        "id": 145,
+        "name": "Wichtige Zahlen (17) für Informatiker",
+        "po": {
+          "id": 125,
+          "valid_since_year": "2016"
+        }
+      }
+    }
+  ]
 }

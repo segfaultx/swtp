@@ -9,9 +9,9 @@ import org.springframework.jms.annotation.EnableJms;
 @EnableJms
 @SpringBootApplication
 public class SwtpApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(SwtpApplication.class, args);
-    }
-
+	
+	public static void main(String[] args) {
+		SpringApplication.run(SwtpApplication.class, args);
+	}
+	
 }

@@ -12,22 +12,18 @@ import java.util.List;
 @Data
 @RequiredArgsConstructor
 public class TimeTable implements Model {
-    
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @Column(name = "date_start")
-    private LocalDate dateStart;
-
-    @Column(name = "date_end")
-    private LocalDate dateEnd;
-    
-    @OneToMany(
-            mappedBy = "timeTable",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<Timeslot> timeslots = new ArrayList<>();
-    
+	
+	@Id
+	@GeneratedValue
+	private Long id;
+	
+	@Column(name = "date_start")
+	private LocalDate dateStart;
+	
+	@Column(name = "date_end")
+	private LocalDate dateEnd;
+	
+	@OneToMany(mappedBy = "timeTable", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Timeslot> timeslots = new ArrayList<>();
+	
 }

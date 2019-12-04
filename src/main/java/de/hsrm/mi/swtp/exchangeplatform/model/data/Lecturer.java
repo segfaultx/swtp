@@ -16,24 +16,20 @@ import java.util.List;
 @Data
 @RequiredArgsConstructor
 public class Lecturer {
-
-    @Id
-    private String username;
-
-    private String email;
-
-    @JsonProperty("first_name")
-    private String firstName;
-
-    @JsonProperty("last_name")
-    private String lastName;
-
-    @JsonIgnore
-    @OneToMany(
-            mappedBy = "lecturer",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<Timeslot> timeslots = new ArrayList<>();
-
+	
+	@Id
+	private String username;
+	
+	private String email;
+	
+	@JsonProperty("first_name")
+	private String firstName;
+	
+	@JsonProperty("last_name")
+	private String lastName;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Timeslot> timeslots = new ArrayList<>();
+	
 }
