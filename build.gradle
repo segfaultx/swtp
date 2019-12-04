@@ -55,6 +55,7 @@ dependencies {
 	compile 'org.springframework.boot:spring-boot-devtools'
 	compile 'com.google.code.gson:gson:2.8.6'
 	compile 'io.swagger:swagger-annotations:1.5.22'
+	compile 'org.openapitools:jackson-databind-nullable:0.1.0'
 }
 
 test {

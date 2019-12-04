@@ -12,12 +12,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.sql.Timestamp;
 
 @RestController
 @RequestMapping("/api/v1/trades")
 @Slf4j
-public class TradeOffersRestController {
+public class TradeOffersRestController implements TradesApi {
 
     @Autowired
     private TradeOfferService tradeOfferService;
@@ -78,35 +79,6 @@ public class TradeOffersRestController {
 
     /**
      * POST request handler.
-     * proviced an endpoint to {@code '/api/v1/trades} for users to create a {@link TradeOffer}
-     *
-     * @param tradeRequest tradeoffer to create
-     * @param result     binding result
-     * @return {@link HttpStatus#OK} if successful, {@link HttpStatus#BAD_REQUEST} if tradeoffer is malformed
-     */
-    @PostMapping
-    public ResponseEntity<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer> createTradeOffer(@RequestBody TradeRequest tradeRequest, BindingResult result) {
-        if (result.hasErrors()) {
-            log.info(String.format("POST Request error: Malformed traderequest of requester: %d", tradeRequest.getOfferedTimeslotId()));
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        log.info(String.format("POST Request create new traderequest: Requester: %d Offered: %d, Seek: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
-                tradeRequest.getOfferedTimeslotId(),
-                tradeRequest.getWantedTimeslotId()));
-        var persistedTradeOffer = tradeOfferService.createTradeOffer(tradeRequest.getOfferedByStudentMatriculationNumber()
-                , tradeRequest.getOfferedTimeslotId(),
-                tradeRequest.getWantedTimeslotId());
-        de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer();
-        restAnswer.setWantedTimeslotId(persistedTradeOffer.getSeek().getId());
-        restAnswer.setOfferedTimeslotId(persistedTradeOffer.getOffer().getId());
-        restAnswer.setId(persistedTradeOffer.getId().intValue());
-        log.info(String.format("POST Request successful: created new tradeoffer with id: %d requester: %d", persistedTradeOffer.getId(),
-                persistedTradeOffer.getOfferer().getMatriculationNumber()));
-        return new ResponseEntity<>(restAnswer, HttpStatus.OK);
-    }
-
-    /**
-     * POST request handler.
      * provides an endpoint to {@code '/api/v1/trades/<id>/<id>/accept} through which an student may accept a given {@link TradeOffer}
      *
      * @param studentId id of requester
@@ -155,5 +127,34 @@ public class TradeOffersRestController {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+    }
+
+    @Override
+    public ResponseEntity<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer> acceptTradeOffer(Long tradeId, Long studentId) {
+        return null;
+    }
+
+    /**
+     * POST request handler.
+     * proviced an endpoint to {@code '/api/v1/trades} for users to create a {@link TradeOffer}
+     *
+     * @param tradeRequest tradeoffer to create
+     * @return {@link HttpStatus#OK} if successful, {@link HttpStatus#BAD_REQUEST} if tradeoffer is malformed
+     */
+    @Override
+    public ResponseEntity<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer> createTradeOffer(@Valid TradeRequest tradeRequest) {
+        log.info(String.format("POST Request create new traderequest: Requester: %d Offered: %d, Seek: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
+                tradeRequest.getOfferedTimeslotId().get(),
+                tradeRequest.getWantedTimeslotId().get()));
+        var persistedTradeOffer = tradeOfferService.createTradeOffer(tradeRequest.getOfferedByStudentMatriculationNumber()
+                , tradeRequest.getOfferedTimeslotId().get(),
+                tradeRequest.getWantedTimeslotId().get());
+        de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer();
+        restAnswer.setWantedTimeslotId(persistedTradeOffer.getSeek().getId());
+        restAnswer.setOfferedTimeslotId(persistedTradeOffer.getOffer().getId());
+        restAnswer.setId(persistedTradeOffer.getId().intValue());
+        log.info(String.format("POST Request successful: created new tradeoffer with id: %d requester: %d", persistedTradeOffer.getId(),
+                persistedTradeOffer.getOfferer().getMatriculationNumber()));
+        return new ResponseEntity<>(restAnswer, HttpStatus.OK);
     }
 }

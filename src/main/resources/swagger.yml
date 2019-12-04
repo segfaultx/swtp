@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   title: Exchange Platform API
-  version: 0.0.1
+  version: 0.0.2
 servers:
   - url: http://localhost:{port}/exchangeplatform/api/v1
     variables:
@@ -21,6 +21,7 @@ paths:
           name: studentId
           schema:
             type: integer
+            format: int64
           required: true
           description: Numeric ID of the student to get
       responses:
@@ -54,6 +55,7 @@ paths:
           name: timeslotId
           schema:
             type: integer
+            format: int64
           required: true
           description: Numeric ID of the timeslot
       responses:
@@ -73,6 +75,7 @@ paths:
           name: studentId
           schema:
             type: integer
+            format: int64
           required: true
           description: Numeric ID of the student
       responses:
@@ -112,6 +115,7 @@ paths:
           name: moduleId
           schema:
             type: integer
+            format: int64
           required: true
           description: Numeric ID of the module
       operationId: getModuleById
@@ -123,7 +127,7 @@ paths:
               schema:
                 $ref: "#/components/schemas/Module"
   
-  /trades/{tradeId}/accept:
+  /trades/{tradeId}/{studentId}/accept:
     post:
       summary: Accept trade offer.
       operationId: "acceptTradeOffer"
@@ -132,8 +136,16 @@ paths:
           name: tradeId
           schema:
             type: integer
+            format: int64
           required: true
           description: Numeric ID of the trade
+        - in: path
+          name: studentId
+          schema:
+            type: integer
+            format: int64
+          required: true
+          description: Numeric ID of the student
       responses:
         '201':    # status code
           description: The accepted trade object
@@ -169,9 +181,11 @@ components:
         offeredTimeslotId:
           type: integer
           format: int64
+          nullable: true
         wantedTimeslotId:
           type: integer
           format: int64
+          nullable: true
         offeredByStudentMatriculationNumber:
           type: integer
           format: int64
@@ -180,6 +194,7 @@ components:
         adminId:
           type: integer
           format: int64
+          nullable: true
 
     Room:
       properties:
@@ -203,7 +218,9 @@ components:
       enum:
         - monday
         - tuesday
-
+        - wednesday
+        - thursday
+        - friday
     Timestamp:
       type: object
       properties:
