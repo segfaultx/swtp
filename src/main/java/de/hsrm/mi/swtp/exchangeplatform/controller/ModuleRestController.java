@@ -40,11 +40,6 @@ public class ModuleRestController {
 		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
 	}
 	
-	@GetMapping("/{timetableId}") // TODO
-	public ResponseEntity<List<Module>> getAllModulesFromTimetable(@PathVariable Long timetableId) {
-		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
-	}
-	
 	@GetMapping("/{moduleId}")
 	public ResponseEntity<Module> getModuleeById(@PathVariable Long moduleId) {
 		log.info(String.format("GET // " + BASEURL + "/%s", moduleId));
