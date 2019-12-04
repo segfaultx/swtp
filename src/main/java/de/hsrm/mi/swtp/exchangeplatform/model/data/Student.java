@@ -1,6 +1,8 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -26,7 +28,7 @@ public class Student implements Model {
     @JsonProperty("last_name")
     private String lastName;
 
-    @JsonIgnore
+    @JsonManagedReference
     @ManyToMany(mappedBy = "attendees")
     private List<Timeslot> timeslots;
 
