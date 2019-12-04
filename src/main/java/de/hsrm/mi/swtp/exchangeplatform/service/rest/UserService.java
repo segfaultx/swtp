@@ -24,6 +24,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+/**
+ * User(Detail)Service for retrieving the User object using the repository, and, if it exists, wrap it into a User(Details) object, which implements UserDetails
+ */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -35,21 +39,24 @@ public class UserService implements UserDetailsService, RestService<User, Long> 
 
     @Autowired private UserRepository userRepository;
 
-
-    public List<User> getAll() {
-        return userRepository.findAll();
-    }
-
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user= userRepository.findByUsername(username);
         if (user==null){throw new UsernameNotFoundException(username);}
+
+        /**
+         * return UserObject with username, password and role.
+         */
 
         return org.springframework.security.core.userdetails.User
                 .withUsername(username)
                 .password(user.getPassword())
                 .roles(user.getRole())
                 .build();
+    }
+
+    public List<User> getAll() {
+        return userRepository.findAll();
     }
 
     @Override
@@ -62,11 +69,11 @@ public class UserService implements UserDetailsService, RestService<User, Long> 
     @Override
     public void save(User user) throws IllegalArgumentException {
         if (this.userRepository.existsById(user.getMatriculationNumber())) {
-            log.info(String.format("FAIL: Student %s not created", user));
+            log.info(String.format("FAIL: User %s not created", user));
             throw new NotCreatedException(user);
         }
         userRepository.save(user);
-        log.info(String.format("SUCCESS: Student %s created", user));
+        log.info(String.format("SUCCESS: User %s created", user));
     }
 
     @Override
@@ -83,7 +90,7 @@ public class UserService implements UserDetailsService, RestService<User, Long> 
             throw new StudentNotUpdatedException();
         }
 
-        log.info("Updating student..");
+        log.info("Updating User..");
         log.info(user.toString() + " -> " + update.toString());
         //user.setTimeslots(update.getTimeslots());
         user.setUsername(update.getUsername());

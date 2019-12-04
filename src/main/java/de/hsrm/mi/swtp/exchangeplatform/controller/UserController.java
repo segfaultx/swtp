@@ -25,6 +25,11 @@ import java.util.List;
 @Component
 @RestController
 @RequestMapping("/api/v1/user")
+
+/**
+ * Same Controller as StudentController and may deleted in future because it depends on matriculationnumbers and not on unique usernames.
+ */
+
 public class UserController {
     String BASEURL = "/api/v1/student";
     UserService UserService;

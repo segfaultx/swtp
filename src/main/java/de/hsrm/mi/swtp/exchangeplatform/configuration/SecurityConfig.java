@@ -14,6 +14,11 @@ import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
 
+
+/**
+ * Security Configuration which enables WebSecurity and configures authentification-parameters and paths.
+ */
+
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -32,7 +37,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .passwordEncoder(getPasswordEncoder());
 
         PasswordEncoder pwenc = getPasswordEncoder();
-
+        /**
+         * authmanagerbuilder with hardcoded user/roles
+         */
         authmanagerbuilder.inMemoryAuthentication()
                 .withUser("student")
                 .password(pwenc.encode("geheim"))
@@ -45,9 +52,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
+        /**
+         * define authentication-paths here
+         */
         http.authorizeRequests()
-                .antMatchers("auth/admin/*").hasRole("ADMIN")
-                .antMatchers("/auth/*").hasAnyRole("ADMIN", "STUDENT")
+                .antMatchers("auth/admin/*").hasRole("ADMIN")                   //is not correct
+                .antMatchers("/auth/*").hasAnyRole("ADMIN", "STUDENT")   // is not correct
                 .antMatchers("/api/**").hasRole("ADMIN")
                 //addfilterbefore
         .and()

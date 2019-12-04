@@ -6,6 +6,11 @@ import lombok.Data;
 import javax.persistence.*;
 
 
+/**
+*User Data Model with matriculationNumber, username, password and role
+*
+*/
+
 @Entity
 @Data
 //@Table(name="Users")
