@@ -143,7 +143,7 @@ public class TimeslotRestController implements BaseRestController<Timeslot, Long
 	 * POST request handler.
 	 * Provides an endpoint to {@code '/api/v1/timeslot/join'} through which a user ({@link Student}) may join an {@link Timeslot}.
 	 *
-	 * @param timeslotRequestBody is an object which contains the id of an {@link Timeslot} and the matriculation number of a {@link Student}.
+	 * @param timeslotRequestBody is an object which contains the id of an {@link Timeslot} and the student ID of a {@link Student}.
 	 *
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user joined successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
@@ -155,13 +155,13 @@ public class TimeslotRestController implements BaseRestController<Timeslot, Long
 		
 		try {
 			timeslotService.addAttendeeToTimeslot(timeslotRequestBody.getTimeslotId(),
-												  this.studentService.getById(timeslotRequestBody.getMatriculationNumber())
+												  this.studentService.getById(timeslotRequestBody.getStudentId())
 												 );
-			return new ResponseEntity<>(timeslotService.getById(timeslotRequestBody.getMatriculationNumber()), HttpStatus.OK);
+			return new ResponseEntity<>(timeslotService.getById(timeslotRequestBody.getStudentId()), HttpStatus.OK);
 		} catch(StudentIsAlreadyAttendeeException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		} catch(NotFoundException e) {
-			log.info(String.format("FAIL: Student %s not found", timeslotRequestBody.getMatriculationNumber()));
+			log.info(String.format("FAIL: Student %s not found", timeslotRequestBody.getStudentId()));
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
@@ -170,7 +170,7 @@ public class TimeslotRestController implements BaseRestController<Timeslot, Long
 	 * POST request handler.
 	 * Provides an endpoint to {@code '/api/v1/timeslot/leave'} through which a user ({@link Student}) can lean an {@link Timeslot}.
 	 *
-	 * @param timeslotRequestBody is an object which contains the id of an {@link Timeslot} and the matriculation number of a {@link Student}.
+	 * @param timeslotRequestBody is an object which contains the id of an {@link Timeslot} and the student ID of a {@link Student}.
 	 *
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user left successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
@@ -182,11 +182,11 @@ public class TimeslotRestController implements BaseRestController<Timeslot, Long
 		
 		try {
 			timeslotService.removeAttendeeFromTimeslot(timeslotRequestBody.getTimeslotId(),
-													   this.studentService.getById(timeslotRequestBody.getMatriculationNumber())
+													   this.studentService.getById(timeslotRequestBody.getStudentId())
 													  );
-			return new ResponseEntity<>(timeslotService.getById(timeslotRequestBody.getMatriculationNumber()), HttpStatus.OK);
+			return new ResponseEntity<>(timeslotService.getById(timeslotRequestBody.getStudentId()), HttpStatus.OK);
 		} catch(NotFoundException e) {
-			log.info(String.format("FAIL: Student %s not found", timeslotRequestBody.getMatriculationNumber()));
+			log.info(String.format("FAIL: Student %s not found", timeslotRequestBody.getStudentId()));
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}

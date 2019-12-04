@@ -1,6 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
@@ -15,9 +15,9 @@ import java.util.List;
 public class Student implements Model {
 	
 	@Id
-	@JsonProperty(value = "matriculationNumber", required = true)
-	@Column(name = "matr_nr", unique = true, updatable = false, insertable = false)
-	private Long matriculationNumber;
+	@JsonProperty(value = "student_id", required = true)
+	@Column(name = "student_id", unique = true, updatable = false, insertable = false)
+	private Long studentId;
 	
 	@JsonProperty("username")
 	@Column(unique = true)
@@ -29,7 +29,6 @@ public class Student implements Model {
 	@JsonProperty("last_name")
 	private String lastName;
 	
-	@JsonManagedReference
 	@ManyToMany(mappedBy = "attendees")
 	private List<Timeslot> timeslots;
 	

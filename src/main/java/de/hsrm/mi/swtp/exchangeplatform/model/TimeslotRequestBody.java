@@ -9,7 +9,7 @@ public class TimeslotRequestBody {
 	@JsonProperty("timeslot_id")
 	Long timeslotId;
 	
-	@JsonProperty("matr_nr")
-	Long matriculationNumber;
+	@JsonProperty("student_id")
+	Long studentId;
 	
 }
