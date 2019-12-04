@@ -9,6 +9,5 @@ import java.util.List;
 
 @Repository
 public interface TimeslotRepository extends JpaRepository<Timeslot, Long> {
-	
 	List<Timeslot> findAllByModule(Module module);
 }

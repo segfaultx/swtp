@@ -4,10 +4,10 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class AppointmentRequestBody {
+public class TimeslotRequestBody {
 	
-	@JsonProperty("appointment_id")
-	Long appointmentId;
+	@JsonProperty("timeslot_id")
+	Long timeslotId;
 	
 	@JsonProperty("matr_nr")
 	Long matriculationNumber;

@@ -11,7 +11,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,36 +19,22 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@Component
 @RestController
 @RequestMapping("/api/v1/student")
-public class StudentController {
+public class StudentRestController implements BaseRestController<Student, Long> {
 	
 	String BASEURL = "/api/v1/student";
 	StudentService studentService;
 	
-	/**
-	 * GET request handler.
-	 * Will handle any request GET request on {@code '/api/v1/student'}.
-	 *
-	 * @return a JSON made up of a list containing all available {@link Student Students}. If there are none will return an empty list.
-	 */
-	@GetMapping
-	public ResponseEntity<List<Student>> getAllStudents() {
+	@Override
+	public ResponseEntity<List<Student>> getAll() {
 		log.info("GET // " + BASEURL);
 		return new ResponseEntity<>(studentService.getAll(), HttpStatus.OK);
 	}
 	
-	/**
-	 * GET request handler.
-	 * Will handle any request GET request to {@code '/api/v1/student/<id>'}.
-	 *
-	 * @param matriculationNumber is the id of a {@link Student}.
-	 *
-	 * @return {@link HttpStatus#OK} and the requested {@link Student} instance if it is found. Otherwise will return {@link HttpStatus#BAD_REQUEST}
-	 */
+	@Override
 	@GetMapping("/{matriculationNumber}")
-	public ResponseEntity<Student> getStudentById(@PathVariable Long matriculationNumber) {
+	public ResponseEntity<Student> getById(@PathVariable Long matriculationNumber) {
 		log.info(String.format("GET // " + BASEURL + "/%s", matriculationNumber));
 		try {
 			return new ResponseEntity<>(studentService.getById(matriculationNumber), HttpStatus.OK);
@@ -58,16 +43,8 @@ public class StudentController {
 		}
 	}
 	
-	/**
-	 * POST request handler.
-	 * Provides an endpoint to {@code '/api/v1/student'} through which an {admin} may create a new {@link Student}.
-	 *
-	 * @param student a new student which is to be created and inserted into the database.
-	 *
-	 * @return {@link HttpStatus#OK} and the created student if was created successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
-	 */
-	@PostMapping
-	public ResponseEntity<Student> createStudent(@RequestBody Student student, BindingResult result) {
+	@Override
+	public ResponseEntity<Student> create(@RequestBody Student student, BindingResult result) {
 		log.info(String.format("POST // " + BASEURL + "/%s", student.toString()));
 		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		
@@ -84,17 +61,9 @@ public class StudentController {
 		}
 	}
 	
-	/**
-	 * PATCH request handler.
-	 * Provides an endpoint to {@code '/api/v1/student/<id>'} through which an {@link Student} can be updated.
-	 *
-	 * @param matriculationNumber is the id of the student which is to be updated/modified.
-	 * @param student             is an object which contains the date of an the updated {@link Student}.
-	 *
-	 * @return {@link HttpStatus#OK} and the updated student if the student was updated successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
-	 */
+	@Override
 	@PatchMapping("/{matriculationNumber}")
-	public ResponseEntity<Student> updateStudent(@PathVariable Long matriculationNumber, @RequestBody Student student, BindingResult result) {
+	public ResponseEntity<Student> update(@PathVariable Long matriculationNumber, @RequestBody Student student, BindingResult result) {
 		log.info(String.format("PATCH // " + BASEURL + "/%s", matriculationNumber));
 		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		
@@ -106,22 +75,14 @@ public class StudentController {
 			log.info(String.format("FAIL: Student %s not found", matriculationNumber));
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} catch(NotUpdatedException e) {
-			log.info(String.format("FAIL: Something went wrong during update of student: id=%s", matriculationNumber));
 			return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
 		}
 		
 	}
 	
-	/**
-	 * DELETE request handler.
-	 * Provides an endpoint to {@code '/api/v1/student/admin/<id>'} through which an {admin} may delete {@link Student}.
-	 *
-	 * @param matriculationNumber the id of an student which is to be deleted.
-	 *
-	 * @return {@link HttpStatus#OK} if the student was removed successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
-	 */
+	@Override
 	@DeleteMapping("/admin/{matriculationNumber}")
-	public ResponseEntity<Student> deleteStudent(@PathVariable Long matriculationNumber) {
+	public ResponseEntity<Student> delete(@PathVariable Long matriculationNumber) {
 		log.info(String.format("DELETE // " + BASEURL + "/admin/%s", matriculationNumber));
 		
 		try {
@@ -137,4 +98,6 @@ public class StudentController {
 		}
 		
 	}
+	
+	
 }

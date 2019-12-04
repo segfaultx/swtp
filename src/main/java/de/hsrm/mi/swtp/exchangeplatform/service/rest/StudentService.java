@@ -3,13 +3,13 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.StudentNotUpdatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.StudentMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
 import de.hsrm.mi.swtp.exchangeplatform.repository.StudentRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,8 +22,8 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StudentService implements RestService<Student, Long> {
 	
-	@Autowired
 	StudentRepository repository;
+	StudentMessageSender messageSender;
 	
 	@Override
 	public List<Student> getAll() {
@@ -33,18 +33,22 @@ public class StudentService implements RestService<Student, Long> {
 	@Override
 	public Student getById(Long matriculationNumber) {
 		Optional<Student> studentOptional = this.repository.findById(matriculationNumber);
-		if(!studentOptional.isPresent()) throw new NotFoundException(matriculationNumber);
+		if(!studentOptional.isPresent()) {
+			log.info(String.format("FAIL: Student %s not found", matriculationNumber));
+			throw new NotFoundException(matriculationNumber);
+		}
 		return studentOptional.get();
 	}
 	
 	@Override
 	public void save(Student student) throws IllegalArgumentException {
 		if(this.repository.existsById(student.getMatriculationNumber())) {
-			log.info(String.format("FAIL: Student %s not created", student));
+			log.info(String.format("FAIL: Student %s not created. Student already exists", student));
 			throw new NotCreatedException(student);
 		}
 		repository.save(student);
 		log.info(String.format("SUCCESS: Student %s created", student));
+		messageSender.send(student);
 	}
 	
 	@Override
@@ -57,6 +61,7 @@ public class StudentService implements RestService<Student, Long> {
 		Student student = this.getById(matriculationNumber);
 		
 		if(!Objects.equals(student.getMatriculationNumber(), update.getMatriculationNumber())) {
+			log.info(String.format("FAIL: Something went wrong. Student %s not found.", matriculationNumber));
 			throw new StudentNotUpdatedException();
 		}
 		
