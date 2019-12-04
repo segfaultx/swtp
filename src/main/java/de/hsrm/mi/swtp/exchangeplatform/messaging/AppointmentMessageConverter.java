@@ -18,33 +18,33 @@ import javax.jms.TextMessage;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Component
 public class AppointmentMessageConverter implements MessageConverter {
-    
-    ObjectMapper mapper = new ObjectMapper();
-    
-    @Override
-    public Message toMessage(Object object, Session session) throws JMSException {
-        Timeslot timeslot = (Timeslot) object;
-        String jsontext = null;
-        try {
-            jsontext = mapper.writeValueAsString(timeslot);
-        } catch (JsonProcessingException e) {
-            log.error("FEHLER toMessage '{}' -> JSON: {}", timeslot.toString(), e.getMessage());
-        }
-        TextMessage message = session.createTextMessage(jsontext);
-        return message;
-    }
-    
-    @Override
-    public Object fromMessage(Message message) throws JMSException {
-        TextMessage textMessage = (TextMessage) message;
-        String jsontext = textMessage.getText();
-        
-        Timeslot timeslot = null;
-        try {
-            timeslot = mapper.readValue(jsontext, Timeslot.class);
-        } catch (JsonProcessingException e) {
-            log.error("FEHLER fromMessage JSON '{}' -> Appointment", jsontext, e.getMessage());
-        }
-        return timeslot;
-    }
+	
+	ObjectMapper mapper = new ObjectMapper();
+	
+	@Override
+	public Message toMessage(Object object, Session session) throws JMSException {
+		Timeslot timeslot = (Timeslot) object;
+		String jsontext = null;
+		try {
+			jsontext = mapper.writeValueAsString(timeslot);
+		} catch(JsonProcessingException e) {
+			log.error("FEHLER toMessage '{}' -> JSON: {}", timeslot.toString(), e.getMessage());
+		}
+		TextMessage message = session.createTextMessage(jsontext);
+		return message;
+	}
+	
+	@Override
+	public Object fromMessage(Message message) throws JMSException {
+		TextMessage textMessage = (TextMessage) message;
+		String jsontext = textMessage.getText();
+		
+		Timeslot timeslot = null;
+		try {
+			timeslot = mapper.readValue(jsontext, Timeslot.class);
+		} catch(JsonProcessingException e) {
+			log.error("FEHLER fromMessage JSON '{}' -> Appointment", jsontext, e.getMessage());
+		}
+		return timeslot;
+	}
 }

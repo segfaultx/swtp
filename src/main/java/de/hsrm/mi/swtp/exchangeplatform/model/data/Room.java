@@ -12,22 +12,18 @@ import java.util.List;
 @Data
 @RequiredArgsConstructor
 public class Room implements Model {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @JsonProperty("room_number")
-    private String roomNumber;
-
-    private String location;
-
-    @JsonIgnore
-    @OneToMany(
-            mappedBy = "room",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true
-    )
-    private List<Timeslot> timeslots;
-
+	
+	@Id
+	@GeneratedValue
+	private Long id;
+	
+	@JsonProperty("room_number")
+	private String roomNumber;
+	
+	private String location;
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Timeslot> timeslots;
+	
 }

@@ -17,28 +17,22 @@ import org.springframework.stereotype.Component;
 @EnableJms
 @RequiredArgsConstructor
 public class AppointmentMessageListener {
-
-    final static String TOPICNAME = "AppointmentTopic";
-    final static String QUEUENAME = "AppointmentQueue";
-    ActiveMQTopic activeMQTopic = new ActiveMQTopic(TOPICNAME);
-
-    JmsTemplate jmsTemplate;
-
-    @JmsListener(
-            destination = TOPICNAME,
-            containerFactory = "myTopicFactory"
-    )
-    public void onReceiveMessage(String message) {
-        log.info("Received <" + message + ">");
-    }
-
-    @JmsListener(
-            destination = QUEUENAME,
-            containerFactory = "myQueueFactory"
-    )
-    public void onReceiveAoppointmentMessage(Timeslot timeslot) {
-        log.info("Es kam ein neuer Termin rein: " + timeslot.toString());
-        jmsTemplate.send(activeMQTopic, session -> session.createTextMessage("Es kam ein neuer Termin rein: " + timeslot.toString()));
-    }
-
+	
+	final static String TOPICNAME = "AppointmentTopic";
+	final static String QUEUENAME = "AppointmentQueue";
+	ActiveMQTopic activeMQTopic = new ActiveMQTopic(TOPICNAME);
+	
+	JmsTemplate jmsTemplate;
+	
+	@JmsListener(destination = TOPICNAME, containerFactory = "myTopicFactory")
+	public void onReceiveMessage(String message) {
+		log.info("Received <" + message + ">");
+	}
+	
+	@JmsListener(destination = QUEUENAME, containerFactory = "myQueueFactory")
+	public void onReceiveAoppointmentMessage(Timeslot timeslot) {
+		log.info("Es kam ein neuer Termin rein: " + timeslot.toString());
+		jmsTemplate.send(activeMQTopic, session -> session.createTextMessage("Es kam ein neuer Termin rein: " + timeslot.toString()));
+	}
+	
 }

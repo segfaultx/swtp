@@ -15,14 +15,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/v1/tradeoffers")
 public class TradeOffersRestController {
-
-    @Autowired
-    private TradeOfferService tradeOfferService;
-
-
-    @GetMapping("/{module}/{timeslot}")
-    public Map<String, List<Timeslot>> getTradeOffersForTimeSlot(
-            @PathVariable("module") Module module, @PathVariable("timeslot") Timeslot timeslot) {
-        return tradeOfferService.getTradeOffersForTimeSlot(timeslot, module);
-    }
+	
+	@Autowired
+	private TradeOfferService tradeOfferService;
+	
+	
+	@GetMapping("/{module}/{timeslot}")
+	public Map<String, List<Timeslot>> getTradeOffersForTimeSlot(@PathVariable("module") Module module, @PathVariable("timeslot") Timeslot timeslot) {
+		return tradeOfferService.getTradeOffersForTimeSlot(timeslot, module);
+	}
 }
