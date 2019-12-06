@@ -50,6 +50,9 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 
+    testCompile group: 'org.springframework', name: 'spring-test', version: '2.5'
+    testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.2.1.RELEASE'
+
 	compile group: 'com.github.javafaker', name: 'javafaker', version: '1.0.1'
 	compile 'org.springframework.boot:spring-boot-starter-activemq'
 	compile 'org.springframework.boot:spring-boot-starter'
@@ -59,6 +62,11 @@ dependencies {
 	compile 'com.google.code.gson:gson:2.8.6'
 	compile 'io.swagger:swagger-annotations:1.5.22'
 	compile 'org.openapitools:jackson-databind-nullable:0.1.0'
+
+    compile 'org.springframework.security:spring-security-acl'
+    compile 'org.springframework.security:spring-security-config'
+    compile 'org.springframework:spring-context-support'
+    compile 'net.sf.ehcache:ehcache-core:2.6.11'
 }
 
 test {
