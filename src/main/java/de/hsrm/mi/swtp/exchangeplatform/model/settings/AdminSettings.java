@@ -7,9 +7,8 @@ import lombok.Getter;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Data
@@ -35,5 +34,5 @@ public class AdminSettings {
 	
 	@ElementCollection
 	@Enumerated(EnumType.STRING)
-	List<Filters> activeFilters;
+	List<Filters> activeFilters = new ArrayList<>();
 }
