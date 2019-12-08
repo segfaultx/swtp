@@ -65,7 +65,7 @@ public class AdminSettings {
 	 * @throws NotFoundException if any of the given filters are unknown to the system
 	 */
 	public void updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
-		log.info(String.format("Updating admin settings (tradesActive old value: %s, new: %s", this.tradesActive, tradesActive));
+		log.info(String.format("Updating admin settings (tradesActive old value: %s, new: %s)", this.tradesActive, tradesActive));
 		this.tradesActive = tradesActive;
 		log.info(String.format("Updating admin settings filters from: %s to: %s", this.activeFilters.toString(), activeFilters.toString()));
 		this.activeFilters.clear();
