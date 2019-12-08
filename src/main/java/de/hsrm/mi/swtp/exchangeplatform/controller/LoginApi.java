@@ -21,14 +21,10 @@ import javax.validation.Valid;
 @Validated
 @Api(value = "login", description = "the login API")
 public interface LoginApi {
-
-    @ApiOperation(value = "", nickname = "loginUser", notes = "", response = User.class, tags={  })
-    @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Login Success", response = User.class) })
-    @RequestMapping(value = "/login",
-        produces = { "application/json" }, 
-        consumes = { "application/json" },
-        method = RequestMethod.POST)
-    ResponseEntity<User> loginUser(@ApiParam(value = "" ,required=true )  @Valid @RequestBody LoginRequest loginRequest);
-
+	
+	@ApiOperation(value = "", nickname = "loginUser", notes = "", response = User.class, tags = { })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "Login Success", response = User.class) })
+	@RequestMapping(value = "/login", produces = { "application/json" }, consumes = { "application/json" }, method = RequestMethod.POST)
+	ResponseEntity<User> loginUser(@ApiParam(value = "", required = true) @Valid @RequestBody LoginRequest loginRequest);
+	
 }

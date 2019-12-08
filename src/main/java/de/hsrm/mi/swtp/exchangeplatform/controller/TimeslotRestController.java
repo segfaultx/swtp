@@ -154,9 +154,7 @@ public class TimeslotRestController implements BaseRestController<Timeslot, Long
 		if(result.hasErrors()) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		
 		try {
-			timeslotService.addAttendeeToTimeslot(timeslotRequestBody.getTimeslotId(),
-												  this.studentService.getById(timeslotRequestBody.getStudentId())
-												 );
+			timeslotService.addAttendeeToTimeslot(timeslotRequestBody.getTimeslotId(), this.studentService.getById(timeslotRequestBody.getStudentId()));
 			return new ResponseEntity<>(timeslotService.getById(timeslotRequestBody.getStudentId()), HttpStatus.OK);
 		} catch(StudentIsAlreadyAttendeeException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -181,9 +179,7 @@ public class TimeslotRestController implements BaseRestController<Timeslot, Long
 		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		
 		try {
-			timeslotService.removeAttendeeFromTimeslot(timeslotRequestBody.getTimeslotId(),
-													   this.studentService.getById(timeslotRequestBody.getStudentId())
-													  );
+			timeslotService.removeAttendeeFromTimeslot(timeslotRequestBody.getTimeslotId(), this.studentService.getById(timeslotRequestBody.getStudentId()));
 			return new ResponseEntity<>(timeslotService.getById(timeslotRequestBody.getStudentId()), HttpStatus.OK);
 		} catch(NotFoundException e) {
 			log.info(String.format("FAIL: Student %s not found", timeslotRequestBody.getStudentId()));

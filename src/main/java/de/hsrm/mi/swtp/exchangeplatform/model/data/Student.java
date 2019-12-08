@@ -1,8 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,24 +13,27 @@ import java.util.List;
 
 @Entity
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Student implements Model {
 	
 	@Id
 	@JsonProperty(value = "student_id", required = true)
 	@Column(name = "student_id", unique = true, updatable = false, insertable = false)
-	private Long studentId;
+	Long studentId;
 	
 	@JsonProperty("username")
 	@Column(unique = true)
-	private String username;
+	String username;
 	
 	@JsonProperty("first_name")
-	private String firstName;
+	String firstName;
 	
 	@JsonProperty("last_name")
-	private String lastName;
+	String lastName;
+	
+	String role = "MEMBER";
 	
 	@ManyToMany(mappedBy = "attendees")
-	private List<Timeslot> timeslots;
+	List<Timeslot> timeslots;
 	
 }

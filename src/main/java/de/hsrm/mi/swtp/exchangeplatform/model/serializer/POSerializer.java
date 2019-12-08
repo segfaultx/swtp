@@ -26,7 +26,7 @@ public class POSerializer extends StdSerializer<PO> {
 		gen.writeStringField("valid_since_year", value.getValidSinceYear());
 		gen.writeFieldName("modules");
 		gen.writeStartArray();
-		for(Module module: value.getModules()) {
+		for(Module module : value.getModules()) {
 			gen.writeNumber(module.getId());
 		}
 		gen.writeEndArray();

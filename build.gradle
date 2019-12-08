@@ -37,6 +37,7 @@ dependencies {
 	implementation 'com.h2database:h2'
 	implementation 'io.hawt:hawtio-springboot:2.8.0'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
 
 	compileOnly 'org.projectlombok:lombok'
 
@@ -62,11 +63,12 @@ dependencies {
 	compile 'com.google.code.gson:gson:2.8.6'
 	compile 'io.swagger:swagger-annotations:1.5.22'
 	compile 'org.openapitools:jackson-databind-nullable:0.1.0'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
 
-    compile 'org.springframework.security:spring-security-acl'
-    compile 'org.springframework.security:spring-security-config'
-    compile 'org.springframework:spring-context-support'
-    compile 'net.sf.ehcache:ehcache-core:2.6.11'
+//    compile 'org.springframework.security:spring-security-acl'
+//    compile 'org.springframework.security:spring-security-config'
+//    compile 'org.springframework:spring-context-support'
+//    compile 'net.sf.ehcache:ehcache-core:2.6.11'
 }
 
 test {

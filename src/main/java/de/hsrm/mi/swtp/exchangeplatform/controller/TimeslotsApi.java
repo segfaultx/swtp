@@ -20,22 +20,16 @@ import java.util.List;
 @Validated
 @Api(value = "timeslots", description = "the timeslots API")
 public interface TimeslotsApi {
-
-    @ApiOperation(value = "Returns a list of timeslots.", nickname = "getAllTimeslots", notes = "", response = Timeslot.class, responseContainer = "List", tags={  })
-    @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "A JSON array of timeslots", response = Timeslot.class, responseContainer = "List") })
-    @RequestMapping(value = "/timeslots",
-        produces = { "application/json" }, 
-        method = RequestMethod.GET)
-    ResponseEntity<List<Timeslot>> getAllTimeslots();
-
-
-    @ApiOperation(value = "Get timeslot.", nickname = "getTimeslotById", notes = "", response = Timeslot.class, tags={  })
-    @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "A single timeslot", response = Timeslot.class) })
-    @RequestMapping(value = "/timeslots/{timeslotId}",
-        produces = { "application/json" }, 
-        method = RequestMethod.GET)
-    ResponseEntity<Timeslot> getTimeslotById(@ApiParam(value = "Numeric ID of the timeslot",required=true) @PathVariable("timeslotId") Long timeslotId);
-
+	
+	@ApiOperation(value = "Returns a list of timeslots.", nickname = "getAllTimeslots", notes = "", response = Timeslot.class, responseContainer = "List", tags = { })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "A JSON array of timeslots", response = Timeslot.class, responseContainer = "List") })
+	@RequestMapping(value = "/timeslots", produces = { "application/json" }, method = RequestMethod.GET)
+	ResponseEntity<List<Timeslot>> getAllTimeslots();
+	
+	
+	@ApiOperation(value = "Get timeslot.", nickname = "getTimeslotById", notes = "", response = Timeslot.class, tags = { })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "A single timeslot", response = Timeslot.class) })
+	@RequestMapping(value = "/timeslots/{timeslotId}", produces = { "application/json" }, method = RequestMethod.GET)
+	ResponseEntity<Timeslot> getTimeslotById(@ApiParam(value = "Numeric ID of the timeslot", required = true) @PathVariable("timeslotId") Long timeslotId);
+	
 }

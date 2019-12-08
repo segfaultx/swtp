@@ -104,12 +104,14 @@ public class StudentRestController implements BaseRestController<Student, Long> 
 		}
 		
 	}
+	
 	/**
 	 * GET request handler.
 	 * Provides an endpoint to {@code '/api/v1/student/<id>/personalizedTimetable'} through which an student
 	 * may get his personalized timetable.
 	 *
 	 * @param studentId studentId to fetch timetable for
+	 *
 	 * @return {@link HttpStatus#OK}
 	 */
 	@GetMapping("/{studentId}/personalizedTimetable")
@@ -120,10 +122,10 @@ public class StudentRestController implements BaseRestController<Student, Long> 
 		log.info(String.format("Looking up possible Tradeoffers for student: %d", studentId));
 		try {
 			var tradeoffers = tradeOfferService.getTradeOffersForTimeSlots(student.getTimeslots());
-			for (Timeslot timeslot : tradeoffers.keySet()) {
+			for(Timeslot timeslot : tradeoffers.keySet()) {
 				de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot restTimeSlot = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();
 				BeanUtils.copyProperties(timeslot, restTimeSlot);
-				for (String key : tradeoffers.get(timeslot).keySet()) {
+				for(String key : tradeoffers.get(timeslot).keySet()) {
 					tradeoffers.get(timeslot).get(key).forEach(tradeOffer -> {
 						TradeOffer restOffer = new TradeOffer();
 						BeanUtils.copyProperties(tradeOffer, restOffer);
@@ -133,7 +135,7 @@ public class StudentRestController implements BaseRestController<Student, Long> 
 				timeTable.addTimeslotsItem(restTimeSlot);
 			}
 			return new ResponseEntity<>(timeTable, HttpStatus.OK);
-		} catch (RuntimeException ex) {
+		} catch(RuntimeException ex) {
 			log.info(String.format("Error creating dersonalized timetable for student: %d", studentId));
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}

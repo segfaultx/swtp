@@ -31,10 +31,10 @@ public class StudentService implements RestService<Student, Long> {
 		List<Student> students = repository.findAll();
 		
 		// Kill bidirectional infinite recursion by setting timeslots attendees and module timeslots to null
-		for(Student student: students) {
+		for(Student student : students) {
 			List<Timeslot> timeslots = student.getTimeslots();
-
-			for(Timeslot timeslot: timeslots) {
+			
+			for(Timeslot timeslot : timeslots) {
 				timeslot.setAttendees(null);
 				//timeslot.getModule().setTimeslots(null);
 			}
@@ -50,6 +50,11 @@ public class StudentService implements RestService<Student, Long> {
 			throw new NotFoundException(studentId);
 		}
 		return studentOptional.get();
+	}
+	
+	public Student getByUsername(String username) {
+		Optional<Student> studentOptional = this.repository.findByUsername(username);
+		return studentOptional.orElseThrow(() -> new NotFoundException("Student not found"));
 	}
 	
 	@Override

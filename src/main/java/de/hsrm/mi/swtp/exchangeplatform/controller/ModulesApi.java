@@ -18,13 +18,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Validated
 @Api(value = "modules", description = "the modules API")
 public interface ModulesApi {
-
-    @ApiOperation(value = "", nickname = "getModuleById", notes = "", response = Module.class, tags={  })
-    @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "single module", response = Module.class) })
-    @RequestMapping(value = "/modules/{moduleId}",
-        produces = { "application/json" }, 
-        method = RequestMethod.GET)
-    ResponseEntity<Module> getModuleById(@ApiParam(value = "Numeric ID of the module",required=true) @PathVariable("moduleId") Long moduleId);
-
+	
+	@ApiOperation(value = "", nickname = "getModuleById", notes = "", response = Module.class, tags = { })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "single module", response = Module.class) })
+	@RequestMapping(value = "/modules/{moduleId}", produces = { "application/json" }, method = RequestMethod.GET)
+	ResponseEntity<Module> getModuleById(@ApiParam(value = "Numeric ID of the module", required = true) @PathVariable("moduleId") Long moduleId);
+	
 }

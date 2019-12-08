@@ -21,22 +21,18 @@ import java.util.List;
 @Validated
 @Api(value = "students", description = "the students API")
 public interface StudentsApi {
-
-    @ApiOperation(value = "Get personalized Timetable of student.", nickname = "getPersonalizedTimetable", notes = "", response = Timetable.class, responseContainer = "List", tags={  })
-    @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "a timetable", response = Timetable.class, responseContainer = "List") })
-    @RequestMapping(value = "/students/{studentId}/personalizedTimetable",
-        produces = { "application/json" }, 
-        method = RequestMethod.GET)
-    ResponseEntity<List<Timetable>> getPersonalizedTimetable(@ApiParam(value = "Numeric ID of the student",required=true) @PathVariable("studentId") Long studentId);
-
-
-    @ApiOperation(value = "Returns detailed information about the student specified by the Id.", nickname = "getStudentById", notes = "", response = Student.class, tags={  })
-    @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "A single student", response = Student.class) })
-    @RequestMapping(value = "/students/{studentId}",
-        produces = { "application/json" }, 
-        method = RequestMethod.GET)
-    ResponseEntity<Student> getStudentById(@ApiParam(value = "Numeric ID of the student to get",required=true) @PathVariable("studentId") Long studentId);
-
+	
+	@ApiOperation(value = "Get personalized Timetable of student.", nickname = "getPersonalizedTimetable", notes = "", response = Timetable.class, responseContainer = "List", tags = { })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "a timetable", response = Timetable.class, responseContainer = "List") })
+	@RequestMapping(value = "/students/{studentId}/personalizedTimetable", produces = { "application/json" }, method = RequestMethod.GET)
+	ResponseEntity<List<Timetable>> getPersonalizedTimetable(
+			@ApiParam(value = "Numeric ID of the student", required = true) @PathVariable("studentId") Long studentId
+															);
+	
+	
+	@ApiOperation(value = "Returns detailed information about the student specified by the Id.", nickname = "getStudentById", notes = "", response = Student.class, tags = { })
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "A single student", response = Student.class) })
+	@RequestMapping(value = "/students/{studentId}", produces = { "application/json" }, method = RequestMethod.GET)
+	ResponseEntity<Student> getStudentById(@ApiParam(value = "Numeric ID of the student to get", required = true) @PathVariable("studentId") Long studentId);
+	
 }
