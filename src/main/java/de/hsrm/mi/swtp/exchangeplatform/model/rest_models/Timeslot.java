@@ -3,14 +3,18 @@ package de.hsrm.mi.swtp.exchangeplatform.model.rest_models;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-import java.util.ArrayList;
-import java.util.List;
+import org.openapitools.model.DayEnum;
+import org.openapitools.model.Lecturer;
+import org.openapitools.model.Module;
+import org.openapitools.model.Room;
+import org.openapitools.model.TimeslotType;
+
 import javax.validation.Valid;
 
 /**
  * Timeslot
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T17:32:19.208350+01:00[Europe/Berlin]")
 
 public class Timeslot   {
   @JsonProperty("id")
@@ -35,8 +39,7 @@ public class Timeslot   {
   private Integer capacity;
 
   @JsonProperty("possibleTrades")
-  @Valid
-  private List<TradeOffer> possibleTrades = null;
+  private PossibleTradesResponse possibleTrades;
 
   @JsonProperty("attendees")
   private Integer attendees;
@@ -192,16 +195,8 @@ public class Timeslot   {
     this.capacity = capacity;
   }
 
-  public Timeslot possibleTrades(List<TradeOffer> possibleTrades) {
+  public Timeslot possibleTrades(PossibleTradesResponse possibleTrades) {
     this.possibleTrades = possibleTrades;
-    return this;
-  }
-
-  public Timeslot addPossibleTradesItem(TradeOffer possibleTradesItem) {
-    if (this.possibleTrades == null) {
-      this.possibleTrades = new ArrayList<>();
-    }
-    this.possibleTrades.add(possibleTradesItem);
     return this;
   }
 
@@ -213,11 +208,11 @@ public class Timeslot   {
 
   @Valid
 
-  public List<TradeOffer> getPossibleTrades() {
+  public PossibleTradesResponse getPossibleTrades() {
     return possibleTrades;
   }
 
-  public void setPossibleTrades(List<TradeOffer> possibleTrades) {
+  public void setPossibleTrades(PossibleTradesResponse possibleTrades) {
     this.possibleTrades = possibleTrades;
   }
 

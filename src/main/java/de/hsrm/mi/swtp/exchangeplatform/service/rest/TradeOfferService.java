@@ -93,7 +93,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	public boolean deleteTradeOffer(long studentId, long tradeId) throws RuntimeException {
 		log.info(String.format("Looking up Tradeoffer with id: %d. Requester: %d", tradeId, studentId));
 		tradeOfferRepository.findById(tradeId).ifPresentOrElse(tradeOffer -> {
-			if(tradeOffer.getOfferer().getMatriculationNumber() != studentId) {
+			if(tradeOffer.getOfferer().getStudentId() != studentId) {
 				log.info(String.format("Error: Requester is not owner of trade with id: %d, requester: %d", tradeId, studentId));
 				throw new RuntimeException("not your tradeoffer");
 			}

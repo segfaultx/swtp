@@ -10,27 +10,27 @@ import javax.validation.Valid;
 /**
  * PossibleTradesResponse
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T17:46:28.627314+01:00[Europe/Berlin]")
 
 public class PossibleTradesResponse   {
   @JsonProperty("instant")
   @Valid
-  private List<Timeslot> instant = null;
+  private List<Long> instant = null;
 
   @JsonProperty("tradesAvailable")
   @Valid
-  private List<Timeslot> tradesAvailable = null;
+  private List<Long> tradesAvailable = null;
 
   @JsonProperty("remaining")
   @Valid
-  private List<Timeslot> remaining = null;
+  private List<Long> remaining = null;
 
-  public PossibleTradesResponse instant(List<Timeslot> instant) {
+  public PossibleTradesResponse instant(List<Long> instant) {
     this.instant = instant;
     return this;
   }
 
-  public PossibleTradesResponse addInstantItem(Timeslot instantItem) {
+  public PossibleTradesResponse addInstantItem(Long instantItem) {
     if (this.instant == null) {
       this.instant = new ArrayList<>();
     }
@@ -44,22 +44,21 @@ public class PossibleTradesResponse   {
   */
   @ApiModelProperty(value = "")
 
-  @Valid
 
-  public List<Timeslot> getInstant() {
+  public List<Long> getInstant() {
     return instant;
   }
 
-  public void setInstant(List<Timeslot> instant) {
+  public void setInstant(List<Long> instant) {
     this.instant = instant;
   }
 
-  public PossibleTradesResponse tradesAvailable(List<Timeslot> tradesAvailable) {
+  public PossibleTradesResponse tradesAvailable(List<Long> tradesAvailable) {
     this.tradesAvailable = tradesAvailable;
     return this;
   }
 
-  public PossibleTradesResponse addTradesAvailableItem(Timeslot tradesAvailableItem) {
+  public PossibleTradesResponse addTradesAvailableItem(Long tradesAvailableItem) {
     if (this.tradesAvailable == null) {
       this.tradesAvailable = new ArrayList<>();
     }
@@ -73,22 +72,21 @@ public class PossibleTradesResponse   {
   */
   @ApiModelProperty(value = "")
 
-  @Valid
 
-  public List<Timeslot> getTradesAvailable() {
+  public List<Long> getTradesAvailable() {
     return tradesAvailable;
   }
 
-  public void setTradesAvailable(List<Timeslot> tradesAvailable) {
+  public void setTradesAvailable(List<Long> tradesAvailable) {
     this.tradesAvailable = tradesAvailable;
   }
 
-  public PossibleTradesResponse remaining(List<Timeslot> remaining) {
+  public PossibleTradesResponse remaining(List<Long> remaining) {
     this.remaining = remaining;
     return this;
   }
 
-  public PossibleTradesResponse addRemainingItem(Timeslot remainingItem) {
+  public PossibleTradesResponse addRemainingItem(Long remainingItem) {
     if (this.remaining == null) {
       this.remaining = new ArrayList<>();
     }
@@ -102,13 +100,12 @@ public class PossibleTradesResponse   {
   */
   @ApiModelProperty(value = "")
 
-  @Valid
 
-  public List<Timeslot> getRemaining() {
+  public List<Long> getRemaining() {
     return remaining;
   }
 
-  public void setRemaining(List<Timeslot> remaining) {
+  public void setRemaining(List<Long> remaining) {
     this.remaining = remaining;
   }
 

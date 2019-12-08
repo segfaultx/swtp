@@ -158,7 +158,7 @@ paths:
                     module:
                       id: 23
                       name: "AFS"
-                    type: "Lecture"
+                    type: "Exercise"
                 
 
 
@@ -403,15 +403,18 @@ components:
         instant:
           type: array
           items:
-            $ref: "#/components/schemas/Timeslot"
+            type: integer
+            format: int64
         tradesAvailable:
           type: array
           items:
-            $ref: "#/components/schemas/Timeslot"
+            type: integer
+            format: int64
         remaining:
           type: array
           items:
-            $ref: "#/components/schemas/Timeslot"
+            type: integer
+            format: int64
 
     Timeslot:
       properties:
@@ -431,9 +434,7 @@ components:
         capacity:
           type: integer
         possibleTrades:
-          type: array
-          items:
-            $ref : "#/components/schemas/TradeOffer"
+            $ref : "#/components/schemas/PossibleTradesResponse"
         attendees:
           type: integer
         module:
@@ -444,7 +445,7 @@ components:
 
     Student:
       properties:
-        studentId:
+        matriculationNumber:
           type: integer
           format: int64
         username:
