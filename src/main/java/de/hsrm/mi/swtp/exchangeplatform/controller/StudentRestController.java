@@ -39,11 +39,11 @@ public class StudentRestController implements BaseRestController<Student, Long> 
 	}
 	
 	@Override
-	@GetMapping("/{matriculationNumber}")
-	public ResponseEntity<Student> getById(@PathVariable Long matriculationNumber) {
-		log.info(String.format("GET // " + BASEURL + "/%s", matriculationNumber));
+	@GetMapping("/{studentId}")
+	public ResponseEntity<Student> getById(@PathVariable Long studentId) {
+		log.info(String.format("GET // " + BASEURL + "/%s", studentId));
 		try {
-			return new ResponseEntity<>(studentService.getById(matriculationNumber), HttpStatus.OK);
+			return new ResponseEntity<>(studentService.getById(studentId), HttpStatus.OK);
 		} catch(NotFoundException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -56,29 +56,29 @@ public class StudentRestController implements BaseRestController<Student, Long> 
 		
 		try {
 			studentService.save(student);
-			log.info(String.format("SUCCESS: Created new student %s", student.getMatriculationNumber()));
+			log.info(String.format("SUCCESS: Created new student %s", student.getStudentId()));
 			return new ResponseEntity<>(student, HttpStatus.OK);
 		} catch(NotCreatedException e) {
-			log.info(String.format("FAIL: Student %s not created", student.getMatriculationNumber()));
+			log.info(String.format("FAIL: Student %s not created", student.getStudentId()));
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		} catch(IllegalArgumentException e) {
-			log.info(String.format("FAIL: Student %s not created due to some error", student.getMatriculationNumber()));
+			log.info(String.format("FAIL: Student %s not created due to some error", student.getStudentId()));
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
 	
 	@Override
-	@PatchMapping("/{matriculationNumber}")
-	public ResponseEntity<Student> update(@PathVariable Long matriculationNumber, @RequestBody Student student, BindingResult result) {
-		log.info(String.format("PATCH // " + BASEURL + "/%s", matriculationNumber));
+	@PatchMapping("/{studentId}")
+	public ResponseEntity<Student> update(@PathVariable Long studentId, @RequestBody Student student, BindingResult result) {
+		log.info(String.format("PATCH // " + BASEURL + "/%s", studentId));
 		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		
 		try {
-			studentService.update(matriculationNumber, student);
-			log.info(String.format("SUCCESS: Updated student: id=%s", matriculationNumber));
-			return new ResponseEntity<>(studentService.getById(matriculationNumber), HttpStatus.OK);
+			studentService.update(studentId, student);
+			log.info(String.format("SUCCESS: Updated student: id=%s", studentId));
+			return new ResponseEntity<>(studentService.getById(studentId), HttpStatus.OK);
 		} catch(NotFoundException e) {
-			log.info(String.format("FAIL: Student %s not found", matriculationNumber));
+			log.info(String.format("FAIL: Student %s not found", studentId));
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} catch(NotUpdatedException e) {
 			return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
@@ -87,19 +87,19 @@ public class StudentRestController implements BaseRestController<Student, Long> 
 	}
 	
 	@Override
-	@DeleteMapping("/admin/{matriculationNumber}")
-	public ResponseEntity<Student> delete(@PathVariable Long matriculationNumber) {
-		log.info(String.format("DELETE // " + BASEURL + "/admin/%s", matriculationNumber));
+	@DeleteMapping("/admin/{studentId}")
+	public ResponseEntity<Student> delete(@PathVariable Long studentId) {
+		log.info(String.format("DELETE // " + BASEURL + "/admin/%s", studentId));
 		
 		try {
-			this.studentService.delete(matriculationNumber);
-			log.info(String.format("SUCCESS: Deleted student %s", matriculationNumber));
+			this.studentService.delete(studentId);
+			log.info(String.format("SUCCESS: Deleted student %s", studentId));
 			return new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
 		} catch(NotFoundException e) {
-			log.info(String.format("FAIL: Student %s not found", matriculationNumber));
+			log.info(String.format("FAIL: Student %s not found", studentId));
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} catch(IllegalArgumentException e) {
-			log.info(String.format("FAIL: Something went wrong during deletion of student %s", matriculationNumber));
+			log.info(String.format("FAIL: Something went wrong during deletion of student %s", studentId));
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		

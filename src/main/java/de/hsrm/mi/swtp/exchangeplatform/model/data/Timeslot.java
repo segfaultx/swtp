@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.model.serializer.TimeslotSerializer;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
 @Data
 @RequiredArgsConstructor
 @Table(name = "timeslot")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
+@JsonSerialize(using = TimeslotSerializer.class)
 public class Timeslot implements Model {
 
     /** A unique identifier of an appointment by which it can be found. */
@@ -54,17 +55,16 @@ public class Timeslot implements Model {
     private int capacity;
 
     /** A list of {@link Student Students} which have joined an appointment. */
-    @JsonBackReference
     @ManyToMany(cascade = CascadeType.ALL)
     private List<Student> attendees;
-
-    @JsonManagedReference
+    
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "module_id")
     private Module module;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "timetable_id")
     private TimeTable timeTable;
 
     /**
@@ -75,7 +75,7 @@ public class Timeslot implements Model {
     private Student filterAttendeesForStudent(Student student) {
         List<Student> students = this.attendees
                 .stream()
-                .filter(student1 -> student1.getMatriculationNumber().equals(student.getMatriculationNumber()))
+                .filter(student1 -> student1.getStudentId().equals(student.getStudentId()))
                 .collect(Collectors.toList());
         return students.isEmpty() ? null : students.get(0);
     }

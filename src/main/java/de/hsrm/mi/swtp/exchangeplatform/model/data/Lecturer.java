@@ -29,7 +29,11 @@ public class Lecturer {
 	private String lastName;
 	
 	@JsonIgnore
-	@OneToMany(mappedBy = "lecturer", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OneToMany(
+			mappedBy = "lecturer",
+			cascade = CascadeType.ALL,
+			orphanRemoval = true
+	)
 	private List<Timeslot> timeslots = new ArrayList<>();
 	
 }

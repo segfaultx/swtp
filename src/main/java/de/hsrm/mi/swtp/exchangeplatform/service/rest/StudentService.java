@@ -5,6 +5,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedExceptio
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.StudentMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.repository.StudentRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -27,22 +28,33 @@ public class StudentService implements RestService<Student, Long> {
 	
 	@Override
 	public List<Student> getAll() {
-		return repository.findAll();
+		List<Student> students = repository.findAll();
+		
+		// Kill bidirectional infinite recursion by setting timeslots attendees and module timeslots to null
+		for(Student student: students) {
+			List<Timeslot> timeslots = student.getTimeslots();
+
+			for(Timeslot timeslot: timeslots) {
+				timeslot.setAttendees(null);
+				//timeslot.getModule().setTimeslots(null);
+			}
+		}
+		return students;
 	}
 	
 	@Override
-	public Student getById(Long matriculationNumber) {
-		Optional<Student> studentOptional = this.repository.findById(matriculationNumber);
+	public Student getById(Long studentId) {
+		Optional<Student> studentOptional = this.repository.findById(studentId);
 		if(!studentOptional.isPresent()) {
-			log.info(String.format("FAIL: Student %s not found", matriculationNumber));
-			throw new NotFoundException(matriculationNumber);
+			log.info(String.format("FAIL: Student %s not found", studentId));
+			throw new NotFoundException(studentId);
 		}
 		return studentOptional.get();
 	}
 	
 	@Override
 	public void save(Student student) throws IllegalArgumentException {
-		if(this.repository.existsById(student.getMatriculationNumber())) {
+		if(this.repository.existsById(student.getStudentId())) {
 			log.info(String.format("FAIL: Student %s not created. Student already exists", student));
 			throw new NotCreatedException(student);
 		}
@@ -52,16 +64,16 @@ public class StudentService implements RestService<Student, Long> {
 	}
 	
 	@Override
-	public void delete(Long matriculationNumber) throws IllegalArgumentException {
-		this.repository.delete(this.getById(matriculationNumber));
+	public void delete(Long studentId) throws IllegalArgumentException {
+		this.repository.delete(this.getById(studentId));
 	}
 	
 	@Override
-	public boolean update(Long matriculationNumber, Student update) {
-		Student student = this.getById(matriculationNumber);
+	public boolean update(Long studentId, Student update) {
+		Student student = this.getById(studentId);
 		
-		if(!Objects.equals(student.getMatriculationNumber(), update.getMatriculationNumber())) {
-			log.info(String.format("FAIL: Something went wrong. Student %s not found.", matriculationNumber));
+		if(!Objects.equals(student.getStudentId(), update.getStudentId())) {
+			log.info(String.format("FAIL: Something went wrong. Student %s not found.", studentId));
 			throw new StudentNotUpdatedException();
 		}
 		

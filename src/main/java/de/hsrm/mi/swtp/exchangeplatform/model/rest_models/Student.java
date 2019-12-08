@@ -1,11 +1,12 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.rest_models;
 
-import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+
+import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import javax.validation.Valid;
+import java.util.Objects;
 
 /**
  * Student
@@ -13,7 +14,7 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
 
 public class Student   {
-  @JsonProperty("matriculationNumber")
+  @JsonProperty("student_id")
   private Long matriculationNumber;
 
   @JsonProperty("username")
