@@ -66,6 +66,9 @@ public class Timeslot implements Model {
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "timetable_id")
     private TimeTable timeTable;
+    
+    @JsonIgnore
+	private List<TradeOffer> tradeQueue;
 
     /**
      * A small filter which searches {@link #attendees}.

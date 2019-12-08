@@ -8,6 +8,10 @@ import de.hsrm.mi.swtp.exchangeplatform.repository.StudentRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.*;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomTradeFilter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CapacityFilter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CollisionFilter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.OfferFilter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -34,7 +38,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
     private StudentRepository studentRepository;
 
     @Autowired
-    private TradeFilter filterService;
+    private CustomTradeFilter filterService;
 
     /**
      * Method to get personalized {@link TradeOffer}s for a students timetable
@@ -52,6 +56,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
         filters.add(new CollisionFilter());
         return filterService.applyFilter(timeslotTradeOffers, filters);
     }
+
 
     /**
      * Method to process a requested trade transaction, transaction info is gathered from {@link TradeOffer}'s id

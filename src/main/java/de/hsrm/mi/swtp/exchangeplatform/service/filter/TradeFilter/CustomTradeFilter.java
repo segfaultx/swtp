@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.service.filter;
+package de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter;
 
 
 
@@ -6,6 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class TradeFilter {
+public class CustomTradeFilter {
 
     @Autowired
     private StudentService studentService;

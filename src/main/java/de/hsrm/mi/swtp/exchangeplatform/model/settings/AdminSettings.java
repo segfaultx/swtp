@@ -2,6 +2,10 @@ package de.hsrm.mi.swtp.exchangeplatform.model.settings;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.*;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CapacityFilter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CollisionFilter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.NoOfferFilter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.OfferFilter;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
