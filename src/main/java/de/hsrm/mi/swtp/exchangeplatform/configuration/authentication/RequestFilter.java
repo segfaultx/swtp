@@ -1,8 +1,5 @@
 package de.hsrm.mi.swtp.exchangeplatform.configuration.authentication;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.AuthenticationService;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
@@ -22,7 +19,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -50,14 +46,8 @@ public class RequestFilter extends OncePerRequestFilter {
 			} catch(ExpiredJwtException e) {
 				System.out.println("JWT Token has expired");
 			}
-		} else {
-			logger.warn("JWT Token does not begin with Bearer String");
-			final String bodyString = request.getReader().lines().collect(Collectors.joining(System.lineSeparator()));
-			final LoginRequestBody requestBody = new ObjectMapper().readValue(bodyString, LoginRequestBody.class);
-			username = requestBody.getUsername();
-			final Student student = studentService.getByUsername(username);
-			jwtToken = jwtTokenUtil.generateToken(student);
 		}
+		
 		// Once we get the token validate it.
 		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = this.authenticationUserDetailsService.loadUserByUsername(username);
