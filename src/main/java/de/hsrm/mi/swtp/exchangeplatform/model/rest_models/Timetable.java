@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.model.rest_models;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import javax.validation.Valid;
@@ -10,17 +11,17 @@ import javax.validation.Valid;
 /**
  * Timetable
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-04T10:25:24.919398+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
 
 public class Timetable   {
   @JsonProperty("id")
   private Long id;
 
   @JsonProperty("end")
-  private String end;
+  private LocalDate end;
 
   @JsonProperty("start")
-  private String start;
+  private LocalDate start;
 
   @JsonProperty("timeslots")
   @Valid
@@ -46,7 +47,7 @@ public class Timetable   {
     this.id = id;
   }
 
-  public Timetable end(String end) {
+  public Timetable end(LocalDate end) {
     this.end = end;
     return this;
   }
@@ -57,16 +58,17 @@ public class Timetable   {
   */
   @ApiModelProperty(value = "")
 
+  @Valid
 
-  public String getEnd() {
+  public LocalDate getEnd() {
     return end;
   }
 
-  public void setEnd(String end) {
+  public void setEnd(LocalDate end) {
     this.end = end;
   }
 
-  public Timetable start(String start) {
+  public Timetable start(LocalDate start) {
     this.start = start;
     return this;
   }
@@ -77,12 +79,13 @@ public class Timetable   {
   */
   @ApiModelProperty(value = "")
 
+  @Valid
 
-  public String getStart() {
+  public LocalDate getStart() {
     return start;
   }
 
-  public void setStart(String start) {
+  public void setStart(LocalDate start) {
     this.start = start;
   }
 

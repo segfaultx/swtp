@@ -9,11 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.sql.Timestamp;
 
 @RestController
 @RequestMapping("/api/v1/trades")
@@ -76,64 +74,7 @@ public class TradeOffersRestController implements TradesApi {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    /**
-     * POST request handler.
-     * provides an endpoint to {@code '/api/v1/trades/<id>/<id>/accept} through which an student may accept a given {@link TradeOffer}
-     *
-     * @param studentId id of requester
-     * @param tradeId   id of trade which requester wants to accept
-     * @return {@link HttpStatus#OK} if successful, {@link HttpStatus#BAD_REQUEST} if trade transaction failed,
-     * {@link HttpStatus#INTERNAL_SERVER_ERROR} if an runtime exception was thrown by the service
-     */
-    @PostMapping("/{studentId}/{tradeId}/accept")
-    public ResponseEntity<Timeslot> acceptTrade(@PathVariable("studentId") long studentId,
-                                                @PathVariable("tradeId") long tradeId,
-                                                @RequestBody TradeRequest tradeRequest,
-                                                BindingResult result) {
-
-        log.info(String.format("POST Request Accept Trade: %d Requester: %d", tradeId, studentId));
-        if (result.hasErrors()) {
-            log.info(String.format("Post Request error, trade: %d from requester: %d failed", tradeId, studentId));
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-        try {
-            var answer = tradeOfferService.tradeTimeslots(studentId, tradeId);
-
-            if (answer != null) {
-                log.info(String.format("POST Request successful, performed trade: %d Requester: %d", tradeId, studentId));
-                de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();
-                restAnswer.setId(answer.getId());
-                Lecturer lecturer = new Lecturer();
-                lecturer.setMail(answer.getLecturer().getEmail());
-                lecturer.setName(answer.getLecturer().getUsername());
-                restAnswer.setLecturer(lecturer);
-                restAnswer.setAttendees(answer.getAttendees().size());
-                restAnswer.setCapacity(answer.getCapacity());
-                Room room = new Room();
-                room.setId(answer.getRoom().getId());
-                room.setLocation(answer.getRoom().getLocation());
-                room.setRoomNumber(answer.getRoom().getRoomNumber());
-                restAnswer.setRoom(room);
-                restAnswer.setTimeEnd(Timestamp.valueOf(answer.getTimeEnd().toString()));
-                restAnswer.setTimeStart(Timestamp.valueOf(answer.getTimeStart().toString()));
-                restAnswer.setDay(DayEnum.valueOf(answer.getDay()));
-                return new ResponseEntity<>(restAnswer, HttpStatus.OK);
-            }
-            log.info(String.format("Post Request error, trade: %d from requester: %d failed", tradeId, studentId));
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        } catch (RuntimeException ex) {
-            log.info(String.format("POST Request error, trade: %d from requester: %d - internal error", tradeId, studentId));
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
-    }
-
-    @Override
-    public ResponseEntity<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer> acceptTradeOffer(Long tradeId, Long studentId) {
-        return null;
-    }
-
+    
     /**
      * POST request handler.
      * proviced an endpoint to {@code '/api/v1/trades} for users to create a {@link TradeOffer}
@@ -157,4 +98,18 @@ public class TradeOffersRestController implements TradesApi {
                 persistedTradeOffer.getOfferer().getMatriculationNumber()));
         return new ResponseEntity<>(restAnswer, HttpStatus.OK);
     }
+	
+	@Override
+	public ResponseEntity<Timetable> requestTrade(@Valid TradeRequest tradeRequest) {
+    	log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
+							   tradeRequest.getOfferedTimeslotId().get(),
+							   tradeRequest.getWantedTimeslotId().get()));
+    	var timetable = tradeOfferService.tradeTimeslots(tradeRequest.getOfferedByStudentMatriculationNumber(),
+														 tradeRequest.getOfferedTimeslotId().get(),
+														 tradeRequest.getWantedTimeslotId().get());
+    	var possibleTrades = tradeOfferService.getTradeOffersForTimeSlots(timetable.getTimeslots());
+    	
+    	
+		return null;
+	}
 }

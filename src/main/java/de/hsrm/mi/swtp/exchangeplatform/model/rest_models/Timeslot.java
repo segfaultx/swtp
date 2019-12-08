@@ -10,7 +10,7 @@ import javax.validation.Valid;
 /**
  * Timeslot
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-04T10:25:24.919398+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
 
 public class Timeslot   {
   @JsonProperty("id")
@@ -40,6 +40,12 @@ public class Timeslot   {
 
   @JsonProperty("attendees")
   private Integer attendees;
+
+  @JsonProperty("module")
+  private Module module;
+
+  @JsonProperty("type")
+  private TimeslotType type;
 
   public Timeslot id(Long id) {
     this.id = id;
@@ -235,6 +241,48 @@ public class Timeslot   {
     this.attendees = attendees;
   }
 
+  public Timeslot module(Module module) {
+    this.module = module;
+    return this;
+  }
+
+  /**
+   * Get module
+   * @return module
+  */
+  @ApiModelProperty(value = "")
+
+  @Valid
+
+  public Module getModule() {
+    return module;
+  }
+
+  public void setModule(Module module) {
+    this.module = module;
+  }
+
+  public Timeslot type(TimeslotType type) {
+    this.type = type;
+    return this;
+  }
+
+  /**
+   * Get type
+   * @return type
+  */
+  @ApiModelProperty(value = "")
+
+  @Valid
+
+  public TimeslotType getType() {
+    return type;
+  }
+
+  public void setType(TimeslotType type) {
+    this.type = type;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -253,12 +301,14 @@ public class Timeslot   {
         Objects.equals(this.lecturer, timeslot.lecturer) &&
         Objects.equals(this.capacity, timeslot.capacity) &&
         Objects.equals(this.possibleTrades, timeslot.possibleTrades) &&
-        Objects.equals(this.attendees, timeslot.attendees);
+        Objects.equals(this.attendees, timeslot.attendees) &&
+        Objects.equals(this.module, timeslot.module) &&
+        Objects.equals(this.type, timeslot.type);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, room, day, timeStart, timeEnd, lecturer, capacity, possibleTrades, attendees);
+    return Objects.hash(id, room, day, timeStart, timeEnd, lecturer, capacity, possibleTrades, attendees, module, type);
   }
 
   @Override
@@ -275,6 +325,8 @@ public class Timeslot   {
     sb.append("    capacity: ").append(toIndentedString(capacity)).append("\n");
     sb.append("    possibleTrades: ").append(toIndentedString(possibleTrades)).append("\n");
     sb.append("    attendees: ").append(toIndentedString(attendees)).append("\n");
+    sb.append("    module: ").append(toIndentedString(module)).append("\n");
+    sb.append("    type: ").append(toIndentedString(type)).append("\n");
     sb.append("}");
     return sb.toString();
   }

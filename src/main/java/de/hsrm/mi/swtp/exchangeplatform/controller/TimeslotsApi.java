@@ -5,6 +5,8 @@
  */
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.PossibleTradesResponse;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-04T10:25:24.919398+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
 
 @Validated
 @Api(value = "timeslots", description = "the timeslots API")
@@ -30,12 +32,21 @@ public interface TimeslotsApi {
     ResponseEntity<List<Timeslot>> getAllTimeslots();
 
 
-    @ApiOperation(value = "Get timeslot.", nickname = "getTimeslotById", notes = "", response = Timeslot.class, tags={  })
+    @ApiOperation(value = "", nickname = "getModuleByTimeslotId", notes = "", response = Module.class, tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "A single timeslot", response = Timeslot.class) })
-    @RequestMapping(value = "/timeslots/{timeslotId}",
+        @ApiResponse(code = 200, message = "Success", response = Module.class) })
+    @RequestMapping(value = "/timeslots/{timeslotId}/module",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<Timeslot> getTimeslotById(@ApiParam(value = "Numeric ID of the timeslot",required=true) @PathVariable("timeslotId") Long timeslotId);
+    ResponseEntity<Module> getModuleByTimeslotId(@ApiParam(value = "Numeric TimeslotId",required=true) @PathVariable("timeslotId") Long timeslotId);
+
+
+    @ApiOperation(value = "Get possible trades for timeslot.", nickname = "getPossibleTradesForTimeslotById", notes = "", response = PossibleTradesResponse.class, tags={  })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "A single timeslot", response = PossibleTradesResponse.class) })
+    @RequestMapping(value = "/timeslots/{timeslotId}/possibleTrades",
+        produces = { "application/json" }, 
+        method = RequestMethod.GET)
+    ResponseEntity<PossibleTradesResponse> getPossibleTradesForTimeslotById(@ApiParam(value = "Numeric ID of the timeslot",required=true) @PathVariable("timeslotId") Long timeslotId);
 
 }
