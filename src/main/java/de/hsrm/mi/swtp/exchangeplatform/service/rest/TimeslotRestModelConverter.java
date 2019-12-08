@@ -3,7 +3,6 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.DayEnum;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.PossibleTradesResponse;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import lombok.RequiredArgsConstructor;
