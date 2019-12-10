@@ -23,7 +23,8 @@ import org.springframework.security.web.header.writers.StaticHeadersWriter;
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired UserService userService;
+    @Autowired
+	UserService userService;
 
     @Bean PasswordEncoder getPasswordEncoder() {
         return PasswordEncoderFactories.createDelegatingPasswordEncoder();
@@ -55,21 +56,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         /**
          * define authentication-paths here
          */
-        http.authorizeRequests()
-                .antMatchers("auth/admin/*").hasRole("ADMIN")                   //is not correct
-                .antMatchers("/auth/*").hasAnyRole("ADMIN", "STUDENT")   // is not correct
-                .antMatchers("/api/**").hasRole("ADMIN")
-                //addfilterbefore
-        .and()
-                .httpBasic()
-        .and()
-                .headers()
-                .addHeaderWriter(new StaticHeadersWriter("funny","hahaha"))
-        .and()
-                .logout()
-                .logoutUrl("/logout")
-                .logoutSuccessUrl("/loggedout")
-                .permitAll();
+//        http.authorizeRequests()
+//                .antMatchers("auth/admin/*").hasRole("ADMIN")                   //is not correct
+//                .antMatchers("/auth/*").hasAnyRole("ADMIN", "STUDENT")   // is not correct
+//                .antMatchers("/api/**").hasRole("ADMIN")
+//                //addfilterbefore
+//        .and()
+//                .httpBasic()
+//        .and()
+//                .headers()
+//                .addHeaderWriter(new StaticHeadersWriter("funny","hahaha"))
+//        .and()
+//                .logout()
+//                .logoutUrl("/logout")
+//                .logoutSuccessUrl("/loggedout")
+//                .permitAll();
+		http.authorizeRequests().antMatchers("/").permitAll();
     }
 }
 
