@@ -62,27 +62,19 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
      * Method to process a requested trade transaction, transaction info is gathered from {@link TradeOffer}'s id
      *
      * @param requesterId id of requester
-     * @param tradeId accepted trade
+     * @param offeredId accepted trade
+	 * @param requestedId requested id
      * @return new Timeslot of requester
      * @throws RuntimeException if either requesterId or tradeId cant be found
      */
     @Transactional
-    public Timeslot tradeTimeslots(long requesterId, long tradeId) throws RuntimeException {
-        log.info(String.format("Performing Trade for requester: %d, trade: %d", requesterId, tradeId));
+    public Timeslot tradeTimeslots(long requesterId, long offeredId,  long requestedId) throws RuntimeException {
+        log.info(String.format("Performing Trade for requester: %d, trade: %d", requesterId, offeredId));
         var requester = studentRepository.findById(requesterId).orElseThrow(() -> {
             log.info(String.format("Error fetching Student from repository with ID: %d", requesterId));
             throw new NotFoundException(requesterId);
         });
-        var trade = tradeOfferRepository.findById(tradeId).orElseThrow(() -> {
-            log.info(String.format("Error fetching Tradeoffer with ID: %d", tradeId));
-            throw new NotFoundException(tradeId);
-        });
-        requester.getTimeslots().remove(trade.getSeek());
-        requester.getTimeslots().add(trade.getOffer());
-        var tradePartner = trade.getOfferer();
-        tradePartner.getTimeslots().remove(trade.getOffer());
-        tradePartner.getTimeslots().add(trade.getSeek());
-        return trade.getOffer();
+        return null; //TODO: merge with adminTradeservice + bereitstellen branch to have correct functionality
     }
 
     /**
