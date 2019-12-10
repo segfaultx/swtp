@@ -2,6 +2,10 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timetable;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.RestConverterService;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.RestModelConverter;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,9 +23,11 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequestMapping("/api/v1/timetable")
 @RestController
-public class TimeTableController implements BaseRestController<TimeTable, Long>{
+public class TimeTableController implements BaseRestController<TimeTable, Long>, TimetablesApi{
 	
 	TimeTableService timeTableService;
+	StudentService studentService;
+	RestConverterService restConverterService;
 	
 	@Override
 	@GetMapping
@@ -64,5 +70,14 @@ public class TimeTableController implements BaseRestController<TimeTable, Long>{
 			log.info(String.format("FAIL: Something went wrong during deletion of timetable %s", id));
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
+	}
+	
+	@Override
+	public ResponseEntity<Timetable> getTimetableForStudent(Long studentId) {
+		var stud = studentService.getById(studentId);
+		TimeTable timeTable = new TimeTable();
+		timeTable.setTimeslots(stud.getTimeslots());
+		Timetable out = (Timetable) restConverterService.convert(timeTable);
+		return new ResponseEntity<>(out, HttpStatus.OK);
 	}
 }
