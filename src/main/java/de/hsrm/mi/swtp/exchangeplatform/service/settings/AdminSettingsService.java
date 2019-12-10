@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -17,7 +18,7 @@ import javax.validation.constraints.NotNull;
 public class AdminSettingsService {
 	AdminSettingsRepository adminSettingsRepository;
 	AdminSettings adminSettings;
-	Long adminSettingsId = 1L;
+	final Long adminSettingsId = 1L;
 	
 	@Autowired
 	public AdminSettingsService(@NotNull AdminSettingsRepository adminSettingsRepository) {
@@ -40,5 +41,11 @@ public class AdminSettingsService {
 	
 	public void setAdminSettings(AdminSettings adminSettings) {
 		this.adminSettings = adminSettings;
+	}
+	
+	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters){
+		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
+		adminSettingsRepository.save(adminSettings);
+		return true;
 	}
 }
