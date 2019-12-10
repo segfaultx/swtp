@@ -68,6 +68,7 @@ public class Timeslot implements Model {
     private TimeTable timeTable;
     
     @JsonIgnore
+	@Transient
 	private List<TradeOffer> tradeQueue;
 
     /**
