@@ -5,55 +5,32 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * Module
+ * LoginResponse
  */
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
 
-public class Module   {
-  @JsonProperty("id")
-  private Long id;
+public class LoginResponse   {
+  @JsonProperty("token")
+  private String token;
 
-  @JsonProperty("name")
-  private String name;
-
-  public Module id(Long id) {
-    this.id = id;
+  public LoginResponse token(String token) {
+    this.token = token;
     return this;
   }
 
   /**
-   * Get id
-   * @return id
+   * Get token
+   * @return token
   */
   @ApiModelProperty(value = "")
 
 
-  public Long getId() {
-    return id;
+  public String getToken() {
+    return token;
   }
 
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public Module name(String name) {
-    this.name = name;
-    return this;
-  }
-
-  /**
-   * Get name
-   * @return name
-  */
-  @ApiModelProperty(value = "")
-
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
+  public void setToken(String token) {
+    this.token = token;
   }
 
 
@@ -65,23 +42,21 @@ public class Module   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Module module = (Module) o;
-    return Objects.equals(this.id, module.id) &&
-        Objects.equals(this.name, module.name);
+    LoginResponse loginResponse = (LoginResponse) o;
+    return Objects.equals(this.token, loginResponse.token);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name);
+    return Objects.hash(token);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Module {\n");
+    sb.append("class LoginResponse {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
-    sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    token: ").append(toIndentedString(token)).append("\n");
     sb.append("}");
     return sb.toString();
   }

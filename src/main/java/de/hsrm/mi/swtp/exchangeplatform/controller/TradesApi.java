@@ -5,41 +5,43 @@
  */
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timetable;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeRequest;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.validation.Valid;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-04T10:25:24.919398+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
 
 @Validated
 @Api(value = "trades", description = "the trades API")
 public interface TradesApi {
 
-    @ApiOperation(value = "Accept trade offer.", nickname = "acceptTradeOffer", notes = "", response = TradeOffer.class, tags={  })
+    @ApiOperation(value = "Create Trade Offer.", nickname = "createTradeOffer", notes = "", response = TradeOffer.class, tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 201, message = "The accepted trade object", response = TradeOffer.class) })
-    @RequestMapping(value = "/trades/{tradeId}/{studentId}/accept",
+        @ApiResponse(code = 201, message = "The new trade offer", response = TradeOffer.class),
+        @ApiResponse(code = 400, message = "Bad Request") })
+    @RequestMapping(value = "/trades/offers",
         produces = { "application/json" }, 
+        consumes = { "application/json" },
         method = RequestMethod.POST)
-    ResponseEntity<TradeOffer> acceptTradeOffer(@ApiParam(value = "Numeric ID of the trade",required=true) @PathVariable("tradeId") Long tradeId,@ApiParam(value = "Numeric ID of the student",required=true) @PathVariable("studentId") Long studentId);
+    ResponseEntity<TradeOffer> createTradeOffer(@ApiParam(value = "" ,required=true )  @Valid @RequestBody TradeRequest tradeRequest);
 
 
-    @ApiOperation(value = "Create trade offer.", nickname = "createTradeOffer", notes = "", response = TradeOffer.class, tags={  })
+    @ApiOperation(value = "Request Trade.", nickname = "requestTrade", notes = "", response = Timetable.class, tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 201, message = "The created trade object", response = TradeOffer.class),
+        @ApiResponse(code = 201, message = "The new timetable", response = Timetable.class),
         @ApiResponse(code = 400, message = "Bad Request") })
     @RequestMapping(value = "/trades",
         produces = { "application/json" }, 
         consumes = { "application/json" },
         method = RequestMethod.POST)
-    ResponseEntity<TradeOffer> createTradeOffer(@ApiParam(value = "" ,required=true )  @Valid @RequestBody TradeRequest tradeRequest);
+    ResponseEntity<Timetable> requestTrade(@ApiParam(value = "" ,required=true )  @Valid @RequestBody TradeRequest tradeRequest);
 
 }

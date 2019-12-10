@@ -12,6 +12,32 @@ servers:
 
 
 paths:
+  /students:
+    get:
+      summary: Returns a list of students
+      operationId: getStudents
+      parameters:
+        - in: query
+          name: name
+          schema:
+            type: string
+          required: false
+        - in: query
+          name: studentId
+          schema:
+            type: integer
+            format: int64
+          required: false
+      responses:
+        "200":
+          description: List of Students
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Student"
+
   /students/{studentId}:
     get:
       summary: Returns detailed information about the student specified by the Id.
@@ -31,7 +57,8 @@ paths:
             application/json:
               schema: 
                 $ref: "#/components/schemas/Student"
-  
+
+
   /timeslots:
     get:
       summary: Returns a list of timeslots.
@@ -46,10 +73,10 @@ paths:
                 items: 
                   $ref: "#/components/schemas/Timeslot"
 
-  /timeslots/{timeslotId}:
+  /timeslots/{timeslotId}/possibleTrades:
     get:
-      summary: Get timeslot.
-      operationId: "getTimeslotById"
+      summary: Get possible trades for timeslot.
+      operationId: "getPossibleTradesForTimeslotById"
       parameters:
         - in: path
           name: timeslotId
@@ -64,12 +91,12 @@ paths:
           content:
             application/json:
               schema: 
-                $ref: "#/components/schemas/Timeslot"
+                $ref: "#/components/schemas/PossibleTradesResponse"
 
-  /students/{studentId}/personalizedTimetable:
+  /timetables/{studentId}:
     get:
       summary: Get personalized Timetable of student.
-      operationId: "getPersonalizedTimetable"
+      operationId: "getTimetableForStudent"
       parameters:
         - in: path
           name: studentId
@@ -84,14 +111,63 @@ paths:
           content:
             application/json:
               schema: 
-                type: array
-                items: 
-                  $ref: "#/components/schemas/Timetable"
+                $ref: "#/components/schemas/Timetable"
+              example:
+                id: 12
+                end: "2017-07-21"
+                start: "2017-08-19"
+                timeslots:
+                  - id: "17"
+                    room: 
+                      id: 42
+                      roomNumber: "13"
+                      location: "Ude"
+                    day: "monday"
+                    time_start:
+                      hour: 8
+                      minute: 15
+                    time_end:
+                      hour: 9
+                      minute: 45
+                    lecturer:
+                      name: "Willi Wonka"
+                      mail: "WilliWonka@schokoladenfabrik.de"
+                    capacity: 15
+                    attendees: 10
+                    module:
+                      id: 14
+                      name: "Programmieren 2"
+                    type: "Lecture"
+                  - id: "3"
+                    room: 
+                      id: 34
+                      roomNumber: "25"
+                      location: "Ude"
+                    day: "friday"
+                    time_start:
+                      hour: 14
+                      minute: 15
+                    time_end:
+                      hour: 15
+                      minute: 45
+                    lecturer:
+                      name: "Willi Wonka"
+                      mail: "WilliWonka@schokoladenfabrik.de"
+                    capacity: 29
+                    attendees: 3
+                    module:
+                      id: 23
+                      name: "AFS"
+                    type: "Exercise"
+                
+
+
+                
   
   /trades:
     post:
-      summary: Create trade offer.
-      operationId: "createTradeOffer"
+      summary: Request Trade.
+      operationId: "requestTrade"
       requestBody:
         required: true
         content:
@@ -100,11 +176,11 @@ paths:
               $ref: "#/components/schemas/TradeRequest"
       responses:
         '201':    # status code
-          description: The created trade object
+          description: The new timetable
           content:
             application/json:
               schema: 
-                $ref: "#/components/schemas/TradeOffer"
+                $ref: "#/components/schemas/Timetable"
         '400':
           description: Bad Request
     
@@ -127,32 +203,45 @@ paths:
               schema:
                 $ref: "#/components/schemas/Module"
   
-  /trades/{tradeId}/{studentId}/accept:
+  /trades/offers:
     post:
-      summary: Accept trade offer.
-      operationId: "acceptTradeOffer"
-      parameters:
-        - in: path
-          name: tradeId
-          schema:
-            type: integer
-            format: int64
-          required: true
-          description: Numeric ID of the trade
-        - in: path
-          name: studentId
-          schema:
-            type: integer
-            format: int64
-          required: true
-          description: Numeric ID of the student
+      summary: Create Trade Offer.
+      operationId: "createTradeOffer"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TradeRequest"
       responses:
         '201':    # status code
-          description: The accepted trade object
+          description: The new trade offer
           content:
             application/json:
               schema: 
                 $ref: "#/components/schemas/TradeOffer"
+        '400':
+          description: Bad Request
+
+
+  /timeslots/{timeslotId}/module:
+    get:
+      operationId: getModuleByTimeslotId
+      parameters:
+        - in: path
+          name: timeslotId
+          schema:
+            type: integer
+            format: int64
+          description: Numeric TimeslotId
+          required: true
+      responses:
+        "200": 
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Module"
 
   # username  + password
   /login:
@@ -171,7 +260,11 @@ paths:
             application/json:
               schema:
                 $ref : "#/components/schemas/User"
-    
+
+  #/logout
+
+
+
 components:
   schemas:
     
@@ -226,8 +319,12 @@ components:
       properties:
         hour: 
           type: integer
+          minimum: 0
+          maximum: 23
         minute: 
           type: integer
+          minimum: 0
+          maximum: 59
 
     TimeslotType:
       type: string
@@ -257,6 +354,11 @@ components:
           type: string
         password:
           type: string
+    
+    LoginResponse:
+      properties:
+        token: 
+          type: string
 
     User:
       properties:
@@ -275,8 +377,10 @@ components:
           format: int64
         end:
           type: string
+          format: date
         start:
           type: string
+          format: date
         timeslots:
           type: array
           items:
@@ -289,11 +393,28 @@ components:
           format: int64
         name:
           type: string
-        timeslots:
+        #timeslots:
+        #  type: array
+        #  items:
+        #    $ref: "#/components/schemas/Timeslot"
+        
+    PossibleTradesResponse:
+      properties:
+        instant:
           type: array
           items:
-            $ref: "#/components/schemas/Timeslot"
-        
+            type: integer
+            format: int64
+        tradesAvailable:
+          type: array
+          items:
+            type: integer
+            format: int64
+        remaining:
+          type: array
+          items:
+            type: integer
+            format: int64
 
     Timeslot:
       properties:
@@ -313,15 +434,18 @@ components:
         capacity:
           type: integer
         possibleTrades:
-          type: array
-          items:
-            $ref : "#/components/schemas/TradeOffer"
+            $ref : "#/components/schemas/PossibleTradesResponse"
         attendees:
           type: integer
+        module:
+          $ref: "#/components/schemas/Module"
+        type:
+          $ref: "#/components/schemas/TimeslotType"
+
 
     Student:
       properties:
-        studentId:
+        matriculationNumber:
           type: integer
           format: int64
         username:

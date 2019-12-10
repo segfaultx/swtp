@@ -5,7 +5,7 @@
  */
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timetable;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,15 +16,15 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
 
 @Validated
-@Api(value = "modules", description = "the modules API")
-public interface ModulesApi {
+@Api(value = "timetables", description = "the timetables API")
+public interface TimetablesApi {
 
-    @ApiOperation(value = "", nickname = "getModuleById", notes = "", response = Module.class, tags={  })
+    @ApiOperation(value = "Get personalized Timetable of student.", nickname = "getTimetableForStudent", notes = "", response = Timetable.class, tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "single module", response = Module.class) })
-    @RequestMapping(value = "/modules/{moduleId}",
+        @ApiResponse(code = 200, message = "a timetable", response = Timetable.class) })
+    @RequestMapping(value = "/timetables/{studentId}",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<Module> getModuleById(@ApiParam(value = "Numeric ID of the module",required=true) @PathVariable("moduleId") Long moduleId);
+    ResponseEntity<Timetable> getTimetableForStudent(@ApiParam(value = "Numeric ID of the student",required=true) @PathVariable("studentId") Long studentId);
 
 }

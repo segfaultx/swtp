@@ -19,7 +19,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequestMapping("/api/v1/timetable")
 @RestController
-public class TimeTableController implements BaseRestController<TimeTable, Long> {
+public class TimeTableController implements BaseRestController<TimeTable, Long>{
 	
 	TimeTableService timeTableService;
 	
