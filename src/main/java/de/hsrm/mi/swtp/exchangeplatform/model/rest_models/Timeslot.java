@@ -3,11 +3,6 @@ package de.hsrm.mi.swtp.exchangeplatform.model.rest_models;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-import org.openapitools.model.DayEnum;
-import org.openapitools.model.Lecturer;
-import org.openapitools.model.Module;
-import org.openapitools.model.Room;
-import org.openapitools.model.TimeslotType;
 
 import javax.validation.Valid;
 

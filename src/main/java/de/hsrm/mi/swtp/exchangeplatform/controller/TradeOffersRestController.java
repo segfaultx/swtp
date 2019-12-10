@@ -5,7 +5,6 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.TradeOfferNotFoundEx
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.*;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.RestConverterService;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableRestModelConverter;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
