@@ -7,17 +7,28 @@ import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
+
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class TimeslotRestModelConverter implements RestModelConverter {
 	
 	TradeOfferService tradeOfferService;
 	TradeOfferRepository tradeOfferRepository;
 	TimeslotRepository timeslotRepository;
+	
+	@Autowired
+	public TimeslotRestModelConverter(@NotNull TradeOfferService tradeOfferService,
+									  @NotNull TradeOfferRepository tradeOfferRepository,
+									  @NotNull TimeslotRepository timeslotRepository){
+		this.tradeOfferService = tradeOfferService;
+		this.tradeOfferRepository = tradeOfferRepository;
+		this.timeslotRepository = timeslotRepository;
+	}
 	
 	@Override
 	public boolean isResponsible(Object object) {

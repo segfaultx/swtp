@@ -5,18 +5,24 @@ import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timetable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class TimeTableRestModelConverter implements RestModelConverter {
 	
 	TimeslotRestModelConverter timeslotRestModelConverter;
+	
+	@Autowired
+	public TimeTableRestModelConverter(@NotNull TimeslotRestModelConverter timeslotRestModelConverter){
+		this.timeslotRestModelConverter = timeslotRestModelConverter;
+	}
 	
 	@Override
 	public boolean isResponsible(Object object) {
