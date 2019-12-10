@@ -5,6 +5,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Module;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,21 +20,31 @@ import java.util.Map;
 
 @Service
 @Slf4j
-public class TimeslotRestModelConverter implements RestModelConverter {
+public class TimeslotRestModelConverter implements RestModelConverter<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot> {
 	
 	TradeOfferService tradeOfferService;
 	TradeOfferRepository tradeOfferRepository;
 	TimeslotRepository timeslotRepository;
+	RoomRestModelConverter roomRestModelConverter;
+	ModuleRestConverter moduleRestConverter;
+	LecturerRestModelConverter lecturerRestModelConverter;
 	Map<String, String> dayMapper = new HashMap<>();
 	Map<String, String> timeslotTypeMapper = new HashMap<>();
 	
 	@Autowired
-	public TimeslotRestModelConverter(@NotNull TradeOfferService tradeOfferService, @NotNull TradeOfferRepository tradeOfferRepository,
-									  @NotNull TimeslotRepository timeslotRepository
+	public TimeslotRestModelConverter(@NotNull TradeOfferService tradeOfferService,
+									  @NotNull TradeOfferRepository tradeOfferRepository,
+									  @NotNull TimeslotRepository timeslotRepository,
+									  @NotNull RoomRestModelConverter roomRestModelConverter,
+									  @NotNull LecturerRestModelConverter lecturerRestModelConverter,
+									  @NonNull ModuleRestConverter moduleRestConverter
 									 ) {
 		this.tradeOfferService = tradeOfferService;
 		this.tradeOfferRepository = tradeOfferRepository;
 		this.timeslotRepository = timeslotRepository;
+		this.roomRestModelConverter = roomRestModelConverter;
+		this.lecturerRestModelConverter = lecturerRestModelConverter;
+		this.moduleRestConverter = moduleRestConverter;
 		this.dayMapper.put("Mittwoch", "wednesday");
 		this.dayMapper.put("Montag", "monday");
 		this.dayMapper.put("Dienstag", "tuesday");
@@ -53,30 +64,22 @@ public class TimeslotRestModelConverter implements RestModelConverter {
 	}
 	
 	@Override
-	public Object convertToRest(Object object) {
+	public de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot convertToRest(Object object) {
 		Timeslot timeslot = (Timeslot) object;
 		de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot out = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();
+		
 		out.setDay(DayEnum.fromValue(dayMapper.get(timeslot.getDay())));
 		
-		Room room = new Room();
-		room.setRoomNumber(timeslot.getRoom().getRoomNumber());
-		room.setLocation(timeslot.getRoom().getLocation());
-		room.setId(timeslot.getRoom().getId());
-		out.setRoom(room);
+		out.setRoom(roomRestModelConverter.convertToRest(timeslot.getRoom()));
 		
-		Lecturer lecturer = new Lecturer();
-		lecturer.setName(timeslot.getLecturer().getLastName());
-		lecturer.setMail(timeslot.getLecturer().getEmail());
-		out.setLecturer(lecturer);
+		out.setLecturer(lecturerRestModelConverter.convertToRest(timeslot.getLecturer()));
 		
 		out.setCapacity(timeslot.getCapacity());
 		
 		out.setId(timeslot.getId());
 		
-		Module module = new Module();
-		module.setName(timeslot.getModule().getName());
-		module.setId(timeslot.getModule().getId());
-		out.setModule(module);
+		out.setModule(moduleRestConverter.convertToRest(timeslot.getModule()));
+		
 		out.setType(TimeslotType.fromValue(timeslotTypeMapper.get(timeslot.getType())));
 		
 		out.setTimeStart(Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), timeslot.getTimeStart())));

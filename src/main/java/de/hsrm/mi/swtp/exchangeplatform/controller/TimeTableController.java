@@ -78,6 +78,7 @@ public class TimeTableController implements BaseRestController<TimeTable, Long>,
 		TimeTable timeTable = new TimeTable();
 		timeTable.setTimeslots(stud.getTimeslots());
 		Timetable out = (Timetable) restConverterService.convert(timeTable);
+		out.setId(stud.getStudentId());
 		return new ResponseEntity<>(out, HttpStatus.OK);
 	}
 }

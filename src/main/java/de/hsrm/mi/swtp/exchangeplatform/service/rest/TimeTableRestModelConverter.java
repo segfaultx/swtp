@@ -15,7 +15,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public class TimeTableRestModelConverter implements RestModelConverter {
+public class TimeTableRestModelConverter implements RestModelConverter<Timetable> {
 	
 	TimeslotRestModelConverter timeslotRestModelConverter;
 	
@@ -30,12 +30,11 @@ public class TimeTableRestModelConverter implements RestModelConverter {
 	}
 	
 	@Override
-	public Object convertToRest(Object object) {
+	public Timetable convertToRest(Object object) {
 		TimeTable timetable = (TimeTable) object;
 		Timetable out = new Timetable();
 		out.setEnd(timetable.getDateEnd());
 		out.setStart(timetable.getDateStart());
-		out.setId(timetable.getId());
 		List<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot> timeslotList = new ArrayList<>();
 		for(Timeslot timeslot : timetable.getTimeslots()) {
 			timeslotList.add((de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot) timeslotRestModelConverter.convertToRest(timeslot));
