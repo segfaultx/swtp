@@ -1,5 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import antlr.Token;
+import de.hsrm.mi.swtp.exchangeplatform.model.authentication.JWTResponse;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.AuthenticationService;
@@ -39,12 +41,21 @@ public class AuthenticationController {
 		Student student = studentService.getByUsername(authenticationRequest.getUsername());
 		
 		final String token = jwtTokenUtil.generateToken(student);
-		return ResponseEntity.ok(token);
+		JWTResponse response = new JWTResponse(token);
+		return ResponseEntity.ok(response);
 	}
 	
 	@GetMapping("/whoami")
 	public ResponseEntity<?> getUser(@RequestHeader("Authorization") String token) {
-		return ResponseEntity.ok(jwtTokenUtil.getUsernameFromToken(token));
+		
+		if(token != null && token.startsWith("Bearer ")) {
+			String jwtToken = token.substring(7);
+			
+			String usernameFromToken = jwtTokenUtil.getUsernameFromToken(jwtToken);
+			Student found = studentService.getByUsername(usernameFromToken);
+			return ResponseEntity.ok(found);
+		}
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 	}
 
 
