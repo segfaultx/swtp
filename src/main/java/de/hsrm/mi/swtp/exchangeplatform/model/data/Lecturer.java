@@ -1,9 +1,11 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.Fetch;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -15,7 +17,7 @@ import java.util.List;
 @Entity
 @Data
 @RequiredArgsConstructor
-public class Lecturer {
+public class Lecturer implements Model {
 	
 	@Id
 	private String username;
