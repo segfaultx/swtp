@@ -28,6 +28,12 @@ public class Student implements Model {
 	
 	@JsonProperty("last_name")
 	private String lastName;
+
+	@JsonProperty("cp")
+	private int cp;
+
+	@JsonProperty("fairness")
+	private int fairness;
 	
 	@ManyToMany(mappedBy = "attendees")
 	private List<Timeslot> timeslots;

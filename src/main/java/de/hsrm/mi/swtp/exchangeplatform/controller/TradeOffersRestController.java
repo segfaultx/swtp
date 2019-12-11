@@ -1,10 +1,10 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.TradeOfferNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -29,6 +29,7 @@ import javax.validation.Valid;
 public class TradeOffersRestController {
 	
 	TradeOfferService tradeOfferService;
+	StudentService studentService;
 	
 	/**
 	 * DELETE request handler.
@@ -78,7 +79,8 @@ public class TradeOffersRestController {
 							@ApiResponse(code = 400, message = "malformed trade request") })
 	public ResponseEntity<TradeOffer> createTradeOffer(
 			@ApiParam(value = "Object containing ID's of student, wanted and offered timeslot", required = true) @Valid TradeRequest tradeRequest,
-			BindingResult bindingResult) {
+			BindingResult bindingResult
+													  ) {
 		
 		if(bindingResult.hasErrors()) {
 			log.info("Malformed traderequest");
@@ -105,9 +107,12 @@ public class TradeOffersRestController {
 		log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 							   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
 							  ));
-		var timetable = tradeOfferService.tradeTimeslots(tradeRequest.getOfferedByStudentMatriculationNumber(), tradeRequest.getOfferedTimeslotId(),
-														 tradeRequest.getWantedTimeslotId()
-														);
+		var timeslot = tradeOfferService.tradeTimeslots(tradeRequest.getOfferedByStudentMatriculationNumber(), tradeRequest.getOfferedTimeslotId(),
+														tradeRequest.getWantedTimeslotId()
+													   );
+		TimeTable timetable = new TimeTable();
+		timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
+		timetable.setTimeslots(studentService.getById(tradeRequest.getOfferedByStudentMatriculationNumber()).getTimeslots());
 		return new ResponseEntity<>(timetable, HttpStatus.OK);
 	}
 }
