@@ -5,8 +5,6 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedExceptio
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timetable;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import lombok.AccessLevel;
@@ -30,7 +28,6 @@ public class StudentRestController implements BaseRestController<Student, Long> 
 	
 	String BASEURL = "/api/v1/student";
 	StudentService studentService;
-	TradeOfferService tradeOfferService;
 	
 	@Override
 	public ResponseEntity<List<Student>> getAll() {
