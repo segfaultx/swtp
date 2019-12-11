@@ -28,7 +28,7 @@ public class TimeTableController {
 	StudentService studentService;
 	
 	@ApiOperation(value = "Get personalized Timetable of student.", nickname = "getTimetableForStudent", notes = "", response = TimeTable.class, tags = { })
-	@RequestMapping(value = "/{studentId}", produces = { "application/json" }, method = RequestMethod.GET)
+	@GetMapping(value = "/{studentId}", produces = { "application/json" })
 	
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "a timetable", response = TimeTable.class) })
 	public ResponseEntity<TimeTable> getTimetableForStudent(
