@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.AdminSettingsRequest;
+import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -11,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,5 +38,13 @@ public class AdminRestController {
 		if(adminSettingsService.updateAdminSettings(adminSettingsRequest.isTradesActive(), adminSettingsRequest.getActiveFilters()))
 			return new ResponseEntity<>(HttpStatus.OK);
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+	}
+	
+	@GetMapping("/settings")
+	@ApiOperation(value = "get admin settings", nickname = "getAdminSettings")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully received adminsettings"),
+							@ApiResponse(code = 403, message = "unauthorized get settings attempt") })
+	public ResponseEntity<AdminSettings> getAdminSettings() {
+		return new ResponseEntity<>(adminSettingsService.getAdminSettings(), HttpStatus.OK);
 	}
 }
