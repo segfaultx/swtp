@@ -64,38 +64,6 @@ public class TradeOffersRestController {
 	
 	/**
 	 * POST request handler.
-	 * provides an endpoint to {@code '/api/v1/trades/<id>/<id>/<id>} through which an student may insert a new {@link TradeOffer}
-	 *
-	 * @param studentId id of requester
-	 * @param offerId   id of timeslot which requester is offering
-	 * @param seekId    id of sought timeslot
-	 *
-	 * @return {@link HttpStatus#OK} plus the new {@link TradeOffer} instance which has been created,
-	 * {@link HttpStatus#INTERNAL_SERVER_ERROR} if the server encountered an error.
-	 */
-	@PostMapping("/{studentId}/{offer}/{seek}")
-	@ApiOperation(value = "create tradeoffer for student", nickname = "createTradeOfferForStudent")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully deleted tradeoffer"),
-							@ApiResponse(code = 403, message = "unauthorized delete attempt"),
-							@ApiResponse(code = 404, message = "tradeoffer not found") })
-	public ResponseEntity<TradeOffer> createTradeOffer(
-			@ApiParam(value = "Numeric ID of the student", required = true) @PathVariable("studentId") long studentId,
-			@ApiParam(value = "Numeric ID of the offered timeslot", required = true) @PathVariable("offer") long offerId,
-			@ApiParam(value = "Numeric ID of the wanted timeslot", required = true) @PathVariable("seek") long seekId
-													  ) {
-		log.info(String.format("POST Request Student: %d with Offer/Seek: %d/%d", studentId, offerId, seekId));
-		try {
-			var tradeoffer = tradeOfferService.createTradeOffer(studentId, offerId, seekId);
-			log.info(String.format("SUCCESS POST Request Student: %d with Offer/Seek: %d/%d - insert successful", studentId, offerId, seekId));
-			return new ResponseEntity<>(tradeoffer, HttpStatus.OK);
-		} catch(NotFoundException ex) {
-			log.info(String.format("ERROR POST Request Student: %d with Offer/Seek: %d/%d - error while creating entity", studentId, offerId, seekId));
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-	
-	/**
-	 * POST request handler.
 	 * proviced an endpoint to {@code '/api/v1/trades} for users to create a {@link TradeOffer}
 	 *
 	 * @param tradeRequest tradeoffer to create
