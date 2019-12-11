@@ -33,8 +33,8 @@ public class TimeTableRestModelConverter implements RestModelConverter<Timetable
 	public TimetableDTO convertToRest(Object object) {
 		TimeTable timetable = (TimeTable) object;
 		TimetableDTO out = new TimetableDTO();
-		out.setEnd(JsonNullable.of(timetable.getDateEnd()));
-		out.setStart(JsonNullable.of(timetable.getDateStart()));
+		out.setEnd(null);
+		out.setStart(null);
 		List<TimeslotDTO> timeslotList = new ArrayList<>();
 		for(Timeslot timeslot : timetable.getTimeslots()) {
 			timeslotList.add(timeslotRestModelConverter.convertToRest(timeslot));
