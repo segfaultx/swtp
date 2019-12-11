@@ -1,6 +1,5 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.settings;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import lombok.AccessLevel;
@@ -47,5 +46,9 @@ public class AdminSettingsService {
 		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
 		adminSettingsRepository.save(adminSettings);
 		return true;
+	}
+	
+	public AdminSettings getAdminSettings() {
+		return adminSettings;
 	}
 }
