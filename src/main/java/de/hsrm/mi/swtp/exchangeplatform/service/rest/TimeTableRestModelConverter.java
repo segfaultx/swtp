@@ -31,6 +31,7 @@ public class TimeTableRestModelConverter implements RestModelConverter<Timetable
 	
 	@Override
 	public TimetableDTO convertToRest(Object object) {
+		log.info("viel logging");
 		TimeTable timetable = (TimeTable) object;
 		TimetableDTO out = new TimetableDTO();
 		out.setEnd(null);
