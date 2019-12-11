@@ -2,12 +2,11 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.*;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Module;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +14,15 @@ import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 @Slf4j
-public class TimeslotRestModelConverter implements RestModelConverter<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot> {
+public class TimeslotRestModelConverter implements RestModelConverter<TimeslotDTO> {
 	
 	TradeOfferService tradeOfferService;
 	TradeOfferRepository tradeOfferRepository;
@@ -32,12 +34,9 @@ public class TimeslotRestModelConverter implements RestModelConverter<de.hsrm.mi
 	Map<String, String> timeslotTypeMapper = new HashMap<>();
 	
 	@Autowired
-	public TimeslotRestModelConverter(@NotNull TradeOfferService tradeOfferService,
-									  @NotNull TradeOfferRepository tradeOfferRepository,
-									  @NotNull TimeslotRepository timeslotRepository,
-									  @NotNull RoomRestModelConverter roomRestModelConverter,
-									  @NotNull LecturerRestModelConverter lecturerRestModelConverter,
-									  @NonNull ModuleRestConverter moduleRestConverter
+	public TimeslotRestModelConverter(@NotNull TradeOfferService tradeOfferService, @NotNull TradeOfferRepository tradeOfferRepository,
+									  @NotNull TimeslotRepository timeslotRepository, @NotNull RoomRestModelConverter roomRestModelConverter,
+									  @NotNull LecturerRestModelConverter lecturerRestModelConverter, @NonNull ModuleRestConverter moduleRestConverter
 									 ) {
 		this.tradeOfferService = tradeOfferService;
 		this.tradeOfferRepository = tradeOfferRepository;
@@ -64,9 +63,9 @@ public class TimeslotRestModelConverter implements RestModelConverter<de.hsrm.mi
 	}
 	
 	@Override
-	public de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot convertToRest(Object object) {
+	public TimeslotDTO convertToRest(Object object) {
 		Timeslot timeslot = (Timeslot) object;
-		de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot out = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();
+		TimeslotDTO out = new TimeslotDTO();
 		
 		out.setDay(DayEnum.fromValue(dayMapper.get(timeslot.getDay())));
 		
@@ -74,7 +73,7 @@ public class TimeslotRestModelConverter implements RestModelConverter<de.hsrm.mi
 		
 		out.setLecturer(lecturerRestModelConverter.convertToRest(timeslot.getLecturer()));
 		
-		out.setCapacity(timeslot.getCapacity());
+		out.setCapacity(JsonNullable.of(timeslot.getCapacity()));
 		
 		out.setId(timeslot.getId());
 		
@@ -82,26 +81,29 @@ public class TimeslotRestModelConverter implements RestModelConverter<de.hsrm.mi
 		
 		out.setType(TimeslotType.fromValue(timeslotTypeMapper.get(timeslot.getType())));
 		
-		out.setTimeStart(Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), timeslot.getTimeStart())));
-		out.setTimeEnd(Timestamp.valueOf(LocalDateTime.of(LocalDate.now(), timeslot.getTimeEnd())));
+		out.setTimeStart(OffsetDateTime.of(LocalDate.now(), timeslot.getTimeStart(), ZoneOffset.UTC));
+		out.setTimeEnd(OffsetDateTime.of(LocalDate.now(), timeslot.getTimeEnd(), ZoneOffset.UTC));
 		
 		PossibleTradesResponse possibleTradesResponse = new PossibleTradesResponse();
-		var instantTrades = tradeOfferRepository.findAllBySeekAndInstantTrade(timeslot, true);
-		instantTrades.forEach(tradeOffer -> possibleTradesResponse.addInstantItem(tradeOffer.getOffer().getId()));
-		var regularTrades = tradeOfferRepository.findAllBySeekAndInstantTrade(timeslot, false);
-		regularTrades.forEach(tradeOffer -> possibleTradesResponse.addTradesAvailableItem((tradeOffer.getOffer().getId())));
-		/*
+		possibleTradesResponse.setInstant(new ArrayList<>());
+		possibleTradesResponse.setRemaining(new ArrayList<>());
+		possibleTradesResponse.setTradesAvailable(new ArrayList<>());
+		var allTrades = tradeOfferRepository.findAllBySeek(timeslot);
+		if(allTrades == null) allTrades = new ArrayList<>();
+		allTrades.forEach(tradeOffer -> {
+			if(tradeOffer.isInstantTrade()) possibleTradesResponse.addInstantItem(tradeOffer.getOffer().getId());
+		});
+		allTrades.forEach(tradeOffer -> {
+			if(!tradeOffer.isInstantTrade()) possibleTradesResponse.addTradesAvailableItem((tradeOffer.getOffer().getId()));
+		});
 		var others = timeslotRepository.findAllByModule(timeslot.getModule());
 		if(others != null) {
-			for(Timeslot timeslt: others){
-				System.out.println(timeslt.getId());
-			}
 			others.forEach(timeslt -> {
 				if(!possibleTradesResponse.getInstant().contains(timeslt.getId()) && !possibleTradesResponse.getTradesAvailable().contains(timeslt.getId()))
 					possibleTradesResponse.addRemainingItem(timeslt.getId());
 			});
 		}
-		 */
+		
 		out.setPossibleTrades(possibleTradesResponse);
 		
 		//TODO: fix stackoverflow errors of objects

@@ -8,11 +8,11 @@ import java.util.List;
 import javax.validation.Valid;
 
 /**
- * User
+ * UserDTO
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
-public class User   {
+public class UserDTO   {
   @JsonProperty("userId")
   private Long userId;
 
@@ -20,7 +20,7 @@ public class User   {
   @Valid
   private List<String> roles = null;
 
-  public User userId(Long userId) {
+  public UserDTO userId(Long userId) {
     this.userId = userId;
     return this;
   }
@@ -40,12 +40,12 @@ public class User   {
     this.userId = userId;
   }
 
-  public User roles(List<String> roles) {
+  public UserDTO roles(List<String> roles) {
     this.roles = roles;
     return this;
   }
 
-  public User addRolesItem(String rolesItem) {
+  public UserDTO addRolesItem(String rolesItem) {
     if (this.roles == null) {
       this.roles = new ArrayList<>();
     }
@@ -77,9 +77,9 @@ public class User   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    User user = (User) o;
-    return Objects.equals(this.userId, user.userId) &&
-        Objects.equals(this.roles, user.roles);
+    UserDTO userDTO = (UserDTO) o;
+    return Objects.equals(this.userId, userDTO.userId) &&
+        Objects.equals(this.roles, userDTO.roles);
   }
 
   @Override
@@ -90,7 +90,7 @@ public class User   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class User {\n");
+    sb.append("class UserDTO {\n");
     
     sb.append("    userId: ").append(toIndentedString(userId)).append("\n");
     sb.append("    roles: ").append(toIndentedString(roles)).append("\n");

@@ -5,7 +5,8 @@
  */
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.ModuleDTO;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TimeslotDTO;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -13,18 +14,29 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
+import java.util.List;
+
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
 @Validated
 @Api(value = "modules", description = "the modules API")
 public interface ModulesApi {
 
-    @ApiOperation(value = "", nickname = "getModuleById", notes = "", response = Module.class, tags={  })
+    @ApiOperation(value = "", nickname = "getModuleById", notes = "", response = ModuleDTO.class, tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "single module", response = Module.class) })
+        @ApiResponse(code = 200, message = "single module", response = ModuleDTO.class) })
     @RequestMapping(value = "/modules/{moduleId}",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<Module> getModuleById(@ApiParam(value = "Numeric ID of the module",required=true) @PathVariable("moduleId") Long moduleId);
+    ResponseEntity<ModuleDTO> getModuleById(@ApiParam(value = "Numeric ID of the module",required=true) @PathVariable("moduleId") Long moduleId);
+
+
+    @ApiOperation(value = "", nickname = "getTimeslotsOfModule", notes = "", response = TimeslotDTO.class, responseContainer = "List", tags={  })
+    @ApiResponses(value = { 
+        @ApiResponse(code = 200, message = "list of timeslots", response = TimeslotDTO.class, responseContainer = "List") })
+    @RequestMapping(value = "/modules/{moduleId}/timeslots",
+        produces = { "application/json" }, 
+        method = RequestMethod.GET)
+    ResponseEntity<List<TimeslotDTO>> getTimeslotsOfModule(@ApiParam(value = "Numeric ID of the module",required=true) @PathVariable("moduleId") Long moduleId);
 
 }

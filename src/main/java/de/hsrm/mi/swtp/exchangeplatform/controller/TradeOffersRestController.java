@@ -64,14 +64,14 @@ public class TradeOffersRestController implements TradesApi {
 	 * {@link HttpStatus#INTERNAL_SERVER_ERROR} if the server encountered an error.
 	 */
 	@PostMapping("/{studentId}/{offer}/{seek}")
-	public ResponseEntity<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer> createTradeOffer(@PathVariable("studentId") long studentId,
+	public ResponseEntity<TradeOfferDTO> createTradeOffer(@PathVariable("studentId") long studentId,
 																										  @PathVariable("offer") long offerId,
 																										  @PathVariable("seek") long seekId
 																										 ) {
 		log.info(String.format("POST Request Student: %d with Offer/Seek: %d/%d", studentId, offerId, seekId));
 		try {
 			var tradeoffer = tradeOfferService.createTradeOffer(studentId, offerId, seekId);
-			de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer();
+			TradeOfferDTO restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOfferDTO();
 			restAnswer.setId(tradeoffer.getId().intValue());
 			restAnswer.setOfferedTimeslotId(tradeoffer.getOffer().getId());
 			restAnswer.setWantedTimeslotId(tradeoffer.getSeek().getId());
@@ -92,14 +92,14 @@ public class TradeOffersRestController implements TradesApi {
 	 * @return {@link HttpStatus#OK} if successful, {@link HttpStatus#BAD_REQUEST} if tradeoffer is malformed
 	 */
 	@Override
-	public ResponseEntity<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer> createTradeOffer(@Valid TradeRequest tradeRequest) {
+	public ResponseEntity<TradeOfferDTO> createTradeOffer(@Valid TradeRequest tradeRequest) {
 		log.info(String.format("POST Request create new traderequest: Requester: %d Offered: %d, Seek: %d",
 							   tradeRequest.getOfferedByStudentMatriculationNumber(), tradeRequest.getOfferedTimeslotId().get(),
 							   tradeRequest.getWantedTimeslotId().get()
 							  ));
 		var persistedTradeOffer = tradeOfferService.createTradeOffer(tradeRequest.getOfferedByStudentMatriculationNumber(),
 																	 tradeRequest.getOfferedTimeslotId().get(), tradeRequest.getWantedTimeslotId().get());
-		de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer();
+		TradeOfferDTO restAnswer = new TradeOfferDTO();
 		restAnswer.setWantedTimeslotId(persistedTradeOffer.getSeek().getId());
 		restAnswer.setOfferedTimeslotId(persistedTradeOffer.getOffer().getId());
 		restAnswer.setId(persistedTradeOffer.getId().intValue());
@@ -110,14 +110,14 @@ public class TradeOffersRestController implements TradesApi {
 	}
 	
 	@Override
-	public ResponseEntity<Timetable> requestTrade(@Valid TradeRequest tradeRequest) {
+	public ResponseEntity<TimetableDTO> requestTrade(@Valid TradeRequest tradeRequest) {
 		log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 							   tradeRequest.getOfferedTimeslotId().get(), tradeRequest.getWantedTimeslotId().get()
 							  ));
 		var timetable = tradeOfferService.tradeTimeslots(tradeRequest.getOfferedByStudentMatriculationNumber(), tradeRequest.getOfferedTimeslotId().get(),
 														 tradeRequest.getWantedTimeslotId().get()
 														);
-		Timetable out = (Timetable) restConverterService.convert(timetable);
+		TimetableDTO out = (TimetableDTO) restConverterService.convert(timetable);
 		return new ResponseEntity<>(out, HttpStatus.OK);
 	}
 }

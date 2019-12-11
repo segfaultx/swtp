@@ -5,8 +5,7 @@
  */
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.LoginRequest;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.UserDTO;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.AdminSettingsRequest;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -19,16 +18,17 @@ import javax.validation.Valid;
 @javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
 @Validated
-@Api(value = "login", description = "the login API")
-public interface LoginApi {
+@Api(value = "admin", description = "the admin API")
+public interface AdminApi {
 
-    @ApiOperation(value = "", nickname = "loginUser", notes = "", response = UserDTO.class, tags={  })
+    @ApiOperation(value = "Endpoint for admins to update admin settings", nickname = "updateAdminSettings", notes = "", tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Login Success", response = UserDTO.class) })
-    @RequestMapping(value = "/login",
-        produces = { "application/json" }, 
+        @ApiResponse(code = 200, message = "If changes were successful"),
+        @ApiResponse(code = 201, message = "The new trade offer"),
+        @ApiResponse(code = 400, message = "Bad Request") })
+    @RequestMapping(value = "/admin/settings",
         consumes = { "application/json" },
         method = RequestMethod.POST)
-    ResponseEntity<UserDTO> loginUser(@ApiParam(value = "" ,required=true )  @Valid @RequestBody LoginRequest loginRequest);
+    ResponseEntity<Void> updateAdminSettings(@ApiParam(value = "" ,required=true )  @Valid @RequestBody AdminSettingsRequest adminSettingsRequest);
 
 }

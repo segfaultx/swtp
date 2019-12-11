@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * TradeOffer
+ * TradeOfferDTO
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
-public class TradeOffer   {
+public class TradeOfferDTO   {
   @JsonProperty("offeredTimeslotId")
   private Long offeredTimeslotId;
 
@@ -25,7 +25,7 @@ public class TradeOffer   {
   @JsonProperty("collides")
   private Boolean collides;
 
-  public TradeOffer offeredTimeslotId(Long offeredTimeslotId) {
+  public TradeOfferDTO offeredTimeslotId(Long offeredTimeslotId) {
     this.offeredTimeslotId = offeredTimeslotId;
     return this;
   }
@@ -45,7 +45,7 @@ public class TradeOffer   {
     this.offeredTimeslotId = offeredTimeslotId;
   }
 
-  public TradeOffer wantedTimeslotId(Long wantedTimeslotId) {
+  public TradeOfferDTO wantedTimeslotId(Long wantedTimeslotId) {
     this.wantedTimeslotId = wantedTimeslotId;
     return this;
   }
@@ -65,7 +65,7 @@ public class TradeOffer   {
     this.wantedTimeslotId = wantedTimeslotId;
   }
 
-  public TradeOffer id(Integer id) {
+  public TradeOfferDTO id(Integer id) {
     this.id = id;
     return this;
   }
@@ -85,7 +85,7 @@ public class TradeOffer   {
     this.id = id;
   }
 
-  public TradeOffer instant(Boolean instant) {
+  public TradeOfferDTO instant(Boolean instant) {
     this.instant = instant;
     return this;
   }
@@ -105,7 +105,7 @@ public class TradeOffer   {
     this.instant = instant;
   }
 
-  public TradeOffer collides(Boolean collides) {
+  public TradeOfferDTO collides(Boolean collides) {
     this.collides = collides;
     return this;
   }
@@ -134,12 +134,12 @@ public class TradeOffer   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    TradeOffer tradeOffer = (TradeOffer) o;
-    return Objects.equals(this.offeredTimeslotId, tradeOffer.offeredTimeslotId) &&
-        Objects.equals(this.wantedTimeslotId, tradeOffer.wantedTimeslotId) &&
-        Objects.equals(this.id, tradeOffer.id) &&
-        Objects.equals(this.instant, tradeOffer.instant) &&
-        Objects.equals(this.collides, tradeOffer.collides);
+    TradeOfferDTO tradeOfferDTO = (TradeOfferDTO) o;
+    return Objects.equals(this.offeredTimeslotId, tradeOfferDTO.offeredTimeslotId) &&
+        Objects.equals(this.wantedTimeslotId, tradeOfferDTO.wantedTimeslotId) &&
+        Objects.equals(this.id, tradeOfferDTO.id) &&
+        Objects.equals(this.instant, tradeOfferDTO.instant) &&
+        Objects.equals(this.collides, tradeOfferDTO.collides);
   }
 
   @Override
@@ -150,7 +150,7 @@ public class TradeOffer   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class TradeOffer {\n");
+    sb.append("class TradeOfferDTO {\n");
     
     sb.append("    offeredTimeslotId: ").append(toIndentedString(offeredTimeslotId)).append("\n");
     sb.append("    wantedTimeslotId: ").append(toIndentedString(wantedTimeslotId)).append("\n");

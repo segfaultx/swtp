@@ -103,5 +103,10 @@ public class Timeslot implements Model {
         }
         return this.attendees.remove(student);
     }
+    @Override
+    public String toString(){
+    	return String.format("timeslot: id: %d room: %d day: %s timeStart: %s timeEnd: %s lecturer: %s type: %s capacity: %d", id,
+							 room.getId(), day, timeStart.toString(), timeEnd.toString(), lecturer.getLastName(), type, capacity);
+	}
 
 }

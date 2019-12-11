@@ -6,28 +6,30 @@ import io.swagger.annotations.ApiModelProperty;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
 
 /**
- * Timetable
+ * TimetableDTO
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
-public class Timetable   {
+public class TimetableDTO   {
   @JsonProperty("id")
   private Long id;
 
   @JsonProperty("end")
-  private LocalDate end;
+  private JsonNullable<LocalDate> end = JsonNullable.undefined();
 
   @JsonProperty("start")
-  private LocalDate start;
+  private JsonNullable<LocalDate> start = JsonNullable.undefined();
 
   @JsonProperty("timeslots")
   @Valid
-  private List<Timeslot> timeslots = null;
+  private List<TimeslotDTO> timeslots = null;
 
-  public Timetable id(Long id) {
+  public TimetableDTO id(Long id) {
     this.id = id;
     return this;
   }
@@ -47,8 +49,8 @@ public class Timetable   {
     this.id = id;
   }
 
-  public Timetable end(LocalDate end) {
-    this.end = end;
+  public TimetableDTO end(LocalDate end) {
+    this.end = JsonNullable.of(end);
     return this;
   }
 
@@ -60,16 +62,16 @@ public class Timetable   {
 
   @Valid
 
-  public LocalDate getEnd() {
+  public JsonNullable<LocalDate> getEnd() {
     return end;
   }
 
-  public void setEnd(LocalDate end) {
+  public void setEnd(JsonNullable<LocalDate> end) {
     this.end = end;
   }
 
-  public Timetable start(LocalDate start) {
-    this.start = start;
+  public TimetableDTO start(LocalDate start) {
+    this.start = JsonNullable.of(start);
     return this;
   }
 
@@ -81,20 +83,20 @@ public class Timetable   {
 
   @Valid
 
-  public LocalDate getStart() {
+  public JsonNullable<LocalDate> getStart() {
     return start;
   }
 
-  public void setStart(LocalDate start) {
+  public void setStart(JsonNullable<LocalDate> start) {
     this.start = start;
   }
 
-  public Timetable timeslots(List<Timeslot> timeslots) {
+  public TimetableDTO timeslots(List<TimeslotDTO> timeslots) {
     this.timeslots = timeslots;
     return this;
   }
 
-  public Timetable addTimeslotsItem(Timeslot timeslotsItem) {
+  public TimetableDTO addTimeslotsItem(TimeslotDTO timeslotsItem) {
     if (this.timeslots == null) {
       this.timeslots = new ArrayList<>();
     }
@@ -110,11 +112,11 @@ public class Timetable   {
 
   @Valid
 
-  public List<Timeslot> getTimeslots() {
+  public List<TimeslotDTO> getTimeslots() {
     return timeslots;
   }
 
-  public void setTimeslots(List<Timeslot> timeslots) {
+  public void setTimeslots(List<TimeslotDTO> timeslots) {
     this.timeslots = timeslots;
   }
 
@@ -127,11 +129,11 @@ public class Timetable   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Timetable timetable = (Timetable) o;
-    return Objects.equals(this.id, timetable.id) &&
-        Objects.equals(this.end, timetable.end) &&
-        Objects.equals(this.start, timetable.start) &&
-        Objects.equals(this.timeslots, timetable.timeslots);
+    TimetableDTO timetableDTO = (TimetableDTO) o;
+    return Objects.equals(this.id, timetableDTO.id) &&
+        Objects.equals(this.end, timetableDTO.end) &&
+        Objects.equals(this.start, timetableDTO.start) &&
+        Objects.equals(this.timeslots, timetableDTO.timeslots);
   }
 
   @Override
@@ -142,7 +144,7 @@ public class Timetable   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Timetable {\n");
+    sb.append("class TimetableDTO {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    end: ").append(toIndentedString(end)).append("\n");

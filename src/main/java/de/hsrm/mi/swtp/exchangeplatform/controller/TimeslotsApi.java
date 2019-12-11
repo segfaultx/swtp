@@ -5,9 +5,9 @@
  */
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.ModuleDTO;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.PossibleTradesResponse;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TimeslotDTO;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,28 +17,28 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import java.util.List;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
 @Validated
 @Api(value = "timeslots", description = "the timeslots API")
 public interface TimeslotsApi {
 
-    @ApiOperation(value = "Returns a list of timeslots.", nickname = "getAllTimeslots", notes = "", response = Timeslot.class, responseContainer = "List", tags={  })
+    @ApiOperation(value = "Returns a list of timeslots.", nickname = "getAllTimeslots", notes = "", response = TimeslotDTO.class, responseContainer = "List", tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "A JSON array of timeslots", response = Timeslot.class, responseContainer = "List") })
+        @ApiResponse(code = 200, message = "A JSON array of timeslots", response = TimeslotDTO.class, responseContainer = "List") })
     @RequestMapping(value = "/timeslots",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<List<Timeslot>> getAllTimeslots();
+    ResponseEntity<List<TimeslotDTO>> getAllTimeslots();
 
 
-    @ApiOperation(value = "", nickname = "getModuleByTimeslotId", notes = "", response = Module.class, tags={  })
+    @ApiOperation(value = "", nickname = "getModuleByTimeslotId", notes = "", response = ModuleDTO.class, tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "Success", response = Module.class) })
+        @ApiResponse(code = 200, message = "Success", response = ModuleDTO.class) })
     @RequestMapping(value = "/timeslots/{timeslotId}/module",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<Module> getModuleByTimeslotId(@ApiParam(value = "Numeric TimeslotId",required=true) @PathVariable("timeslotId") Long timeslotId);
+    ResponseEntity<ModuleDTO> getModuleByTimeslotId(@ApiParam(value = "Numeric TimeslotId",required=true) @PathVariable("timeslotId") Long timeslotId);
 
 
     @ApiOperation(value = "Get possible trades for timeslot.", nickname = "getPossibleTradesForTimeslotById", notes = "", response = PossibleTradesResponse.class, tags={  })

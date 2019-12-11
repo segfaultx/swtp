@@ -1,18 +1,19 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Room;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.RoomDTO;
 import org.springframework.stereotype.Service;
 
 @Service
-public class RoomRestModelConverter implements RestModelConverter<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Room> {
+public class RoomRestModelConverter implements RestModelConverter<RoomDTO> {
 	@Override
 	public boolean isResponsible(Object object) {
 		return object instanceof Room;
 	}
 	
 	@Override
-	public de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Room convertToRest(Object object) {
-		de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Room out = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Room();
+	public RoomDTO convertToRest(Object object) {
+		RoomDTO out = new RoomDTO();
 		Room room = (Room) object;
 		out.setId(room.getId());
 		out.setLocation(room.getLocation());

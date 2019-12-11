@@ -2,9 +2,8 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timetable;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TimetableDTO;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.RestConverterService;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.RestModelConverter;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
 import lombok.AccessLevel;
@@ -21,7 +20,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@RequestMapping("/api/v1/timetable")
+@RequestMapping("/api/v1")
 @RestController
 public class TimeTableController implements BaseRestController<TimeTable, Long>, TimetablesApi{
 	
@@ -73,11 +72,11 @@ public class TimeTableController implements BaseRestController<TimeTable, Long>,
 	}
 	
 	@Override
-	public ResponseEntity<Timetable> getTimetableForStudent(Long studentId) {
+	public ResponseEntity<TimetableDTO> getTimetableForStudent(Long studentId) {
 		var stud = studentService.getById(studentId);
 		TimeTable timeTable = new TimeTable();
 		timeTable.setTimeslots(stud.getTimeslots());
-		Timetable out = (Timetable) restConverterService.convert(timeTable);
+		TimetableDTO out = (TimetableDTO) restConverterService.convert(timeTable);
 		out.setId(stud.getStudentId());
 		return new ResponseEntity<>(out, HttpStatus.OK);
 	}
