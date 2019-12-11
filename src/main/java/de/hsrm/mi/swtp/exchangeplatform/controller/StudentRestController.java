@@ -5,8 +5,6 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedExceptio
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TimetableDTO;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOfferDTO;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import lombok.AccessLevel;
