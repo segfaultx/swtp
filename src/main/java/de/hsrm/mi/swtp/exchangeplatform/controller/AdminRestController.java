@@ -12,12 +12,9 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 
 @RestController
 @Slf4j
@@ -34,9 +31,10 @@ public class AdminRestController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully updated settings"),
 							@ApiResponse(code = 403, message = "unauthorized update settings attempt"),
 							@ApiResponse(code = 400, message = "malformed admin settings request") })
-	public ResponseEntity<Void> updateAdminSettings(@Valid AdminSettingsRequest adminSettingsRequest) {
+	public ResponseEntity<AdminSettings> updateAdminSettings(@RequestBody AdminSettingsRequest adminSettingsRequest, BindingResult bindingResult) {
+		if(bindingResult.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		if(adminSettingsService.updateAdminSettings(adminSettingsRequest.isTradesActive(), adminSettingsRequest.getActiveFilters()))
-			return new ResponseEntity<>(HttpStatus.OK);
+			return new ResponseEntity<>(adminSettingsService.getAdminSettings(), HttpStatus.OK);
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 	
