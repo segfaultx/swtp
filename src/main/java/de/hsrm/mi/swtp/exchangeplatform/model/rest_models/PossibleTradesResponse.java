@@ -10,7 +10,7 @@ import javax.validation.Valid;
 /**
  * PossibleTradesResponse
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T17:46:28.627314+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
 public class PossibleTradesResponse   {
   @JsonProperty("instant")

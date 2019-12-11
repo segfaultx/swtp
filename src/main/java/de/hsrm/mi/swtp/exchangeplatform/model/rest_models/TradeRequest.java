@@ -8,7 +8,7 @@ import org.openapitools.jackson.nullable.JsonNullable;
 /**
  * TradeRequest
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
 public class TradeRequest   {
   @JsonProperty("offeredTimeslotId")

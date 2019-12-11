@@ -5,11 +5,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * Room
+ * RoomDTO
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
-public class Room   {
+public class RoomDTO   {
   @JsonProperty("id")
   private Long id;
 
@@ -19,7 +19,7 @@ public class Room   {
   @JsonProperty("location")
   private String location;
 
-  public Room id(Long id) {
+  public RoomDTO id(Long id) {
     this.id = id;
     return this;
   }
@@ -39,7 +39,7 @@ public class Room   {
     this.id = id;
   }
 
-  public Room roomNumber(String roomNumber) {
+  public RoomDTO roomNumber(String roomNumber) {
     this.roomNumber = roomNumber;
     return this;
   }
@@ -59,7 +59,7 @@ public class Room   {
     this.roomNumber = roomNumber;
   }
 
-  public Room location(String location) {
+  public RoomDTO location(String location) {
     this.location = location;
     return this;
   }
@@ -88,10 +88,10 @@ public class Room   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Room room = (Room) o;
-    return Objects.equals(this.id, room.id) &&
-        Objects.equals(this.roomNumber, room.roomNumber) &&
-        Objects.equals(this.location, room.location);
+    RoomDTO roomDTO = (RoomDTO) o;
+    return Objects.equals(this.id, roomDTO.id) &&
+        Objects.equals(this.roomNumber, roomDTO.roomNumber) &&
+        Objects.equals(this.location, roomDTO.location);
   }
 
   @Override
@@ -102,7 +102,7 @@ public class Room   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Room {\n");
+    sb.append("class RoomDTO {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    roomNumber: ").append(toIndentedString(roomNumber)).append("\n");

@@ -5,7 +5,7 @@
  */
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Student;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.StudentDTO;
 import io.swagger.annotations.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -17,27 +17,27 @@ import org.springframework.web.bind.annotation.RequestParam;
 import javax.validation.Valid;
 import java.util.List;
 
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
 @Validated
 @Api(value = "students", description = "the students API")
 public interface StudentsApi {
 
-    @ApiOperation(value = "Returns detailed information about the student specified by the Id.", nickname = "getStudentById", notes = "", response = Student.class, tags={  })
+    @ApiOperation(value = "Returns detailed information about the student specified by the Id.", nickname = "getStudentById", notes = "", response = StudentDTO.class, tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "A single student", response = Student.class) })
+        @ApiResponse(code = 200, message = "A single student", response = StudentDTO.class) })
     @RequestMapping(value = "/students/{studentId}",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<Student> getStudentById(@ApiParam(value = "Numeric ID of the student to get",required=true) @PathVariable("studentId") Long studentId);
+    ResponseEntity<StudentDTO> getStudentById(@ApiParam(value = "Numeric ID of the student to get",required=true) @PathVariable("studentId") Long studentId);
 
 
-    @ApiOperation(value = "Returns a list of students", nickname = "getStudents", notes = "", response = Student.class, responseContainer = "List", tags={  })
+    @ApiOperation(value = "Returns a list of students", nickname = "getStudents", notes = "", response = StudentDTO.class, responseContainer = "List", tags={  })
     @ApiResponses(value = { 
-        @ApiResponse(code = 200, message = "List of Students", response = Student.class, responseContainer = "List") })
+        @ApiResponse(code = 200, message = "List of Students", response = StudentDTO.class, responseContainer = "List") })
     @RequestMapping(value = "/students",
         produces = { "application/json" }, 
         method = RequestMethod.GET)
-    ResponseEntity<List<Student>> getStudents(@ApiParam(value = "") @Valid @RequestParam(value = "name", required = false) String name,@ApiParam(value = "") @Valid @RequestParam(value = "studentId", required = false) Long studentId);
+    ResponseEntity<List<StudentDTO>> getStudents(@ApiParam(value = "") @Valid @RequestParam(value = "name", required = false) String name,@ApiParam(value = "") @Valid @RequestParam(value = "studentId", required = false) Long studentId);
 
 }

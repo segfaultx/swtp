@@ -5,38 +5,18 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * Module
+ * LecturerDTO
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
-public class Module   {
-  @JsonProperty("id")
-  private Long id;
-
+public class LecturerDTO   {
   @JsonProperty("name")
   private String name;
 
-  public Module id(Long id) {
-    this.id = id;
-    return this;
-  }
+  @JsonProperty("mail")
+  private String mail;
 
-  /**
-   * Get id
-   * @return id
-  */
-  @ApiModelProperty(value = "")
-
-
-  public Long getId() {
-    return id;
-  }
-
-  public void setId(Long id) {
-    this.id = id;
-  }
-
-  public Module name(String name) {
+  public LecturerDTO name(String name) {
     this.name = name;
     return this;
   }
@@ -56,6 +36,26 @@ public class Module   {
     this.name = name;
   }
 
+  public LecturerDTO mail(String mail) {
+    this.mail = mail;
+    return this;
+  }
+
+  /**
+   * Get mail
+   * @return mail
+  */
+  @ApiModelProperty(value = "")
+
+
+  public String getMail() {
+    return mail;
+  }
+
+  public void setMail(String mail) {
+    this.mail = mail;
+  }
+
 
   @Override
   public boolean equals(java.lang.Object o) {
@@ -65,23 +65,23 @@ public class Module   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Module module = (Module) o;
-    return Objects.equals(this.id, module.id) &&
-        Objects.equals(this.name, module.name);
+    LecturerDTO lecturerDTO = (LecturerDTO) o;
+    return Objects.equals(this.name, lecturerDTO.name) &&
+        Objects.equals(this.mail, lecturerDTO.mail);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, name);
+    return Objects.hash(name, mail);
   }
 
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Module {\n");
+    sb.append("class LecturerDTO {\n");
     
-    sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    name: ").append(toIndentedString(name)).append("\n");
+    sb.append("    mail: ").append(toIndentedString(mail)).append("\n");
     sb.append("}");
     return sb.toString();
   }

@@ -3,49 +3,51 @@ package de.hsrm.mi.swtp.exchangeplatform.model.rest_models;
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
+import java.time.OffsetDateTime;
 
+import org.openapitools.jackson.nullable.JsonNullable;
 import javax.validation.Valid;
 
 /**
- * Timeslot
+ * TimeslotDTO
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T17:32:19.208350+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
-public class Timeslot   {
+public class TimeslotDTO   {
   @JsonProperty("id")
   private Long id;
 
   @JsonProperty("room")
-  private Room room;
+  private RoomDTO room;
 
   @JsonProperty("day")
   private DayEnum day;
 
   @JsonProperty("time_start")
-  private java.sql.Timestamp timeStart;
+  private OffsetDateTime timeStart;
 
   @JsonProperty("time_end")
-  private java.sql.Timestamp timeEnd;
+  private OffsetDateTime timeEnd;
 
   @JsonProperty("lecturer")
-  private Lecturer lecturer;
+  private LecturerDTO lecturer;
 
   @JsonProperty("capacity")
-  private Integer capacity;
+  private JsonNullable<Integer> capacity = JsonNullable.undefined();
 
   @JsonProperty("possibleTrades")
   private PossibleTradesResponse possibleTrades;
 
   @JsonProperty("attendees")
-  private Integer attendees;
+  private JsonNullable<Integer> attendees = JsonNullable.undefined();
 
   @JsonProperty("module")
-  private Module module;
+  private ModuleDTO module;
 
   @JsonProperty("type")
   private TimeslotType type;
 
-  public Timeslot id(Long id) {
+  public TimeslotDTO id(Long id) {
     this.id = id;
     return this;
   }
@@ -65,7 +67,7 @@ public class Timeslot   {
     this.id = id;
   }
 
-  public Timeslot room(Room room) {
+  public TimeslotDTO room(RoomDTO room) {
     this.room = room;
     return this;
   }
@@ -78,15 +80,15 @@ public class Timeslot   {
 
   @Valid
 
-  public Room getRoom() {
+  public RoomDTO getRoom() {
     return room;
   }
 
-  public void setRoom(Room room) {
+  public void setRoom(RoomDTO room) {
     this.room = room;
   }
 
-  public Timeslot day(DayEnum day) {
+  public TimeslotDTO day(DayEnum day) {
     this.day = day;
     return this;
   }
@@ -107,7 +109,7 @@ public class Timeslot   {
     this.day = day;
   }
 
-  public Timeslot timeStart(java.sql.Timestamp timeStart) {
+  public TimeslotDTO timeStart(OffsetDateTime timeStart) {
     this.timeStart = timeStart;
     return this;
   }
@@ -120,15 +122,15 @@ public class Timeslot   {
 
   @Valid
 
-  public java.sql.Timestamp getTimeStart() {
+  public OffsetDateTime getTimeStart() {
     return timeStart;
   }
 
-  public void setTimeStart(java.sql.Timestamp timeStart) {
+  public void setTimeStart(OffsetDateTime timeStart) {
     this.timeStart = timeStart;
   }
 
-  public Timeslot timeEnd(java.sql.Timestamp timeEnd) {
+  public TimeslotDTO timeEnd(OffsetDateTime timeEnd) {
     this.timeEnd = timeEnd;
     return this;
   }
@@ -141,15 +143,15 @@ public class Timeslot   {
 
   @Valid
 
-  public java.sql.Timestamp getTimeEnd() {
+  public OffsetDateTime getTimeEnd() {
     return timeEnd;
   }
 
-  public void setTimeEnd(java.sql.Timestamp timeEnd) {
+  public void setTimeEnd(OffsetDateTime timeEnd) {
     this.timeEnd = timeEnd;
   }
 
-  public Timeslot lecturer(Lecturer lecturer) {
+  public TimeslotDTO lecturer(LecturerDTO lecturer) {
     this.lecturer = lecturer;
     return this;
   }
@@ -162,16 +164,16 @@ public class Timeslot   {
 
   @Valid
 
-  public Lecturer getLecturer() {
+  public LecturerDTO getLecturer() {
     return lecturer;
   }
 
-  public void setLecturer(Lecturer lecturer) {
+  public void setLecturer(LecturerDTO lecturer) {
     this.lecturer = lecturer;
   }
 
-  public Timeslot capacity(Integer capacity) {
-    this.capacity = capacity;
+  public TimeslotDTO capacity(Integer capacity) {
+    this.capacity = JsonNullable.of(capacity);
     return this;
   }
 
@@ -182,15 +184,15 @@ public class Timeslot   {
   @ApiModelProperty(value = "")
 
 
-  public Integer getCapacity() {
+  public JsonNullable<Integer> getCapacity() {
     return capacity;
   }
 
-  public void setCapacity(Integer capacity) {
+  public void setCapacity(JsonNullable<Integer> capacity) {
     this.capacity = capacity;
   }
 
-  public Timeslot possibleTrades(PossibleTradesResponse possibleTrades) {
+  public TimeslotDTO possibleTrades(PossibleTradesResponse possibleTrades) {
     this.possibleTrades = possibleTrades;
     return this;
   }
@@ -211,8 +213,8 @@ public class Timeslot   {
     this.possibleTrades = possibleTrades;
   }
 
-  public Timeslot attendees(Integer attendees) {
-    this.attendees = attendees;
+  public TimeslotDTO attendees(Integer attendees) {
+    this.attendees = JsonNullable.of(attendees);
     return this;
   }
 
@@ -223,15 +225,15 @@ public class Timeslot   {
   @ApiModelProperty(value = "")
 
 
-  public Integer getAttendees() {
+  public JsonNullable<Integer> getAttendees() {
     return attendees;
   }
 
-  public void setAttendees(Integer attendees) {
+  public void setAttendees(JsonNullable<Integer> attendees) {
     this.attendees = attendees;
   }
 
-  public Timeslot module(Module module) {
+  public TimeslotDTO module(ModuleDTO module) {
     this.module = module;
     return this;
   }
@@ -244,15 +246,15 @@ public class Timeslot   {
 
   @Valid
 
-  public Module getModule() {
+  public ModuleDTO getModule() {
     return module;
   }
 
-  public void setModule(Module module) {
+  public void setModule(ModuleDTO module) {
     this.module = module;
   }
 
-  public Timeslot type(TimeslotType type) {
+  public TimeslotDTO type(TimeslotType type) {
     this.type = type;
     return this;
   }
@@ -282,18 +284,18 @@ public class Timeslot   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Timeslot timeslot = (Timeslot) o;
-    return Objects.equals(this.id, timeslot.id) &&
-        Objects.equals(this.room, timeslot.room) &&
-        Objects.equals(this.day, timeslot.day) &&
-        Objects.equals(this.timeStart, timeslot.timeStart) &&
-        Objects.equals(this.timeEnd, timeslot.timeEnd) &&
-        Objects.equals(this.lecturer, timeslot.lecturer) &&
-        Objects.equals(this.capacity, timeslot.capacity) &&
-        Objects.equals(this.possibleTrades, timeslot.possibleTrades) &&
-        Objects.equals(this.attendees, timeslot.attendees) &&
-        Objects.equals(this.module, timeslot.module) &&
-        Objects.equals(this.type, timeslot.type);
+    TimeslotDTO timeslotDTO = (TimeslotDTO) o;
+    return Objects.equals(this.id, timeslotDTO.id) &&
+        Objects.equals(this.room, timeslotDTO.room) &&
+        Objects.equals(this.day, timeslotDTO.day) &&
+        Objects.equals(this.timeStart, timeslotDTO.timeStart) &&
+        Objects.equals(this.timeEnd, timeslotDTO.timeEnd) &&
+        Objects.equals(this.lecturer, timeslotDTO.lecturer) &&
+        Objects.equals(this.capacity, timeslotDTO.capacity) &&
+        Objects.equals(this.possibleTrades, timeslotDTO.possibleTrades) &&
+        Objects.equals(this.attendees, timeslotDTO.attendees) &&
+        Objects.equals(this.module, timeslotDTO.module) &&
+        Objects.equals(this.type, timeslotDTO.type);
   }
 
   @Override
@@ -304,7 +306,7 @@ public class Timeslot   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Timeslot {\n");
+    sb.append("class TimeslotDTO {\n");
     
     sb.append("    id: ").append(toIndentedString(id)).append("\n");
     sb.append("    room: ").append(toIndentedString(room)).append("\n");

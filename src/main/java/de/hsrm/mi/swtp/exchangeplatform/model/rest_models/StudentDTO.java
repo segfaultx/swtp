@@ -1,20 +1,19 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.rest_models;
 
+import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModelProperty;
-
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import javax.validation.Valid;
 
 /**
- * Student
+ * StudentDTO
  */
-@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-08T16:41:50.727112+01:00[Europe/Berlin]")
+@javax.annotation.Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2019-12-11T08:15:17.638366+01:00[Europe/Berlin]")
 
-public class Student   {
-  @JsonProperty("student_id")
+public class StudentDTO   {
+  @JsonProperty("matriculationNumber")
   private Long matriculationNumber;
 
   @JsonProperty("username")
@@ -22,9 +21,9 @@ public class Student   {
 
   @JsonProperty("timeslots")
   @Valid
-  private List<Timeslot> timeslots = null;
+  private List<TimeslotDTO> timeslots = null;
 
-  public Student matriculationNumber(Long matriculationNumber) {
+  public StudentDTO matriculationNumber(Long matriculationNumber) {
     this.matriculationNumber = matriculationNumber;
     return this;
   }
@@ -44,7 +43,7 @@ public class Student   {
     this.matriculationNumber = matriculationNumber;
   }
 
-  public Student username(String username) {
+  public StudentDTO username(String username) {
     this.username = username;
     return this;
   }
@@ -64,12 +63,12 @@ public class Student   {
     this.username = username;
   }
 
-  public Student timeslots(List<Timeslot> timeslots) {
+  public StudentDTO timeslots(List<TimeslotDTO> timeslots) {
     this.timeslots = timeslots;
     return this;
   }
 
-  public Student addTimeslotsItem(Timeslot timeslotsItem) {
+  public StudentDTO addTimeslotsItem(TimeslotDTO timeslotsItem) {
     if (this.timeslots == null) {
       this.timeslots = new ArrayList<>();
     }
@@ -85,11 +84,11 @@ public class Student   {
 
   @Valid
 
-  public List<Timeslot> getTimeslots() {
+  public List<TimeslotDTO> getTimeslots() {
     return timeslots;
   }
 
-  public void setTimeslots(List<Timeslot> timeslots) {
+  public void setTimeslots(List<TimeslotDTO> timeslots) {
     this.timeslots = timeslots;
   }
 
@@ -102,10 +101,10 @@ public class Student   {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    Student student = (Student) o;
-    return Objects.equals(this.matriculationNumber, student.matriculationNumber) &&
-        Objects.equals(this.username, student.username) &&
-        Objects.equals(this.timeslots, student.timeslots);
+    StudentDTO studentDTO = (StudentDTO) o;
+    return Objects.equals(this.matriculationNumber, studentDTO.matriculationNumber) &&
+        Objects.equals(this.username, studentDTO.username) &&
+        Objects.equals(this.timeslots, studentDTO.timeslots);
   }
 
   @Override
@@ -116,7 +115,7 @@ public class Student   {
   @Override
   public String toString() {
     StringBuilder sb = new StringBuilder();
-    sb.append("class Student {\n");
+    sb.append("class StudentDTO {\n");
     
     sb.append("    matriculationNumber: ").append(toIndentedString(matriculationNumber)).append("\n");
     sb.append("    username: ").append(toIndentedString(username)).append("\n");
