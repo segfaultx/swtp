@@ -34,12 +34,10 @@ public class Timeslot implements Model {
 
     /** The scheduled beginning of the appointment. */
     @JsonProperty("time_start")
-    @JsonSerialize(using = LocalTimeSerializer.class)
     private LocalTime timeStart;  // string nur weil aktuell in lokalen DB ein falscher Eintrag war
 
     /** The scheduled end time of the appointment. */
     @JsonProperty("time_end")
-    @JsonSerialize(using = LocalTimeSerializer.class)
     private LocalTime timeEnd;  // string nur weil aktuell in lokalen DB ein falscher Eintrag war
 
     /** The lecturer of the appointment. */
