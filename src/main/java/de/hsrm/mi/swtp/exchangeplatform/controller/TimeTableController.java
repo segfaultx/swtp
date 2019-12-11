@@ -6,6 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TimetableDTO;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.RestConverterService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
+import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,7 +23,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequestMapping("/api/v1")
 @RestController
-public class TimeTableController implements BaseRestController<TimeTable, Long>, TimetablesApi{
+public class TimeTableController implements BaseRestController<TimeTable, Long> {
 	
 	TimeTableService timeTableService;
 	StudentService studentService;
@@ -72,7 +73,9 @@ public class TimeTableController implements BaseRestController<TimeTable, Long>,
 	}
 	
 	@Override
-	public ResponseEntity<TimetableDTO> getTimetableForStudent(Long studentId) {
+	@ApiOperation(value = "Get personalized Timetable of student.", nickname = "getTimetableForStudent", notes = "", response = TimetableDTO.class, tags = { })
+	@RequestMapping(value = "/timetables/{studentId}", produces = { "application/json" }, method = RequestMethod.GET)
+	public ResponseEntity<TimetableDTO> getTimetableForStudent(@PathVariable(value = "studentId") Long studentId) {
 		var stud = studentService.getById(studentId);
 		TimeTable timeTable = new TimeTable();
 		timeTable.setTimeslots(stud.getTimeslots());
