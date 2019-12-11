@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/timetables")
 @RestController
 public class TimeTableController implements BaseRestController<TimeTable, Long> {
 	
@@ -72,9 +72,8 @@ public class TimeTableController implements BaseRestController<TimeTable, Long> 
 		}
 	}
 	
-	@Override
 	@ApiOperation(value = "Get personalized Timetable of student.", nickname = "getTimetableForStudent", notes = "", response = TimetableDTO.class, tags = { })
-	@RequestMapping(value = "/timetables/{studentId}", produces = { "application/json" }, method = RequestMethod.GET)
+	@RequestMapping(value = "/{studentId}", produces = { "application/json" }, method = RequestMethod.GET)
 	public ResponseEntity<TimetableDTO> getTimetableForStudent(@PathVariable(value = "studentId") Long studentId) {
 		var stud = studentService.getById(studentId);
 		TimeTable timeTable = new TimeTable();
