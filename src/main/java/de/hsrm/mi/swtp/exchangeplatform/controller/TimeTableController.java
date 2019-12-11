@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -32,6 +34,8 @@ public class TimeTableController {
 		TimeTable timeTable = new TimeTable();
 		timeTable.setTimeslots(stud.getTimeslots());
 		timeTable.setId(stud.getStudentId());
+		timeTable.setDateEnd(LocalDate.now());
+		timeTable.setDateStart(LocalDate.now()); // todo: fix this shit
 		return new ResponseEntity<>(timeTable, HttpStatus.OK);
 	}
 }
