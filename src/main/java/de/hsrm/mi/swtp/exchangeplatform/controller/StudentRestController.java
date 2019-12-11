@@ -28,7 +28,6 @@ public class StudentRestController implements BaseRestController<Student, Long> 
 	
 	String BASEURL = "/api/v1/student";
 	StudentService studentService;
-	TradeOfferService tradeOfferService;
 	
 	@Override
 	public ResponseEntity<List<Student>> getAll() {
