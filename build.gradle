@@ -38,6 +38,9 @@ dependencies {
 	implementation 'io.hawt:hawtio-springboot:2.8.0'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 
+    implementation 'org.springdoc:springdoc-openapi-core:1.1.49'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.1.44'
+
 	compileOnly 'org.projectlombok:lombok'
 
     runtimeOnly 'com.h2database:h2'
