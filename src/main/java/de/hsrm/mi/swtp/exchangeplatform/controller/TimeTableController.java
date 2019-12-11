@@ -1,9 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TimetableDTO;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.RestConverterService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
 import io.swagger.annotations.*;
@@ -13,7 +10,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -24,7 +20,6 @@ import org.springframework.web.bind.annotation.*;
 @Api(value = "timetables", description = "the timetables API")
 public class TimeTableController {
 	
-	TimeTableService timeTableService;
 	StudentService studentService;
 	
 	@ApiOperation(value = "Get personalized Timetable of student.", nickname = "getTimetableForStudent", notes = "", response = TimeTable.class, tags = { })
