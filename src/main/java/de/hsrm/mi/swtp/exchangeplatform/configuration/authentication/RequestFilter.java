@@ -2,7 +2,6 @@ package de.hsrm.mi.swtp.exchangeplatform.configuration.authentication;
 
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.AuthenticationService;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import io.jsonwebtoken.ExpiredJwtException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,17 +23,16 @@ import java.io.IOException;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Component
 public class RequestFilter extends OncePerRequestFilter {
-	
+
 	JWTTokenUtils jwtTokenUtil;
 	AuthenticationService authenticationUserDetailsService;
-	StudentService studentService;
-	
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
 		final String requestTokenHeader = request.getHeader("Authorization");
 		String username = null;
 		String jwtToken = null;
-		
+
 		// JWT Token is in the form "Bearer token". Remove Bearer word and get
 		// only the Token
 		if(requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
@@ -47,7 +45,7 @@ public class RequestFilter extends OncePerRequestFilter {
 				System.out.println("JWT Token has expired");
 			}
 		}
-		
+
 		// Once we get the token validate it.
 		if(username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 			UserDetails userDetails = this.authenticationUserDetailsService.loadUserByUsername(username);
@@ -64,9 +62,7 @@ public class RequestFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
 			}
 		}
-		
+
 		chain.doFilter(request, response);
-//		if(jwtToken != null) {
-//		}
 	}
 }
