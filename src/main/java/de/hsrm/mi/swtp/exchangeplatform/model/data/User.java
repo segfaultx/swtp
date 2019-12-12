@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -32,14 +33,16 @@ public class User implements Model {
 	@JsonProperty("staff_number")
 	Long staffNumber;
 	
-	@JsonIgnore
 	@OneToOne(cascade = CascadeType.ALL)
+	@JsonIgnore
 	AuthenticationInformation authenticationInformation;
 	
 	@JsonProperty("user_type")
 	@OneToOne(cascade = CascadeType.ALL)
+	@JsonManagedReference
 	UserType userType;
 	
 	@OneToMany(mappedBy = "user")
+	@JsonManagedReference
 	List<Timeslot> timeslots;
 }

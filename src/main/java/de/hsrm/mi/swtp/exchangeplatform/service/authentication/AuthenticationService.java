@@ -42,7 +42,7 @@ public class AuthenticationService implements UserDetailsService {
 			de.hsrm.mi.swtp.exchangeplatform.model.data.User found = user.get();
 			builder = org.springframework.security.core.userdetails.User.withUsername(username);
 			builder.password(new BCryptPasswordEncoder().encode(found.getAuthenticationInformation().getUsername())); // TODO: add password field in User entity
-			builder.roles(found.getAuthenticationInformation().getRole());
+			builder.roles(found.getAuthenticationInformation().getRole().name());
 		} else {
 			throw new UsernameNotFoundException("User not found.");
 		}
