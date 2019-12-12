@@ -1,6 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound;
 
-public class TradeOfferNotFoundException extends RuntimeException {
+public class TradeOfferNotFoundException extends Exception {
 	
 	public TradeOfferNotFoundException() {
 		super("Could not find the requested object.");
