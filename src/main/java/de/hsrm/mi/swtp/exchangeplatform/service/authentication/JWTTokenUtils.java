@@ -1,6 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.authentication;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -48,9 +48,9 @@ public class JWTTokenUtils {
 	}
 	
 	//generate token for user
-	public String generateToken(Student student) {
+	public String generateToken(User user) {
 		Map<String, Object> claims = new HashMap<>();
-		return doGenerateToken(claims, student.getUsername());
+		return doGenerateToken(claims, user.getAuthenticationInformation().getUsername());
 	}
 	
 	//while creating the token -
