@@ -90,11 +90,11 @@ public class UserRestController {
 	public ResponseEntity<Timetable> getPersonalizedTimeTable(@PathVariable("studentId") long studentId) {
 		log.info(String.format("Getting personalized Timetable for student: %d", studentId));
 		Timetable timeTable = new Timetable();
-		// TODO: Dennis
+		// TODO: anpassen an neues Model
 		//var student = studentService.getById(studentId);
 		log.info(String.format("Looking up possible Tradeoffers for student: %d", studentId));
 		try {
-			// TODO: Dennis
+			// TODO: anpassen an neues Model
 //			var tradeoffers = tradeOfferService.getTradeOffersForTimeSlots(student.getTimeslots());
 //			for(Timeslot timeslot : tradeoffers.keySet()) {
 //				de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot restTimeSlot = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();

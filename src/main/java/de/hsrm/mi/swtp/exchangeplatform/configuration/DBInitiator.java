@@ -151,79 +151,8 @@ public class DBInitiator implements ApplicationRunner {
 		userRepository.save(dennis);
 		userRepository.save(weitz);
 		
-
-
-//		Room d12 = new Room();
-//		d12.setLocation("Unter den Eichen");
-//		d12.setRoomNumber("D12");
-//		timeslot1.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
-//
-//
-//		List<User> attendees = new ArrayList<>();
-//		attendees.add(dennis);
-//
-//		List<Student> attendees2 = new ArrayList<>();
-//		attendees2.add(willi);
-//
-//		List<Timeslot> timeslots = new ArrayList<>();
-//		timeslots.add(timeslot1);
-//		timeslots.add(timeslot2);
-//
-//		List<Timeslot> dennisTimeslots = new ArrayList<>();
-//		dennisTimeslots.add(timeslot1);
-//
-//		List<Timeslot> williTimeslots = new ArrayList<>();
-//		williTimeslots.add(timeslot2);
-//
-//		Module module = new Module();
-//		module.setName("Softwaretechnik");
-//		List<Module> modules = new ArrayList<>();
-//		modules.add(module);
-//
-//		lecturer.setTimeslots(timeslots);
-//		d12.setTimeslots(timeslots);
-//
-//		timeslot1.setRoom(d12);
-//		timeslot2.setRoom(d12);
-//
-//		PO po = new PO();
-//		po.setMajor("Medieninformatik");
-//		po.setValidSinceYear("2017");
-//		po.setModules(modules);
-//
-//		module.setPo(po);
-//		module.setTimeslots(timeslots);
-//
-//		TimeTable timeTable = new TimeTable();
-//		timeTable.setDateStart(LocalDate.of(2019, 10, 15));
-//		timeTable.setDateEnd(LocalDate.of(2020, 3, 31));
-//		timeTable.setTimeslots(timeslots);
-//
-//		timeslot1.setTimeTable(timeTable);
-//		timeslot1.setModule(module);
-//
-//		TODO: Dennis anpassen nach model umstellung
-//		timeslot1.setAttendees(attendees);
-//		timeslot1.setLecturer(lecturer);
-//
-//		timeslot2.setTimeTable(timeTable);
-//		timeslot2.setModule(module);
-//
-//		// TODO: Dennis anpassen nach Model Umstellung
-//		timeslot2.setAttendees(attendees2);
-//		timeslot2.setLecturer(lecturer);
-//
-//
-//		dennis.setTimeslots(dennisTimeslots);
-//		//willi.setTimeslots(williTimeslots);
-//
-//		TradeOffer tradeOffer = new TradeOffer();
-//		//tradeOffer.setOfferer(willi);
-//		tradeOffer.setOffer(timeslot2);
-//		tradeOffer.setSeek(timeslot1);
-//
-//		tradeOfferRepository.save(tradeOffer);
-//		timeTableRepository.save(timeTable);
+		// TODO: Sinnvoll befüllen nach Model refactoring
+		
 		log.info("Done saving timeTable...");
 		
 	}

@@ -13,12 +13,11 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.sql.Timestamp;
 
 @RestController
 @RequestMapping("/api/v1/trades")
 @Slf4j
-public class TradeOffersRestController implements TradesApi {
+public class TradeOffersRestController {
 	
 	@Autowired
 	private TradeOfferService tradeOfferService;
@@ -36,14 +35,9 @@ public class TradeOffersRestController implements TradesApi {
 	@DeleteMapping("/{studentId}/{tradeId}")
 	public ResponseEntity deleteTradeOffer(@PathVariable("studentId") long studentId, @PathVariable("tradeId") long tradeId) {
 		log.info(String.format("DELETE Request Student: %d TradeOffer: %d", studentId, tradeId));
-		try {
-			if(tradeOfferService.deleteTradeOffer(studentId, tradeId)) {
-				log.info(String.format("DELETE Request successful Student: %d TradeOffer: %d", studentId, tradeId));
-				return new ResponseEntity<>(HttpStatus.OK);
-			}
-		} catch(TradeOfferNotFoundException ex) {
-			log.info(String.format("ERROR while DELETE Request Student: %d TradeOffer: %d - Entity not found", studentId, tradeId));
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		if(tradeOfferService.deleteTradeOffer(studentId, tradeId)) {
+			log.info(String.format("DELETE Request successful Student: %d TradeOffer: %d", studentId, tradeId));
+			return new ResponseEntity<>(HttpStatus.OK);
 		}
 		log.info(String.format("ERROR while DELETE Request Student: %d TradeOffer: %d - Student isn't owner of entity", studentId, tradeId));
 		return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -107,20 +101,21 @@ public class TradeOffersRestController implements TradesApi {
 				log.info(String.format("POST Request successful, performed trade: %d Requester: %d", tradeId, studentId));
 				de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();
 				restAnswer.setId(answer.getId());
-				Lecturer lecturer = new Lecturer();
-				lecturer.setMail(answer.getLecturer().getEmail());
-				lecturer.setName(answer.getLecturer().getUsername());
-				restAnswer.setLecturer(lecturer);
-				restAnswer.setAttendees(answer.getAttendees().size());
-				restAnswer.setCapacity(answer.getCapacity());
-				Room room = new Room();
-				room.setId(answer.getRoom().getId());
-				room.setLocation(answer.getRoom().getLocation());
-				room.setRoomNumber(answer.getRoom().getRoomNumber());
-				restAnswer.setRoom(room);
-				restAnswer.setTimeEnd(Timestamp.valueOf(answer.getTimeEnd().toString()));
-				restAnswer.setTimeStart(Timestamp.valueOf(answer.getTimeStart().toString()));
-				restAnswer.setDay(DayEnum.valueOf(answer.getDay()));
+				//TODO: auf das neue User Model anpassen
+//				Lecturer lecturer = new Lecturer();
+//				lecturer.setMail(answer.getLecturer().getEmail());
+//				lecturer.setName(answer.getLecturer().getUsername());
+//				restAnswer.setLecturer(lecturer);
+//				restAnswer.setAttendees(answer.getAttendees().size());
+//				restAnswer.setCapacity(answer.getCapacity());
+//				Room room = new Room();
+//				room.setId(answer.getRoom().getId());
+//				room.setLocation(answer.getRoom().getLocation());
+//				room.setRoomNumber(answer.getRoom().getRoomNumber());
+//				restAnswer.setRoom(room);
+//				restAnswer.setTimeEnd(Timestamp.valueOf(answer.getTimeEnd().toString()));
+//				restAnswer.setTimeStart(Timestamp.valueOf(answer.getTimeStart().toString()));
+//				restAnswer.setDay(DayEnum.valueOf(answer.getDay()));
 				return new ResponseEntity<>(restAnswer, HttpStatus.OK);
 			}
 			log.info(String.format("Post Request error, trade: %d from requester: %d failed", tradeId, studentId));
@@ -128,11 +123,13 @@ public class TradeOffersRestController implements TradesApi {
 		} catch(RuntimeException ex) {
 			log.info(String.format("POST Request error, trade: %d from requester: %d - internal error", tradeId, studentId));
 			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		} catch(Exception e) {
+			e.printStackTrace();
+			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 		
 	}
 	
-	@Override
 	public ResponseEntity<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer> acceptTradeOffer(Long tradeId, Long studentId) {
 		return null;
 	}
@@ -145,8 +142,8 @@ public class TradeOffersRestController implements TradesApi {
 	 *
 	 * @return {@link HttpStatus#OK} if successful, {@link HttpStatus#BAD_REQUEST} if tradeoffer is malformed
 	 */
-	@Override
-	public ResponseEntity<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer> createTradeOffer(@Valid TradeRequest tradeRequest) {
+	public ResponseEntity<de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TradeOffer> createTradeOffer(@Valid TradeRequest tradeRequest) throws
+			NotFoundException {
 		log.info(String.format("POST Request create new traderequest: Requester: %d Offered: %d, Seek: %d",
 							   tradeRequest.getOfferedByStudentMatriculationNumber(), tradeRequest.getOfferedTimeslotId().get(),
 							   tradeRequest.getWantedTimeslotId().get()
@@ -158,7 +155,7 @@ public class TradeOffersRestController implements TradesApi {
 		restAnswer.setOfferedTimeslotId(persistedTradeOffer.getOffer().getId());
 		restAnswer.setId(persistedTradeOffer.getId().intValue());
 		log.info(String.format("POST Request successful: created new tradeoffer with id: %d requester: %d", persistedTradeOffer.getId(),
-							   persistedTradeOffer.getOfferer().getStudentId()
+							   persistedTradeOffer.getOfferer().getStudentNumber()
 							  ));
 		return new ResponseEntity<>(restAnswer, HttpStatus.OK);
 	}

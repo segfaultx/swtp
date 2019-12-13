@@ -4,11 +4,13 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.TradeOfferNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
-import de.hsrm.mi.swtp.exchangeplatform.repository.StudentRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.*;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,18 +25,15 @@ import java.util.Map;
 @Service
 @Slf4j
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TradeOfferService implements RestService<TradeOffer, Long> {
-	@Autowired
-	private TradeOfferRepository tradeOfferRepository;
 	
-	@Autowired
-	private TimeslotRepository timeSlotRepository;
+	// TODO: Prüfen ob Klasse vom Model Refactoring beeinflusst
 	
-	@Autowired
-	private StudentRepository studentRepository;
-	
-	@Autowired
-	private TradeFilter filterService;
+	TradeOfferRepository tradeOfferRepository;
+	TimeslotRepository timeSlotRepository;
+	UserRepository userRepository;
+	TradeFilter filterService;
 	
 	/**
 	 * Method to get personalized {@link TradeOffer}s for a students timetable
@@ -62,19 +61,15 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 *
 	 * @return new Timeslot of requester
 	 *
-	 * @throws RuntimeException if either requesterId or tradeId cant be found
+	 * @throws Exception if either requesterId or tradeId cant be found
 	 */
 	@Transactional
-	public Timeslot tradeTimeslots(long requesterId, long tradeId) throws RuntimeException {
+	public Timeslot tradeTimeslots(long requesterId, long tradeId) throws Exception {
 		log.info(String.format("Performing Trade for requester: %d, trade: %d", requesterId, tradeId));
-		var requester = studentRepository.findById(requesterId).orElseThrow(() -> {
-			log.info(String.format("Error fetching Student from repository with ID: %d", requesterId));
-			throw new NotFoundException(requesterId);
-		});
-		var trade = tradeOfferRepository.findById(tradeId).orElseThrow(() -> {
-			log.info(String.format("Error fetching Tradeoffer with ID: %d", tradeId));
-			throw new NotFoundException(tradeId);
-		});
+		var requester = userRepository.findById(requesterId)
+				  			.orElseThrow(NotFoundException::new);
+		var trade = tradeOfferRepository.findById(tradeId)
+							.orElseThrow(NotFoundException::new);
 		requester.getTimeslots().remove(trade.getSeek());
 		requester.getTimeslots().add(trade.getOffer());
 		var tradePartner = trade.getOfferer();
@@ -96,16 +91,13 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	public boolean deleteTradeOffer(long studentId, long tradeId) throws RuntimeException {
 		log.info(String.format("Looking up Tradeoffer with id: %d. Requester: %d", tradeId, studentId));
 		tradeOfferRepository.findById(tradeId).ifPresentOrElse(tradeOffer -> {
-			if(tradeOffer.getOfferer().getStudentId() != studentId) {
+			if(tradeOffer.getOfferer().getStudentNumber() != studentId) {
 				log.info(String.format("Error: Requester is not owner of trade with id: %d, requester: %d", tradeId, studentId));
 				throw new RuntimeException("not your tradeoffer");
 			}
 			log.info(String.format("Successfully deleted tradeoffer with id: %d of student: %d", tradeId, studentId));
 			tradeOfferRepository.delete(tradeOffer);
-		}, () -> {
-			log.info(String.format("Error: could not find tradeoffer with id: %d of student: %d", tradeId, studentId));
-			throw new TradeOfferNotFoundException(tradeId);
-		});
+		}, NotFoundException::new);
 		return true;
 	}
 	
@@ -123,18 +115,10 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	public TradeOffer createTradeOffer(long studentId, long offerId, long seekId) throws NotFoundException {
 		log.info(String.format("Creating new Tradeoffer for Student: %d with offer/request: %d/%d", studentId, offerId, seekId));
 		TradeOffer tradeoffer = new TradeOffer();
-		tradeoffer.setOfferer(studentRepository.findById(studentId).orElseThrow(() -> {
-			log.info(String.format("ERROR while creating Tradeoffer: StudentId not found: %d", studentId));
-			throw new NotFoundException(studentId);
-		}));
-		tradeoffer.setOffer(timeSlotRepository.findById(offerId).orElseThrow(() -> {
-			log.info(String.format("ERROR while creating Tradeoffer: offerId not found: %d", offerId));
-			throw new NotFoundException(offerId);
-		}));
-		tradeoffer.setSeek(timeSlotRepository.findById(seekId).orElseThrow(() -> {
-			log.info(String.format("ERROR while creating Tradeoffer: seekId not found: %d", seekId));
-			throw new NotFoundException(seekId);
-		}));
+		tradeoffer.setOfferer(userRepository.findById(studentId)
+			.orElseThrow(NotFoundException::new));
+		tradeoffer.setOffer(timeSlotRepository.findById(offerId).orElseThrow(NotFoundException::new));
+		tradeoffer.setSeek(timeSlotRepository.findById(seekId).orElseThrow(NotFoundException::new));
 		log.info(String.format("Successfully created new Tradeoffer for Student: %d with offer/seek: %d/%d", studentId, offerId, seekId));
 		return tradeOfferRepository.save(tradeoffer);
 	}

@@ -11,9 +11,10 @@ public class CapacityFilter implements Filter {
 	public List<TradeOffer> filter(List<TradeOffer> offers) {
 		List<TradeOffer> capacityList = new ArrayList<>();
 		for(TradeOffer offer : capacityList) {
-			if(offer.getSeek().getCapacity() < offer.getSeek().getAttendees().size()) {
-				capacityList.add(offer);
-			}
+			// TODO: Anpassen nach Model Umstellung
+//			if(offer.getSeek().getCapacity() < offer.getSeek().getAttendees().size()) {
+//				capacityList.add(offer);
+//			}
 		}
 		return capacityList;
 	}

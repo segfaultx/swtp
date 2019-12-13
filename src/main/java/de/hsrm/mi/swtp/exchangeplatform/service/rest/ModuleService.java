@@ -1,7 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.ModuleMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
@@ -18,27 +17,20 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ModuleService implements RestService<Module, Long> {
+public class ModuleService {
 	
 	ModuleRepository repository;
 	ModuleMessageSender messageSender;
 	
-	@Override
 	public List<Module> getAll() {
 		return repository.findAll();
 	}
 	
-	@Override
-	public Module getById(Long moduleId) {
+	public Optional<Module> getById(Long moduleId) {
 		Optional<Module> moduleOptional = this.repository.findById(moduleId);
-		if(!moduleOptional.isPresent()) {
-			log.info(String.format("FAIL: Module %s not found", moduleId));
-			throw new NotFoundException(moduleId);
-		}
-		return moduleOptional.get();
+		return moduleOptional;
 	}
 	
-	@Override
 	public void save(Module module) {
 		if(this.repository.existsById(module.getId())) {
 			log.info(String.format("FAIL: Module %s not created", module));
@@ -49,15 +41,9 @@ public class ModuleService implements RestService<Module, Long> {
 		log.info(String.format("SUCCESS: Module %s created", module));
 	}
 	
-	@Override
-	public void delete(Long moduleId) throws IllegalArgumentException {
-		this.repository.delete(this.getById(moduleId));
-		messageSender.send(String.format("SUCCESS: Module %s deleted", moduleId));
-		log.info(String.format("SUCCESS: Module %s deleted", moduleId));
-	}
-	
-	@Override
-	public boolean update(Long aLong, Module update) throws IllegalArgumentException {
-		return true;
+	public void delete(Module module) throws IllegalArgumentException {
+		repository.delete(module);
+		messageSender.send(String.format("SUCCESS: Module %s deleted", module));
+		log.info(String.format("SUCCESS: Module %s deleted", module));
 	}
 }
