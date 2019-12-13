@@ -1,12 +1,12 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import antlr.Token;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.JWTResponse;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Student;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.AuthenticationService;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
 	
 	AuthenticationService authenticationService;
-	StudentService studentService;
+	UserService userService;
 	AuthenticationManager authenticationManager;
 	
 	@Autowired
@@ -38,21 +38,23 @@ public class AuthenticationController {
 		
 		if(!authenticationService.isLoginValid(authenticationRequest)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		
-		Student student = studentService.getByUsername(authenticationRequest.getUsername());
+		User user = userService.getByUsername(authenticationRequest.getUsername())
+				.orElseThrow(NotFoundException::new);
 		
-		final String token = jwtTokenUtil.generateToken(student);
+		final String token = jwtTokenUtil.generateToken(user);
 		JWTResponse response = new JWTResponse(token);
 		return ResponseEntity.ok(response);
 	}
 	
 	@GetMapping("/whoami")
-	public ResponseEntity<?> getUser(@RequestHeader("Authorization") String token) {
+	public ResponseEntity<?> getUser(@RequestHeader("Authorization") String token) throws Exception {
 		
 		if(token != null && token.startsWith("Bearer ")) {
 			String jwtToken = token.substring(7);
 			
 			String usernameFromToken = jwtTokenUtil.getUsernameFromToken(jwtToken);
-			Student found = studentService.getByUsername(usernameFromToken);
+			User found = userService.getByUsername(usernameFromToken)
+					.orElseThrow(NotFoundException::new);
 			return ResponseEntity.ok(found);
 		}
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
