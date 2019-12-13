@@ -4,6 +4,9 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -13,13 +16,16 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 @Component
 public class JWTTokenUtils {
 	
+	public final static String BEARER_TOKEN_PREFIX = "Bearer ";
 	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 	
 	@Value("${jwt.secret}")
-	private String secret;
+	String secret;
 	
 	//retrieve username from jwt token
 	public String getUsernameFromToken(String token) {
@@ -54,10 +60,10 @@ public class JWTTokenUtils {
 	}
 	
 	//while creating the token -
-//1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID
-//2. Sign the JWT using the HS512 algorithm and secret key.
-//3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
-//   compaction of the JWT to a URL-safe string
+	//1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID
+	//2. Sign the JWT using the HS512 algorithm and secret key.
+	//3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
+	//   compaction of the JWT to a URL-safe string
 	private String doGenerateToken(Map<String, Object> claims, String subject) {
 		return Jwts.builder()
 				   .setClaims(claims)
@@ -73,4 +79,13 @@ public class JWTTokenUtils {
 		final String username = getUsernameFromToken(token);
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
+	
+	public String tokenWithoutPrefix(final String bearerToken) {
+		return bearerToken.replace(BEARER_TOKEN_PREFIX, "");
+	}
+	
+	public boolean isValidToken(final String token) {
+		return token != null && token.startsWith(BEARER_TOKEN_PREFIX);
+	}
+	
 }

@@ -48,16 +48,12 @@ public class AuthenticationController {
 	
 	@GetMapping("/whoami")
 	public ResponseEntity<?> getUser(@RequestHeader("Authorization") String token) throws Exception {
+		if(!jwtTokenUtil.isValidToken(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		
-		if(token != null && token.startsWith("Bearer ")) {
-			String jwtToken = token.substring(7);
-			
-			String usernameFromToken = jwtTokenUtil.getUsernameFromToken(jwtToken);
-			User found = userService.getByUsername(usernameFromToken)
-					.orElseThrow(NotFoundException::new);
-			return ResponseEntity.ok(found);
-		}
-		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		String jwtToken = jwtTokenUtil.tokenWithoutPrefix(token);
+		String usernameFromToken = jwtTokenUtil.getUsernameFromToken(jwtToken);
+		User found = userService.getByUsername(usernameFromToken).orElseThrow(NotFoundException::new);
+		return ResponseEntity.ok(found);
 	}
 
 
