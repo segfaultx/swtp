@@ -4,9 +4,6 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -16,8 +13,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
 @Component
 public class JWTTokenUtils {
 	
@@ -25,7 +20,7 @@ public class JWTTokenUtils {
 	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 	
 	@Value("${jwt.secret}")
-	String secret;
+	private String secret;
 	
 	//retrieve username from jwt token
 	public String getUsernameFromToken(String token) {
