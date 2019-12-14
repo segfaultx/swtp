@@ -1,16 +1,17 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging;
 
 import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.ModuleMessageConverter;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.UserMessageConverter;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.TimeslotMessageConverter;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.UserMessageConverter;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ModuleMessageListener;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.UserMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.TimeslotMessageListener;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.UserMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.service.JmsErrorHandler;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQTopic;
@@ -22,6 +23,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.destination.JndiDestinationResolver;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.JMSException;
 
 @Slf4j
 @EnableJms
@@ -71,12 +73,29 @@ public class MessageListenerConfig {
 	}
 	
 	@Bean
+	public ActiveMQConnectionFactory activeMQConnectionFactory() throws JMSException {
+		ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
+		activeMQConnectionFactory.createConnection("admin", "admin");
+		return activeMQConnectionFactory;
+	}
+	
+	@Bean
 	public JmsTemplate jmsTemplate() {
 		JmsTemplate jmsTemplate = new JmsTemplate();
 //        jmsTemplate.setDestinationResolver(jndiDestinationResolver());
 		jmsTemplate.setMessageIdEnabled(true);
 		jmsTemplate.setMessageTimestampEnabled(true);
 		jmsTemplate.setConnectionFactory(connectionFactory);
+		return jmsTemplate;
+	}
+	
+	@Bean(name = "personalJmsTemplate")
+	public JmsTemplate personalJmsTemplate(ActiveMQConnectionFactory activeMQConnectionFactory) {
+		JmsTemplate jmsTemplate = new JmsTemplate();
+//        jmsTemplate.setDestinationResolver(jndiDestinationResolver());
+		jmsTemplate.setMessageIdEnabled(true);
+		jmsTemplate.setMessageTimestampEnabled(true);
+		jmsTemplate.setConnectionFactory(activeMQConnectionFactory);
 		return jmsTemplate;
 	}
 	

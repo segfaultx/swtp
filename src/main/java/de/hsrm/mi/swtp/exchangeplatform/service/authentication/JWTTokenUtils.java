@@ -80,11 +80,11 @@ public class JWTTokenUtils {
 		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 	}
 	
-	public String tokenWithoutPrefix(final String bearerToken) {
+	public static String tokenWithoutPrefix(final String bearerToken) {
 		return bearerToken.replace(BEARER_TOKEN_PREFIX, "");
 	}
 	
-	public boolean isValidToken(final String token) {
+	public static boolean isValidToken(final String token) {
 		return token != null && token.startsWith(BEARER_TOKEN_PREFIX);
 	}
 	
