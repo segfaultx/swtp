@@ -54,6 +54,7 @@ dependencies {
 	}
 
 	compile group: 'com.github.javafaker', name: 'javafaker', version: '1.0.1'
+    compile group: 'net.kaczmarzyk', name: 'specification-arg-resolver', version: '2.1.1'
 	compile 'org.springframework.boot:spring-boot-starter-activemq'
 	compile 'org.springframework.boot:spring-boot-starter'
 	compile 'org.apache.activemq:activemq-broker'
