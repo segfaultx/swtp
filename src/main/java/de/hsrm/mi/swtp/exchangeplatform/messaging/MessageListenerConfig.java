@@ -36,6 +36,7 @@ public class MessageListenerConfig {
 		log.info("BrokerService broker() gezogen");
 		BrokerService broker = new BrokerService();
 		broker.addConnector("tcp://0.0.0.0:4242");
+		log.info(broker.toString());
 		return broker;
 	}
 	

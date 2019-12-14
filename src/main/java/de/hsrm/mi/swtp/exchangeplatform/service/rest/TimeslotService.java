@@ -4,7 +4,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.TimeslotNotCreated
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.TimeslotMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.UserModel;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +32,7 @@ public class TimeslotService {
 		return repository.findAll();
 	}
 
-	public void addAttendeeToTimeslot(Long timeslotId, User student) throws NotFoundException {
+	public void addAttendeeToTimeslot(Long timeslotId, UserModel student) throws NotFoundException {
 		Timeslot timeslot = getById(timeslotId)
 				.orElseThrow(NotFoundException::new);
 
@@ -65,7 +65,7 @@ public class TimeslotService {
 		messageSender.send(timeslot);
 	}
 
-	public void removeAttendeeFromTimeslot(Long timeslotId, User student) throws NotFoundException {
+	public void removeAttendeeFromTimeslot(Long timeslotId, UserModel student) throws NotFoundException {
 //		Timeslot timeslot = this.getById(timeslotId)
 //				.orElseThrow(NotFoundException::new);
 //

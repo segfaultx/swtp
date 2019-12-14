@@ -2,7 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging.converter;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.UserModel;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ public class UserMessageConverter implements MessageConverter {
 	
 	@Override
 	public Message toMessage(Object object, Session session) throws JMSException {
-		User user = (User) object;
+		UserModel user = (UserModel) object;
 		String jsontext = null;
 		try {
 			log.info("TO MESSAGE::" + user.toString());
@@ -38,9 +38,9 @@ public class UserMessageConverter implements MessageConverter {
 		TextMessage textMessage = (TextMessage) message;
 		String jsontext = textMessage.getText();
 		
-		User user = null;
+		UserModel user = null;
 		try {
-			user = mapper.readValue(jsontext, User.class);
+			user = mapper.readValue(jsontext, UserModel.class);
 		} catch(JsonProcessingException e) {
 			log.error("FEHLER fromMessage JSON '{}' -> Student", jsontext, e.getMessage());
 		}

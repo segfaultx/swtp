@@ -13,6 +13,6 @@ import java.util.List;
 public interface TimeslotRepository extends JpaRepository<Timeslot, Long> {
 	List<Timeslot> findAllByModule(Module module);
 	
-	@Query("select user.id from User user join Timeslot ts where ts.id = :id")
+	@Query("select user.id from UserModel user join Timeslot ts where ts.id = :id")
 	List<Timeslot> findAllAttendeesByTimeSlotId(@Param("id") Long id);
 }

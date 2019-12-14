@@ -6,9 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TimeTableRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +38,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// START Dennis
 		
-		User dennis = new User();
+		UserModel dennis = new UserModel();
 		dennis.setFirstName("Dennis");
 		dennis.setLastName("Schad");
 		dennis.setStaffNumber(null);
@@ -64,7 +62,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// START Weitz
 		
-		User weitz = new User();
+		UserModel weitz = new UserModel();
 		weitz.setFirstName("Wolfgang");
 		weitz.setLastName("Weitz");
 		weitz.setStudentNumber(null);
