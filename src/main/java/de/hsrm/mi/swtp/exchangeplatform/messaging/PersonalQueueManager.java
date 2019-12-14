@@ -5,11 +5,11 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
+import javax.jms.ConnectionFactory;
 import java.util.Map;
 import java.util.UUID;
 
@@ -18,9 +18,9 @@ import java.util.UUID;
 @Component
 public class PersonalQueueManager {
 	
-	JmsTemplate personalJmsTemplate;
+	JmsTemplate jmsTemplate;
 	Map<String, PersonalQueue> personalQueues;
-	ActiveMQConnectionFactory activeMQConnectionFactory;
+	ConnectionFactory connectionFactory;
 	
 	public ActiveMQQueue createNewQueue(final String jwtToken, final User user) {
 		if(personalQueues.containsKey(jwtToken)) return personalQueues.get(jwtToken).getActiveMQQueue();
