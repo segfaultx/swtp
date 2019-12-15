@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.messaging;
+package de.hsrm.mi.swtp.exchangeplatform.configuration;
 
 import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.ModuleMessageConverter;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.TimeslotMessageConverter;

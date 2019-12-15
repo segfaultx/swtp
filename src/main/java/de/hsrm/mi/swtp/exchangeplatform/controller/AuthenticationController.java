@@ -3,7 +3,10 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginResponseBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutResponseBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.UserModel;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Status;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.AuthenticationService;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
@@ -11,10 +14,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -32,7 +33,6 @@ public class AuthenticationController {
 	UserService userService;
 	AuthenticationManager authenticationManager;
 	JWTTokenUtils jwtTokenUtil;
-	JmsTemplate jmsTemplate;
 	
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody LoginRequestBody authenticationRequest) throws Exception {
@@ -42,13 +42,19 @@ public class AuthenticationController {
 		
 		try {
 			LoginResponseBody responseBody = authenticationService.loginUser(authenticationRequest);
-			
-//			jmsTemplate.send(new ActiveMQTopic("SEMS"), session -> session.createTextMessage("LOGGED IN"));
-			log.info("USER LOGGED IN");
-			log.info("PERSONAL  QUEUE: " + responseBody.getQueueName());
-			jmsTemplate.send(new ActiveMQQueue(responseBody.getQueueName()), session -> session.createTextMessage("LOGGED IN"));
-			
 			return ResponseEntity.ok(responseBody);
+		} catch(NotFoundException e) {
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		}
+	}
+	
+	@PostMapping("/logout")
+	public ResponseEntity<?> logout(@RequestBody LogoutRequestBody logoutRequestBody) throws Exception {
+		try {
+			LogoutResponseBody logoutResponseBody = authenticationService.logoutUser(logoutRequestBody);
+			// TODO: correct implementation of logout; is a PoC for now
+			if(logoutResponseBody.getStatus().equals(Status.FAIL)) return ResponseEntity.badRequest().body(logoutResponseBody);
+			return ResponseEntity.ok(logoutResponseBody);
 		} catch(NotFoundException e) {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}

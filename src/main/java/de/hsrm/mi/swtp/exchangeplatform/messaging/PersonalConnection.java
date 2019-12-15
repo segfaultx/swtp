@@ -9,20 +9,18 @@ import org.apache.activemq.command.ActiveMQQueue;
 
 import javax.jms.Connection;
 
+/**
+ * A class holding information about a logged in/an online {@link UserModel}.
+ * Contains information such as the user itself and the {@link Connection} in which its {@link ActiveMQQueue} is active.
+ * <p>
+ * This object is mainly used for management purposes {@link de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager}.
+ */
+@Builder
 @Value
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class UserConnection {
+public class PersonalConnection {
 	
-	String jwtToken;
 	UserModel user;
 	ActiveMQQueue personalQueue;
 	Connection connection;
-	
-	@Builder
-	public UserConnection(String jwtToken, UserModel user, Connection connection, ActiveMQQueue personalQueue) {
-		this.jwtToken = jwtToken;
-		this.user = user;
-		this.connection = connection;
-		this.personalQueue = personalQueue;
-	}
 }
