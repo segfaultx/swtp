@@ -101,21 +101,7 @@ public class TradeOffersRestController {
 				log.info(String.format("POST Request successful, performed trade: %d Requester: %d", tradeId, studentId));
 				de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot restAnswer = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();
 				restAnswer.setId(answer.getId());
-				//TODO: auf das neue User Model anpassen
-//				Lecturer lecturer = new Lecturer();
-//				lecturer.setMail(answer.getLecturer().getEmail());
-//				lecturer.setName(answer.getLecturer().getUsername());
-//				restAnswer.setLecturer(lecturer);
-//				restAnswer.setAttendees(answer.getAttendees().size());
-//				restAnswer.setCapacity(answer.getCapacity());
-//				Room room = new Room();
-//				room.setId(answer.getRoom().getId());
-//				room.setLocation(answer.getRoom().getLocation());
-//				room.setRoomNumber(answer.getRoom().getRoomNumber());
-//				restAnswer.setRoom(room);
-//				restAnswer.setTimeEnd(Timestamp.valueOf(answer.getTimeEnd().toString()));
-//				restAnswer.setTimeStart(Timestamp.valueOf(answer.getTimeStart().toString()));
-//				restAnswer.setDay(DayEnum.valueOf(answer.getDay()));
+				//bereits gefixt auf aktuellem dev stand
 				return new ResponseEntity<>(restAnswer, HttpStatus.OK);
 			}
 			log.info(String.format("Post Request error, trade: %d from requester: %d failed", tradeId, studentId));
