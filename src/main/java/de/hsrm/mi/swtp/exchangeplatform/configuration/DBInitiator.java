@@ -176,7 +176,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		afsVorlesung.setUser(krechel);
 		
-		afsVorlesung.setModule(null);
+		afsVorlesung.setModule(afs);
 		afsVorlesung.setRoom(d12);
 		afsVorlesung.setTimeTable(null);
 		
@@ -190,7 +190,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		afsUebung.setUser(krechel);
 		
-		afsUebung.setModule(null);
+		afsUebung.setModule(afs);
 		afsUebung.setRoom(d12);
 		afsUebung.setTimeTable(null);
 		
