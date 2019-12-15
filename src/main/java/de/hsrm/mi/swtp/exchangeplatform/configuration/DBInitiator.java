@@ -158,6 +158,13 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// END Modul Programmieren 3
 		
+		// START ROOM D12
+		Room d12 = new Room();
+		d12.setLocation("Unter den Eichen");
+		d12.setRoomNumber("D12");
+		d12.setTimeslots(null);
+		
+		
 		// START AFS Timeslots
 		
 		Timeslot afsVorlesung = new Timeslot();
@@ -170,7 +177,7 @@ public class DBInitiator implements ApplicationRunner {
 		afsVorlesung.setUser(krechel);
 		
 		afsVorlesung.setModule(null);
-		afsVorlesung.setRoom(null);
+		afsVorlesung.setRoom(d12);
 		afsVorlesung.setTimeTable(null);
 		
 		
@@ -184,7 +191,7 @@ public class DBInitiator implements ApplicationRunner {
 		afsUebung.setUser(krechel);
 		
 		afsUebung.setModule(null);
-		afsUebung.setRoom(null);
+		afsUebung.setRoom(d12);
 		afsUebung.setTimeTable(null);
 		
 		List<Timeslot> dennisTimeslots = new ArrayList<>();
