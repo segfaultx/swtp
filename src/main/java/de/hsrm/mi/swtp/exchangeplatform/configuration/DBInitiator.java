@@ -16,6 +16,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
@@ -82,13 +83,57 @@ public class DBInitiator implements ApplicationRunner {
 		weitzType.setType(TypeOfUsers.LECTURER);
 		weitzType.setUser(weitz);
 		
-		dennis.setAuthenticationInformation(dennisInformation);
-		dennis.setUserType(dennisType);
-		
-		dennis.setTimeslots(null);
-		
 		// END WEITZ
 		
+		// START CHANDLER
+		
+		User chandler = new User();
+		chandler.setFirstName("Chandler");
+		chandler.setLastName("Bing");
+		chandler.setStudentNumber(1005917L);
+		chandler.setEmail("chandler.bing@student.hs-rm.de");
+		chandler.setStaffNumber(null);
+		
+		AuthenticationInformation williAuthInfo = new AuthenticationInformation();
+		williAuthInfo.setRole(Roles.MEMBER);
+		williAuthInfo.setUser(chandler);
+		williAuthInfo.setPassword("chandler123");
+		williAuthInfo.setUsername("cbing001");
+		
+		UserType chandlerType = new UserType();
+		chandlerType.setType(TypeOfUsers.STUDENT);
+		chandlerType.setUser(chandler);
+		
+		// END CHANDLER
+		
+		// START KRECHEL
+		User krechel = new User();
+		krechel.setFirstName("Dirk");
+		krechel.setLastName("Krechel");
+		krechel.setEmail("dirk.krechel@hs-rm.de");
+		krechel.setStudentNumber(null);
+		krechel.setStaffNumber(12345678L);
+		krechel.setTimeslots(null);
+		
+		// KRECHEL USERTYPE
+		UserType krechelType = new UserType();
+		krechelType.setType(TypeOfUsers.LECTURER);
+		krechelType.setUser(krechel);
+		krechel.setUserType(krechelType);
+		// END KRECHEL USERTYPE
+		
+		// KRECHEL AUTHINFO
+		AuthenticationInformation krechelAuthInfo = new AuthenticationInformation();
+		krechelAuthInfo.setUsername("dkrec001");
+		krechelAuthInfo.setPassword("dkrec001");
+		krechelAuthInfo.setUser(krechel);
+		krechelAuthInfo.setRole(Roles.ADMIN);
+		
+		krechel.setAuthenticationInformation(krechelAuthInfo);
+		//END KRECHEL AUTHINFO
+		
+		
+		// END KRECHEL
 		// START PO 2017
 		
 		PO po2017 = new PO();
@@ -122,7 +167,7 @@ public class DBInitiator implements ApplicationRunner {
 		afsVorlesung.setTimeStart(LocalTime.of(8, 15));
 		afsVorlesung.setTimeEnd(LocalTime.of(9, 45));
 		
-		afsVorlesung.setUser(dennis);
+		afsVorlesung.setUser(krechel);
 		
 		afsVorlesung.setModule(null);
 		afsVorlesung.setRoom(null);
@@ -136,21 +181,25 @@ public class DBInitiator implements ApplicationRunner {
 		afsUebung.setTimeStart(LocalTime.of(10, 0));
 		afsUebung.setTimeEnd(LocalTime.of(11, 30));
 		
-		afsUebung.setUser(dennis);
+		afsUebung.setUser(krechel);
 		
 		afsUebung.setModule(null);
 		afsUebung.setRoom(null);
 		afsUebung.setTimeTable(null);
-
+		
 		List<Timeslot> dennisTimeslots = new ArrayList<>();
 		dennisTimeslots.add(afsUebung);
 		dennisTimeslots.add(afsVorlesung);
 		
 		dennis.setTimeslots(dennisTimeslots);
 		
-		userRepository.save(dennis);
-		userRepository.save(weitz);
 		
+		userRepository.save(krechel);
+		userRepository.save(weitz);
+		// SAVE Lecturers first so attendees can reference them
+		
+		userRepository.save(dennis);
+		userRepository.save(chandler);
 		// TODO: Sinnvoll befüllen nach Model refactoring
 		
 		log.info("Done saving timeTable...");
