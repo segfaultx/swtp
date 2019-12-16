@@ -19,6 +19,10 @@ public class AdminSettingsService {
 	AdminSettings adminSettings;
 	final Long adminSettingsId = 1L;
 	
+	/**
+	 *
+	 * @param adminSettingsRepository
+	 */
 	@Autowired
 	public AdminSettingsService(@NotNull AdminSettingsRepository adminSettingsRepository) {
 		this.adminSettingsRepository = adminSettingsRepository;
@@ -38,6 +42,11 @@ public class AdminSettingsService {
 		return adminSettings.isTradesActive();
 	}
 	
+	
+	/**
+	 * Method to set the admin settings on startup, used for dev purposes
+	 * @param adminSettings adminsettings from db
+	 */
 	public void setAdminSettings(AdminSettings adminSettings) {
 		this.adminSettings = adminSettings;
 	}
@@ -48,6 +57,10 @@ public class AdminSettingsService {
 		return true;
 	}
 	
+	/**
+	 *
+	 * @return
+	 */
 	public AdminSettings getAdminSettings() {
 		return adminSettings;
 	}
