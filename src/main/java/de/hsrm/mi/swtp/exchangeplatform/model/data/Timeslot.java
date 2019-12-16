@@ -24,7 +24,7 @@ public class Timeslot implements Model {
 	@JsonBackReference
 	User user;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne
 	Room room;
 	
 	@Enumerated(EnumType.STRING)
