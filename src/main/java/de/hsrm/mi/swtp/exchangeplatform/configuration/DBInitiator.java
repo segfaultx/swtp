@@ -13,7 +13,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalTime;
@@ -214,6 +213,8 @@ public class DBInitiator implements ApplicationRunner {
 		afsVorlesung.setUser(krechel_out);
 		userRepository.save(weitz);
 		// SAVE Lecturers first so attendees can reference them
+		
+		
 		List<Timeslot> toSave = new ArrayList<>();
 		toSave.add(afsVorlesung);
 		toSave.add(afsUebung);
@@ -221,21 +222,38 @@ public class DBInitiator implements ApplicationRunner {
 		
 		d12_out.setTimeslots(toSave);
 		
+		// START ADD TIMESLOTS DENNIS
+		
 		List<Timeslot> dennisTimeslots = new ArrayList<>();
 		dennisTimeslots.add(afsUebung);
 		dennisTimeslots.add(afsVorlesung);
+		
+		// END ADD TIMESLOTS DENNIS
+		
+		// START ADD TIMESLOTS CHANDLER
 		
 		List<Timeslot> chandlerTimeslots = new ArrayList<>();
 		chandlerTimeslots.add(afsVorlesung);
 		chandlerTimeslots.add(afsUebung2);
 		
+		// END ADD TIMESLOTS CHANDLER
+		
+		// START SET TIMESLOTS FOR USERS
+		
 		dennis.setTimeslots(dennisTimeslots);
 		chandler.setTimeslots(chandlerTimeslots);
+		
+		// END SET TIMESLOTS FOR USERS
+		
+		// START USERS LIST
 		
 		List<User> usersToSave = new ArrayList<>();
 		usersToSave.add(dennis);
 		usersToSave.add(chandler);
-		userRepository.saveAll(usersToSave);
+		
+		//END USERS LIST
+		
+		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
 		
 		log.info("Done saving timeTable...");
 		
