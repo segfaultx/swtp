@@ -23,6 +23,15 @@ public class TimeTableController {
 	
 	StudentService studentService;
 	
+	/**
+	 * GET request handler
+	 * <p>
+	 * provides an endpoint to {@code '/api/v1/timetables'} for users to retrieve their timetables
+	 *
+	 * @param studentId id of student to fetch timetable for
+	 *
+	 * @return timetable of student
+	 */
 	@ApiOperation(value = "Get personalized Timetable of student.", nickname = "getTimetableForStudent", notes = "", response = TimeTable.class, tags = { })
 	@GetMapping(value = "/{studentId}", produces = { "application/json" })
 	

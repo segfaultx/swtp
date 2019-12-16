@@ -25,7 +25,14 @@ public class AdminRestController {
 	
 	AdminSettingsService adminSettingsService;
 	
-	
+	/**
+	 * POST request handler
+	 *
+	 * provides an endpoint for admins to update {@link AdminSettings}
+	 * @param adminSettingsRequest request containing admin settings
+	 * @param bindingResult
+	 * @return new admin settings if successful
+	 */
 	@PostMapping("/settings")
 	@ApiOperation(value = "update admin settings", nickname = "updateAdminSettings")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully updated settings"),
