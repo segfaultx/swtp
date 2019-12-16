@@ -1,8 +1,10 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging;
 
+import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.ExchangeplatformMessageConverter;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.ModuleMessageConverter;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.StudentMessageConverter;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.TimeslotMessageConverter;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ModuleMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.StudentMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.TimeslotMessageListener;
@@ -65,6 +67,11 @@ public class MessageListenerConfig {
 	@Bean(name = "moduleTopic")
 	public ActiveMQTopic moduleTopic() {
 		return new ActiveMQTopic(ModuleMessageListener.TOPICNAME);
+	}
+	
+	@Bean(name = "exchangeplatformTopic")
+	public ActiveMQTopic exchangeplatformTopic() {
+		return new ActiveMQTopic(ExchangeplatformMessageListener.TOPICNAME);
 	}
 	
 	@Bean
@@ -133,6 +140,17 @@ public class MessageListenerConfig {
 		factory.setConnectionFactory(connectionFactory);
 		factory.setPubSubDomain(false);
 		factory.setMessageConverter(new ModuleMessageConverter());
+		factory.setErrorHandler(new JmsErrorHandler());
+		return factory;
+	}
+	
+	@Bean(name = "exchangeplatformFactory")
+	public DefaultJmsListenerContainerFactory exchangeplatformFactory() {
+		log.info("DefaultJmsListenerContainerFactory exchangeplatformFactory() created");
+		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
+		factory.setConnectionFactory(connectionFactory);
+		factory.setPubSubDomain(true);
+		factory.setMessageConverter(new ExchangeplatformMessageConverter());
 		factory.setErrorHandler(new JmsErrorHandler());
 		return factory;
 	}

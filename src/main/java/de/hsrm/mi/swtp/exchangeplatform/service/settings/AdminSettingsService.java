@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.settings;
 
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.ExchangeplatformMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import lombok.AccessLevel;
@@ -18,6 +19,7 @@ public class AdminSettingsService {
 	AdminSettingsRepository adminSettingsRepository;
 	AdminSettings adminSettings;
 	final Long adminSettingsId = 1L;
+	ExchangeplatformMessageSender exchangeplatformMessageSender;
 	
 	@Autowired
 	public AdminSettingsService(@NotNull AdminSettingsRepository adminSettingsRepository) {
@@ -26,7 +28,6 @@ public class AdminSettingsService {
 		if(tmp.isPresent())
 			this.adminSettings = tmp.get(); // TODO: throw exception if settings not present at application startup, changed to this so DBInitiator can fill DB
 		else log.info(String.format("Couldnt lookup admin settings with ID: %d", adminSettingsId));
-		
 	}
 	
 	/**
@@ -44,6 +45,7 @@ public class AdminSettingsService {
 	
 	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters){
 		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
+		exchangeplatformMessageSender.send(tradesActive);
 		adminSettingsRepository.save(adminSettings);
 		return true;
 	}
