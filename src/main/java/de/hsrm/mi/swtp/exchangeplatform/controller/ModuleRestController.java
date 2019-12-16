@@ -26,69 +26,22 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequestMapping("/api/v1/module")
 @RestController
-public class ModuleRestController implements BaseRestController<Module, Long> {
+public class ModuleRestController {
 	
 	String BASEURL = "/api/v1/module";
 	ModuleService moduleService;
 	
-	@Override
 	public ResponseEntity<List<Module>> getAll() {
 		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
 	}
 	
-	@Override
 	@GetMapping("/{moduleId}")
-	public ResponseEntity<Module> getById(@PathVariable Long moduleId) {
+	public ResponseEntity<Module> getById(@PathVariable Long moduleId) throws NotFoundException {
 		log.info(String.format("GET // " + BASEURL + "/%s", moduleId));
-		try {
-			return new ResponseEntity<>(moduleService.getById(moduleId), HttpStatus.OK);
-		} catch(NotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
-	
-	@Override
-	public ResponseEntity<Module> create(@RequestBody Module module, BindingResult result) {
-		log.info("POST // " + BASEURL);
-		log.info(module.toString());
-		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		
-		try {
-			moduleService.save(module);
-			return new ResponseEntity<>(module, HttpStatus.OK);
-		} catch(NotCreatedException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
-	
-	@Override
-	@PatchMapping("/{moduleId}")
-	public ResponseEntity<Module> update(@PathVariable Long moduleId, @RequestBody Module model, BindingResult result) {
-		return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-	}
-	
-	@Override
-	@DeleteMapping("/{moduleId}")
-	public ResponseEntity<Module> delete(@PathVariable Long moduleId) {
-		log.info(String.format("DELETE // " + BASEURL + "/admin/s", moduleId));
-		
-		try {
-			moduleService.delete(moduleId);
-			return new ResponseEntity<>(HttpStatus.OK);
-		} catch(NotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		} catch(IllegalArgumentException e) {
-			log.info(String.format("FAIL: Module %s not deleted due to error while parsing", moduleId));
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
-	
-	@GetMapping("/{id}/timeslots")
-	public ResponseEntity<List<Timeslot>> getAllTimeslotsOfModule(@PathVariable Long id) {
-		try {
-			return new ResponseEntity<>(moduleService.getById(id).getTimeslots(), HttpStatus.OK);
-		} catch(NotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		Module module = moduleService.getById(moduleId)
+				.orElseThrow(NotFoundException::new);
+		return new ResponseEntity<>(module, HttpStatus.OK);
+
 	}
 }

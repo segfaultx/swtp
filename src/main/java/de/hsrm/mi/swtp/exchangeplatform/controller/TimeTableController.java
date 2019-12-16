@@ -1,50 +1,41 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
-import io.swagger.annotations.*;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@RequestMapping("/api/v1/timetables")
+@RequestMapping("/api/v1/timetable")
 @RestController
-@Api(value = "timetables", description = "the timetables API")
 public class TimeTableController {
 	
-	StudentService studentService;
+	TimeTableService timeTableService;
 	
-	/**
-	 * GET request handler
-	 * <p>
-	 * provides an endpoint to {@code '/api/v1/timetables'} for users to retrieve their timetables
-	 *
-	 * @param studentId id of student to fetch timetable for
-	 *
-	 * @return timetable of student
-	 */
-	@ApiOperation(value = "Get personalized Timetable of student.", nickname = "getTimetableForStudent", notes = "", response = TimeTable.class, tags = { })
-	@GetMapping(value = "/{studentId}", produces = { "application/json" })
+	@GetMapping
+	public ResponseEntity<List<TimeTable>> getAll() {
+		return new ResponseEntity<>(timeTableService.getAll(), HttpStatus.OK);
+	}
 	
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "a timetable", response = TimeTable.class) })
-	public ResponseEntity<TimeTable> getTimetableForStudent(
-			@ApiParam(value = "Numeric ID of the student", required = true) @PathVariable(value = "studentId") Long studentId
-														   ) {
-		var stud = studentService.getById(studentId);
-		TimeTable timeTable = new TimeTable();
-		timeTable.setTimeslots(stud.getTimeslots());
-		timeTable.setId(stud.getStudentId());
-		timeTable.setDateEnd(LocalDate.now());
-		timeTable.setDateStart(LocalDate.now()); // todo: fix this shit
-		return new ResponseEntity<>(timeTable, HttpStatus.OK);
+	@GetMapping("/{id}")
+	public ResponseEntity<TimeTable> getById(@PathVariable Long id) throws NotFoundException {
+		
+		TimeTable timeTable = timeTableService.getById(id)
+				.orElseThrow(NotFoundException::new);
+		
+		return ResponseEntity.ok(timeTable);
 	}
 }

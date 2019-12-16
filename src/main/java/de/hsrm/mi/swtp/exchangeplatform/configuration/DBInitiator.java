@@ -1,156 +1,260 @@
 package de.hsrm.mi.swtp.exchangeplatform.configuration;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
-import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import de.hsrm.mi.swtp.exchangeplatform.repository.*;
-import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Slf4j
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Component
 public class DBInitiator implements ApplicationRunner {
 	
-	private final Logger log = LoggerFactory.getLogger(DBInitiator.class);
+	TimeslotRepository timeslotRepository;
 	
-	private final TimeTableRepository timeTableRepository;
+	UserRepository userRepository;
 	
-	private final TradeOfferRepository tradeOfferRepository;
+	ModuleRepository moduleRepository;
 	
-	private final AdminSettingsRepository adminSettingsRepository;
+	RoomRepository roomRepository;
 	
-	private final AdminSettingsService adminSettingsService;
-	
-	public DBInitiator(TimeTableRepository timeTableRepository, TradeOfferRepository tradeOfferRepository, AdminSettingsRepository adminSettingsRepository,
-					   AdminSettingsService adminSettingsService
-					  ) {
-		this.timeTableRepository = timeTableRepository;
-		this.tradeOfferRepository = tradeOfferRepository;
-		this.adminSettingsRepository = adminSettingsRepository;
-		this.adminSettingsService = adminSettingsService;
-	}
 	
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		
 		log.info("Filling Database with dark magic");
 		
-		Lecturer lecturer = new Lecturer();
-		lecturer.setFirstName("Wolfgang");
-		lecturer.setLastName("Weitz");
-		lecturer.setEmail("wolfgang.weitz@hs-rm.de");
-		lecturer.setUsername("wweit001");
+		// START Dennis
 		
-		Student dennis = new Student();
+		User dennis = new User();
 		dennis.setFirstName("Dennis");
 		dennis.setLastName("Schad");
-		dennis.setStudentId(1006351L);
-		dennis.setUsername("dscha001");
+		dennis.setStaffNumber(null);
+		dennis.setStudentNumber(1006351L);
+		dennis.setEmail("dennis.schad@student.hs-rm.de");
 		
-		Student willi = new Student();
-		willi.setFirstName("Willi");
-		willi.setLastName("Wusel");
-		willi.setStudentId(1005993L);
-		willi.setUsername("wwuse001");
+		AuthenticationInformation dennisInformation = new AuthenticationInformation();
+		dennisInformation.setUsername("dscha001");
+		dennisInformation.setPassword("dscha001");
+		dennisInformation.setRole(Roles.MEMBER);
+		dennisInformation.setUser(dennis);
 		
-		Timeslot timeslot2 = new Timeslot();
-		timeslot2.setCapacity(20);
-		timeslot2.setDay("Montag");
-		timeslot2.setTimeStart(LocalTime.of(8, 15));
-		timeslot2.setTimeEnd(LocalTime.of(9, 45));
-		timeslot2.setType("PRAKTIKUM");
+		UserType dennisType = new UserType();
+		dennisType.setType(TypeOfUsers.STUDENT);
+		dennisType.setUser(dennis);
 		
-		Timeslot timeslot1 = new Timeslot();
-		timeslot1.setCapacity(20);
-		timeslot1.setDay("Mittwoch");
-		timeslot1.setTimeStart(LocalTime.of(8, 15));
-		timeslot1.setTimeEnd(LocalTime.of(9, 45));
+		dennis.setAuthenticationInformation(dennisInformation);
+		dennis.setUserType(dennisType);
+		
+		// END Dennis
+		
+		// START Weitz
+		
+		User weitz = new User();
+		weitz.setFirstName("Wolfgang");
+		weitz.setLastName("Weitz");
+		weitz.setStudentNumber(null);
+		weitz.setStaffNumber(171717171717L);
+		weitz.setEmail("wolfgang.weitz@hs-rm.de");
+		
+		AuthenticationInformation weitzInformation = new AuthenticationInformation();
+		weitzInformation.setUsername("wweit001");
+		weitzInformation.setPassword("wweit001");
+		weitzInformation.setRole(Roles.ADMIN);
+		weitzInformation.setUser(weitz);
+		weitz.setAuthenticationInformation(weitzInformation);
+		
+		UserType weitzType = new UserType();
+		weitzType.setType(TypeOfUsers.LECTURER);
+		weitzType.setUser(weitz);
+		
+		// END WEITZ
+		
+		// START CHANDLER
+		
+		User chandler = new User();
+		chandler.setFirstName("Chandler");
+		chandler.setLastName("Bing");
+		chandler.setStudentNumber(1005917L);
+		chandler.setEmail("chandler.bing@student.hs-rm.de");
+		chandler.setStaffNumber(null);
+		
+		AuthenticationInformation chandlerAuthInfo = new AuthenticationInformation();
+		chandlerAuthInfo.setRole(Roles.MEMBER);
+		chandlerAuthInfo.setUser(chandler);
+		chandlerAuthInfo.setPassword("chandler123");
+		chandlerAuthInfo.setUsername("cbing001");
+		
+		UserType chandlerType = new UserType();
+		chandlerType.setType(TypeOfUsers.STUDENT);
+		chandlerType.setUser(chandler);
+		
+		// END CHANDLER
+		
+		// START KRECHEL
+		User krechel = new User();
+		krechel.setFirstName("Dirk");
+		krechel.setLastName("Krechel");
+		krechel.setEmail("dirk.krechel@hs-rm.de");
+		krechel.setStudentNumber(null);
+		krechel.setStaffNumber(12345678L);
+		krechel.setTimeslots(null);
+		
+		// KRECHEL USERTYPE
+		UserType krechelType = new UserType();
+		krechelType.setType(TypeOfUsers.LECTURER);
+		krechelType.setUser(krechel);
+		krechel.setUserType(krechelType);
+		// END KRECHEL USERTYPE
+		
+		// KRECHEL AUTHINFO
+		AuthenticationInformation krechelAuthInfo = new AuthenticationInformation();
+		krechelAuthInfo.setUsername("dkrec001");
+		krechelAuthInfo.setPassword("dkrec001");
+		krechelAuthInfo.setUser(krechel);
+		krechelAuthInfo.setRole(Roles.ADMIN);
+		
+		krechel.setAuthenticationInformation(krechelAuthInfo);
+		//END KRECHEL AUTHINFO
 		
 		
+		// END KRECHEL
+		// START PO 2017
+		
+		PO po2017 = new PO();
+		po2017.setMajor("Medieninformatik");
+		po2017.setValidSinceYear("2017");
+		
+		// END PO 2017
+		
+		// START Modul AFS
+		
+		Module afs = new Module();
+		afs.setName("Automaten und formale Sprachen");
+		afs.setPo(po2017);
+		
+		// END Modul AFS
+		
+		// START Modul Programmieren 3
+		
+		Module prog3 = new Module();
+		prog3.setName("Programmieren 3");
+		prog3.setPo(po2017);
+		
+		// END Modul Programmieren 3
+		
+		// START ROOM D12
 		Room d12 = new Room();
 		d12.setLocation("Unter den Eichen");
 		d12.setRoomNumber("D12");
-		timeslot1.setType("PRAKTIKUM");
+		d12.setTimeslots(null);
+		
+		var d12_out = roomRepository.save(d12);
 		
 		
-		List<Student> attendees = new ArrayList<>();
-		attendees.add(dennis);
+		// START AFS Timeslots
 		
-		List<Student> attendees2 = new ArrayList<>();
-		attendees2.add(willi);
+		Timeslot afsVorlesung = new Timeslot();
+		afsVorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
+		afsVorlesung.setCapacity(100);
+		afsVorlesung.setDay(DayOfWeek.WEDNESDAY);
+		afsVorlesung.setTimeStart(LocalTime.of(8, 15));
+		afsVorlesung.setTimeEnd(LocalTime.of(9, 45));
 		
-		List<Timeslot> timeslots = new ArrayList<>();
-		timeslots.add(timeslot1);
-		timeslots.add(timeslot2);
+		afsVorlesung.setRoom(d12_out);
+		afsVorlesung.setTimeTable(null);
+		
+		
+		// START AFS UEBUNG 1
+		Timeslot afsUebung = new Timeslot();
+		afsUebung.setTimeSlotType(TypeOfTimeslots.UEBUNG);
+		afsUebung.setCapacity(50);
+		afsUebung.setDay(DayOfWeek.WEDNESDAY);
+		afsUebung.setTimeStart(LocalTime.of(10, 0));
+		afsUebung.setTimeEnd(LocalTime.of(11, 30));
+		
+		afsUebung.setRoom(d12_out);
+		afsUebung.setTimeTable(null);
+		
+		// END AFS UEBUNG 1
+		
+		// START AFS UEBUNG 2
+		
+		Timeslot afsUebung2 = new Timeslot();
+		afsUebung2.setTimeSlotType(TypeOfTimeslots.UEBUNG);
+		afsUebung2.setCapacity(50);
+		afsUebung2.setDay(DayOfWeek.WEDNESDAY);
+		afsUebung2.setTimeStart(LocalTime.of(11, 45));
+		afsUebung2.setTimeEnd(LocalTime.of(13, 15));
+		
+		afsUebung2.setRoom(d12_out);
+		afsUebung2.setTimeTable(null);
+		
+		// END AFS UEBUNG 2
+		
+		var krechel_out = userRepository.save(krechel);
+		afsUebung.setUser(krechel_out);
+		afsUebung2.setUser(krechel_out);
+		afsVorlesung.setUser(krechel_out);
+		userRepository.save(weitz);
+		// SAVE Lecturers first so attendees can reference them
+		
+		
+		List<Timeslot> toSave = new ArrayList<>();
+		toSave.add(afsVorlesung);
+		toSave.add(afsUebung);
+		toSave.add(afsUebung2);
+		
+		d12_out.setTimeslots(toSave);
+		
+		// START ADD TIMESLOTS DENNIS
 		
 		List<Timeslot> dennisTimeslots = new ArrayList<>();
-		dennisTimeslots.add(timeslot1);
+		dennisTimeslots.add(afsUebung);
+		dennisTimeslots.add(afsVorlesung);
 		
-		List<Timeslot> williTimeslots = new ArrayList<>();
-		williTimeslots.add(timeslot2);
+		// END ADD TIMESLOTS DENNIS
 		
-		Module module = new Module();
-		module.setName("Softwaretechnik");
-		List<Module> modules = new ArrayList<>();
-		modules.add(module);
+		// START ADD TIMESLOTS CHANDLER
 		
-		lecturer.setTimeslots(timeslots);
-		d12.setTimeslots(timeslots);
+		List<Timeslot> chandlerTimeslots = new ArrayList<>();
+		chandlerTimeslots.add(afsVorlesung);
+		chandlerTimeslots.add(afsUebung2);
 		
-		timeslot1.setRoom(d12);
-		timeslot2.setRoom(d12);
+		// END ADD TIMESLOTS CHANDLER
 		
-		PO po = new PO();
-		po.setMajor("Medieninformatik");
-		po.setValidSinceYear("2017");
-		po.setModules(modules);
-		
-		module.setPo(po);
-		module.setTimeslots(timeslots);
-		
-		TimeTable timeTable = new TimeTable();
-		timeTable.setDateStart(LocalDate.of(2019, 10, 15));
-		timeTable.setDateEnd(LocalDate.of(2020, 3, 31));
-		timeTable.setTimeslots(timeslots);
-		
-		timeslot1.setTimeTable(timeTable);
-		timeslot1.setModule(module);
-		timeslot1.setAttendees(attendees);
-		timeslot1.setLecturer(lecturer);
-		
-		timeslot2.setTimeTable(timeTable);
-		timeslot2.setModule(module);
-		timeslot2.setAttendees(attendees2);
-		timeslot2.setLecturer(lecturer);
-		
+		// START SET TIMESLOTS FOR USERS
 		
 		dennis.setTimeslots(dennisTimeslots);
-		willi.setTimeslots(williTimeslots);
+		chandler.setTimeslots(chandlerTimeslots);
 		
-		TradeOffer tradeOffer = new TradeOffer();
-		tradeOffer.setOfferer(willi);
-		tradeOffer.setOffer(timeslot2);
-		tradeOffer.setSeek(timeslot1);
+		// END SET TIMESLOTS FOR USERS
 		
-		AdminSettings adminSettings = new AdminSettings();
-		List<String> filters = new ArrayList<>();
-		filters.add("COLLISION");
-		filters.add("CAPACITY");
-		adminSettings.updateAdminSettings(true, filters);
+		// START USERS LIST
 		
-		tradeOfferRepository.save(tradeOffer);
-		timeTableRepository.save(timeTable);
-		var persistedSettings = adminSettingsRepository.save(adminSettings);
-		adminSettingsService.setAdminSettings(persistedSettings);
+		List<User> usersToSave = new ArrayList<>();
+		usersToSave.add(dennis);
+		usersToSave.add(chandler);
+		
+		//END USERS LIST
+		
+		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
+		
 		log.info("Done saving timeTable...");
 		
 	}

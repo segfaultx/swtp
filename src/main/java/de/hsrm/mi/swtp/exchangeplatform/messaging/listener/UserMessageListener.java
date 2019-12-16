@@ -20,7 +20,7 @@ import javax.jms.TextMessage;
 @Component
 @EnableJms
 @RequiredArgsConstructor
-public class StudentMessageListener implements MessageListener {
+public class UserMessageListener implements MessageListener {
 	
 	public final static String TOPICNAME = "StudentTopic";
 	public final static String QUEUENAME = "StudentQueue";

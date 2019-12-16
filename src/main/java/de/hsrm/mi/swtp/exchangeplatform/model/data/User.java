@@ -1,37 +1,48 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
-import com.fasterxml.jackson.annotation.JacksonInject;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.experimental.FieldDefaults;
+
 import javax.persistence.*;
-
-
-/**
-*User Data Model with matriculationNumber, username, password and role
-*
-*/
+import java.util.List;
 
 @Entity
 @Data
-//@Table(name="Users")
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class User implements Model {
-        @Id
-        @JsonProperty(value = "matriculationNumber", required = true)
-        @Column(unique = true, updatable = false, insertable = false)
-        private Long matriculationNumber; //student{matrikelnummer = id}
-
-        @JsonProperty(value="username")
-        @Column(nullable = false, unique = true)
-        //@Column(name="username" ,nullable = false, unique = true)
-        private String username;
-
-        @JsonProperty(value = "password")
-        //@Column(name = "password")
-        private String password;
-
-        @JsonProperty(value= "role")
-        //@Column(name="role")
-        private String role;
-
-
+	
+	@Id
+	@GeneratedValue
+	Long id;
+	
+	String email;
+	
+	@JsonProperty("first_name")
+	String firstName;
+	
+	@JsonProperty("last_name")
+	String lastName;
+	
+	@JsonProperty("student_number")
+	Long studentNumber;
+	
+	@JsonProperty("staff_number")
+	Long staffNumber;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JsonIgnore
+	AuthenticationInformation authenticationInformation;
+	
+	@JsonProperty("user_type")
+	@OneToOne(cascade = CascadeType.ALL)
+	@JsonManagedReference
+	UserType userType;
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@JsonManagedReference
+	List<Timeslot> timeslots;
 }
