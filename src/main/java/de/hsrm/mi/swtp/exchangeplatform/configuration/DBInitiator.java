@@ -236,7 +236,6 @@ public class DBInitiator implements ApplicationRunner {
 		usersToSave.add(dennis);
 		usersToSave.add(chandler);
 		userRepository.saveAll(usersToSave);
-		// TODO: Sinnvoll befüllen nach Model refactoring
 		
 		log.info("Done saving timeTable...");
 		
