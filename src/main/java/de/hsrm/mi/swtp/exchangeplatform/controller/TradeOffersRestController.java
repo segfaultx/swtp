@@ -70,7 +70,7 @@ public class TradeOffersRestController {
 	
 	/**
 	 * POST request handler.
-	 * proviced an endpoint to {@code '/api/v1/trades} for users to create a {@link TradeOffer}
+	 * proviced an endpoint to {@code '/api/v1/trades'} for users to create a {@link TradeOffer}
 	 *
 	 * @param tradeRequest tradeoffer to create
 	 *
@@ -105,6 +105,13 @@ public class TradeOffersRestController {
 		} else return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 	
+	/**
+	 * POST request handler
+	 *
+	 * provides an endpoint to {@code '/api/v1/trades'} for users to request a trade
+	 * @param tradeRequest {@link TradeRequest} object containing requesters ID, offered Id and requested ID
+	 * @return new timetable if trade was successful
+	 */
 	@PostMapping
 	@ApiOperation(value = "request trade", nickname = "requestTrade")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully processed traderequest"),
