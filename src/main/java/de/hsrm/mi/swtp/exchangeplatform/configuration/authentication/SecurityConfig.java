@@ -48,13 +48,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
-
+	
+	
 	@Override
 	public void configure(WebSecurity web) {
 		web.ignoring().antMatchers("/v2/api-docs",
-								   "/swagger-ui/**",
 								   "/configuration/ui",
-								   "/swagger-resources/**",
+								   "/swagger-resources",
 								   "/configuration/security",
 								   "/swagger-ui.html",
 								   "/webjars/**");
