@@ -29,7 +29,7 @@ import java.util.List;
 @RestController
 public class ModuleRestController {
 	
-	String BASEURL = "/api/v1/module";
+	String BASEURL = "/api/v1/modules";
 	ModuleService moduleService;
 	
 	public ResponseEntity<List<Module>> getAll() {

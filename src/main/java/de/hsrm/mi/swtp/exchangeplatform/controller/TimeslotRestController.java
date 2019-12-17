@@ -31,7 +31,7 @@ import java.util.List;
 @RequestMapping("/api/v1/timeslots")
 public class TimeslotRestController {
 
-	String BASEURL = "/api/v1/timeslot";
+	String BASEURL = "/api/v1/timeslots";
 	TimeslotService timeslotService;
 	UserService userService;
 
