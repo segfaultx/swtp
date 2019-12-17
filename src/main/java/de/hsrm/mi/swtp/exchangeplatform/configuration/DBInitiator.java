@@ -6,6 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.TimeslotType;
 import de.hsrm.mi.swtp.exchangeplatform.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,6 +34,8 @@ public class DBInitiator implements ApplicationRunner {
 	ModuleRepository moduleRepository;
 	
 	RoomRepository roomRepository;
+	
+	TradeOfferRepository tradeofferRepository;
 	
 	
 	@Override
@@ -253,6 +257,15 @@ public class DBInitiator implements ApplicationRunner {
 		
 		//END USERS LIST
 		
+		// START TRADEOFFER DENNIS
+		TradeOffer offer1 = new TradeOffer();
+		offer1.setOfferer(dennis);
+		offer1.setSeek(afsUebung2);
+		offer1.setOffer(afsUebung);
+		dennis.getTradeoffers().add(offer1);
+		// END TRADEOFFER DENNIS
+		
+		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
 		
 		log.info("Done saving timeTable...");
