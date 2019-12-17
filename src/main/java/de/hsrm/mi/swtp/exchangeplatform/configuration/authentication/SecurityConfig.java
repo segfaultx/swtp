@@ -52,7 +52,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	public void configure(WebSecurity web) {
-		web.ignoring().antMatchers("/v2/api-docs",
+		web.ignoring().antMatchers("/v3/api-docs",
 								   "/configuration/ui",
 								   "/swagger-resources",
 								   "/configuration/security",
@@ -66,7 +66,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		httpSecurity.csrf()
 					.disable()
 					.authorizeRequests()
-					.antMatchers("/api/v1/auth/login**")
+					.antMatchers("/api/v1/auth/login**",
+								 "/v2/api-docs",
+								 "/configuration/ui",
+								 "/swagger-resources",
+								 "/configuration/security",
+								 "/swagger-ui.html",
+								 "/webjars/**",
+								 "/swagger-resources/configuration/ui",
+								 "/swagger-resources/configuration/security")
 					.permitAll()
 					.anyRequest()
 					.authenticated()
