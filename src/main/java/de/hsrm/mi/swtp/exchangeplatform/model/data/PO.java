@@ -13,10 +13,10 @@ import java.util.List;
 @Entity
 @Data
 @RequiredArgsConstructor
-@JsonSerialize(using = POSerializer.class)
 public class PO implements Model {
 	@Id
 	@GeneratedValue
+	@JsonIgnore
 	private Long id;
 	
 	@JsonProperty("valid_since_year")
@@ -25,7 +25,6 @@ public class PO implements Model {
 	private String major;
 	
 	@JsonIgnore
-	@JsonProperty("modules")
 	@OneToMany(mappedBy = "po", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Module> modules;
 }
