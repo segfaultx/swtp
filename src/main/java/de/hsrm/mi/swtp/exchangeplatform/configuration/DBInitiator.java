@@ -82,6 +82,7 @@ public class DBInitiator implements ApplicationRunner {
 		UserType weitzType = new UserType();
 		weitzType.setType(TypeOfUsers.LECTURER);
 		weitzType.setUser(weitz);
+		weitz.setUserType(weitzType);
 		
 		// END WEITZ
 		
