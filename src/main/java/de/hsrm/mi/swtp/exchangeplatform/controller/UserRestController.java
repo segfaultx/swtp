@@ -68,8 +68,6 @@ public class UserRestController {
 	@DeleteMapping("/admin/{userId}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<User> delete(@PathVariable Long userId) throws NotFoundException {
-		// TODO: Route ändern, wenn ACL fertig
-		//  -> Abfrage ob Authentifiziert und Rolle berechtigt zum löschen
 		log.info(String.format("DELETE // " + BASEURL + "/admin/%s", userId));
 		
 		User user = userService.getById(userId)

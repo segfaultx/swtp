@@ -53,7 +53,8 @@ public class TradeOffersRestController {
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity deleteTradeOffer(@ApiParam(value = "Numeric ID of the student", required = true) @PathVariable("studentId") long studentId,
 										   @ApiParam(value = "Numeric ID of the tradeoffer", required = true) @PathVariable("tradeId") long tradeId
-										  ) {
+										  )
+	throws Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("DELETE Request Student: %d TradeOffer: %d", studentId, tradeId));
 			if(tradeOfferService.deleteTradeOffer(studentId, tradeId)) {
@@ -117,14 +118,13 @@ public class TradeOffersRestController {
 							@ApiResponse(code = 403, message = "unauthorized trade attempt"),
 							@ApiResponse(code = 400, message = "malformed trade request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<TimeTable> requestTrade(@Valid TradeRequest tradeRequest) throws NotFoundException {
+	public ResponseEntity<TimeTable> requestTrade(@Valid TradeRequest tradeRequest) throws Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
 								  ));
 			var timeslot = tradeOfferService.tradeTimeslots(tradeRequest.getOfferedByStudentMatriculationNumber(), tradeRequest.getOfferedTimeslotId(),
-															tradeRequest.getWantedTimeslotId()
-														   );
+															tradeRequest.getWantedTimeslotId());
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
 			

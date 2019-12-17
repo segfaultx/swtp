@@ -54,6 +54,10 @@ public class AdminSettings {
 		public String toString() {
 			return "Filters{" + "filter=" + filter + ", stringVal='" + stringVal + '\'' + '}';
 		}
+		
+		public Filter getFilter() {
+			return filter;
+		}
 	}
 	
 	@ElementCollection
@@ -74,5 +78,10 @@ public class AdminSettings {
 		log.info(String.format("Updating admin settings filters from: %s to: %s", this.activeFilters.toString(), activeFilters.toString()));
 		this.activeFilters.clear();
 		activeFilters.forEach(filterVal -> this.activeFilters.add(Filters.valueOf(filterVal)));
+	}
+	public List<Filter> getCurrentActiveFilters(){
+		List<Filter> out = new ArrayList<>();
+		activeFilters.forEach(item -> out.add(item.getFilter()));
+		return out;
 	}
 }

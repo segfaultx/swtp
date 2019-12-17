@@ -103,9 +103,14 @@ public class DBInitiator implements ApplicationRunner {
 		chandlerAuthInfo.setPassword("chandler123");
 		chandlerAuthInfo.setUsername("cbing001");
 		
+		chandler.setAuthenticationInformation(chandlerAuthInfo);
+		
 		UserType chandlerType = new UserType();
 		chandlerType.setType(TypeOfUsers.STUDENT);
 		chandlerType.setUser(chandler);
+		
+		chandler.setUserType(chandlerType);
+		
 		
 		// END CHANDLER
 		
