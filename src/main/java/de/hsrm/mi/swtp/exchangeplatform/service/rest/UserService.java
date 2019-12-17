@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.UserMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.WhoAmI;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
@@ -20,7 +21,8 @@ import java.util.Optional;
 public class UserService {
 
 	UserRepository repository;
-	//UserMessageSender messageSender;
+	
+	UserMessageSender messageSender;
 
 	public List<User> getAll() {
 		return repository.findAll();
@@ -42,8 +44,7 @@ public class UserService {
 		repository.save(user);
 		log.info(String.format("SUCCESS: User %s created", user));
 		
-		// TODO: nach bearbeitung von UserMessageSender wieder auskommentieren
-		//messageSender.send(user);
+		messageSender.send(user);
 	}
 
 	public void delete(User user) {
