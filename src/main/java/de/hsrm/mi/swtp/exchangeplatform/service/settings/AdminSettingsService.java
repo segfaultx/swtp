@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.settings;
 
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import lombok.AccessLevel;
@@ -51,7 +52,7 @@ public class AdminSettingsService {
 		this.adminSettings = adminSettings;
 	}
 	
-	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters){
+	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
 		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
 		adminSettingsRepository.save(adminSettings);
 		return true;
