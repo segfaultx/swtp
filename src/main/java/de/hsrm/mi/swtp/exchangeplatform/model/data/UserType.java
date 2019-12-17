@@ -22,5 +22,5 @@ public class UserType {
 	
 	@OneToOne(mappedBy = "userType")
 	@JsonBackReference
-	UserModel user;
+	User user;
 }

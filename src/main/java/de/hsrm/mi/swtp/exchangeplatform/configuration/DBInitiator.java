@@ -38,7 +38,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// START Dennis
 		
-		UserModel dennis = new UserModel();
+		User dennis = new User();
 		dennis.setFirstName("Dennis");
 		dennis.setLastName("Schad");
 		dennis.setStaffNumber(null);
@@ -62,7 +62,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// START Weitz
 		
-		UserModel weitz = new UserModel();
+		User weitz = new User();
 		weitz.setFirstName("Wolfgang");
 		weitz.setLastName("Weitz");
 		weitz.setStudentNumber(null);

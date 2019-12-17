@@ -13,7 +13,7 @@ import java.util.List;
 @Entity
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserModel implements Model {
+public class User implements Model {
 	
 	@Id
 	@GeneratedValue

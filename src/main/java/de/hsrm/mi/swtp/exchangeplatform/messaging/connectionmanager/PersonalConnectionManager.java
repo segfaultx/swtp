@@ -1,7 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 
 import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalConnection;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.UserModel;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import java.util.Map;
 
 /**
  * Manages {@link PersonalConnection PersonalConnections}.
- * Can create a connection for each logged {@link UserModel} and close those when the user goes offline.
+ * Can create a connection for each logged {@link User} and close those when the user goes offline.
  */
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -30,14 +30,14 @@ public class PersonalConnectionManager {
 	SingleConnectionFactory connectionFactory;
 	
 	/**
-	 * Creates a new connection with a session and {@link ActiveMQQueue} for the logged in {@link UserModel}.
+	 * Creates a new connection with a session and {@link ActiveMQQueue} for the logged in {@link User}.
 	 *
 	 * @param user is the logged in user itself.
 	 *
 	 * @return the dynamically created {@link ActiveMQQueue} over which the server can communicate specific changes
 	 * to the user.
 	 */
-	public ActiveMQQueue createNewConnection(final UserModel user) throws JMSException {
+	public ActiveMQQueue createNewConnection(final User user) throws JMSException {
 		final String queueName = createPersonalQueueName(user);
 		if(userConnectionMap.containsKey(queueName)) return userConnectionMap.get(queueName).getPersonalQueue();
 		
@@ -58,12 +58,12 @@ public class PersonalConnectionManager {
 	/**
 	 * A helper method for closing an active messaging connection.
 	 *
-	 * @param user {@link UserModel}
+	 * @param user {@link User}
 	 *
 	 * @return a boolean which indicates whether the requested user has a running connection and the connection was
 	 * closed successfully or not.
 	 */
-	public boolean closeConnection(final UserModel user) throws JMSException {
+	public boolean closeConnection(final User user) throws JMSException {
 		PersonalConnection personalConnection = this.userConnectionMap.remove(createPersonalQueueName(user));
 		if(personalConnection == null) return false;
 		personalConnection.getConnection().close();
@@ -73,23 +73,23 @@ public class PersonalConnectionManager {
 	/**
 	 * Creates and returns a string which is used for the personal queue of a logged in user.
 	 *
-	 * @param user {@link UserModel}
+	 * @param user {@link User}
 	 */
-	private String createPersonalQueueName(final UserModel user) {
+	private String createPersonalQueueName(final User user) {
 		final String FORMAT = "usr:%s-%s";
 		Long userId = user.getUserType().getType().equals(TypeOfUsers.STUDENT) ? user.getStudentNumber() : user.getStaffNumber();
 		String username = user.getAuthenticationInformation().getUsername();
 		return String.format(FORMAT, userId, username);
 	}
 	
-	private String createPersonalQueueDestinationName(final UserModel user) {
+	private String createPersonalQueueDestinationName(final User user) {
 		final String FORMAT = "dst:%s-%s";
 		Long userId = user.getUserType().getType().equals(TypeOfUsers.STUDENT) ? user.getStudentNumber() : user.getStaffNumber();
 		String username = user.getAuthenticationInformation().getUsername();
 		return String.format(FORMAT, userId, username);
 	}
 	
-	public ActiveMQQueue getConnection(UserModel user) {
+	public ActiveMQQueue getConnection(User user) {
 		final String queueName = createPersonalQueueName(user);
 		if(!this.userConnectionMap.containsKey(queueName)) return null;
 		return this.userConnectionMap.get(queueName).getPersonalQueue();

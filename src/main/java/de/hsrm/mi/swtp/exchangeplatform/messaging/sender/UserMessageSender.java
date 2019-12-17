@@ -1,6 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.sender;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.data.UserModel;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Component
 @Builder
-public class UserMessageSender implements MessageSender<UserModel> {
+public class UserMessageSender implements MessageSender<User> {
 
 	JmsTemplate jmsTemplate;
 	ActiveMQQueue studentQueue;
@@ -25,7 +25,7 @@ public class UserMessageSender implements MessageSender<UserModel> {
 	}
 
 	@Override
-	public void send(UserModel model) {
+	public void send(User model) {
 		String message = String.format("Create User-Event TextMessage::< USER {} WURDE ABGERUFEN/-GEÄNDERT. >", model.getId());
 		this.send(message);
 	}

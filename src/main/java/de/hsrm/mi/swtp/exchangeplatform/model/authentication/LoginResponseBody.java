@@ -1,13 +1,14 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.authentication;
 
 import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalConnection;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 /**
- * A simple object which will be returned when {@link de.hsrm.mi.swtp.exchangeplatform.model.data.UserModel} has been
+ * A simple object which will be returned when {@link User} has been
  * logged in successfully.
  * <p>
  * Contains necessary values such as the {@link JWTResponse} with a generated token (without which one cannot access

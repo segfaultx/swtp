@@ -5,7 +5,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginResponseBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutResponseBody;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.UserModel;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Status;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.AuthenticationService;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
@@ -66,7 +66,7 @@ public class AuthenticationController {
 		
 		String jwtToken = JWTTokenUtils.tokenWithoutPrefix(token);
 		String usernameFromToken = jwtTokenUtil.getUsernameFromToken(jwtToken);
-		UserModel found = userService.getByUsername(usernameFromToken).orElseThrow(NotFoundException::new);
+		User found = userService.getByUsername(usernameFromToken).orElseThrow(NotFoundException::new);
 		return ResponseEntity.ok(found);
 	}
 	

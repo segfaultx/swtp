@@ -19,7 +19,7 @@ public class TradeOffer implements Model {
 	
 	@JsonProperty("offerer")
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-	private UserModel offerer;
+	private User offerer;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private Timeslot offer;

@@ -24,6 +24,6 @@ public class AuthenticationInformation {
 	Roles role;
 	
 	@OneToOne(mappedBy = "authenticationInformation")
-	UserModel user;
+    User user;
 	
 }
