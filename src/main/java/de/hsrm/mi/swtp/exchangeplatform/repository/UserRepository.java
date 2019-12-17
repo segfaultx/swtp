@@ -11,4 +11,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
 	
 	@Query("select user from User user join user.authenticationInformation ai where ai.username =:username")
 	Optional<User> findByUsername(@Param("username") String username);
+	
+	User findByStudentNumber(Long studentnumber);
 }
