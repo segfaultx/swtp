@@ -42,6 +42,9 @@ dependencies {
     implementation 'org.springdoc:springdoc-openapi-core:1.1.49'
     implementation 'org.springdoc:springdoc-openapi-ui:1.1.44'
 
+    implementation 'org.springdoc:springdoc-openapi-core:1.1.49'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.1.44'
+
 	compileOnly 'org.projectlombok:lombok'
 
     runtimeOnly 'com.h2database:h2'
