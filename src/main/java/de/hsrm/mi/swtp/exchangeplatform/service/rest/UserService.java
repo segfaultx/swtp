@@ -52,6 +52,7 @@ public class UserService {
 	
 	public WhoAmI getWhoAmI(User user) {
 		WhoAmI whoAmI = new WhoAmI();
+		whoAmI.setUserId(user.getId());
 		whoAmI.setUsername(user.getAuthenticationInformation().getUsername());
 		whoAmI.setType(user.getUserType().getType());
 		whoAmI.setRole(user.getAuthenticationInformation().getRole());
