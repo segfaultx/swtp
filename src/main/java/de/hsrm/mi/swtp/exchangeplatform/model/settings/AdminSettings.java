@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.settings;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.*;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CapacityFilter;
@@ -79,6 +80,7 @@ public class AdminSettings {
 		this.activeFilters.clear();
 		activeFilters.forEach(filterVal -> this.activeFilters.add(Filters.valueOf(filterVal)));
 	}
+	@JsonIgnore
 	public List<Filter> getCurrentActiveFilters(){
 		List<Filter> out = new ArrayList<>();
 		activeFilters.forEach(item -> out.add(item.getFilter()));
