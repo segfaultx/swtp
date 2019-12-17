@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -44,5 +45,8 @@ public class User implements Model {
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	@JsonManagedReference
-	List<Timeslot> timeslots;
+	List<Timeslot> timeslots = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
+	List<TradeOffer> tradeoffers = new ArrayList<>();
 }
