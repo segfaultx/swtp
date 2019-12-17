@@ -25,12 +25,9 @@ public class AuthenticationService implements UserDetailsService {
 		String username = requestBody.getUsername();
 		String password = requestBody.getPassword();
 		
-		// TODO: Useful implementation
-		return username.equals(password);
-	}
-	
-	public boolean hasToken() {
-		return false;
+		UserDetails userDetails = loadUserByUsername(username);
+		
+		return new BCryptPasswordEncoder().matches(password, userDetails.getPassword());
 	}
 	
 	@Override

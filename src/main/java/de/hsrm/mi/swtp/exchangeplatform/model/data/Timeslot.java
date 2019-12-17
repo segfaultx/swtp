@@ -5,6 +5,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
@@ -14,6 +15,7 @@ import java.util.List;
 
 @Entity
 @Data
+@ToString(exclude = { "user", "room", "module", "timeTable", "attendees"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Timeslot implements Model {
 	
