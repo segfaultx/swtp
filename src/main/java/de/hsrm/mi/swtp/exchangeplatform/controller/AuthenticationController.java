@@ -40,7 +40,8 @@ public class AuthenticationController {
 	public ResponseEntity<?> login(@RequestBody LoginRequestBody authenticationRequest) throws Exception {
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		
-		if(!authenticationService.isLoginValid(authenticationRequest)) return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		if(!authenticationService.isLoginValid(authenticationRequest))
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
 		
 		User user = userService.getByUsername(authenticationRequest.getUsername()).orElseThrow(NotFoundException::new);
 		
