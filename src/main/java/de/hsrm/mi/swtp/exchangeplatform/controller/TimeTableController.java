@@ -36,8 +36,7 @@ public class TimeTableController {
 	@GetMapping("/{id}")
 	public ResponseEntity<TimeTable> getById(@PathVariable Long id) throws NotFoundException {
 		
-		TimeTable timeTable = timeTableService.getById(id)
-				.orElseThrow(NotFoundException::new);
+		TimeTable timeTable = timeTableService.getById(id);
 		
 		return ResponseEntity.ok(timeTable);
 	}
