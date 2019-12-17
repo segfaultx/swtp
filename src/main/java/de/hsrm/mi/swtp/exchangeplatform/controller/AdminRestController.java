@@ -13,10 +13,13 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-
+/**
+ * A rest controller which handles getting and updating {@link AdminSettings}
+ */
 @RestController
 @Slf4j
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ public class AdminRestController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully updated settings"),
 							@ApiResponse(code = 403, message = "unauthorized update settings attempt"),
 							@ApiResponse(code = 400, message = "malformed admin settings request") })
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<AdminSettings> updateAdminSettings(@RequestBody AdminSettingsRequest adminSettingsRequest, BindingResult bindingResult) throws
 			NotFoundException {
 		if(bindingResult.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -51,6 +55,7 @@ public class AdminRestController {
 	@ApiOperation(value = "get admin settings", nickname = "getAdminSettings")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully received adminsettings"),
 							@ApiResponse(code = 403, message = "unauthorized get settings attempt") })
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<AdminSettings> getAdminSettings() {
 		return new ResponseEntity<>(adminSettingsService.getAdminSettings(), HttpStatus.OK);
 	}
