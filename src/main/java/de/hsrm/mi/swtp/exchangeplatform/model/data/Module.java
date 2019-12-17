@@ -19,7 +19,6 @@ public class Module implements Model {
 	
 	@Id
 	@GeneratedValue
-	@JsonIgnore
 	private Long id;
 	
 	private String name;
