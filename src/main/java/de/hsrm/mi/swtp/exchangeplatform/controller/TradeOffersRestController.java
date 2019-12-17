@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,6 +50,7 @@ public class TradeOffersRestController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully deleted tradeoffer"),
 							@ApiResponse(code = 403, message = "unauthorized delete attempt"),
 							@ApiResponse(code = 404, message = "tradeoffer not found") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity deleteTradeOffer(@ApiParam(value = "Numeric ID of the student", required = true) @PathVariable("studentId") long studentId,
 										   @ApiParam(value = "Numeric ID of the tradeoffer", required = true) @PathVariable("tradeId") long tradeId
 										  ) {
@@ -78,6 +80,7 @@ public class TradeOffersRestController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully created tradeoffer"),
 							@ApiResponse(code = 403, message = "unauthorized create attempt"),
 							@ApiResponse(code = 400, message = "malformed trade request") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<TradeOffer> createTradeOffer(
 			@ApiParam(value = "Object containing ID's of student, wanted and offered timeslot", required = true) @Valid TradeRequest tradeRequest,
 			BindingResult bindingResult
@@ -113,6 +116,7 @@ public class TradeOffersRestController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully processed traderequest"),
 							@ApiResponse(code = 403, message = "unauthorized trade attempt"),
 							@ApiResponse(code = 400, message = "malformed trade request") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<TimeTable> requestTrade(@Valid TradeRequest tradeRequest) throws NotFoundException {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),

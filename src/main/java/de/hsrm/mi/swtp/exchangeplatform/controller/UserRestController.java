@@ -12,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +30,7 @@ public class UserRestController {
 	TradeOfferService tradeOfferService;
 	
 	@GetMapping("")
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<?> getAll(@RequestParam(value = "username", required = false) String username) throws NotFoundException {
 		log.info("GET // " + BASEURL);
 		if(username != null && username.length() > 0) {
@@ -40,6 +42,7 @@ public class UserRestController {
 	}
 	
 	@GetMapping("/{userId}")
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<User> getById(@PathVariable Long userId) throws NotFoundException {
 		log.info(String.format("GET // " + BASEURL + "/%s", userId));
 		User user = userService.getById(userId)
@@ -65,6 +68,7 @@ public class UserRestController {
 	}
 	
 	@DeleteMapping("/admin/{userId}")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<User> delete(@PathVariable Long userId) throws NotFoundException {
 		// TODO: Route ändern, wenn ACL fertig
 		//  -> Abfrage ob Authentifiziert und Rolle berechtigt zum löschen
@@ -87,6 +91,7 @@ public class UserRestController {
 	 * @return {@link HttpStatus#OK}
 	 */
 	@GetMapping("/{studentId}/personalizedTimetable")
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<TimeTable> getPersonalizedTimeTable(@PathVariable("studentId") long studentId) {
 		log.info(String.format("Getting personalized Timetable for student: %d", studentId));
 		TimeTable timeTable = new TimeTable();

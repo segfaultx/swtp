@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -52,6 +53,7 @@ public class AdminSettingsService {
 		this.adminSettings = adminSettings;
 	}
 	
+	@PreAuthorize("hasRole('ADMIN')")
 	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
 		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
 		adminSettingsRepository.save(adminSettings);
@@ -62,6 +64,7 @@ public class AdminSettingsService {
 	 *
 	 * @return
 	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	public AdminSettings getAdminSettings() {
 		return adminSettings;
 	}

@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -54,6 +55,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the requested {@link Timeslot} instance if it is found. Otherwise will return {@link HttpStatus#BAD_REQUEST}
 	 */
 	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<Timeslot> getById(@PathVariable Long id) throws NotFoundException {
 		log.info(String.format("GET // " + BASEURL + "/%s", id));
 		Timeslot timeslot = timeslotService.getById(id)
@@ -70,6 +72,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user joined successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/join")
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<Timeslot> joinAppointment(@RequestBody TimeslotRequestBody timeslotRequestBody, BindingResult result) throws NotFoundException {
 		log.info("POST // " + BASEURL + "/join");
 		log.info(timeslotRequestBody.toString());
@@ -97,6 +100,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user left successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/leave")
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<Timeslot> leaveAppointment(@RequestBody TimeslotRequestBody timeslotRequestBody, BindingResult result) throws NotFoundException {
 		log.info("POST // " + BASEURL + "/leave");
 		log.info(timeslotRequestBody.toString());
