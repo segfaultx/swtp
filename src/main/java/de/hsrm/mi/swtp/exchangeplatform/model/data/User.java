@@ -43,7 +43,7 @@ public class User implements Model {
 	@JsonManagedReference
 	UserType userType;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JsonManagedReference
 	List<Timeslot> timeslots = new ArrayList<>();
 	
