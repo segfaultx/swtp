@@ -1,16 +1,16 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter;
 
 
-
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -20,16 +20,14 @@ import java.util.Map;
 @Service
 @RequiredArgsConstructor
 @Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CustomTradeFilter {
 
-    @Autowired
-    private StudentService studentService;
+    UserService userService;
 
-    @Autowired
-    private TimeslotRepository timeSlotRepository;
+    TimeslotRepository timeSlotRepository;
 
-    @Autowired
-    private TradeOfferRepository tradeOfferRepository;
+    TradeOfferRepository tradeOfferRepository;
 
 
 
