@@ -4,7 +4,6 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LoginSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.*;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Status;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import lombok.AccessLevel;
@@ -13,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.jms.core.JmsTemplate;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -38,12 +38,13 @@ public class AuthenticationService implements UserDetailsService {
 		String username = requestBody.getUsername();
 		String password = requestBody.getPassword();
 		
-		// TODO: Useful implementation
-		return username.equals(password);
+		UserDetails userDetails = loadUserByUsername(username);
+		
+		return new BCryptPasswordEncoder().matches(password, userDetails.getPassword());
 	}
 	
 	public LoginResponseBody loginUser(final LoginRequestBody authenticationRequest) throws NotFoundException, JMSException {
-		final User user = userService.getByUsername(authenticationRequest.getUsername())
+		final de.hsrm.mi.swtp.exchangeplatform.model.data.User user = userService.getByUsername(authenticationRequest.getUsername())
 									 .orElseThrow(NotFoundException::new);
 		final String token = jwtTokenUtil.generateToken(user);
 		JWTResponse response = new JWTResponse(token);
@@ -60,7 +61,7 @@ public class AuthenticationService implements UserDetailsService {
 	}
 	
 	public LogoutResponseBody logoutUser(final LogoutRequestBody logoutRequestBody) throws NotFoundException, JMSException {
-		final User user = userService.getByUsername(logoutRequestBody.getUsername())
+		final de.hsrm.mi.swtp.exchangeplatform.model.data.User user = userService.getByUsername(logoutRequestBody.getUsername())
 									 .orElseThrow(NotFoundException::new);
 		boolean isLoggedOut = personalConnectionManager.closeConnection(user);
 		return LogoutResponseBody.builder()
@@ -75,13 +76,13 @@ public class AuthenticationService implements UserDetailsService {
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		Optional<User> user = userService.getByUsername(username);
+		Optional<de.hsrm.mi.swtp.exchangeplatform.model.data.User> user = userService.getByUsername(username);
 		
-		org.springframework.security.core.userdetails.User.UserBuilder builder;
+		User.UserBuilder builder;
 		if(user.isPresent()) {
-			User found = user.get();
+			de.hsrm.mi.swtp.exchangeplatform.model.data.User found = user.get();
 			builder = org.springframework.security.core.userdetails.User.withUsername(username);
-			builder.password(new BCryptPasswordEncoder().encode(found.getAuthenticationInformation().getUsername())); // TODO: add password field in User entity
+			builder.password(new BCryptPasswordEncoder().encode(found.getAuthenticationInformation().getPassword()));
 			builder.roles(found.getAuthenticationInformation().getRole().name());
 		} else {
 			throw new UsernameNotFoundException("User not found.");

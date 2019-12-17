@@ -6,17 +6,19 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.POSerializer;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.List;
 
 @Entity
 @Data
+@ToString(exclude = { "modules"})
 @RequiredArgsConstructor
-@JsonSerialize(using = POSerializer.class)
 public class PO implements Model {
 	@Id
 	@GeneratedValue
+	@JsonIgnore
 	private Long id;
 	
 	@JsonProperty("valid_since_year")
@@ -25,7 +27,6 @@ public class PO implements Model {
 	private String major;
 	
 	@JsonIgnore
-	@JsonProperty("modules")
 	@OneToMany(mappedBy = "po", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Module> modules;
 }

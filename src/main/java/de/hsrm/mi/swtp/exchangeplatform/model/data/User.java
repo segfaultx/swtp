@@ -5,13 +5,16 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Data
+@ToString(exclude = {"authenticationInformation", "userType", "timeslots", "tradeoffers"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User implements Model {
 	
@@ -42,7 +45,10 @@ public class User implements Model {
 	@JsonManagedReference
 	UserType userType;
 	
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	@ManyToMany(cascade = CascadeType.ALL)
 	@JsonManagedReference
-	List<Timeslot> timeslots;
+	List<Timeslot> timeslots = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
+	List<TradeOffer> tradeoffers = new ArrayList<>();
 }

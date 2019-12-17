@@ -6,8 +6,9 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
+import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
+import de.hsrm.mi.swtp.exchangeplatform.repository.*;
+import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,9 +27,13 @@ import java.util.List;
 @Component
 public class DBInitiator implements ApplicationRunner {
 	
-	TimeslotRepository timeslotRepository;
-	
 	UserRepository userRepository;
+	
+	RoomRepository roomRepository;
+	
+	AdminSettingsService adminSettingsService;
+	
+	AdminSettingsRepository adminSettingsRepository;
 	
 	
 	@Override
@@ -79,14 +84,64 @@ public class DBInitiator implements ApplicationRunner {
 		UserType weitzType = new UserType();
 		weitzType.setType(TypeOfUsers.LECTURER);
 		weitzType.setUser(weitz);
-		
-		dennis.setAuthenticationInformation(dennisInformation);
-		dennis.setUserType(dennisType);
-		
-		dennis.setTimeslots(null);
+		weitz.setUserType(weitzType);
 		
 		// END WEITZ
 		
+		// START CHANDLER
+		
+		User chandler = new User();
+		chandler.setFirstName("Chandler");
+		chandler.setLastName("Bing");
+		chandler.setStudentNumber(1005917L);
+		chandler.setEmail("chandler.bing@student.hs-rm.de");
+		chandler.setStaffNumber(null);
+		
+		AuthenticationInformation chandlerAuthInfo = new AuthenticationInformation();
+		chandlerAuthInfo.setRole(Roles.MEMBER);
+		chandlerAuthInfo.setUser(chandler);
+		chandlerAuthInfo.setPassword("chandler123");
+		chandlerAuthInfo.setUsername("cbing001");
+		
+		chandler.setAuthenticationInformation(chandlerAuthInfo);
+		
+		UserType chandlerType = new UserType();
+		chandlerType.setType(TypeOfUsers.STUDENT);
+		chandlerType.setUser(chandler);
+		
+		chandler.setUserType(chandlerType);
+		
+		
+		// END CHANDLER
+		
+		// START KRECHEL
+		User krechel = new User();
+		krechel.setFirstName("Dirk");
+		krechel.setLastName("Krechel");
+		krechel.setEmail("dirk.krechel@hs-rm.de");
+		krechel.setStudentNumber(null);
+		krechel.setStaffNumber(12345678L);
+		krechel.setTimeslots(null);
+		
+		// KRECHEL USERTYPE
+		UserType krechelType = new UserType();
+		krechelType.setType(TypeOfUsers.LECTURER);
+		krechelType.setUser(krechel);
+		krechel.setUserType(krechelType);
+		// END KRECHEL USERTYPE
+		
+		// KRECHEL AUTHINFO
+		AuthenticationInformation krechelAuthInfo = new AuthenticationInformation();
+		krechelAuthInfo.setUsername("dkrec001");
+		krechelAuthInfo.setPassword("dkrec001");
+		krechelAuthInfo.setUser(krechel);
+		krechelAuthInfo.setRole(Roles.ADMIN);
+		
+		krechel.setAuthenticationInformation(krechelAuthInfo);
+		//END KRECHEL AUTHINFO
+		
+		
+		// END KRECHEL
 		// START PO 2017
 		
 		PO po2017 = new PO();
@@ -111,45 +166,126 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// END Modul Programmieren 3
 		
+		// START ROOM D12
+		Room d12 = new Room();
+		d12.setLocation("Unter den Eichen");
+		d12.setRoomNumber("D12");
+		d12.setTimeslots(null);
+		
+		var d12_out = roomRepository.save(d12);
+		
+		
 		// START AFS Timeslots
 		
 		Timeslot afsVorlesung = new Timeslot();
 		afsVorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
 		afsVorlesung.setCapacity(100);
+		afsVorlesung.setModule(afs);
 		afsVorlesung.setDay(DayOfWeek.WEDNESDAY);
 		afsVorlesung.setTimeStart(LocalTime.of(8, 15));
 		afsVorlesung.setTimeEnd(LocalTime.of(9, 45));
 		
-		afsVorlesung.setUser(dennis);
-		
-		afsVorlesung.setModule(null);
-		afsVorlesung.setRoom(null);
+		afsVorlesung.setRoom(d12_out);
 		afsVorlesung.setTimeTable(null);
 		
 		
+		// START AFS UEBUNG 1
 		Timeslot afsUebung = new Timeslot();
 		afsUebung.setTimeSlotType(TypeOfTimeslots.UEBUNG);
 		afsUebung.setCapacity(50);
+		afsUebung.setModule(afs);
 		afsUebung.setDay(DayOfWeek.WEDNESDAY);
 		afsUebung.setTimeStart(LocalTime.of(10, 0));
 		afsUebung.setTimeEnd(LocalTime.of(11, 30));
 		
-		afsUebung.setUser(dennis);
-		
-		afsUebung.setModule(null);
-		afsUebung.setRoom(null);
+		afsUebung.setRoom(d12_out);
 		afsUebung.setTimeTable(null);
-
+		
+		// END AFS UEBUNG 1
+		
+		// START AFS UEBUNG 2
+		
+		Timeslot afsUebung2 = new Timeslot();
+		afsUebung2.setTimeSlotType(TypeOfTimeslots.UEBUNG);
+		afsUebung2.setCapacity(50);
+		afsUebung2.setModule(afs);
+		afsUebung2.setDay(DayOfWeek.WEDNESDAY);
+		afsUebung2.setTimeStart(LocalTime.of(11, 45));
+		afsUebung2.setTimeEnd(LocalTime.of(13, 15));
+		
+		afsUebung2.setRoom(d12_out);
+		afsUebung2.setTimeTable(null);
+		
+		// END AFS UEBUNG 2
+		
+		var krechel_out = userRepository.save(krechel);
+		afsUebung.setUser(krechel_out);
+		afsUebung2.setUser(krechel_out);
+		afsVorlesung.setUser(krechel_out);
+		userRepository.save(weitz);
+		// SAVE Lecturers first so attendees can reference them
+		
+		
+		List<Timeslot> toSave = new ArrayList<>();
+		toSave.add(afsVorlesung);
+		toSave.add(afsUebung);
+		toSave.add(afsUebung2);
+		
+		d12_out.setTimeslots(toSave);
+		
+		// START ADD TIMESLOTS DENNIS
+		
 		List<Timeslot> dennisTimeslots = new ArrayList<>();
 		dennisTimeslots.add(afsUebung);
 		dennisTimeslots.add(afsVorlesung);
 		
+		// END ADD TIMESLOTS DENNIS
+		
+		// START ADD TIMESLOTS CHANDLER
+		
+		List<Timeslot> chandlerTimeslots = new ArrayList<>();
+		chandlerTimeslots.add(afsVorlesung);
+		chandlerTimeslots.add(afsUebung2);
+		
+		// END ADD TIMESLOTS CHANDLER
+		
+		// START SET TIMESLOTS FOR USERS
+		
 		dennis.setTimeslots(dennisTimeslots);
+		chandler.setTimeslots(chandlerTimeslots);
 		
-		userRepository.save(dennis);
-		userRepository.save(weitz);
+		// END SET TIMESLOTS FOR USERS
 		
-		// TODO: Sinnvoll befüllen nach Model refactoring
+		// START USERS LIST
+		
+		List<User> usersToSave = new ArrayList<>();
+		usersToSave.add(dennis);
+		usersToSave.add(chandler);
+		
+		//END USERS LIST
+		
+		// START TRADEOFFER DENNIS
+		
+		TradeOffer offer1 = new TradeOffer();
+		offer1.setOfferer(dennis);
+		offer1.setSeek(afsUebung2);
+		offer1.setOffer(afsUebung);
+		dennis.getTradeoffers().add(offer1);
+		
+		// END TRADEOFFER DENNIS
+		
+		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
+		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
+		
+		AdminSettings adminSettings = new AdminSettings();
+		List<String> filters = new ArrayList<>();
+		filters.add("COLLISION");
+		filters.add("CAPACITY");
+		adminSettings.updateAdminSettings(true, filters);
+		
+		var persistedSettings = adminSettingsRepository.save(adminSettings);
+		adminSettingsService.setAdminSettings(persistedSettings);
+		
 		
 		log.info("Done saving timeTable...");
 		
