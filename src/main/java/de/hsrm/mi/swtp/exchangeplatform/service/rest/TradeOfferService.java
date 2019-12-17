@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
@@ -40,6 +41,8 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	
 	AdminSettingsService adminSettingsService;
 	
+	ModuleRepository moduleRepository;
+	
 	/**
 	 * Method to get personalized {@link TradeOffer}s for a students timetable
 	 *
@@ -75,6 +78,35 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		return adminTradeService.assignTimeslotToStudent(studentId, ownedTimeslotId, futureTimeslotId, adminId);
 	}
 	
+	/**
+	 * Method to lookup potential tradeoffers for a given timeslot
+	 *
+	 * @param id timeslotid
+	 *
+	 * @return map with keys "instant", "trades" and "remaining" holding lists of timeslots
+	 *
+	 * @throws Exception if lookup fails
+	 */
+	public Map<String, List<Timeslot>> getTradeOffersForModule(long id) throws Exception {
+		Map<String, List<Timeslot>> out = new HashMap<>();
+		List<Timeslot> instantTrades = new ArrayList<>();
+		List<Timeslot> regularTrades = new ArrayList<>();
+		List<Timeslot> remaining = new ArrayList<>();
+		var offeredTimeslot = timeSlotRepository.findById(id).orElseThrow();
+		var trades = tradeOfferRepository.findAllBySeek(offeredTimeslot);
+		trades.forEach(trade -> {
+			if(trade.isInstantTrade()) instantTrades.add(trade.getOffer());
+			else regularTrades.add(trade.getOffer());
+		});
+		var allTimeslots = timeSlotRepository.findAllByModule(offeredTimeslot.getModule());
+		allTimeslots.forEach(timeslot -> {
+			if(!instantTrades.contains(timeslot) && !regularTrades.contains(timeslot)) remaining.add(timeslot);
+		});
+		out.put("instant", instantTrades);
+		out.put("trades", regularTrades);
+		out.put("remaining", remaining);
+		return out;
+	}
 	
 	/**
 	 * Method to process a requested trade transaction, transaction info is gathered from {@link TradeOffer}'s id
