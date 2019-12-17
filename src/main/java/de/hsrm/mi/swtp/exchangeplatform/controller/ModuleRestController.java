@@ -24,7 +24,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@RequestMapping("/api/v1/module")
+@RequestMapping("/api/v1/modules")
 @RestController
 public class ModuleRestController {
 	

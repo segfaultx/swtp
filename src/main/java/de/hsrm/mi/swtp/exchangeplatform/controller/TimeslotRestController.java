@@ -27,7 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RestController
-@RequestMapping("/api/v1/timeslot")
+@RequestMapping("/api/v1/timeslots")
 public class TimeslotRestController {
 
 	String BASEURL = "/api/v1/timeslot";
@@ -53,6 +53,7 @@ public class TimeslotRestController {
 	 *
 	 * @return {@link HttpStatus#OK} and the requested {@link Timeslot} instance if it is found. Otherwise will return {@link HttpStatus#BAD_REQUEST}
 	 */
+	@GetMapping("/{id}")
 	public ResponseEntity<Timeslot> getById(@PathVariable Long id) throws NotFoundException {
 		log.info(String.format("GET // " + BASEURL + "/%s", id));
 		Timeslot timeslot = timeslotService.getById(id)
