@@ -2,7 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.service.admin;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
-import de.hsrm.mi.swtp.exchangeplatform.repository.StudentRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public class DefaultAdminTradeService implements AdminTradeService {
 	
-	StudentRepository studentRepository;
+	UserRepository studentRepository;
 	TimeslotRepository timeslotRepository;
 	
 	/**
@@ -36,18 +36,18 @@ public class DefaultAdminTradeService implements AdminTradeService {
 	 */
 	@Override
 	@Transactional
-	public Timeslot assignTimeslotToStudent(long studentId, long ownedTimeslot, long futureTimeslot, long adminId) throws NotFoundException {
+	public Timeslot assignTimeslotToStudent(long studentId, long ownedTimeslot, long futureTimeslot, long adminId) throws Exception {
 		log.info(String.format("Admin (ID: %d) assigning new timeslot (ID: %d) to student (ID: %d), old timeslot (ID: %d)", adminId, futureTimeslot, studentId,
 							   ownedTimeslot
 							  ));
 		var student = studentRepository.findById(studentId).orElseThrow(() -> {
 			log.info(String.format("Error looking up studentId: %d", studentId));
-			throw new NotFoundException();
+			return new NotFoundException();
 		});
 		student.setTimeslots(student.getTimeslots().stream().filter(timeslot -> timeslot.getId() != ownedTimeslot).collect(Collectors.toList()));
 		var timeslot = timeslotRepository.findById(futureTimeslot).orElseThrow(() -> {
 			log.info(String.format("Error looking up future timeslot: ID %d", futureTimeslot));
-			throw new NotFoundException();
+			return new NotFoundException();
 		});
 		student.getTimeslots().add(timeslot);
 		studentRepository.save(student);

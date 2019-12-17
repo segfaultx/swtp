@@ -6,5 +6,5 @@ import org.springframework.stereotype.Service;
 @Service
 public interface AdminTradeService {
 	
-	Timeslot assignTimeslotToStudent(long StudentId, long ownedTimeslot, long futureTimeslot, long adminId);
+	Timeslot assignTimeslotToStudent(long StudentId, long ownedTimeslot, long futureTimeslot, long adminId) throws Exception;
 }
