@@ -7,6 +7,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeTableRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,26 +26,20 @@ import java.util.Optional;
 public class TimeTableService {
 	
 	TimeTableRepository repository;
+	UserRepository userRepository;
 	
 	public List<TimeTable> getAll() {
 		return repository.findAll();
 	}
 	
-	public Optional<TimeTable> getById(Long id) {
-		// TODO: check if can be deleted safely
-//		// This is just a Mock implementation
-//		ObjectMapper mapper = new ObjectMapper();
-//		mapper.registerModule(new JavaTimeModule());
-//		mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-//		ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-//		File jsonInput = new File(classLoader.getResource("data.json").getFile());
-//
-//		try {
-//			return mapper.readValue(jsonInput, new TypeReference<TimeTable>() {});
-//		} catch(IOException e) {
-//			throw new NotFoundException(id);
-//		}
-		return repository.findById(id);
+	public TimeTable getById(Long id) {
+		var user = userRepository.findByStudentNumber(id);
+		TimeTable out = new TimeTable();
+		out.setDateStart(LocalDate.now());
+		out.setDateEnd(LocalDate.now());
+		out.setId(id);
+		out.setTimeslots(user.getTimeslots());
+		return out;
 	}
 	
 	public void save(TimeTable timeTable) {

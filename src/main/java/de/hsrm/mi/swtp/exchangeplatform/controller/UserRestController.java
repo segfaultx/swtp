@@ -2,8 +2,8 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timetable;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import lombok.AccessLevel;
@@ -87,9 +87,9 @@ public class UserRestController {
 	 * @return {@link HttpStatus#OK}
 	 */
 	@GetMapping("/{studentId}/personalizedTimetable")
-	public ResponseEntity<Timetable> getPersonalizedTimeTable(@PathVariable("studentId") long studentId) {
+	public ResponseEntity<TimeTable> getPersonalizedTimeTable(@PathVariable("studentId") long studentId) {
 		log.info(String.format("Getting personalized Timetable for student: %d", studentId));
-		Timetable timeTable = new Timetable();
+		TimeTable timeTable = new TimeTable();
 		// TODO: anpassen an neues Model
 		//var student = studentService.getById(studentId);
 		log.info(String.format("Looking up possible Tradeoffers for student: %d", studentId));

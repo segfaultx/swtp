@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.JWTResponse;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.authentication.WhoAmI;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.AuthenticationService;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
@@ -28,8 +29,6 @@ public class AuthenticationController {
 	AuthenticationService authenticationService;
 	UserService userService;
 	AuthenticationManager authenticationManager;
-	
-	@Autowired
 	JWTTokenUtils jwtTokenUtil;
 	
 	@PostMapping("/login")
@@ -47,13 +46,14 @@ public class AuthenticationController {
 	}
 	
 	@GetMapping("/whoami")
-	public ResponseEntity<?> getUser(@RequestHeader("Authorization") String token) throws Exception {
+	public ResponseEntity<WhoAmI> getUser(@RequestHeader("Authorization") String token) throws Exception {
 		if(!jwtTokenUtil.isValidToken(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		
 		String jwtToken = jwtTokenUtil.tokenWithoutPrefix(token);
 		String usernameFromToken = jwtTokenUtil.getUsernameFromToken(jwtToken);
 		User found = userService.getByUsername(usernameFromToken).orElseThrow(NotFoundException::new);
-		return ResponseEntity.ok(found);
+		WhoAmI whoAmI = userService.getWhoAmI(found);
+		return ResponseEntity.ok(whoAmI);
 	}
 
 

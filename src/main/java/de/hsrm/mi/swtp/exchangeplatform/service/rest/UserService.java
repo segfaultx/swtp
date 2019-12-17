@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
+import de.hsrm.mi.swtp.exchangeplatform.model.authentication.WhoAmI;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import lombok.AccessLevel;
@@ -47,5 +48,13 @@ public class UserService {
 
 	public void delete(User user) {
 		repository.delete(user);
+	}
+	
+	public WhoAmI getWhoAmI(User user) {
+		WhoAmI whoAmI = new WhoAmI();
+		whoAmI.setUsername(user.getAuthenticationInformation().getUsername());
+		whoAmI.setType(user.getUserType().getType());
+		whoAmI.setRole(user.getAuthenticationInformation().getRole());
+		return whoAmI;
 	}
 }

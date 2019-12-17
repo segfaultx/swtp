@@ -25,11 +25,7 @@ import java.util.List;
 @Component
 public class DBInitiator implements ApplicationRunner {
 	
-	TimeslotRepository timeslotRepository;
-	
 	UserRepository userRepository;
-	
-	ModuleRepository moduleRepository;
 	
 	RoomRepository roomRepository;
 	
@@ -82,6 +78,7 @@ public class DBInitiator implements ApplicationRunner {
 		UserType weitzType = new UserType();
 		weitzType.setType(TypeOfUsers.LECTURER);
 		weitzType.setUser(weitz);
+		weitz.setUserType(weitzType);
 		
 		// END WEITZ
 		
@@ -253,6 +250,17 @@ public class DBInitiator implements ApplicationRunner {
 		
 		//END USERS LIST
 		
+		// START TRADEOFFER DENNIS
+		
+		TradeOffer offer1 = new TradeOffer();
+		offer1.setOfferer(dennis);
+		offer1.setSeek(afsUebung2);
+		offer1.setOffer(afsUebung);
+		dennis.getTradeoffers().add(offer1);
+		
+		// END TRADEOFFER DENNIS
+		
+		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
 		
 		log.info("Done saving timeTable...");

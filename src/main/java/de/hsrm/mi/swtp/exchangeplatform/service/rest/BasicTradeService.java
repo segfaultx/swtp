@@ -1,9 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.repository.StudentRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,15 +18,15 @@ import javax.transaction.Transactional;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BasicTradeService implements TradeService{
 
-	StudentRepository studentRepository;
+	UserRepository userRepository;
 	TradeOfferRepository tradeOfferRepository;
 	TimeslotRepository timeslotRepository;
 	
 	@Override
 	@Transactional
 	public boolean doTrade(long studentId, long offeredId, long wantedId) throws NotFoundException {
-		var student = studentRepository.findById(studentId).orElseThrow();
-		var offered = timeslotRepository.findById(offeredId).orElseThrow();
+		var student = userRepository.findById(studentId).orElseThrow(NotFoundException::new);
+		var offered = timeslotRepository.findById(offeredId).orElseThrow(NotFoundException::new);
 		var tradeOffers = tradeOfferRepository.findAllBySeek(offered);
 		var acceptedTrade = tradeOffers.get(0);
 		student.getTimeslots().remove(offered);
@@ -34,8 +34,8 @@ public class BasicTradeService implements TradeService{
 		var student2 = acceptedTrade.getOfferer();
 		student2.getTimeslots().remove(acceptedTrade.getOffer());
 		student2.getTimeslots().add(offered);
-		studentRepository.save(student);
-		studentRepository.save(student2);
+		userRepository.save(student);
+		userRepository.save(student2);
 		return true;
 	}
 }

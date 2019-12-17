@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.AdminSettingsRequest;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
@@ -38,7 +39,8 @@ public class AdminRestController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully updated settings"),
 							@ApiResponse(code = 403, message = "unauthorized update settings attempt"),
 							@ApiResponse(code = 400, message = "malformed admin settings request") })
-	public ResponseEntity<AdminSettings> updateAdminSettings(@RequestBody AdminSettingsRequest adminSettingsRequest, BindingResult bindingResult) {
+	public ResponseEntity<AdminSettings> updateAdminSettings(@RequestBody AdminSettingsRequest adminSettingsRequest, BindingResult bindingResult) throws
+			NotFoundException {
 		if(bindingResult.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		if(adminSettingsService.updateAdminSettings(adminSettingsRequest.isTradesActive(), adminSettingsRequest.getActiveFilters()))
 			return new ResponseEntity<>(adminSettingsService.getAdminSettings(), HttpStatus.OK);
