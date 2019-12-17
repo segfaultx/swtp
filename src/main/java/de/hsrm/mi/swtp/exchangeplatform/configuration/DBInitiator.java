@@ -169,6 +169,7 @@ public class DBInitiator implements ApplicationRunner {
 		Timeslot afsVorlesung = new Timeslot();
 		afsVorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
 		afsVorlesung.setCapacity(100);
+		afsVorlesung.setModule(afs);
 		afsVorlesung.setDay(DayOfWeek.WEDNESDAY);
 		afsVorlesung.setTimeStart(LocalTime.of(8, 15));
 		afsVorlesung.setTimeEnd(LocalTime.of(9, 45));
@@ -181,6 +182,7 @@ public class DBInitiator implements ApplicationRunner {
 		Timeslot afsUebung = new Timeslot();
 		afsUebung.setTimeSlotType(TypeOfTimeslots.UEBUNG);
 		afsUebung.setCapacity(50);
+		afsUebung.setModule(afs);
 		afsUebung.setDay(DayOfWeek.WEDNESDAY);
 		afsUebung.setTimeStart(LocalTime.of(10, 0));
 		afsUebung.setTimeEnd(LocalTime.of(11, 30));
@@ -195,6 +197,7 @@ public class DBInitiator implements ApplicationRunner {
 		Timeslot afsUebung2 = new Timeslot();
 		afsUebung2.setTimeSlotType(TypeOfTimeslots.UEBUNG);
 		afsUebung2.setCapacity(50);
+		afsUebung2.setModule(afs);
 		afsUebung2.setDay(DayOfWeek.WEDNESDAY);
 		afsUebung2.setTimeStart(LocalTime.of(11, 45));
 		afsUebung2.setTimeEnd(LocalTime.of(13, 15));
