@@ -1,5 +1,8 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.ModuleSerializer;
 import lombok.Data;
@@ -12,16 +15,17 @@ import java.util.List;
 @Data
 @RequiredArgsConstructor
 @Table(name = "my_module")
-@JsonSerialize(using = ModuleSerializer.class)
 public class Module implements Model {
 	
 	@Id
 	@GeneratedValue
+	@JsonIgnore
 	private Long id;
 	
 	private String name;
 	
 	@OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonIgnore
 	private List<Timeslot> timeslots;
 	
 	@JoinColumn(name = "po_id")
