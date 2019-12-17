@@ -90,24 +90,9 @@ public class UserRestController {
 	public ResponseEntity<TimeTable> getPersonalizedTimeTable(@PathVariable("studentId") long studentId) {
 		log.info(String.format("Getting personalized Timetable for student: %d", studentId));
 		TimeTable timeTable = new TimeTable();
-		// TODO: anpassen an neues Model
-		//var student = studentService.getById(studentId);
 		log.info(String.format("Looking up possible Tradeoffers for student: %d", studentId));
 		try {
-			// TODO: anpassen an neues Model
-//			var tradeoffers = tradeOfferService.getTradeOffersForTimeSlots(student.getTimeslots());
-//			for(Timeslot timeslot : tradeoffers.keySet()) {
-//				de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot restTimeSlot = new de.hsrm.mi.swtp.exchangeplatform.model.rest_models.Timeslot();
-//				BeanUtils.copyProperties(timeslot, restTimeSlot);
-//				for(String key : tradeoffers.get(timeslot).keySet()) {
-//					tradeoffers.get(timeslot).get(key).forEach(tradeOffer -> {
-//						TradeOffer restOffer = new TradeOffer();
-//						BeanUtils.copyProperties(tradeOffer, restOffer);
-//						restTimeSlot.addPossibleTradesItem(restOffer);
-//					});
-//				}
-//				timeTable.addTimeslotsItem(restTimeSlot);
-//			}
+			//TODO: checken, ob route in dieser form noch benötigt wird
 			return new ResponseEntity<>(timeTable, HttpStatus.OK);
 		} catch(RuntimeException ex) {
 			log.info(String.format("Error creating dersonalized timetable for student: %d", studentId));
