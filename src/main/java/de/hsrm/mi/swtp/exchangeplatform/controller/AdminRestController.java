@@ -31,10 +31,12 @@ public class AdminRestController {
 	
 	/**
 	 * POST request handler
-	 *
+	 * <p>
 	 * provides an endpoint for admins to update {@link AdminSettings}
+	 *
 	 * @param adminSettingsRequest request containing admin settings
 	 * @param bindingResult
+	 *
 	 * @return new admin settings if successful
 	 */
 	@PostMapping("/settings")
