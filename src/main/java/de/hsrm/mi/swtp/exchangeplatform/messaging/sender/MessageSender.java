@@ -7,7 +7,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Model;
  *
  * @param <T> a class which has to extend a {@link Model}.
  */
-public interface MessageSender<T extends Model> {
+public interface MessageSender<T> {
 	
 	void send();
 	
