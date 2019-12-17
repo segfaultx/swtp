@@ -1,11 +1,12 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.TradeOfferNotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.StudentService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -30,7 +31,7 @@ import javax.validation.Valid;
 public class TradeOffersRestController {
 	
 	TradeOfferService tradeOfferService;
-	StudentService studentService;
+	UserService userService;
 	AdminSettingsService adminSettingsService;
 	
 	/**
@@ -53,14 +54,9 @@ public class TradeOffersRestController {
 										  ) {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("DELETE Request Student: %d TradeOffer: %d", studentId, tradeId));
-			try {
-				if(tradeOfferService.deleteTradeOffer(studentId, tradeId)) {
-					log.info(String.format("DELETE Request successful Student: %d TradeOffer: %d", studentId, tradeId));
-					return new ResponseEntity<>(HttpStatus.OK);
-				}
-			} catch(TradeOfferNotFoundException ex) {
-				log.info(String.format("ERROR while DELETE Request Student: %d TradeOffer: %d - Entity not found", studentId, tradeId));
-				return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+			if(tradeOfferService.deleteTradeOffer(studentId, tradeId)) {
+				log.info(String.format("DELETE Request successful Student: %d TradeOffer: %d", studentId, tradeId));
+				return new ResponseEntity<>(HttpStatus.OK);
 			}
 			log.info(String.format("ERROR while DELETE Request Student: %d TradeOffer: %d - Student isn't owner of entity", studentId, tradeId));
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -85,7 +81,7 @@ public class TradeOffersRestController {
 	public ResponseEntity<TradeOffer> createTradeOffer(
 			@ApiParam(value = "Object containing ID's of student, wanted and offered timeslot", required = true) @Valid TradeRequest tradeRequest,
 			BindingResult bindingResult
-													  ) {
+													  ) throws NotFoundException {
 		if(adminSettingsService.isTradesActive()) {
 			if(bindingResult.hasErrors()) {
 				log.info("Malformed traderequest");
@@ -99,7 +95,7 @@ public class TradeOffersRestController {
 																		 tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
 																		);
 			log.info(String.format("POST Request successful: created new tradeoffer with id: %d requester: %d", persistedTradeOffer.getId(),
-								   persistedTradeOffer.getOfferer().getStudentId()
+								   persistedTradeOffer.getOfferer().getStudentNumber()
 								  ));
 			return new ResponseEntity<>(persistedTradeOffer, HttpStatus.OK);
 		} else return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
@@ -117,7 +113,7 @@ public class TradeOffersRestController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully processed traderequest"),
 							@ApiResponse(code = 403, message = "unauthorized trade attempt"),
 							@ApiResponse(code = 400, message = "malformed trade request") })
-	public ResponseEntity<TimeTable> requestTrade(@Valid TradeRequest tradeRequest) {
+	public ResponseEntity<TimeTable> requestTrade(@Valid TradeRequest tradeRequest) throws NotFoundException {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
@@ -127,7 +123,11 @@ public class TradeOffersRestController {
 														   );
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
-			timetable.setTimeslots(studentService.getById(tradeRequest.getOfferedByStudentMatriculationNumber()).getTimeslots());
+			
+			User user = userService.getById(tradeRequest.getOfferedByStudentMatriculationNumber())
+					.orElseThrow(NotFoundException::new);
+			
+			timetable.setTimeslots(user.getTimeslots());
 			return new ResponseEntity<>(timetable, HttpStatus.OK);
 		} else return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
 	}

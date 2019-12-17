@@ -2,17 +2,13 @@ package de.hsrm.mi.swtp.exchangeplatform.repository;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import java.util.Optional;
 
-/**
- * UserRepository retrieves one user by its username and communicates with UserService
- */
-
-@Repository
-public interface UserRepository extends JpaRepository<User,Long> {
-    //List<User> findAll();
-
-    User findByUsername(String username);
+public interface UserRepository extends JpaRepository<User, Long> {
+	
+	@Query("select user from User user join user.authenticationInformation ai where ai.username =:username")
+	Optional<User> findByUsername(@Param("username") String username);
 }

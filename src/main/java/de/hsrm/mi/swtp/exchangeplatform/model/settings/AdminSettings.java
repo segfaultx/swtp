@@ -40,7 +40,7 @@ public class AdminSettings {
 			this.stringVal = stringVal;
 		}
 		
-		public Filters valueFromString(String value) {
+		public Filters valueFromString(String value) throws NotFoundException {
 			for(Filters filter : Filters.values()) {
 				if(filter.stringVal.equals(value)) return filter;
 			}
