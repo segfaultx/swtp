@@ -6,6 +6,9 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +31,11 @@ public class UserRestController {
 	TradeOfferService tradeOfferService;
 	
 	@GetMapping("")
-	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
+	@ApiOperation(value = "get all users", nickname = "getAllUsers")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved users"),
+							@ApiResponse(code = 403, message = "unauthorized fetch attempt"),
+							@ApiResponse(code = 400, message = "malformed fetch request") })
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> getAll(@RequestParam(value = "username", required = false) String username) throws NotFoundException {
 		log.info("GET // " + BASEURL);
 		if(username != null && username.length() > 0) {
@@ -40,6 +47,10 @@ public class UserRestController {
 	}
 	
 	@GetMapping("/{userId}")
+	@ApiOperation(value = "get user by id", nickname = "getUserById")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved user"),
+							@ApiResponse(code = 403, message = "unauthorized fetch attempt"),
+							@ApiResponse(code = 400, message = "malformed fetch request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<User> getById(@PathVariable Long userId) throws NotFoundException {
 		log.info(String.format("GET // " + BASEURL + "/%s", userId));

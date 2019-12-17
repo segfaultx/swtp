@@ -3,6 +3,9 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,6 +40,10 @@ public class ModuleRestController {
 	}
 	
 	@GetMapping("/{moduleId}")
+	@ApiOperation(value = "get module by id", nickname = "getModuleById")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved module"),
+							@ApiResponse(code = 403, message = "unauthorized fetch attempt"),
+							@ApiResponse(code = 400, message = "malformed ID") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<Module> getById(@PathVariable Long moduleId) throws NotFoundException {
 		log.info(String.format("GET // " + BASEURL + "/%s", moduleId));

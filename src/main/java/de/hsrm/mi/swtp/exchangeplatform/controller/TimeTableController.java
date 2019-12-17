@@ -4,6 +4,9 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,6 +33,10 @@ public class TimeTableController {
 	TimeTableService timeTableService;
 	
 	@GetMapping
+	@ApiOperation(value = "get all timetables", nickname = "getAllTimetables")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved timetables"),
+							@ApiResponse(code = 403, message = "unauthorized fetch attempt"),
+							@ApiResponse(code = 400, message = "malformed request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<List<TimeTable>> getAll() {
 		return new ResponseEntity<>(timeTableService.getAll(), HttpStatus.OK);
