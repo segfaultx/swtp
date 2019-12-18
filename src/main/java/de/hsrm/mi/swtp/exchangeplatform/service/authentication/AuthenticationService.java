@@ -65,10 +65,6 @@ public class AuthenticationService implements UserDetailsService {
 								 .build();
 	}
 	
-	public boolean hasToken() {
-		return false;
-	}
-	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Optional<de.hsrm.mi.swtp.exchangeplatform.model.data.User> user = userService.getByUsername(username);

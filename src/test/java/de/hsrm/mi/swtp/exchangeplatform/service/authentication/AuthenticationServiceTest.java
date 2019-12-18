@@ -1,16 +1,26 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.authentication;
 
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginResponseBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutResponseBody;
+import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.rules.ExpectedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import javax.jms.JMSException;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @ExtendWith(SpringExtension.class)
@@ -18,6 +28,9 @@ public class AuthenticationServiceTest {
 
 	@Autowired
 	AuthenticationService authenticationService;
+	
+	@Rule
+	public ExpectedException thrown= ExpectedException.none();
 	
 	@Test
 	public void isLoginValidTestValidCredentials() {
@@ -51,6 +64,57 @@ public class AuthenticationServiceTest {
 		boolean actual = authenticationService.isLoginValid(password, userDetails);
 		
 		assertFalse(actual);
+	}
+	
+	@Test
+	public void testLoadUserByUsername() {
+		String expected = "dscha001";
+		UserDetails userDetails = authenticationService.loadUserByUsername(expected);
+		String actual = userDetails.getUsername();
+		
+		assertEquals(expected, actual);
+	}
+	
+	@Test
+	public void testLoadByUsernameThrowUsernameNotFoundException() {
+		assertThrows(UsernameNotFoundException.class, () -> {
+			authenticationService.loadUserByUsername("garbagename");
+		});
+	}
+	
+	@Test
+	public void testLoginUserThrowNotFoundException() {
+		assertThrows(NotFoundException.class, () -> {
+			LoginRequestBody requestBody = new LoginRequestBody();
+			requestBody.setUsername("garbagename");
+			authenticationService.loginUser(requestBody);
+		});
+	}
+	
+	@Test
+	public void testLoginUserWithValidCredentials() throws NotFoundException, JMSException {
+		LoginRequestBody requestBody = new LoginRequestBody();
+		requestBody.setUsername("dscha001");
+		requestBody.setPassword("dscha001");
+		LoginResponseBody responseBody = authenticationService.loginUser(requestBody);
+		assertNotNull(responseBody);
+	}
+	
+	@Test
+	public void testLogoutUserThrowNotFoundException() {
+		assertThrows(NotFoundException.class, () -> {
+			LogoutRequestBody requestBody = new LogoutRequestBody();
+			requestBody.setUsername("garbagename");
+			authenticationService.logoutUser(requestBody);
+		});
+	}
+	
+	@Test
+	public void testLogoutUserWithValidCredentials() throws NotFoundException, JMSException {
+		LogoutRequestBody requestBody = new LogoutRequestBody();
+		requestBody.setUsername("dscha001");
+		LogoutResponseBody responseBody = authenticationService.logoutUser(requestBody);
+		assertNotNull(responseBody);
 	}
 
 }
