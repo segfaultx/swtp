@@ -72,9 +72,9 @@ public class TimeslotRestController {
 
 	/**
 	 * POST request handler.
-	 * Provides an endpoint to {@code '/api/v1/timeslot/join'} through which a user ({@link de.hsrm.mi.swtp.exchangeplatform.model.data.User}) may join an {@link Timeslot}.
+	 * Provides an endpoint to {@code '/api/v1/timeslot/join'} through which a user ({@link User}) may join an {@link Timeslot}.
 	 *
-	 * @param timeslotRequestBody is an object which contains the id of an {@link Timeslot} and the student ID of a {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User}.
+	 * @param timeslotRequestBody is an object which contains the id of an {@link Timeslot} and the student ID of a {@link User}.
 	 *
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user joined successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
@@ -90,7 +90,7 @@ public class TimeslotRestController {
 		if(result.hasErrors()) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		
 		User user = userService.getById(timeslotRequestBody.getStudentId())
-				.orElseThrow(NotFoundException::new);
+							   .orElseThrow(NotFoundException::new);
 
 		try {
 			timeslotService.addAttendeeToTimeslot(timeslotRequestBody.getTimeslotId(), user);
@@ -104,9 +104,9 @@ public class TimeslotRestController {
 
 	/**
 	 * POST request handler.
-	 * Provides an endpoint to {@code '/api/v1/timeslot/leave'} through which a user ({@link de.hsrm.mi.swtp.exchangeplatform.model.data.User}) can lean an {@link Timeslot}.
+	 * Provides an endpoint to {@code '/api/v1/timeslot/leave'} through which a user ({@link User}) can lean an {@link Timeslot}.
 	 *
-	 * @param timeslotRequestBody is an object which contains the id of an {@link Timeslot} and the student ID of a {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User}.
+	 * @param timeslotRequestBody is an object which contains the id of an {@link Timeslot} and the student ID of a {@link User}.
 	 *
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user left successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
@@ -122,7 +122,7 @@ public class TimeslotRestController {
 		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		
 		User user = userService.getById(timeslotRequestBody.getStudentId())
-				.orElseThrow(NotFoundException::new);
+							   .orElseThrow(NotFoundException::new);
 		
 		timeslotService.removeAttendeeFromTimeslot(timeslotRequestBody.getTimeslotId(), user);
 		

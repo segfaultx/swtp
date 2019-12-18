@@ -26,7 +26,7 @@ public class Timeslot implements Model {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID")
 	@JsonBackReference
-	User user;
+    User user;
 	
 	@ManyToOne
 	Room room;

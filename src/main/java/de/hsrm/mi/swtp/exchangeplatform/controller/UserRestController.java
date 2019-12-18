@@ -40,7 +40,7 @@ public class UserRestController {
 		log.info("GET // " + BASEURL);
 		if(username != null && username.length() > 0) {
 			User user = userService.getByUsername(username)
-					.orElseThrow(NotFoundException::new);
+										.orElseThrow(NotFoundException::new);
 			return ResponseEntity.ok(user);
 		}
 		return ResponseEntity.ok(userService.getAll());
@@ -55,7 +55,7 @@ public class UserRestController {
 	public ResponseEntity<User> getById(@PathVariable Long userId) throws NotFoundException {
 		log.info(String.format("GET // " + BASEURL + "/%s", userId));
 		User user = userService.getById(userId)
-				.orElseThrow(NotFoundException::new);
+									.orElseThrow(NotFoundException::new);
 		return ResponseEntity.ok(user);
 	}
 	
@@ -82,7 +82,7 @@ public class UserRestController {
 		log.info(String.format("DELETE // " + BASEURL + "/admin/%s", userId));
 		
 		User user = userService.getById(userId)
-							   .orElseThrow(NotFoundException::new);
+									.orElseThrow(NotFoundException::new);
 		
 		userService.delete(user);
 		return ResponseEntity.ok(user);

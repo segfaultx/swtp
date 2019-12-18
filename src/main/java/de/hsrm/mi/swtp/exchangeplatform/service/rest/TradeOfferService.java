@@ -1,6 +1,8 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
@@ -8,7 +10,7 @@ import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.AdminTradeService;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.*;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,18 +31,13 @@ import java.util.Map;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class TradeOfferService implements RestService<TradeOffer, Long> {
 	
+	PersonalMessageSender personalMessageSender;
 	TradeOfferRepository tradeOfferRepository;
-	
 	TimeslotRepository timeSlotRepository;
-	
 	UserRepository userRepository;
-	
 	//Tradeilter filterService; //TODO: wait for filter fix
-	
 	AdminTradeService adminTradeService;
-	
 	AdminSettingsService adminSettingsService;
-	
 	ModuleRepository moduleRepository;
 	
 	/**
@@ -132,6 +129,11 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		var tradePartner = tradeOffer.getOfferer();
 		tradePartner.getTimeslots().remove(tradeOffer.getOffer());
 		tradePartner.getTimeslots().add(tradeOffer.getSeek());
+		
+		// send message to user's personal queue telling that the trade was successful
+		personalMessageSender.send(tradeOffer.getOfferer(), TradeOfferSuccessfulMessage.builder()
+																					   .tradeOfferId(tradeOffer.getId())
+																					   .build());
 		return tradeOffer.getOffer();
 	}
 	
