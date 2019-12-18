@@ -32,12 +32,13 @@ public class TimeTableService {
 		return repository.findAll();
 	}
 	
-	public TimeTable getById(Long id) {
-		var user = userRepository.findByStudentNumber(id);
+	public TimeTable getById(Long id) throws Exception {
+		var user = userRepository.findById(id).orElseThrow();
+		if (user.getStudentNumber() == null) throw new NotFoundException();
 		TimeTable out = new TimeTable();
 		out.setDateStart(LocalDate.now());
 		out.setDateEnd(LocalDate.now());
-		out.setId(id);
+		out.setId(user.getStudentNumber());
 		out.setTimeslots(user.getTimeslots());
 		return out;
 	}
