@@ -33,6 +33,7 @@ public class AuthenticationService implements UserDetailsService {
 	PersonalConnectionManager personalConnectionManager;
 	JWTTokenUtils jwtTokenUtil;
 	JmsTemplate jmsTemplate;
+	ActiveTokens activeTokens;
 	
 	public boolean isLoginValid(String password, UserDetails userDetails) {
 		return new BCryptPasswordEncoder().matches(password, userDetails.getPassword());
@@ -41,7 +42,11 @@ public class AuthenticationService implements UserDetailsService {
 	public LoginResponseBody loginUser(final LoginRequestBody authenticationRequest) throws NotFoundException, JMSException {
 		final de.hsrm.mi.swtp.exchangeplatform.model.data.User user = userService.getByUsername(authenticationRequest.getUsername())
 									 .orElseThrow(NotFoundException::new);
+		
 		final String token = jwtTokenUtil.generateToken(user);
+		
+		activeTokens.addToken(token);
+		
 		JWTResponse response = new JWTResponse(token);
 		
 		ActiveMQQueue personalQueue = personalConnectionManager.createNewConnection(user);
@@ -55,9 +60,10 @@ public class AuthenticationService implements UserDetailsService {
 								.build();
 	}
 	
-	public LogoutResponseBody logoutUser(final LogoutRequestBody logoutRequestBody) throws NotFoundException, JMSException {
-		final de.hsrm.mi.swtp.exchangeplatform.model.data.User user = userService.getByUsername(logoutRequestBody.getUsername())
-									 .orElseThrow(NotFoundException::new);
+	public LogoutResponseBody logoutUser(de.hsrm.mi.swtp.exchangeplatform.model.data.User user, String token) throws JMSException {
+
+		activeTokens.removeToken(token);
+		
 		boolean isLoggedOut = personalConnectionManager.closeConnection(user);
 		return LogoutResponseBody.builder()
 								 .message(String.format("Logout was %ssuccessful.", isLoggedOut ? "" : "un"))

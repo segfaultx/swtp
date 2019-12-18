@@ -1,9 +1,12 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.authentication;
 
+import de.hsrm.mi.swtp.exchangeplatform.model.authentication.ActiveTokens;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -14,10 +17,13 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
+@RequiredArgsConstructor
 public class JWTTokenUtils {
 	
 	public final static String BEARER_TOKEN_PREFIX = "Bearer ";
 	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+
+	private ActiveTokens activeTokens;
 	
 	@Value("${jwt.secret}")
 	private String secret;
@@ -43,7 +49,7 @@ public class JWTTokenUtils {
 	}
 	
 	//check if the token has expired
-	private Boolean isTokenExpired(String token) {
+	public Boolean isTokenExpired(String token) {
 		final Date expiration = getExpirationDateFromToken(token);
 		return expiration.before(new Date());
 	}
@@ -72,7 +78,9 @@ public class JWTTokenUtils {
 	//validate token
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = getUsernameFromToken(token);
-		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+		return (username.equals(userDetails.getUsername())
+				&& !isTokenExpired(token)
+				&& activeTokens.getActiveTokens().contains(token));
 	}
 	
 	public static String tokenWithoutPrefix(final String bearerToken) {
@@ -83,4 +91,12 @@ public class JWTTokenUtils {
 		return token != null && token.startsWith(BEARER_TOKEN_PREFIX);
 	}
 	
+	public ActiveTokens getActiveTokens() {
+		return activeTokens;
+	}
+	
+	@Autowired
+	public void setActiveTokens(ActiveTokens activeTokens) {
+		this.activeTokens = activeTokens;
+	}
 }

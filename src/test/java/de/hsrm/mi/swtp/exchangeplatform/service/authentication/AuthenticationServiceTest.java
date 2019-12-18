@@ -5,6 +5,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginResponseBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutResponseBody;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,9 @@ public class AuthenticationServiceTest {
 
 	@Autowired
 	AuthenticationService authenticationService;
+	
+	@Autowired
+	UserService userService;
 	
 	@Rule
 	public ExpectedException thrown= ExpectedException.none();
@@ -103,18 +107,28 @@ public class AuthenticationServiceTest {
 	@Test
 	public void testLogoutUserThrowNotFoundException() {
 		assertThrows(NotFoundException.class, () -> {
-			LogoutRequestBody requestBody = new LogoutRequestBody();
-			requestBody.setUsername("garbagename");
-			authenticationService.logoutUser(requestBody);
+			de.hsrm.mi.swtp.exchangeplatform.model.data.User user = new de.hsrm.mi.swtp.exchangeplatform.model.data.User();
+			user.getAuthenticationInformation().setUsername("garbageUsername");
+			authenticationService.logoutUser(user, "");
 		});
 	}
-	
+
 	@Test
 	public void testLogoutUserWithValidCredentials() throws NotFoundException, JMSException {
-		LogoutRequestBody requestBody = new LogoutRequestBody();
+		
+		// First Login
+		LoginRequestBody requestBody = new LoginRequestBody();
 		requestBody.setUsername("dscha001");
-		LogoutResponseBody responseBody = authenticationService.logoutUser(requestBody);
-		assertNotNull(responseBody);
+		requestBody.setPassword("dscha001");
+		LoginResponseBody responseBody = authenticationService.loginUser(requestBody);
+		String token = JWTTokenUtils.tokenWithoutPrefix(responseBody.getTokenResponse().getToken());
+		
+		de.hsrm.mi.swtp.exchangeplatform.model.data.User user = userService.getByUsername("dscha001")
+				.orElseThrow(NotFoundException::new);
+		
+		// Then Logout
+		LogoutResponseBody logoutResponseBody = authenticationService.logoutUser(user, token);
+		assertNotNull(logoutResponseBody);
 	}
 
 }

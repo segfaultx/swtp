@@ -36,7 +36,7 @@ public class RequestFilter extends OncePerRequestFilter {
 		String username = null;
 		String jwtToken = null;
 		
-		if(jwtTokenUtil.isValidToken(requestTokenHeader)) {
+		if(JWTTokenUtils.isValidToken(requestTokenHeader)) {
 			jwtToken = requestTokenHeader.substring(7);
 			try {
 				username = jwtTokenUtil.getUsernameFromToken(jwtToken);
