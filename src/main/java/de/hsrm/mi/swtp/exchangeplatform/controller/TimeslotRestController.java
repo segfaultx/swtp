@@ -45,6 +45,7 @@ public class TimeslotRestController {
 	 * @return a JSON made up of a list containing all available {@link Timeslot Appointments}.
 	 * If there are none will return an empty list.
 	 */
+	@GetMapping("")
 	public ResponseEntity<List<Timeslot>> getAll() {
 		return new ResponseEntity<>(timeslotService.getAll(), HttpStatus.OK);
 	}

@@ -24,6 +24,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @Slf4j
@@ -45,7 +46,10 @@ public class AuthenticationController {
 	public ResponseEntity<?> login(@RequestBody LoginRequestBody authenticationRequest) throws Exception {
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		
-		if(!authenticationService.isLoginValid(authenticationRequest))
+		UserDetails userDetails = authenticationService.loadUserByUsername(authenticationRequest.getUsername());
+		String password = authenticationRequest.getPassword();
+		
+		if(!authenticationService.isLoginValid(password, userDetails))
 			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
 		
 		try {

@@ -34,12 +34,7 @@ public class AuthenticationService implements UserDetailsService {
 	JWTTokenUtils jwtTokenUtil;
 	JmsTemplate jmsTemplate;
 	
-	public boolean isLoginValid(LoginRequestBody requestBody) {
-		String username = requestBody.getUsername();
-		String password = requestBody.getPassword();
-		
-		UserDetails userDetails = loadUserByUsername(username);
-		
+	public boolean isLoginValid(String password, UserDetails userDetails) {
 		return new BCryptPasswordEncoder().matches(password, userDetails.getPassword());
 	}
 	
