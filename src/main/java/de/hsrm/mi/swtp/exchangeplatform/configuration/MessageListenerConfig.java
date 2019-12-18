@@ -1,11 +1,11 @@
-package de.hsrm.mi.swtp.exchangeplatform.messaging;
+package de.hsrm.mi.swtp.exchangeplatform.configuration;
 
 import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.ModuleMessageConverter;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.UserMessageConverter;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.TimeslotMessageConverter;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.UserMessageConverter;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ModuleMessageListener;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.UserMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.TimeslotMessageListener;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.UserMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.service.JmsErrorHandler;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.destination.JndiDestinationResolver;
 
 import javax.jms.ConnectionFactory;
 
@@ -37,12 +36,8 @@ public class MessageListenerConfig {
 		log.info("BrokerService broker() gezogen");
 		BrokerService broker = new BrokerService();
 		broker.addConnector("tcp://0.0.0.0:4242");
+		log.info(broker.toString());
 		return broker;
-	}
-	
-	@Bean
-	public JndiDestinationResolver jndiDestinationResolver() {
-		return new JndiDestinationResolver();
 	}
 	
 	@Bean(name = "studentQueue")

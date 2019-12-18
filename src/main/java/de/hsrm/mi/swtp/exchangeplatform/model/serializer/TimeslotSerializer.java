@@ -20,7 +20,7 @@ public class TimeslotSerializer extends StdSerializer<Timeslot> {
 	@Override
 	public void serialize(Timeslot value, JsonGenerator gen, SerializerProvider provider) throws IOException {
 		
-		// TODO: Serialisierung auf Fehler testen und ggfs fixen
+		// TODO: Prüfen, ob custom serialisierer noch benötigt wird
 		gen.writeStartObject();
 		gen.writeNumberField("id", value.getId());
 		gen.writeObjectField("room", value.getRoom());

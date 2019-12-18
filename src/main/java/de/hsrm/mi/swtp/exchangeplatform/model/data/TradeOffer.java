@@ -1,17 +1,18 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
-import lombok.Getter;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 
 @Entity
-@Getter
-@Setter
+@Data
+@ToString(exclude = { "offerer", "offer", "seek"})
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TradeOffer implements Model {
@@ -22,6 +23,7 @@ public class TradeOffer implements Model {
 	
 	@JsonProperty("offerer")
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JsonBackReference
 	User offerer;
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

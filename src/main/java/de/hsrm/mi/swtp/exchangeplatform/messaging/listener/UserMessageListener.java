@@ -37,7 +37,7 @@ public class UserMessageListener implements MessageListener {
 	@Override
 	public void onMessage(Message message) {
 		try {
-			log.info("Es kam ein neuer Termin rein: " + ((TextMessage) message).getText());
+			log.info("Es kam eine Nachricht rein: " + ((TextMessage) message).getText());
 		} catch(JMSException e) {
 			log.info("ERROR: " + message);
 		}

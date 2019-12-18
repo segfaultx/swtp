@@ -2,6 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
@@ -18,10 +19,16 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/trades")
@@ -49,9 +56,10 @@ public class TradeOffersRestController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully deleted tradeoffer"),
 							@ApiResponse(code = 403, message = "unauthorized delete attempt"),
 							@ApiResponse(code = 404, message = "tradeoffer not found") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity deleteTradeOffer(@ApiParam(value = "Numeric ID of the student", required = true) @PathVariable("studentId") long studentId,
 										   @ApiParam(value = "Numeric ID of the tradeoffer", required = true) @PathVariable("tradeId") long tradeId
-										  ) {
+										  ) throws Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("DELETE Request Student: %d TradeOffer: %d", studentId, tradeId));
 			if(tradeOfferService.deleteTradeOffer(studentId, tradeId)) {
@@ -78,6 +86,7 @@ public class TradeOffersRestController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully created tradeoffer"),
 							@ApiResponse(code = 403, message = "unauthorized create attempt"),
 							@ApiResponse(code = 400, message = "malformed trade request") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<TradeOffer> createTradeOffer(
 			@ApiParam(value = "Object containing ID's of student, wanted and offered timeslot", required = true) @Valid TradeRequest tradeRequest,
 			BindingResult bindingResult
@@ -103,9 +112,11 @@ public class TradeOffersRestController {
 	
 	/**
 	 * POST request handler
-	 *
+	 * <p>
 	 * provides an endpoint to {@code '/api/v1/trades'} for users to request a trade
+	 *
 	 * @param tradeRequest {@link TradeRequest} object containing requesters ID, offered Id and requested ID
+	 *
 	 * @return new timetable if trade was successful
 	 */
 	@PostMapping
@@ -113,7 +124,8 @@ public class TradeOffersRestController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully processed traderequest"),
 							@ApiResponse(code = 403, message = "unauthorized trade attempt"),
 							@ApiResponse(code = 400, message = "malformed trade request") })
-	public ResponseEntity<TimeTable> requestTrade(@Valid TradeRequest tradeRequest) throws NotFoundException {
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
+	public ResponseEntity<TimeTable> requestTrade(@Valid TradeRequest tradeRequest) throws Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
@@ -124,11 +136,33 @@ public class TradeOffersRestController {
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
 			
-			User user = userService.getById(tradeRequest.getOfferedByStudentMatriculationNumber())
-					.orElseThrow(NotFoundException::new);
+			User user = userService.getById(tradeRequest.getOfferedByStudentMatriculationNumber()).orElseThrow(NotFoundException::new);
 			
 			timetable.setTimeslots(user.getTimeslots());
 			return new ResponseEntity<>(timetable, HttpStatus.OK);
 		} else return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
+	}
+	
+	/**
+	 * GET request handler
+	 * <p>
+	 * provides an endpoint to {@link User}s to receive tradeoffers for a given timeslot
+	 *
+	 * @param id id of timeslot
+	 *
+	 * @return map with keys "instant", "trades", "remaining" holding lists of respective timeslots
+	 *
+	 * @throws Exception if lookups fail
+	 */
+	@GetMapping("/{id}")
+	@ApiOperation(value = "request tradeOffers", nickname = "getTradesForTimeslot")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved tradeoffers"),
+							@ApiResponse(code = 403, message = "unauthorized tradeOffer request"),
+							@ApiResponse(code = 400, message = "malformed tradeOffers request") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
+	public ResponseEntity<Map<String, List<Timeslot>>> getTradesForModule(@PathVariable("id") long id, Principal principal) throws Exception {
+		log.info(String.format("GET REQUEST TRADEOFFERS FOR TIMESLOT WITH ID: %d BY USER: %s", id, principal.getName()));
+		var out = tradeOfferService.getTradeOffersForModule(id);
+		return new ResponseEntity<>(out, HttpStatus.OK);
 	}
 }

@@ -21,7 +21,7 @@ public class CapacityFilter implements Filter {
 		List<TradeOffer> capacityList = new ArrayList<>();
 		for(TradeOffer offer : capacityList){
 			/// compare max capacity to number of already subscribed attendees
-			if(offer.getSeek().getCapacity() < 10){ // TODO: Magic number ändern in aktuelle Belegungsanzahl von Studenten
+			if(offer.getSeek().getCapacity() < offer.getOfferer().getTimeslots().size()){
 				capacityList.add(offer);
 			}
 		}

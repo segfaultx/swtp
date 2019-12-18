@@ -6,7 +6,9 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
+import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.*;
+import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,6 +30,10 @@ public class DBInitiator implements ApplicationRunner {
 	UserRepository userRepository;
 	
 	RoomRepository roomRepository;
+	
+	AdminSettingsService adminSettingsService;
+	
+	AdminSettingsRepository adminSettingsRepository;
 	
 	
 	@Override
@@ -97,9 +103,14 @@ public class DBInitiator implements ApplicationRunner {
 		chandlerAuthInfo.setPassword("chandler123");
 		chandlerAuthInfo.setUsername("cbing001");
 		
+		chandler.setAuthenticationInformation(chandlerAuthInfo);
+		
 		UserType chandlerType = new UserType();
 		chandlerType.setType(TypeOfUsers.STUDENT);
 		chandlerType.setUser(chandler);
+		
+		chandler.setUserType(chandlerType);
+		
 		
 		// END CHANDLER
 		
@@ -265,6 +276,16 @@ public class DBInitiator implements ApplicationRunner {
 		
 		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
+		
+		AdminSettings adminSettings = new AdminSettings();
+		List<String> filters = new ArrayList<>();
+		filters.add("COLLISION");
+		filters.add("CAPACITY");
+		adminSettings.updateAdminSettings(true, filters);
+		
+		var persistedSettings = adminSettingsRepository.save(adminSettings);
+		adminSettingsService.setAdminSettings(persistedSettings);
+		
 		
 		log.info("Done saving timeTable...");
 		

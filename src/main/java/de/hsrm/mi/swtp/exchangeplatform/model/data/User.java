@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AccessLevel;
 import lombok.Data;
+import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Entity
 @Data
+@ToString(exclude = {"authenticationInformation", "userType", "timeslots", "tradeoffers"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User implements Model {
 	
