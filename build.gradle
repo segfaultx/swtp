@@ -71,6 +71,7 @@ dependencies {
     compile 'org.springframework.security:spring-security-config'
     compile 'org.springframework:spring-context-support'
     compile 'net.sf.ehcache:ehcache-core:2.6.11'
+    implementation 'junit:junit:4.12'
 }
 
 test {
