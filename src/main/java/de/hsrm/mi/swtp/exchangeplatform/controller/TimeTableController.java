@@ -44,7 +44,7 @@ public class TimeTableController {
 	
 	@GetMapping("/{id}")
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<TimeTable> getById(@PathVariable Long id) throws NotFoundException {
+	public ResponseEntity<TimeTable> getById(@PathVariable Long id) throws Exception {
 		
 		TimeTable timeTable = timeTableService.getById(id);
 		
