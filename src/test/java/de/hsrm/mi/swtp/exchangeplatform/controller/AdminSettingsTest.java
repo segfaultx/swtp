@@ -67,4 +67,9 @@ public class AdminSettingsTest {
 								.contentType(MediaType.APPLICATION_JSON).content("null"))
 			   .andExpect(status().isBadRequest());
 	}
+	@Test
+	@WithMockUser(roles = "USER")
+	void testUnauthorized() throws Exception {
+		mockmvc.perform(get("/api/v1/admin/settings")).andExpect(status().is4xxClientError());
+	}
 }
