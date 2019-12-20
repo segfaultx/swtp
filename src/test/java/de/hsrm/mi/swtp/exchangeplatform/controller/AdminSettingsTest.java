@@ -58,4 +58,13 @@ public class AdminSettingsTest {
 		var settings_response = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AdminSettings.class);
 		assertEquals("Adminsettings post equals", changed_setting, settings_response);
 	}
+	
+	@Test
+	@WithMockUser(roles = "ADMIN")
+	@Transactional
+	void testFalseAdminsettingsPost() throws Exception{
+		mockmvc.perform(post("/api/v1/admin/settings")
+								.contentType(MediaType.APPLICATION_JSON).content("null"))
+			   .andExpect(status().isBadRequest());
+	}
 }
