@@ -51,14 +51,14 @@ public class AuthenticationController {
 	@ApiOperation(value = "login to application", nickname = "login")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully logged in"),
 							@ApiResponse(code = 400, message = "malformed login request") })
-	public ResponseEntity<?> login(@RequestBody LoginRequestBody authenticationRequest) throws Exception {
+	public ResponseEntity<LoginResponseBody> login(@RequestBody LoginRequestBody authenticationRequest) throws Exception {
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		
 		UserDetails userDetails = authenticationService.loadUserByUsername(authenticationRequest.getUsername());
 		String password = authenticationRequest.getPassword();
 		
 		if(!authenticationService.isLoginValid(password, userDetails))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		try {
 			LoginResponseBody responseBody = authenticationService.loginUser(authenticationRequest);
 			return ResponseEntity.ok(responseBody);
