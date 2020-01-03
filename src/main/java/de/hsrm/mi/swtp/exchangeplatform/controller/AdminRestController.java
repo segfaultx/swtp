@@ -63,4 +63,11 @@ public class AdminRestController {
 	public ResponseEntity<AdminSettings> getAdminSettings() {
 		return new ResponseEntity<>(adminSettingsService.getAdminSettings(), HttpStatus.OK);
 	}
+	
+	@GetMapping("/tradingActive")
+	@ApiOperation(value = "get trading active", nickname = "getTradingActive")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully received adminsettings"),
+							@ApiResponse(code = 403, message = "unauthorized get settings attempt") })
+	public ResponseEntity<Boolean> getTradingActive() {return new ResponseEntity<>(adminSettingsService.isTradesActive(), HttpStatus.OK); }
+	
 }

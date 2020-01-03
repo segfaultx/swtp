@@ -28,8 +28,9 @@ public class AdminSettingsService {
 	 * @param adminSettingsRepository
 	 */
 	@Autowired
-	public AdminSettingsService(@NotNull AdminSettingsRepository adminSettingsRepository) {
+	public AdminSettingsService(@NotNull AdminSettingsRepository adminSettingsRepository, @NotNull ExchangeplatformMessageSender exchangeplatformMessageSender) {
 		this.adminSettingsRepository = adminSettingsRepository;
+		this.exchangeplatformMessageSender = exchangeplatformMessageSender;
 		var tmp = adminSettingsRepository.findById(adminSettingsId);
 		if(tmp.isPresent())
 			this.adminSettings = tmp.get(); // TODO: throw exception if settings not present at application startup, changed to this so DBInitiator can fill DB
