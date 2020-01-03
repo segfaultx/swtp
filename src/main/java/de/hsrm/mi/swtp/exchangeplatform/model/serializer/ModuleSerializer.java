@@ -26,12 +26,12 @@ public class ModuleSerializer extends StdSerializer<Module> {
 		gen.writeStringField("name", value.getName());
 		gen.writeFieldName("timeslots");
 		gen.writeStartArray();
-		for(Timeslot timeslot: value.getTimeslots()) {
+		for(Timeslot timeslot : value.getTimeslots()) {
 			gen.writeNumber(timeslot.getId());
 		}
 		gen.writeEndArray();
 		gen.writeObjectField("po", value.getPo());
 		gen.writeEndObject();
 	}
-
+	
 }

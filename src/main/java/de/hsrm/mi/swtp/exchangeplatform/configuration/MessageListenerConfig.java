@@ -1,52 +1,50 @@
-package de.hsrm.mi.swtp.exchangeplatform.messaging;
+package de.hsrm.mi.swtp.exchangeplatform.configuration;
 
 import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.ExchangeplatformMessageConverter;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.ModuleMessageConverter;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.StudentMessageConverter;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.TimeslotMessageConverter;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.converter.UserMessageConverter;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ModuleMessageListener;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.StudentMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.TimeslotMessageListener;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.UserMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.service.JmsErrorHandler;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.apache.activemq.command.ActiveMQTopic;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.destination.JndiDestinationResolver;
 
 import javax.jms.ConnectionFactory;
 
 @Slf4j
 @EnableJms
 @Configuration
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@RequiredArgsConstructor
 public class MessageListenerConfig {
 	
-	@Autowired
-	private ConnectionFactory connectionFactory;
+	ConnectionFactory connectionFactory;
 	
 	@Bean
 	public BrokerService broker() throws Exception {
 		log.info("BrokerService broker() gezogen");
 		BrokerService broker = new BrokerService();
 		broker.addConnector("tcp://0.0.0.0:4242");
+		log.info(broker.toString());
 		return broker;
-	}
-	
-	@Bean
-	public JndiDestinationResolver jndiDestinationResolver() {
-		return new JndiDestinationResolver();
 	}
 	
 	@Bean(name = "studentQueue")
 	public ActiveMQQueue studentQueue() {
-		return new ActiveMQQueue(StudentMessageListener.QUEUENAME);
+		return new ActiveMQQueue(UserMessageListener.QUEUENAME);
 	}
 	
 	@Bean(name = "timeslotQueue")
@@ -128,7 +126,7 @@ public class MessageListenerConfig {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
 		factory.setPubSubDomain(false);
-		factory.setMessageConverter(new StudentMessageConverter());
+		factory.setMessageConverter(new UserMessageConverter());
 		factory.setErrorHandler(new JmsErrorHandler());
 		return factory;
 	}

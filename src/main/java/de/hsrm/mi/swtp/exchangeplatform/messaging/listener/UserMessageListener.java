@@ -20,7 +20,7 @@ import javax.jms.TextMessage;
 @Component
 @EnableJms
 @RequiredArgsConstructor
-public class StudentMessageListener implements MessageListener {
+public class UserMessageListener implements MessageListener {
 	
 	public final static String TOPICNAME = "StudentTopic";
 	public final static String QUEUENAME = "StudentQueue";
@@ -37,7 +37,7 @@ public class StudentMessageListener implements MessageListener {
 	@Override
 	public void onMessage(Message message) {
 		try {
-			log.info("Es kam ein neuer Termin rein: " + ((TextMessage) message).getText());
+			log.info("Es kam eine Nachricht rein: " + ((TextMessage) message).getText());
 		} catch(JMSException e) {
 			log.info("ERROR: " + message);
 		}

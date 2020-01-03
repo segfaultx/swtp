@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.settings;
 
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.ExchangeplatformMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
@@ -7,6 +8,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
@@ -21,6 +23,10 @@ public class AdminSettingsService {
 	final Long adminSettingsId = 1L;
 	ExchangeplatformMessageSender exchangeplatformMessageSender;
 	
+	/**
+	 *
+	 * @param adminSettingsRepository
+	 */
 	@Autowired
 	public AdminSettingsService(@NotNull AdminSettingsRepository adminSettingsRepository) {
 		this.adminSettingsRepository = adminSettingsRepository;
@@ -39,17 +45,28 @@ public class AdminSettingsService {
 		return adminSettings.isTradesActive();
 	}
 	
+	
+	/**
+	 * Method to set the admin settings on startup, used for dev purposes
+	 * @param adminSettings adminsettings from db
+	 */
 	public void setAdminSettings(AdminSettings adminSettings) {
 		this.adminSettings = adminSettings;
 	}
 	
-	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters){
+	@PreAuthorize("hasRole('ADMIN')")
+	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
 		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
 		exchangeplatformMessageSender.send(tradesActive);
 		adminSettingsRepository.save(adminSettings);
 		return true;
 	}
 	
+	/**
+	 *
+	 * @return
+	 */
+	@PreAuthorize("hasRole('ADMIN')")
 	public AdminSettings getAdminSettings() {
 		return adminSettings;
 	}

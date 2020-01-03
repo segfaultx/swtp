@@ -17,14 +17,14 @@ public class CapacityFilter implements Filter {
 	 * @return all TradeOffers with attached timeslots that havent reached their max capacity
 	 */
 	@Override
-    public List<TradeOffer> filter(List<TradeOffer> offers){
-        List<TradeOffer> capacityList = new ArrayList<>();
-        for(TradeOffer offer : capacityList){
-        	/// compare max capacity to number of already subscribed attendees
-            if(offer.getSeek().getCapacity() < offer.getSeek().getAttendees().size()){
-                capacityList.add(offer);
-            }
-        }
-        return capacityList;
-    }
+	public List<TradeOffer> filter(List<TradeOffer> offers){
+		List<TradeOffer> capacityList = new ArrayList<>();
+		for(TradeOffer offer : capacityList){
+			/// compare max capacity to number of already subscribed attendees
+			if(offer.getSeek().getCapacity() < offer.getOfferer().getTimeslots().size()){
+				capacityList.add(offer);
+			}
+		}
+		return capacityList;
+	}
 }

@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.settings;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.*;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CapacityFilter;
@@ -40,7 +41,7 @@ public class AdminSettings {
 			this.stringVal = stringVal;
 		}
 		
-		public Filters valueFromString(String value) {
+		public Filters valueFromString(String value) throws NotFoundException {
 			for(Filters filter : Filters.values()) {
 				if(filter.stringVal.equals(value)) return filter;
 			}
@@ -53,6 +54,10 @@ public class AdminSettings {
 		@Override
 		public String toString() {
 			return "Filters{" + "filter=" + filter + ", stringVal='" + stringVal + '\'' + '}';
+		}
+		
+		public Filter getFilter() {
+			return filter;
 		}
 	}
 	
@@ -74,5 +79,11 @@ public class AdminSettings {
 		log.info(String.format("Updating admin settings filters from: %s to: %s", this.activeFilters.toString(), activeFilters.toString()));
 		this.activeFilters.clear();
 		activeFilters.forEach(filterVal -> this.activeFilters.add(Filters.valueOf(filterVal)));
+	}
+	@JsonIgnore
+	public List<Filter> getCurrentActiveFilters(){
+		List<Filter> out = new ArrayList<>();
+		activeFilters.forEach(item -> out.add(item.getFilter()));
+		return out;
 	}
 }

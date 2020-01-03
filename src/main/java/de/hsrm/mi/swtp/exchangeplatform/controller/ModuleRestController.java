@@ -1,18 +1,23 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
 
@@ -24,71 +29,30 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@RequestMapping("/api/v1/module")
+@SecurityRequirement(name = "Authorization")
+@RequestMapping("/api/v1/modules")
 @RestController
-public class ModuleRestController implements BaseRestController<Module, Long> {
+public class ModuleRestController {
 	
-	String BASEURL = "/api/v1/module";
+	String BASEURL = "/api/v1/modules";
 	ModuleService moduleService;
 	
-	@Override
 	public ResponseEntity<List<Module>> getAll() {
 		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
 	}
 	
-	@Override
 	@GetMapping("/{moduleId}")
-	public ResponseEntity<Module> getById(@PathVariable Long moduleId) {
+	@ApiOperation(value = "get module by id", nickname = "getModuleById")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved module"),
+							@ApiResponse(code = 403, message = "unauthorized fetch attempt"),
+							@ApiResponse(code = 400, message = "malformed ID") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
+	public ResponseEntity<Module> getById(@PathVariable Long moduleId) throws NotFoundException {
 		log.info(String.format("GET // " + BASEURL + "/%s", moduleId));
-		try {
-			return new ResponseEntity<>(moduleService.getById(moduleId), HttpStatus.OK);
-		} catch(NotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-	}
-	
-	@Override
-	public ResponseEntity<Module> create(@RequestBody Module module, BindingResult result) {
-		log.info("POST // " + BASEURL);
-		log.info(module.toString());
-		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		
-		try {
-			moduleService.save(module);
-			return new ResponseEntity<>(module, HttpStatus.OK);
-		} catch(NotCreatedException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
-	
-	@Override
-	@PatchMapping("/{moduleId}")
-	public ResponseEntity<Module> update(@PathVariable Long moduleId, @RequestBody Module model, BindingResult result) {
-		return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-	}
-	
-	@Override
-	@DeleteMapping("/{moduleId}")
-	public ResponseEntity<Module> delete(@PathVariable Long moduleId) {
-		log.info(String.format("DELETE // " + BASEURL + "/admin/s", moduleId));
-		
-		try {
-			moduleService.delete(moduleId);
-			return new ResponseEntity<>(HttpStatus.OK);
-		} catch(NotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		} catch(IllegalArgumentException e) {
-			log.info(String.format("FAIL: Module %s not deleted due to error while parsing", moduleId));
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
-	
-	@GetMapping("/{id}/timeslots")
-	public ResponseEntity<List<Timeslot>> getAllTimeslotsOfModule(@PathVariable Long id) {
-		try {
-			return new ResponseEntity<>(moduleService.getById(id).getTimeslots(), HttpStatus.OK);
-		} catch(NotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		Module module = moduleService.getById(moduleId)
+				.orElseThrow(NotFoundException::new);
+		return new ResponseEntity<>(module, HttpStatus.OK);
+
 	}
 }
