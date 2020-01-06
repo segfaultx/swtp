@@ -131,9 +131,9 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		tradePartner.getTimeslots().add(tradeOffer.getSeek());
 		
 		// send message to user's personal queue telling that the trade was successful
-		personalMessageSender.send(tradeOffer.getOfferer(), TradeOfferSuccessfulMessage.builder()
-																					   .tradeOfferId(tradeOffer.getId())
-																					   .build());
+		//personalMessageSender.send(tradeOffer.getOfferer(), TradeOfferSuccessfulMessage.builder()
+		//																			   .tradeOfferId(tradeOffer.getId())
+		//																			   .build());
 		return tradeOffer.getOffer();
 	}
 	
