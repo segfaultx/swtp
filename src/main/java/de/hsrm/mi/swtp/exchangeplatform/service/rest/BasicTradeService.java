@@ -25,8 +25,8 @@ public class BasicTradeService implements TradeService{
 	@Override
 	@Transactional
 	public boolean doTrade(long studentId, long offeredId, long wantedId) throws NotFoundException {
-		var student = userRepository.findById(studentId).orElseThrow(NotFoundException::new);
-		var offered = timeslotRepository.findById(offeredId).orElseThrow(NotFoundException::new);
+		var student = userRepository.findById(studentId).orElseThrow();
+		var offered = timeslotRepository.findById(offeredId).orElseThrow();
 		var tradeOffers = tradeOfferRepository.findAllBySeek(offered);
 		var acceptedTrade = tradeOffers.get(0);
 		student.getTimeslots().remove(offered);

@@ -9,10 +9,11 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -31,10 +32,19 @@ public class UserService {
 	public Optional<User> getById(Long userId) {
 		return repository.findById(userId);
 	}
-
+	
 	public Optional<User> getByUsername(String username) {
 		return repository.findByUsername(username);
 	}
+	
+	public List<User> getAllByStudentNumber(Long studentNumber){ return repository.findByStudentNumberContaining(String.valueOf(studentNumber));}
+	
+	public List<User> getAllByStaffNumber(Long staffNumber){ return repository.findByStaffNumberContaining(String.valueOf(staffNumber));}
+	
+	public List<User> getAllByFirstName(String firstName){ return repository.findAllByFirstNameContainingIgnoreCase(firstName);}
+	
+	public List<User> getAllByLastName(String lastName){ return repository.findAllByLastNameContainingIgnoreCase(lastName);}
+	
 
 	public void save(User user) throws IllegalArgumentException {
 		if(repository.existsById(user.getStudentNumber())) {
@@ -58,5 +68,13 @@ public class UserService {
 		whoAmI.setType(user.getUserType().getType());
 		whoAmI.setRole(user.getAuthenticationInformation().getRole());
 		return whoAmI;
+	}
+	
+	public List<User> unifyLists(List<List<User>> lists){
+		List<User> out = new ArrayList<>();
+		lists.forEach(list -> list.forEach(user -> {
+			if (!out.contains(user)) out.add(user);
+		}));
+		return out;
 	}
 }
