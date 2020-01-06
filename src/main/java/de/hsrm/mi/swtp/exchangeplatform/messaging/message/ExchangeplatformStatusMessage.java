@@ -1,5 +1,6 @@
-package de.hsrm.mi.swtp.exchangeplatform.messaging;
+package de.hsrm.mi.swtp.exchangeplatform.messaging.message;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.ExchangeplatformMessageSerializer;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.ModuleSerializer;
@@ -17,23 +18,18 @@ import java.io.Serializable;
 @JsonSerialize(using = ExchangeplatformMessageSerializer.class)
 public class ExchangeplatformStatusMessage implements Serializable {
 	
-	@Enumerated(EnumType.STRING)
-	Status status = Status.INACTIVE;
+	@JsonProperty("tradesActive")
+	Boolean isActive = false;
+	@JsonProperty("message")
 	String message;
 	
-	@Builder
-	public ExchangeplatformStatusMessage(String message) {
-		this(false, message);
+	public ExchangeplatformStatusMessage(Boolean isActive) {
+		this(isActive, "Tauschbörse ist jetzt " + (isActive ? "aktiv.": "inaktiv."));
 	}
 	
-	@Builder
 	public ExchangeplatformStatusMessage(Boolean isActive, String message) {
-		this.status = isActive ? Status.ACTIVE : Status.INACTIVE;
+		this.isActive = isActive;
 		this.message = message;
-	}
-	
-	public enum Status {
-		ACTIVE, INACTIVE
 	}
 	
 }

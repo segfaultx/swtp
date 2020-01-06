@@ -22,26 +22,15 @@ import javax.jms.TextMessage;
 @RequiredArgsConstructor
 public class UserMessageListener implements MessageListener {
 	
-	public final static String TOPICNAME = "StudentTopic";
-	public final static String QUEUENAME = "StudentQueue";
-	ActiveMQQueue studentQueue;
+	public final static String QUEUENAME = "usr:171717171717-wweit001";
 	
-	JmsTemplate jmsTemplate;
-	
-	@JmsListener(destination = TOPICNAME, containerFactory = "studentTopicFactory")
-	public void onReceiveMessage(String message) {
-		log.info("Received <" + message + ">");
-	}
-	
-	@JmsListener(destination = QUEUENAME, containerFactory = "studentQueueFactory")
+	@JmsListener(destination = QUEUENAME)
 	@Override
 	public void onMessage(Message message) {
 		try {
-			log.info("Es kam eine Nachricht rein: " + ((TextMessage) message).getText());
+			log.info(String.format("outgoing %s -> \"%s\"", QUEUENAME, ((TextMessage) message).getText()));
 		} catch(JMSException e) {
 			log.info("ERROR: " + message);
 		}
-		jmsTemplate.send(studentQueue, session -> session.createTextMessage(
-				"Erhaltene interne Server-Nachricht: " + ((TextMessage) message).getText() + "\n" + "Student-Änderungen erkannt. Implementierung noch nicht abgeschlossen!"));
 	}
 }

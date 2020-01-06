@@ -1,19 +1,21 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalConnection;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LoginSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
-import org.springframework.jms.connection.SingleConnectionFactory;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.jms.Connection;
-import javax.jms.JMSException;
-import javax.jms.Session;
+import javax.jms.*;
 import java.util.Map;
 
 /**
@@ -27,7 +29,9 @@ import java.util.Map;
 public class PersonalConnectionManager {
 	
 	Map<String, PersonalConnection> userConnectionMap;
-	SingleConnectionFactory connectionFactory;
+	ActiveMQConnectionFactory connectionFactory;
+	JmsTemplate jmsTemplate;
+	ObjectMapper objectMapper;
 	
 	/**
 	 * Creates a new connection with a session and {@link ActiveMQQueue} for the logged in {@link User}.
@@ -41,18 +45,26 @@ public class PersonalConnectionManager {
 		final String queueName = createPersonalQueueName(user);
 		if(userConnectionMap.containsKey(queueName)) return userConnectionMap.get(queueName).getPersonalQueue();
 		
-		final Connection connection = connectionFactory.createQueueConnection();
-		final Session session = connection.createSession();
-		final ActiveMQQueue queue = (ActiveMQQueue) session.createQueue(queueName);
+		QueueConnection connection = connectionFactory.createQueueConnection();
+		final QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+		final Queue queue = session.createQueue(queueName);
 		final PersonalConnection personalConnection = PersonalConnection.builder()
 																		.connection(connection)
-																		.personalQueue(queue)
+																		.personalQueue((ActiveMQQueue) queue)
 																		.user(user)
 																		.build();
-		queue.createDestination(createPersonalQueueDestinationName(user));
 		connection.start();
 		userConnectionMap.put(queueName, personalConnection);
-		return queue;
+		
+		jmsTemplate.send(queue, session1 -> {
+			try {
+				return session1.createTextMessage(objectMapper.writeValueAsString(new LoginSuccessfulMessage()));
+			} catch(JsonProcessingException e) {
+				e.printStackTrace();
+			}
+			return session1.createTextMessage("SUCCESS");
+		});
+		return personalConnection.getPersonalQueue();
 	}
 	
 	/**
@@ -77,13 +89,6 @@ public class PersonalConnectionManager {
 	 */
 	private String createPersonalQueueName(final User user) {
 		final String FORMAT = "usr:%s-%s";
-		Long userId = user.getUserType().getType().equals(TypeOfUsers.STUDENT) ? user.getStudentNumber() : user.getStaffNumber();
-		String username = user.getAuthenticationInformation().getUsername();
-		return String.format(FORMAT, userId, username);
-	}
-	
-	private String createPersonalQueueDestinationName(final User user) {
-		final String FORMAT = "dst:%s-%s";
 		Long userId = user.getUserType().getType().equals(TypeOfUsers.STUDENT) ? user.getStudentNumber() : user.getStaffNumber();
 		String username = user.getAuthenticationInformation().getUsername();
 		return String.format(FORMAT, userId, username);

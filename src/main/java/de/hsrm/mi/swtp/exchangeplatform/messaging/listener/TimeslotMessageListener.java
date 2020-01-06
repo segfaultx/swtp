@@ -25,17 +25,15 @@ public class TimeslotMessageListener implements MessageListener {
 	
 	public final static String TOPICNAME = "TimeslotTopic";
 	public final static String QUEUENAME = "TimeslotQueue";
-	ActiveMQQueue timeslotQueue;
-	ActiveMQTopic timeslotTopic;
 	
 	JmsTemplate jmsTemplate;
 	
-	@JmsListener(destination = TOPICNAME, containerFactory = "timeslotTopicFactory")
+	@JmsListener(destination = TOPICNAME)
 	public void onReceiveMessage(String message) {
 		log.info("Received <" + message + ">");
 	}
 	
-	@JmsListener(destination = QUEUENAME, containerFactory = "timeslotQueueFactory")
+	@JmsListener(destination = QUEUENAME)
 	@Override
 	public void onMessage(Message message) {
 		try {
@@ -43,7 +41,7 @@ public class TimeslotMessageListener implements MessageListener {
 		} catch(JMSException e) {
 			log.info("ERROR: " + message);
 		}
-		jmsTemplate.send(timeslotTopic, session -> session.createTextMessage(
-				"Erhaltene interne Server-Nachricht: " + ((TextMessage) message).getText() + "\n" + "Timeslot-Änderungen erkannt. Implementierung noch nicht abgeschlossen!"));
+//		jmsTemplate.send(timeslotTopic, session -> session.createTextMessage(
+//				"Erhaltene interne Server-Nachricht: " + ((TextMessage) message).getText() + "\n" + "Timeslot-Änderungen erkannt. Implementierung noch nicht abgeschlossen!"));
 	}
 }

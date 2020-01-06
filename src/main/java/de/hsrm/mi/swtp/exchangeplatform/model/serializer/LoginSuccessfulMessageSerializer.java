@@ -4,24 +4,24 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LoginSuccessfulMessage;
 
 import java.io.IOException;
 
-public class ExchangeplatformMessageSerializer extends StdSerializer<ExchangeplatformStatusMessage> {
+public class LoginSuccessfulMessageSerializer extends StdSerializer<LoginSuccessfulMessage> {
 	
-	public ExchangeplatformMessageSerializer() {
+	public LoginSuccessfulMessageSerializer() {
 		this(null);
 	}
 	
-	public ExchangeplatformMessageSerializer(Class<ExchangeplatformStatusMessage> t) {
+	public LoginSuccessfulMessageSerializer(Class<LoginSuccessfulMessage> t) {
 		super(t);
 	}
 	
 	@Override
-	public void serialize(ExchangeplatformStatusMessage value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+	public void serialize(LoginSuccessfulMessage value, JsonGenerator gen, SerializerProvider provider) throws IOException {
 		gen.writeStartObject();
 		gen.writeStringField("message", value.getMessage());
-		gen.writeBooleanField("tradesActive", value.getIsActive());
 		gen.writeEndObject();
 	}
 	
