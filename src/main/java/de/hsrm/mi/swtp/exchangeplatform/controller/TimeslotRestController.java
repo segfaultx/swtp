@@ -19,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
 
@@ -30,6 +31,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@SecurityRequirement(name = "Authorization")
 @RestController
 @RequestMapping("/api/v1/timeslots")
 public class TimeslotRestController {
@@ -45,6 +47,7 @@ public class TimeslotRestController {
 	 * @return a JSON made up of a list containing all available {@link Timeslot Appointments}.
 	 * If there are none will return an empty list.
 	 */
+	@GetMapping("")
 	public ResponseEntity<List<Timeslot>> getAll() {
 		return new ResponseEntity<>(timeslotService.getAll(), HttpStatus.OK);
 	}

@@ -24,11 +24,20 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @Slf4j
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@SecurityScheme(name = "Authorization",
+        type = SecuritySchemeType.APIKEY,
+		in = SecuritySchemeIn.HEADER)
+@SecurityRequirement(name = "Authorization")
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
@@ -42,12 +51,14 @@ public class AuthenticationController {
 	@ApiOperation(value = "login to application", nickname = "login")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully logged in"),
 							@ApiResponse(code = 400, message = "malformed login request") })
-	public ResponseEntity<?> login(@RequestBody LoginRequestBody authenticationRequest) throws Exception {
+	public ResponseEntity<LoginResponseBody> login(@RequestBody LoginRequestBody authenticationRequest) throws Exception {
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		
-		if(!authenticationService.isLoginValid(authenticationRequest))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
+		UserDetails userDetails = authenticationService.loadUserByUsername(authenticationRequest.getUsername());
+		String password = authenticationRequest.getPassword();
 		
+		if(!authenticationService.isLoginValid(password, userDetails))
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		try {
 			LoginResponseBody responseBody = authenticationService.loginUser(authenticationRequest);
 			return ResponseEntity.ok(responseBody);
@@ -57,15 +68,19 @@ public class AuthenticationController {
 	}
 	
 	@PostMapping("/logout")
-	public ResponseEntity<?> logout(@RequestBody LogoutRequestBody logoutRequestBody) throws Exception {
-		try {
-			LogoutResponseBody logoutResponseBody = authenticationService.logoutUser(logoutRequestBody);
-			// TODO: correct implementation of logout; is a PoC for now
-			if(logoutResponseBody.getStatus().equals(Status.FAIL)) return ResponseEntity.badRequest().body(logoutResponseBody);
-			return ResponseEntity.ok(logoutResponseBody);
-		} catch(NotFoundException e) {
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		}
+	public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) throws Exception {
+		if(!JWTTokenUtils.isValidToken(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		
+		String jwtToken = JWTTokenUtils.tokenWithoutPrefix(token);
+		String usernameFromToken = jwtTokenUtil.getUsernameFromToken(jwtToken);
+		User found = userService.getByUsername(usernameFromToken).orElseThrow(NotFoundException::new);
+		
+
+		LogoutResponseBody logoutResponseBody = authenticationService.logoutUser(found, token);
+		
+		if(logoutResponseBody.getStatus().equals(Status.FAIL)) return ResponseEntity.badRequest().body(logoutResponseBody);
+		return ResponseEntity.ok(logoutResponseBody);
+		
 	}
 	
 	@GetMapping("/whoami")
@@ -73,9 +88,9 @@ public class AuthenticationController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully fetched authentitacion info"),
 							@ApiResponse(code = 400, message = "malformed authinfo fetch request") })
 	public ResponseEntity<WhoAmI> getUser(@RequestHeader("Authorization") String token) throws Exception {
-		if(!jwtTokenUtil.isValidToken(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		if(!JWTTokenUtils.isValidToken(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		
-		String jwtToken = jwtTokenUtil.tokenWithoutPrefix(token);
+		String jwtToken = JWTTokenUtils.tokenWithoutPrefix(token);
 		String usernameFromToken = jwtTokenUtil.getUsernameFromToken(jwtToken);
 		User found = userService.getByUsername(usernameFromToken).orElseThrow(NotFoundException::new);
 		WhoAmI whoAmI = userService.getWhoAmI(found);

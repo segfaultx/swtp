@@ -17,6 +17,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.sql.Time;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +65,55 @@ public class DBInitiator implements ApplicationRunner {
 		dennis.setUserType(dennisType);
 		
 		// END Dennis
+		
+		// START Willi
+		
+		User willi = new User();
+		willi.setFirstName("Willi");
+		willi.setLastName("Wusel");
+		willi.setStaffNumber(null);
+		willi.setStudentNumber(1006555L);
+		willi.setEmail("willi.wusel@student.hs-rm.de");
+		
+		AuthenticationInformation williInformation = new AuthenticationInformation();
+		williInformation.setUsername("wwuse001");
+		williInformation.setPassword("wwuse001");
+		williInformation.setRole(Roles.MEMBER);
+		williInformation.setUser(willi);
+		
+		UserType williType = new UserType();
+		williType.setType(TypeOfUsers.STUDENT);
+		williType.setUser(willi);
+		
+		willi.setAuthenticationInformation(williInformation);
+		willi.setUserType(williType);
+		
+		// END Willi
+		
+		// START Jöndhard
+		
+		User joendhard = new User();
+		joendhard.setFirstName("Jöndhard");
+		joendhard.setLastName("Joendhardson");
+		joendhard.setStaffNumber(null);
+		joendhard.setStudentNumber(1006333L);
+		joendhard.setEmail("joendhard.joendhardson@student.hs-rm.de");
+		
+		AuthenticationInformation joendhardInformation = new AuthenticationInformation();
+		joendhardInformation.setUsername("jjoen001");
+		joendhardInformation.setPassword("jjoen001");
+		joendhardInformation.setRole(Roles.MEMBER);
+		joendhardInformation.setUser(joendhard);
+		
+		UserType joendhardType = new UserType();
+		joendhardType.setType(TypeOfUsers.STUDENT);
+		joendhardType.setUser(joendhard);
+		
+		joendhard.setAuthenticationInformation(joendhardInformation);
+		joendhard.setUserType(joendhardType);
+		
+		// END Jöndhard
+		
 		
 		// START Weitz
 		
@@ -218,6 +268,37 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// END AFS UEBUNG 2
 		
+		// START AFS UEBUNG 3
+		
+		Timeslot afsUebung3 = new Timeslot();
+		afsUebung3.setTimeSlotType(TypeOfTimeslots.UEBUNG);
+		afsUebung3.setCapacity(50);
+		afsUebung3.setModule(afs);
+		afsUebung3.setDay(DayOfWeek.MONDAY);
+		afsUebung3.setTimeStart(LocalTime.of(10, 0));
+		afsUebung3.setTimeEnd(LocalTime.of(11, 30));
+		
+		afsUebung3.setRoom(d12_out);
+		afsUebung3.setTimeTable(null);
+		
+		// END AFS UEBUNG 3
+		
+		// START AFS UEBUNG 4
+		
+		Timeslot afsUebung4 = new Timeslot();
+		afsUebung4.setTimeSlotType(TypeOfTimeslots.UEBUNG);
+		afsUebung4.setCapacity(50);
+		afsUebung4.setModule(afs);
+		afsUebung4.setDay(DayOfWeek.FRIDAY);
+		afsUebung4.setTimeStart(LocalTime.of(11, 45));
+		afsUebung4.setTimeEnd(LocalTime.of(13, 15));
+		
+		afsUebung4.setRoom(d12_out);
+		afsUebung4.setTimeTable(null);
+		
+		// END AFS UEBUNG 4
+		
+		
 		var krechel_out = userRepository.save(krechel);
 		afsUebung.setUser(krechel_out);
 		afsUebung2.setUser(krechel_out);
@@ -249,10 +330,26 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// END ADD TIMESLOTS CHANDLER
 		
+		// START ADD TIMESLOTS WILLI
+		List<Timeslot> williTimeslots = new ArrayList<>();
+		williTimeslots.add(afsVorlesung);
+		williTimeslots.add(afsUebung3);
+		
+		// END ADD TIMESLOTS WILLI
+		
+		// START ADD TIMESLOTS JÖNDHARD
+		List<Timeslot> joendhardTimeslots = new ArrayList<>();
+		joendhardTimeslots.add(afsVorlesung);
+		joendhardTimeslots.add(afsUebung4);
+		
+		// END ADD TIMESLOTS JÖNDHARD
+		
 		// START SET TIMESLOTS FOR USERS
 		
 		dennis.setTimeslots(dennisTimeslots);
 		chandler.setTimeslots(chandlerTimeslots);
+		joendhard.setTimeslots(joendhardTimeslots);
+		willi.setTimeslots(williTimeslots);
 		
 		// END SET TIMESLOTS FOR USERS
 		
@@ -261,6 +358,8 @@ public class DBInitiator implements ApplicationRunner {
 		List<User> usersToSave = new ArrayList<>();
 		usersToSave.add(dennis);
 		usersToSave.add(chandler);
+		usersToSave.add(joendhard);
+		usersToSave.add(willi);
 		
 		//END USERS LIST
 		
@@ -273,6 +372,17 @@ public class DBInitiator implements ApplicationRunner {
 		dennis.getTradeoffers().add(offer1);
 		
 		// END TRADEOFFER DENNIS
+		
+		// START TRADEOFFER JOENDHARD
+		
+		TradeOffer offer2 = new TradeOffer();
+		offer2.setOfferer(joendhard);
+		offer2.setOffer(afsUebung4);
+		offer2.setSeek(afsUebung3);
+		joendhard.getTradeoffers().add(offer2);
+		
+		// END TRADEOFFER JOENDHARD
+		
 		
 		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
