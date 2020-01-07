@@ -54,22 +54,22 @@ public class TradeOffersRestController {
 	 * @return {@link HttpStatus#OK} if tradeoffer was deleted, {@link HttpStatus#NOT_FOUND} if tradeoffer wasnt found,
 	 * {@link HttpStatus#FORBIDDEN} if requester isnt owner of the tradeoffer.
 	 */
-	@DeleteMapping("/{studentId}/{tradeId}")
-	@ApiOperation(value = "Delete tradeoffer of student", nickname = "deleteTradeOfferOfStudent")
+	@DeleteMapping("/{studentId}/{seekId}")
+	@ApiOperation(value = "Delete tradeoffer with seekId of student", nickname = "deleteTradeOfferOfStudent")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully deleted tradeoffer"),
 							@ApiResponse(code = 403, message = "unauthorized delete attempt"),
 							@ApiResponse(code = 404, message = "tradeoffer not found") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity deleteTradeOffer(@ApiParam(value = "Numeric ID of the student", required = true) @PathVariable("studentId") long studentId,
-										   @ApiParam(value = "Numeric ID of the tradeoffer", required = true) @PathVariable("tradeId") long tradeId
+										   @ApiParam(value = "Numeric ID of the tradeoffer", required = true) @PathVariable("seekId") long seekId
 										  ) throws Exception {
 		if(adminSettingsService.isTradesActive()) {
-			log.info(String.format("DELETE Request Student: %d TradeOffer: %d", studentId, tradeId));
-			if(tradeOfferService.deleteTradeOffer(studentId, tradeId)) {
-				log.info(String.format("DELETE Request successful Student: %d TradeOffer: %d", studentId, tradeId));
+			log.info(String.format("DELETE Request Student: %d TradeOffer: %d", studentId, seekId));
+			if(tradeOfferService.deleteTradeOffer(studentId, seekId)) {
+				log.info(String.format("DELETE Request successful Student: %d TradeOffer: %d", studentId, seekId));
 				return new ResponseEntity<>(HttpStatus.OK);
 			}
-			log.info(String.format("ERROR while DELETE Request Student: %d TradeOffer: %d - Student isn't owner of entity", studentId, tradeId));
+			log.info(String.format("ERROR while DELETE Request Student: %d TradeOffer: %d - Student isn't owner of entity", studentId, seekId));
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);
 		
