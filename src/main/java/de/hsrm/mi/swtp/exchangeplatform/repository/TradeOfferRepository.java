@@ -13,5 +13,5 @@ public interface TradeOfferRepository extends JpaRepository<TradeOffer, Long> {
 	List<TradeOffer> findAllBySeek(Timeslot seek);
 	List<TradeOffer> findAllBySeekAndInstantTrade(Timeslot seek, boolean instantTrade);
 	List<TradeOffer> findAllByOfferer(User user);
-	TradeOffer findTradeOfferByOffererAndSeek(User user, Timeslot seek);
+	TradeOffer findByOffererAndSeek(User user, Timeslot seek);
 }
