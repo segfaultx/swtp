@@ -49,7 +49,7 @@ public class AdminRestController {
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully updated settings"),
 							@ApiResponse(code = 403, message = "unauthorized update settings attempt"),
 							@ApiResponse(code = 400, message = "malformed admin settings request") })
-//	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<AdminSettings> updateAdminSettings(@RequestBody AdminSettingsRequest adminSettingsRequest, BindingResult bindingResult) throws
 			NotFoundException {
 		if(bindingResult.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -62,7 +62,7 @@ public class AdminRestController {
 	@ApiOperation(value = "get admin settings", nickname = "getAdminSettings")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully received adminsettings"),
 							@ApiResponse(code = 403, message = "unauthorized get settings attempt") })
-//	@PreAuthorize("hasRole('ADMIN')")
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<AdminSettings> getAdminSettings() {
 		return new ResponseEntity<>(adminSettingsService.getAdminSettings(), HttpStatus.OK);
 	}
