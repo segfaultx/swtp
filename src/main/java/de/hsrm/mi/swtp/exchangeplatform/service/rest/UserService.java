@@ -36,12 +36,12 @@ public class UserService {
 	public Optional<User> getByUsername(String username) {
 		return repository.findByUsername(username);
 	}
-	
+	// convert number to string to find user only containing said number
 	public List<User> getAllByStudentNumber(Long studentNumber){ return repository.findByStudentNumberContaining(String.valueOf(studentNumber));}
-	
+	// convert number to string to find user only containing said number
 	public List<User> getAllByStaffNumber(Long staffNumber){ return repository.findByStaffNumberContaining(String.valueOf(staffNumber));}
 	
-	public List<User> getAllByFirstName(String firstName){ return repository.findAllByFirstNameContainingIgnoreCase(firstName);}
+	public List<User> getAllByFirstName(String firstName){ return repository.findAllByFirstNameContainingIgnoreCase(firstName); }
 	
 	public List<User> getAllByLastName(String lastName){ return repository.findAllByLastNameContainingIgnoreCase(lastName);}
 	
