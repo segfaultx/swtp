@@ -145,10 +145,11 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 *
 	 * @throws RuntimeException if tradeoffer cannot be looked up or requester isnt owner of the requested trade
 	 */
+	
 	public boolean deleteTradeOffer(long studentId, long seekId) throws Exception {
 		log.info(String.format("Looking up Tradeoffer with seekId: %d. Requester: %d", seekId, studentId));
 		
-		var found = tradeOfferRepository.findTradeOfferByOffererAndSeek(userRepository.findByStudentNumber(studentId),
+		var found = tradeOfferRepository.findByOffererAndSeek(userRepository.findById(studentId).orElseThrow(),
 																		timeSlotRepository.findById(seekId).orElseThrow()
 																	   );
 		if(found == null) throw new NotFoundException();
