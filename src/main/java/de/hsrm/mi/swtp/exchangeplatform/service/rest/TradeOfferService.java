@@ -1,7 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
@@ -102,15 +101,15 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			}
 			
 		});
+		for(TradeOffer to : tradeOfferRepository.findAllByOfferer(user)) {
+			if(!ownOffers.contains(to.getSeek())) ownOffers.add(to.getSeek());
+		}
 		var allTimeslots = timeSlotRepository.findAllByModule(offeredTimeslot.getModule());
 		allTimeslots.forEach(timeslot -> {
-			if(timeslot.getId() != id && timeslot.getTimeSlotType() != TypeOfTimeslots.VORLESUNG) {
+			if(timeslot.getId() != id && timeslot.getTimeSlotType() != TypeOfTimeslots.VORLESUNG && !ownOffers.contains(timeslot)) {
 				if(!instantTrades.contains(timeslot) && !regularTrades.contains(timeslot)) remaining.add(timeslot);
 			}
 		});
-		for(TradeOffer to : tradeOfferRepository.findAllByOfferer(user)) {
-			ownOffers.add(to.getOffer());
-		}
 		out.put("instant", instantTrades);
 		out.put("trades", regularTrades);
 		out.put("remaining", remaining);
