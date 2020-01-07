@@ -6,6 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
@@ -95,19 +96,19 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		var offeredTimeslot = timeSlotRepository.findById(id).orElseThrow();
 		var trades = tradeOfferRepository.findAllBySeek(offeredTimeslot);
 		trades.forEach(trade -> {
-			if(trade.getId() != id){
+			if(trade.getId() != id) {
 				if(trade.isInstantTrade()) instantTrades.add(trade.getOffer());
-				else regularTrades.add(trade.getOffer());	
+				else regularTrades.add(trade.getOffer());
 			}
 			
 		});
 		var allTimeslots = timeSlotRepository.findAllByModule(offeredTimeslot.getModule());
 		allTimeslots.forEach(timeslot -> {
-			if (timeslot.getId() != id){
+			if(timeslot.getId() != id && timeslot.getTimeSlotType() != TypeOfTimeslots.VORLESUNG) {
 				if(!instantTrades.contains(timeslot) && !regularTrades.contains(timeslot)) remaining.add(timeslot);
 			}
 		});
-		for (TradeOffer to: tradeOfferRepository.findAllByOfferer(user)){
+		for(TradeOffer to : tradeOfferRepository.findAllByOfferer(user)) {
 			ownOffers.add(to.getOffer());
 		}
 		out.put("instant", instantTrades);
