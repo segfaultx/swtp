@@ -26,6 +26,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -90,7 +91,7 @@ public class TradeOffersRestController {
 							@ApiResponse(code = 400, message = "malformed trade request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<TradeOffer> createTradeOffer(
-			@ApiParam(value = "Object containing ID's of student, wanted and offered timeslot", required = true) @Valid TradeRequest tradeRequest,
+			@ApiParam(value = "Object containing ID's of student, wanted and offered timeslot", required = true) @Valid @RequestBody TradeRequest tradeRequest,
 			BindingResult bindingResult
 													  ) throws NotFoundException {
 		if(adminSettingsService.isTradesActive()) {
@@ -127,7 +128,7 @@ public class TradeOffersRestController {
 							@ApiResponse(code = 403, message = "unauthorized trade attempt"),
 							@ApiResponse(code = 400, message = "malformed trade request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<TimeTable> requestTrade(@Valid TradeRequest tradeRequest) throws Exception {
+	public ResponseEntity<TimeTable> requestTrade(@Valid @RequestBody TradeRequest tradeRequest) throws Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
@@ -137,7 +138,8 @@ public class TradeOffersRestController {
 														   );
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
-			
+			timetable.setDateEnd(LocalDate.now()); // DIRTY QUICK FIX
+			timetable.setDateStart(LocalDate.now());// DIRTY QUICK FIX
 			User user = userService.getById(tradeRequest.getOfferedByStudentMatriculationNumber()).orElseThrow(NotFoundException::new);
 			
 			timetable.setTimeslots(user.getTimeslots());
