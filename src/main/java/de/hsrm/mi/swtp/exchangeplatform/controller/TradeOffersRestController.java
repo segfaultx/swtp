@@ -49,7 +49,7 @@ public class TradeOffersRestController {
 	 * provides an endpoint to {@code '/api/v1/trades/<id>/<id>'} through which an {student} may delete his {@link TradeOffer}.
 	 *
 	 * @param studentId studentId of requester
-	 * @param tradeId   tradeId of tradeoffer which is to be deleted.
+	 * @param seekId   tradeId of tradeoffer which is to be deleted.
 	 *
 	 * @return {@link HttpStatus#OK} if tradeoffer was deleted, {@link HttpStatus#NOT_FOUND} if tradeoffer wasnt found,
 	 * {@link HttpStatus#FORBIDDEN} if requester isnt owner of the tradeoffer.
