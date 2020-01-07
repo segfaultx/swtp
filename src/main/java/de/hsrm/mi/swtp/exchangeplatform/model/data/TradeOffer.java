@@ -22,14 +22,14 @@ public class TradeOffer implements Model {
 	Long id;
 	
 	@JsonProperty("offerer")
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference
 	User offerer;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	Timeslot offer;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY)
 	Timeslot seek;
 	
 	boolean instantTrade = false;
