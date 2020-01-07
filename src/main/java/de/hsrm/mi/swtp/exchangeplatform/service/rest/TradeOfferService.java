@@ -5,6 +5,7 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMe
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
@@ -85,24 +86,34 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 *
 	 * @throws Exception if lookup fails
 	 */
-	public Map<String, List<Timeslot>> getTradeOffersForModule(long id) throws Exception {
+	public Map<String, List<Timeslot>> getTradeOffersForModule(long id, User user) throws Exception {
 		Map<String, List<Timeslot>> out = new HashMap<>();
 		List<Timeslot> instantTrades = new ArrayList<>();
 		List<Timeslot> regularTrades = new ArrayList<>();
 		List<Timeslot> remaining = new ArrayList<>();
+		List<Timeslot> ownOffers = new ArrayList<>();
 		var offeredTimeslot = timeSlotRepository.findById(id).orElseThrow();
 		var trades = tradeOfferRepository.findAllBySeek(offeredTimeslot);
 		trades.forEach(trade -> {
-			if(trade.isInstantTrade()) instantTrades.add(trade.getOffer());
-			else regularTrades.add(trade.getOffer());
+			if(trade.getId() != id){
+				if(trade.isInstantTrade()) instantTrades.add(trade.getOffer());
+				else regularTrades.add(trade.getOffer());	
+			}
+			
 		});
 		var allTimeslots = timeSlotRepository.findAllByModule(offeredTimeslot.getModule());
 		allTimeslots.forEach(timeslot -> {
-			if(!instantTrades.contains(timeslot) && !regularTrades.contains(timeslot)) remaining.add(timeslot);
+			if (timeslot.getId() != id){
+				if(!instantTrades.contains(timeslot) && !regularTrades.contains(timeslot)) remaining.add(timeslot);
+			}
 		});
+		for (TradeOffer to: tradeOfferRepository.findAllByOfferer(user)){
+			ownOffers.add(to.getOffer());
+		}
 		out.put("instant", instantTrades);
 		out.put("trades", regularTrades);
 		out.put("remaining", remaining);
+		out.put("ownOffers", ownOffers);
 		return out;
 	}
 	

@@ -166,7 +166,7 @@ public class TradeOffersRestController {
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<Map<String, List<Timeslot>>> getTradesForModule(@PathVariable("id") long id, Principal principal) throws Exception {
 		log.info(String.format("GET REQUEST TRADEOFFERS FOR TIMESLOT WITH ID: %d BY USER: %s", id, principal.getName()));
-		var out = tradeOfferService.getTradeOffersForModule(id);
+		var out = tradeOfferService.getTradeOffersForModule(id, userService.getByUsername(principal.getName()).orElseThrow());
 		return new ResponseEntity<>(out, HttpStatus.OK);
 	}
 }
