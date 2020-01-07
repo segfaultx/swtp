@@ -40,9 +40,10 @@ public class BasicTradeService implements TradeService{
 		userRepository.save(student);
 		userRepository.save(student2);
 		// send message to user's personal queue telling that the trade was successful
-		personalMessageSender.send(acceptedTrade.getOfferer(), TradeOfferSuccessfulMessage.builder()
+		/*personalMessageSender.send(acceptedTrade.getOfferer(), TradeOfferSuccessfulMessage.builder()
 																					   .tradeOfferId(acceptedTrade.getId())
 																					   .build());
+		 */
 		return true;
 	}
 }
