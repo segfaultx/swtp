@@ -108,6 +108,13 @@ public class PersonalConnectionManager {
 		return this.userConnectionMap.get(queueName).getPersonalQueue();
 	}
 	
+	/**
+	 * Sends a message to the dynamically created {@link Queue} of a {@link User}.
+	 * If the {@link User} has no {@link PersonalConnection} in the {@link #userConnectionMap} nothing happens.
+	 *
+	 * @param user {@link User}
+	 * @param message the message which is to be sent to the {@link User}
+	 */
 	public void send(User user, String message) throws JMSException {
 		PersonalConnection personalConnection = this.userConnectionMap.get(createPersonalQueueName(user));
 		if(personalConnection == null) return;
