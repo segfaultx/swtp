@@ -41,7 +41,9 @@ public class PersonalConnectionManager {
 	 * to the user.
 	 */
 	public ActiveMQQueue createNewConnection(final User user) throws JMSException {
+		if(user == null) return null;
 		final String queueName = createPersonalQueueName(user);
+		if(queueName == null) return null;
 		if(userConnectionMap.containsKey(queueName)) return userConnectionMap.get(queueName).getPersonalQueue();
 		
 		QueueConnection connection = connectionFactory.createQueueConnection();
@@ -88,6 +90,10 @@ public class PersonalConnectionManager {
 	 * @param user {@link User}
 	 */
 	private String createPersonalQueueName(final User user) {
+		if(user.getAuthenticationInformation() == null || user.getAuthenticationInformation().getUsername() == null || user.getLastName() == null) {
+			return null;
+		}
+		
 		final String FORMAT = "usr:%s-%s";
 		Long userId = user.getUserType().getType().equals(TypeOfUsers.STUDENT) ? user.getStudentNumber() : user.getStaffNumber();
 		String username = user.getAuthenticationInformation().getUsername();
