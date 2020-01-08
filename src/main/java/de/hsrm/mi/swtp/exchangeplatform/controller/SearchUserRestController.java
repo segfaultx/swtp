@@ -2,6 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
+import io.swagger.annotations.ApiOperation;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,6 +34,7 @@ public class SearchUserRestController {
 	 * @return {@link HttpStatus#OK} and the requested list of users. If none are found, return empty list
 	 */
 	@GetMapping("")
+	@ApiOperation(value="", nickname ="")
 	public ResponseEntity<List<User>> getSearchResult(@RequestParam("name") Optional<String> name, @RequestParam("id") Optional<Long> id) {
 		log.info(String.format("GET // " + BASEURL + "/%s", id, name));
 		List<List<User>> lists = new ArrayList<>();
