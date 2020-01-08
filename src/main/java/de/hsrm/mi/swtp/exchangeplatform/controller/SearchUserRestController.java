@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,6 +18,7 @@ import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
+@SecurityRequirement(name = "Authorization")
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RestController
 @RequestMapping("/api/v1/searchStudent")
@@ -35,12 +37,12 @@ public class SearchUserRestController {
 	 */
 	@GetMapping("")
 	@ApiOperation(value="", nickname ="")
-	public ResponseEntity<List<User>> getSearchResult(@RequestParam("name") Optional<String> name, @RequestParam("id") Optional<Long> id) {
+	public ResponseEntity<List<User>> getSearchResult(@RequestParam("name") Optional<String> name, @RequestParam("id") Optional<String> id) {
 		log.info(String.format("GET // " + BASEURL + "/%s", id, name));
 		List<List<User>> lists = new ArrayList<>();
 		
 		// check for name
-		if(name.isPresent()) {
+		if(name.get() != "") {
 			String reqName = name.get();
 			// check if a full name was given...
 			if(reqName.contains(" ")) {
@@ -67,7 +69,7 @@ public class SearchUserRestController {
 			}
 		}
 		// check by id (student number and staff number are possible, NOT internal ID)
-		if(id.isPresent()){
+		if(id.get() != ""){
 			List<User> studNums = userService.getAllByStudentNumber(id.get());
 			if(!studNums.isEmpty()){lists.add(studNums);}
 			List<User> staffNums = userService.getAllByStaffNumber(id.get());

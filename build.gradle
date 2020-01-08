@@ -55,7 +55,6 @@ dependencies {
     }
 
     testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.2.1.RELEASE'
-    testCompile 'org.junit.jupiter:junit-jupiter-api:5.0.0'
 
     compile group: 'com.github.javafaker', name: 'javafaker', version: '1.0.1'
     compile group: 'net.kaczmarzyk' , name: 'specification-arg-resolver', version: '2.1.1'

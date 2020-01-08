@@ -46,6 +46,7 @@ public class User implements Model {
 	@JsonIgnore
 	AuthenticationInformation authenticationInformation;
 	
+	
 	@JsonProperty("user_type")
 	@OneToOne(cascade = CascadeType.ALL)
 	@JsonManagedReference
