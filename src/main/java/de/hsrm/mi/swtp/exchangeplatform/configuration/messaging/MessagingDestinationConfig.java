@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.configuration;
+package de.hsrm.mi.swtp.exchangeplatform.configuration.messaging;
 
 import de.hsrm.mi.swtp.exchangeplatform.messaging.TopicFactory;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener;

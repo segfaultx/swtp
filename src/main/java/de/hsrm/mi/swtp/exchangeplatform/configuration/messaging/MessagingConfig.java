@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.configuration;
+package de.hsrm.mi.swtp.exchangeplatform.configuration.messaging;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

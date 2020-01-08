@@ -7,6 +7,7 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LoginSuccessfulMessage
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -41,12 +42,12 @@ public class PersonalConnectionManager {
 	 * to the user.
 	 */
 	public ActiveMQQueue createNewConnection(final User user) throws JMSException {
-		if(user == null) return null;
 		final String queueName = createPersonalQueueName(user);
 		if(queueName == null) return null;
 		if(userConnectionMap.containsKey(queueName)) return userConnectionMap.get(queueName).getPersonalQueue();
 		
-		QueueConnection connection = connectionFactory.createQueueConnection();
+		final String username = user.getAuthenticationInformation().getPassword();
+		QueueConnection connection = connectionFactory.createQueueConnection(username, username);
 		final QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
 		final Queue queue = session.createQueue(queueName);
 		final QueueSender messageProducer = session.createSender(queue);
@@ -90,6 +91,7 @@ public class PersonalConnectionManager {
 	 * @param user {@link User}
 	 */
 	private String createPersonalQueueName(final User user) {
+		if(user == null) return null;
 		if(user.getAuthenticationInformation() == null || user.getAuthenticationInformation().getUsername() == null || user.getLastName() == null) {
 			return null;
 		}
