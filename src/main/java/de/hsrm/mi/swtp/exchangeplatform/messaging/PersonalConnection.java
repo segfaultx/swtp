@@ -8,6 +8,8 @@ import lombok.experimental.FieldDefaults;
 import org.apache.activemq.command.ActiveMQQueue;
 
 import javax.jms.Connection;
+import javax.jms.MessageProducer;
+import javax.jms.QueueSession;
 
 /**
  * A class holding information about a logged in/an online {@link User}.
@@ -22,5 +24,7 @@ public class PersonalConnection {
 	
 	User user;
 	ActiveMQQueue personalQueue;
+	MessageProducer messageProducer;
+	QueueSession session;
 	Connection connection;
 }

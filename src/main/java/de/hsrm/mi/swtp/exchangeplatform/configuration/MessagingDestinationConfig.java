@@ -1,5 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.configuration;
 
+import de.hsrm.mi.swtp.exchangeplatform.messaging.TopicFactory;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -8,25 +10,22 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.support.destination.JndiDestinationResolver;
-import org.springframework.stereotype.Component;
+
+import javax.jms.JMSException;
+import javax.jms.Topic;
 
 @Slf4j
 @EnableJms
 @Configuration
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
-public class MessageListenerConfig {
+public class MessagingDestinationConfig {
 	
 	ActiveMQConnectionFactory connectionFactory;
-//	JndiDestinationResolver jndiDestinationResolver;
 	
-	@Bean
-	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
-		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
-		factory.setConnectionFactory(connectionFactory);
-		return factory;
+	@Bean(name = "exchangeplatformSettingsTopic")
+	public Topic exchangeplatformSettingsTopic() throws JMSException {
+		return TopicFactory.builder().connectionFactory(connectionFactory).build().createTopic(ExchangeplatformMessageListener.TOPICNAME);
 	}
 	
 }

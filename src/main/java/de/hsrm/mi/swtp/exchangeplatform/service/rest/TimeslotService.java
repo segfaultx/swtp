@@ -2,7 +2,6 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.TimeslotNotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.TimeslotMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
@@ -23,7 +22,6 @@ import java.util.Optional;
 public class TimeslotService {
 
 	TimeslotRepository repository;
-	TimeslotMessageSender messageSender;
 
 	@NonFinal
 	private Integer attendeeCount = 0; // TODO: remove; is just for testing
@@ -62,7 +60,6 @@ public class TimeslotService {
 		}
 		repository.save(timeslot);
 		log.info(String.format("SUCCESS: Appointment %s created", timeslot));
-		messageSender.send(timeslot);
 	}
 
 	public void removeAttendeeFromTimeslot(Long timeslotId, User student) throws NotFoundException {
