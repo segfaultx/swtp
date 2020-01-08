@@ -56,10 +56,19 @@ public class MessagingConfig {
 		return broker;
 	}
 	
-	@Bean
+	@Bean(name = "jmsTemplate")
 	public JmsTemplate jmsTemplate() {
 		JmsTemplate jmsTemplate = new JmsTemplate();
-//        jmsTemplate.setDestinationResolver(jndiDestinationResolver());
+		jmsTemplate.setMessageIdEnabled(true);
+		jmsTemplate.setMessageTimestampEnabled(true);
+		jmsTemplate.setConnectionFactory(connectionFactory());
+		return jmsTemplate;
+	}
+	
+	@Bean(name = "jmsTopicTemplate")
+	public JmsTemplate jmsTopicTemplate() {
+		JmsTemplate jmsTemplate = new JmsTemplate();
+		jmsTemplate.setPubSubDomain(true);
 		jmsTemplate.setMessageIdEnabled(true);
 		jmsTemplate.setMessageTimestampEnabled(true);
 		jmsTemplate.setConnectionFactory(connectionFactory());

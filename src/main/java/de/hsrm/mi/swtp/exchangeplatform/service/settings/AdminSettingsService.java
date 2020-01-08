@@ -3,24 +3,18 @@ package de.hsrm.mi.swtp.exchangeplatform.service.settings;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.MessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.MessageSenderImpl;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.activemq.command.ActiveMQTopic;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import javax.jms.JMSException;
-import javax.jms.MessageProducer;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -36,7 +30,7 @@ public class AdminSettingsService {
 	@Autowired
 	MessageSenderImpl messageSender;
 	@Autowired
-	JmsTemplate jmsTemplate;
+	JmsTemplate jmsTopicTemplate;
 	@Autowired
 	ObjectMapper objectMapper;
 	
@@ -74,7 +68,7 @@ public class AdminSettingsService {
 	@PreAuthorize("hasRole('ADMIN')")
 	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
 		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
-		jmsTemplate.send(TOPICNAME, session -> {
+		jmsTopicTemplate.send(TOPICNAME, session -> {
 			try {
 				return session.createTextMessage(
 						objectMapper.writeValueAsString(new ExchangeplatformStatusMessage(tradesActive)));

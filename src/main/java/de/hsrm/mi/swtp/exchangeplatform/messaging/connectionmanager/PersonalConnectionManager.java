@@ -30,7 +30,6 @@ public class PersonalConnectionManager {
 	
 	Map<String, PersonalConnection> userConnectionMap;
 	ActiveMQConnectionFactory connectionFactory;
-	JmsTemplate jmsTemplate;
 	ObjectMapper objectMapper;
 	
 	/**
