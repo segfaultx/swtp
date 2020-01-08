@@ -39,7 +39,7 @@ public class MessagingConfig {
 	String brokerUri;
 	
 	@Bean(name = "connectionFactory")
-	public ConnectionFactory connectionFactory() {
+	public ActiveMQConnectionFactory jmsConnectionFactory() {
 		ActiveMQConnectionFactory activeMQConnectionFactory = new ActiveMQConnectionFactory();
 		activeMQConnectionFactory.setBrokerURL(brokerUrl);
 		activeMQConnectionFactory.setUserName(USERNAME);
@@ -61,7 +61,7 @@ public class MessagingConfig {
 		JmsTemplate jmsTemplate = new JmsTemplate();
 		jmsTemplate.setMessageIdEnabled(true);
 		jmsTemplate.setMessageTimestampEnabled(true);
-		jmsTemplate.setConnectionFactory(connectionFactory());
+		jmsTemplate.setConnectionFactory(jmsConnectionFactory());
 		return jmsTemplate;
 	}
 	
@@ -71,7 +71,7 @@ public class MessagingConfig {
 		jmsTemplate.setPubSubDomain(true);
 		jmsTemplate.setMessageIdEnabled(true);
 		jmsTemplate.setMessageTimestampEnabled(true);
-		jmsTemplate.setConnectionFactory(connectionFactory());
+		jmsTemplate.setConnectionFactory(jmsConnectionFactory());
 		return jmsTemplate;
 	}
 	
