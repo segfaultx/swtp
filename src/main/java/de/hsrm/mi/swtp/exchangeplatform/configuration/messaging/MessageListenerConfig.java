@@ -20,7 +20,6 @@ import org.springframework.stereotype.Component;
 public class MessageListenerConfig {
 	
 	ActiveMQConnectionFactory connectionFactory;
-//	JndiDestinationResolver jndiDestinationResolver;
 	
 	@Bean
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
