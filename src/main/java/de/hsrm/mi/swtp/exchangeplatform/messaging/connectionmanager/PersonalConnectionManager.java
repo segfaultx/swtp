@@ -48,22 +48,23 @@ public class PersonalConnectionManager {
 		QueueConnection connection = connectionFactory.createQueueConnection();
 		final QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
 		final Queue queue = session.createQueue(queueName);
+		final QueueSender messageProducer = session.createSender(queue);
 		final PersonalConnection personalConnection = PersonalConnection.builder()
 																		.connection(connection)
+																		.session(session)
 																		.personalQueue((ActiveMQQueue) queue)
+																		.messageProducer(messageProducer)
 																		.user(user)
 																		.build();
 		connection.start();
 		userConnectionMap.put(queueName, personalConnection);
 		
-		jmsTemplate.send(queue, session1 -> {
-			try {
-				return session1.createTextMessage(objectMapper.writeValueAsString(new LoginSuccessfulMessage()));
-			} catch(JsonProcessingException e) {
-				e.printStackTrace();
-			}
-			return session1.createTextMessage("SUCCESS");
-		});
+		try {
+			messageProducer.send(session.createTextMessage(objectMapper.writeValueAsString(new LoginSuccessfulMessage())));
+		} catch(JsonProcessingException e) {
+			messageProducer.send(session.createTextMessage(new LoginSuccessfulMessage().getMessage()));
+		}
+		
 		return personalConnection.getPersonalQueue();
 	}
 	
@@ -98,6 +99,12 @@ public class PersonalConnectionManager {
 		final String queueName = createPersonalQueueName(user);
 		if(!this.userConnectionMap.containsKey(queueName)) return null;
 		return this.userConnectionMap.get(queueName).getPersonalQueue();
+	}
+	
+	public void send(User user, String message) throws JMSException {
+		PersonalConnection personalConnection = this.userConnectionMap.get(createPersonalQueueName(user));
+		if(personalConnection == null) return;
+		personalConnection.getMessageProducer().send(personalConnection.getSession().createTextMessage(message));
 	}
 	
 }

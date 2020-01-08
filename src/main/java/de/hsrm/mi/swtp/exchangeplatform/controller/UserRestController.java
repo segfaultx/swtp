@@ -2,6 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
@@ -20,6 +21,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
+import javax.jms.JMSException;
+
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -31,6 +34,7 @@ public class UserRestController {
 	String BASEURL = "/api/v1/users";
 	UserService userService;
 	TradeOfferService tradeOfferService;
+	PersonalConnectionManager personalConnectionManager;
 	
 	@GetMapping("")
 	@ApiOperation(value = "get all users", nickname = "getAllUsers")
@@ -54,10 +58,11 @@ public class UserRestController {
 							@ApiResponse(code = 403, message = "unauthorized fetch attempt"),
 							@ApiResponse(code = 400, message = "malformed fetch request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<User> getById(@PathVariable Long userId) throws NotFoundException {
+	public ResponseEntity<User> getById(@PathVariable Long userId) throws NotFoundException, JMSException {
 		log.info(String.format("GET // " + BASEURL + "/%s", userId));
 		User user = userService.getById(userId)
 									.orElseThrow(NotFoundException::new);
+		personalConnectionManager.send(user, "You got got.");
 		return ResponseEntity.ok(user);
 	}
 	

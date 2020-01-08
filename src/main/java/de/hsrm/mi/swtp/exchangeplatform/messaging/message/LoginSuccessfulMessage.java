@@ -21,4 +21,5 @@ public class LoginSuccessfulMessage implements Serializable {
 	public LoginSuccessfulMessage() {
 		this.message = String.format("Log in successful at %s.", LocalDateTime.now().toString());
 	}
+	
 }
