@@ -49,6 +49,7 @@ public class AuthenticationService implements UserDetailsService {
 		JWTResponse response = new JWTResponse(token);
 		
 		ActiveMQQueue personalQueue = personalConnectionManager.createNewConnection(user);
+		log.info("USER LOGIN: " + authenticationRequest.getUsername());
 		return LoginResponseBody.builder()
 								.tokenResponse(response)
 								.queueName(personalQueue.getQueueName())
