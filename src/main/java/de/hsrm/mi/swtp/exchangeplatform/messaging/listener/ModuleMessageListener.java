@@ -25,17 +25,15 @@ public class ModuleMessageListener implements MessageListener {
 	
 	public final static String TOPICNAME = "ModuleTopic";
 	public final static String QUEUENAME = "ModuleQueue";
-	ActiveMQQueue moduleQueue;
-	ActiveMQTopic moduleTopic;
 	
 	JmsTemplate jmsTemplate;
 	
-	@JmsListener(destination = TOPICNAME, containerFactory = "moduleTopicFactory")
+	@JmsListener(destination = TOPICNAME)
 	public void onReceiveMessage(String message) {
 		log.info("Received <" + message + ">");
 	}
 	
-	@JmsListener(destination = QUEUENAME, containerFactory = "moduleQueueFactory")
+	@JmsListener(destination = QUEUENAME)
 	@Override
 	public void onMessage(Message message) {
 		try {
@@ -43,7 +41,7 @@ public class ModuleMessageListener implements MessageListener {
 		} catch(JMSException e) {
 			log.info("ERROR: " + message);
 		}
-		jmsTemplate.send(moduleTopic, session -> session.createTextMessage(
-				"Erhaltene interne Server-Nachricht: " + ((TextMessage) message).getText() + "\n" + "Module-Änderungen erkannt. Implementierung noch nicht abgeschlossen!"));
+//		jmsTemplate.send(moduleTopic, session -> session.createTextMessage(
+//				"Erhaltene interne Server-Nachricht: " + ((TextMessage) message).getText() + "\n" + "Module-Änderungen erkannt. Implementierung noch nicht abgeschlossen!"));
 	}
 }

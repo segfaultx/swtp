@@ -32,7 +32,6 @@ public class AuthenticationService implements UserDetailsService {
 	UserService userService;
 	PersonalConnectionManager personalConnectionManager;
 	JWTTokenUtils jwtTokenUtil;
-	JmsTemplate jmsTemplate;
 	ActiveTokens activeTokens;
 	
 	public boolean isLoginValid(String password, UserDetails userDetails) {
@@ -50,10 +49,7 @@ public class AuthenticationService implements UserDetailsService {
 		JWTResponse response = new JWTResponse(token);
 		
 		ActiveMQQueue personalQueue = personalConnectionManager.createNewConnection(user);
-		LoginSuccessfulMessage message = LoginSuccessfulMessage.builder()
-															   .message(String.format("Log in at %s successful.", LocalDateTime.now().toString()))
-															   .build();
-		jmsTemplate.send(personalQueue, session -> session.createObjectMessage(message));
+		log.info("USER LOGIN: " + authenticationRequest.getUsername());
 		return LoginResponseBody.builder()
 								.tokenResponse(response)
 								.queueName(personalQueue.getQueueName())
