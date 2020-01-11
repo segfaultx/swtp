@@ -11,16 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
-import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.core.JmsTemplate;
-import org.springframework.jms.support.destination.JndiDestinationResolver;
 
-import javax.jms.ConnectionFactory;
-import javax.naming.Context;
 import java.net.URI;
-import java.util.Properties;
-
-import static javax.naming.Context.INITIAL_CONTEXT_FACTORY;
 
 @Slf4j
 @EnableJms
