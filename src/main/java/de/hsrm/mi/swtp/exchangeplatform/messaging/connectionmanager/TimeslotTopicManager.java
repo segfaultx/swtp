@@ -1,17 +1,12 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 
-import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.TimeslotMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.jms.*;
@@ -25,28 +20,16 @@ import java.util.HashMap;
 @Component
 public class TimeslotTopicManager implements DynamicTopicManager<Timeslot> {
 	
-	TimeslotRepository timeslotRepository;
-	TimeslotService timeslotService;
-	ActiveMQConnectionFactory connectionFactory;
 	TopicConnection timeslotConnection;
 	/** <Long, Topic> := Long -> Timeslot.id, Topic -> Topic of Timeslot */
 	HashMap<Long, Topic> timeslotTopicHashMap;
-	JmsTemplate jmsTopicTemplate;
-	TimeslotMessageListener timeslotMessageListener;
 	
 	@Autowired
 	@Builder
-	public TimeslotTopicManager(final ActiveMQConnectionFactory connectionFactory, final TopicConnection timeslotConnection,
-								final TimeslotRepository timeslotRepository, final TimeslotService timeslotService, JmsTemplate jmsTopicTemplate,
-								TimeslotMessageListener timeslotMessageListener
+	public TimeslotTopicManager(final TopicConnection timeslotConnection
 							   ) {
-		this.connectionFactory = connectionFactory;
 		this.timeslotConnection = timeslotConnection;
-		this.timeslotService = timeslotService;
-		this.jmsTopicTemplate = jmsTopicTemplate;
-		this.timeslotMessageListener = timeslotMessageListener;
 		this.timeslotTopicHashMap = new HashMap<>();
-		this.timeslotRepository = timeslotRepository;
 	}
 	
 	private String createTopicName(final Timeslot timeslot) {
