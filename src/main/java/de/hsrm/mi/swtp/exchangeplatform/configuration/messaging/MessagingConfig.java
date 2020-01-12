@@ -13,11 +13,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.core.JmsTemplate;
 
+import javax.jms.Queue;
+import javax.jms.Topic;
 import java.net.URI;
 
 @Slf4j
 @EnableJms
-@Configuration
+@Configuration()
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class MessagingConfig {
@@ -30,6 +32,7 @@ public class MessagingConfig {
 	String brokerUrl;
 	@Value("${spring.activemq.broker-uri}")
 	String brokerUri;
+	BrokerService broker;
 	
 	@Bean(name = "connectionFactory")
 	public ActiveMQConnectionFactory jmsConnectionFactory() {
@@ -37,18 +40,22 @@ public class MessagingConfig {
 		activeMQConnectionFactory.setBrokerURL(brokerUrl);
 		activeMQConnectionFactory.setUserName(USERNAME);
 		activeMQConnectionFactory.setPassword(PASSWORD);
-		activeMQConnectionFactory.setTrustAllPackages(true);
-		
 		return activeMQConnectionFactory;
 	}
 	
 	@Bean(name = "broker")
 	public BrokerService brokerService() throws Exception {
 		BrokerService broker = BrokerFactory.createBroker(new URI(brokerUri));
-		broker.start();
+		broker.setBrokerName("exchangeplatform-broker");
+		broker.deleteAllMessages();
+		broker.start(true);
 		return broker;
 	}
 	
+	/**
+	 * A JmsTemplate used for {@link Queue Queues}.
+	 * @return a basic JmsTemplate with which one can send messages to a {@link Queue}.
+	 */
 	@Bean(name = "jmsTemplate")
 	public JmsTemplate jmsTemplate() {
 		JmsTemplate jmsTemplate = new JmsTemplate();
@@ -58,6 +65,10 @@ public class MessagingConfig {
 		return jmsTemplate;
 	}
 	
+	/**
+	 * A JmsTemplate used for {@link Topic Topics}.
+	 * @return a basic JmsTemplate with which one can publish messages to a {@link Topic}.
+	 */
 	@Bean(name = "jmsTopicTemplate")
 	public JmsTemplate jmsTopicTemplate() {
 		JmsTemplate jmsTemplate = new JmsTemplate();

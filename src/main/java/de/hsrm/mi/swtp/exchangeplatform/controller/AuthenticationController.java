@@ -3,7 +3,6 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginResponseBody;
-import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutResponseBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.WhoAmI;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
@@ -14,6 +13,10 @@ import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -26,10 +29,6 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 @Slf4j
 @RestController
