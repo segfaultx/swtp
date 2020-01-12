@@ -1,72 +1,61 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalTimeSerializer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
+import de.hsrm.mi.swtp.exchangeplatform.model.serializer.LocalTimeSerializer;
+import lombok.AccessLevel;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Data
-@RequiredArgsConstructor
+@ToString(exclude = { "user", "room", "module", "timeTable", "attendees"})
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Timeslot implements Model {
-
-    @Id
-    @GeneratedValue
-    @Column(name = "id")
-    private Long id;
-
-    @Column(name = "weekday")
-    private Integer day;
-
-    private enum Type { VORLESUNG, PRAKTIKUM, UEBUNG }
-
-    @Column(name ="timeslot_type")
-    @Enumerated(EnumType.STRING)
-    private Type type;
-
-    @JsonIgnore
-    @JsonProperty("time_start")
-    @JsonSerialize(using = LocalTimeSerializer.class)
-    @Column(name = "time_start")
-    private LocalTime timeStart;
-
-    @JsonIgnore
-    @JsonProperty("time_end")
-    @JsonSerialize(using = LocalTimeSerializer.class)
-    @Column(name = "time_end")
-    private LocalTime timeEnd;
-
-    @JsonIgnore
-    @ManyToOne
-    private Lecturer lecturer;
-
-    @JsonIgnore
-    @Column(name = "max_capacity")
-    private int capacity;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "room")
-    private Room room;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "module")
-    private Module module;
-
-    @JsonIgnore
-    @ManyToOne
-    @JoinColumn(name = "courseplan")
-    private TimeTable timeTable;
-
-    @JsonIgnore
-    @ManyToMany(fetch = FetchType.LAZY)
-    private List<Student> attendees;
-
+	
+	@Id
+	@GeneratedValue
+	Long id;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "USER_ID")
+	@JsonBackReference
+    User user;
+	
+	@ManyToOne
+	Room room;
+	
+	@Enumerated(EnumType.STRING)
+	DayOfWeek day;
+	
+	@JsonSerialize(using = LocalTimeSerializer.class)
+	LocalTime timeStart;
+	
+	@JsonSerialize(using = LocalTimeSerializer.class)
+	LocalTime timeEnd;
+	
+	TypeOfTimeslots timeSlotType;
+	
+	Integer capacity;
+	
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "MODULE_ID")
+	Module module;
+	
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JoinColumn(name = "TIMETABLE_ID")
+	@JsonBackReference
+	TimeTable timeTable;
+	
+	@ManyToMany(mappedBy = "timeslots", fetch = FetchType.LAZY)
+	@JsonBackReference
+	List<User> attendees = new ArrayList<>();
 }

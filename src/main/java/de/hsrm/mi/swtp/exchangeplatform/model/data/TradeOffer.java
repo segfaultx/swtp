@@ -1,32 +1,38 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
-import lombok.Getter;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AccessLevel;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
+import lombok.ToString;
+import lombok.experimental.FieldDefaults;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
-@Getter
-@Setter
+@Data
+@ToString(exclude = { "offerer", "offer", "seek"})
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class TradeOffer implements Model {
-
-    @Id
-    @GeneratedValue
-    private Long id;
-
-    @ManyToOne
-    private Student offerer;
-
-    @ManyToOne
-    private Timeslot offer;
-
-    @ManyToOne
-    private Timeslot seek;
-
-    private boolean instantTrade = false;
+	
+	@Id
+	@GeneratedValue
+	Long id;
+	
+	@JsonProperty("offerer")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonBackReference
+	User offerer;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	Timeslot offer;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	Timeslot seek;
+	
+	boolean instantTrade = false;
+	
+	boolean accepted = false;
 }

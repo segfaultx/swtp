@@ -1,80 +1,58 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Appointment;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
 
 /**
- * A simple rest-controller which will handle any rest calls concerning {@link Appointment Appointments}.
- * Its base url is {@code '/api/v1/appointment'}.
+ * A simple rest-controller which will handle any rest calls concerning {@link Module Modules}.
+ * Its base url is {@code '/api/v1/module'}.
  * <p>
- * All fields will have
  */
 @Slf4j
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
-@Component
+@SecurityRequirement(name = "Authorization")
+@RequestMapping("/api/v1/modules")
 @RestController
-@RequestMapping("/api/v1/module")
 public class ModuleRestController {
+	
+	String BASEURL = "/api/v1/modules";
+	ModuleService moduleService;
+	
+	public ResponseEntity<List<Module>> getAll() {
+		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
+	}
+	
+	@GetMapping("/{moduleId}")
+	@ApiOperation(value = "get module by id", nickname = "getModuleById")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved module"),
+							@ApiResponse(code = 403, message = "unauthorized fetch attempt"),
+							@ApiResponse(code = 400, message = "malformed ID") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
+	public ResponseEntity<Module> getById(@PathVariable Long moduleId) throws NotFoundException {
+		log.info(String.format("GET // " + BASEURL + "/%s", moduleId));
+		
+		Module module = moduleService.getById(moduleId)
+				.orElseThrow(NotFoundException::new);
+		return new ResponseEntity<>(module, HttpStatus.OK);
 
-    String BASEURL = "/api/v1/module";
-    ModuleService moduleService;
-    TimeTableService timeTableService;
-
-    @GetMapping
-    public ResponseEntity<List<Module>> getAllModules() {
-        return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
-    }
-
-    @GetMapping("/{timetableId}") // TODO
-    public ResponseEntity<List<Module>> getAllModulesFromTimetable(@PathVariable Long timetableId) {
-        return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
-    }
-
-    @GetMapping("/{moduleId}")
-    public ResponseEntity<Module> getModuleeById(@PathVariable Long moduleId) {
-        log.info(String.format("GET // " + BASEURL + "/%s", moduleId));
-        try {
-            return new ResponseEntity<>(
-                    moduleService.getById(moduleId),
-                    HttpStatus.OK);
-        } catch (NotFoundException e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @PostMapping
-    public ResponseEntity<Module> createAppointment(@RequestBody Module module, BindingResult result) {
-        log.info("POST // " + BASEURL);
-        log.info(module.toString());
-        if (result.hasErrors()) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        moduleService.save(module);
-        return new ResponseEntity<>(module, HttpStatus.OK);
-    }
-
-    @DeleteMapping("/admin/{moduleId}")
-    public ResponseEntity<Module> deleteAppointment(@PathVariable Long moduleId) {
-        log.info(String.format("DELETE // " + BASEURL + "/s", moduleId));
-
-        try {
-            moduleService.delete(moduleId);
-            return new ResponseEntity<>(HttpStatus.OK);
-        } catch (IllegalArgumentException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
-    }
+	}
 }
