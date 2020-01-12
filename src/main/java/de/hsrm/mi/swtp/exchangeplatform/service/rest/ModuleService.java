@@ -1,7 +1,10 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +22,7 @@ import java.util.Optional;
 public class ModuleService {
 	
 	ModuleRepository repository;
+	TimeslotService timeslotService;
 	
 	public List<Module> getAll() {
 		return repository.findAll();
@@ -27,6 +31,20 @@ public class ModuleService {
 	public Optional<Module> getById(Long moduleId) {
 		Optional<Module> moduleOptional = this.repository.findById(moduleId);
 		return moduleOptional;
+	}
+	
+	public void removeStudentFromModule(Long moduleId, User student) throws NotFoundException {
+		Module module = this.getById(moduleId)
+							.orElseThrow(NotFoundException::new);
+		
+		List<Timeslot> allTimeSlots = module.getTimeslots();
+		for(Timeslot timeslot : allTimeSlots){
+			if(timeslot.getAttendees().contains(student)){
+				timeslotService.removeAttendeeFromTimeslot(timeslot.getId(), student);
+			}
+		}
+		
+		module.getAttendees().remove(student);
 	}
 	
 	public void save(Module module) {

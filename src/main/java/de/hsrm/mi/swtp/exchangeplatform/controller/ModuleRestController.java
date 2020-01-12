@@ -1,8 +1,11 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.model.ModuleRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -13,10 +16,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class ModuleRestController {
 	
 	String BASEURL = "/api/v1/modules";
 	ModuleService moduleService;
+	UserService userService;
 	
 	public ResponseEntity<List<Module>> getAll() {
 		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
@@ -54,5 +56,34 @@ public class ModuleRestController {
 				.orElseThrow(NotFoundException::new);
 		return new ResponseEntity<>(module, HttpStatus.OK);
 
+	}
+	
+	/**
+	 * POST request handler.
+	 * Provides an endpoint to {@code '/api/v1/modules/leave'} through which a user ({@link User}) can leave a {@link Module}.
+	 *
+	 * @param moduleRequestBody is an object which contains the id of a {@link Module} and the student ID of an {@link User}.
+	 *
+	 * @return {@link HttpStatus#OK} and the updated Module if the user left successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
+	 */
+	@PostMapping("/leave")
+	@ApiOperation(value = "leave module", nickname = "leaveModule")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully left module"),
+							@ApiResponse(code = 403, message = "unauthorized leave attempt"),
+							@ApiResponse(code = 400, message = "malformed leave request") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
+	public ResponseEntity<Module> leaveModule(@RequestBody ModuleRequestBody moduleRequestBody, BindingResult result) throws NotFoundException {
+		log.info("POST // " + BASEURL + "/leave");
+		log.info(moduleRequestBody.toString());
+		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		
+		User user = userService.getById(moduleRequestBody.getStudentId())
+							   .orElseThrow(NotFoundException::new);
+		
+		moduleService.removeStudentFromModule(moduleRequestBody.getModuleId(), user);
+		
+		Module module = moduleService.getById(moduleRequestBody.getModuleId())
+										   .orElseThrow(NotFoundException::new);
+		return ResponseEntity.ok(module);
 	}
 }
