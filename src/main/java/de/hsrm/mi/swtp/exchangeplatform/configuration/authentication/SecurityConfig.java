@@ -58,6 +58,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 								   "/configuration/security",
 								   "/swagger-ui.html",
 								   "/webjars/**",
+								   "/actuator/**",
+								   "/actuator/hawtio/**",
 								   "/h2-console/**");
 	}
 	
@@ -74,7 +76,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 								 "/swagger-ui.html",
 								 "/webjars/**",
 								 "/swagger-resources/configuration/ui",
-								 "/swagger-resources/configuration/security")
+								 "/swagger-resources/configuration/security",
+								 "/actuator/**")
 					.permitAll()
 					.anyRequest()
 					.authenticated()

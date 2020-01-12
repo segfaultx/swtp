@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.MessageSenderImpl;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import lombok.AccessLevel;
@@ -18,7 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
-import static de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener.*;
+import static de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener.TOPICNAME;
 
 @Service
 @Slf4j
@@ -27,8 +26,6 @@ public class AdminSettingsService {
 	AdminSettingsRepository adminSettingsRepository;
 	AdminSettings adminSettings;
 	final Long adminSettingsId = 1L;
-	@Autowired
-	MessageSenderImpl messageSender;
 	@Autowired
 	JmsTemplate jmsTopicTemplate;
 	@Autowired

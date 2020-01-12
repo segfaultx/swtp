@@ -34,9 +34,9 @@ public class UserService {
 		return repository.findByUsername(username);
 	}
 	// convert number to string to find user only containing said number
-	public List<User> getAllByStudentNumber(Long studentNumber){ return repository.findByStudentNumberContaining(String.valueOf(studentNumber));}
+	public List<User> getAllByStudentNumber(String studentNumber){ return repository.findByStudentNumberContaining(studentNumber);}
 	// convert number to string to find user only containing said number
-	public List<User> getAllByStaffNumber(Long staffNumber){ return repository.findByStaffNumberContaining(String.valueOf(staffNumber));}
+	public List<User> getAllByStaffNumber(String staffNumber){ return repository.findByStaffNumberContaining(staffNumber);}
 	
 	public List<User> getAllByFirstName(String firstName){ return repository.findAllByFirstNameContainingIgnoreCase(firstName); }
 	

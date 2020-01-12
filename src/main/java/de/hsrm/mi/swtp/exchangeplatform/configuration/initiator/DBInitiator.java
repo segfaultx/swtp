@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.configuration;
+package de.hsrm.mi.swtp.exchangeplatform.configuration.initiator;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
@@ -7,7 +7,9 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
-import de.hsrm.mi.swtp.exchangeplatform.repository.*;
+import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.RoomRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,7 +19,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
-import java.sql.Time;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -396,8 +397,7 @@ public class DBInitiator implements ApplicationRunner {
 		var persistedSettings = adminSettingsRepository.save(adminSettings);
 		adminSettingsService.setAdminSettings(persistedSettings);
 		
-		
 		log.info("Done saving timeTable...");
-		
 	}
+	
 }
