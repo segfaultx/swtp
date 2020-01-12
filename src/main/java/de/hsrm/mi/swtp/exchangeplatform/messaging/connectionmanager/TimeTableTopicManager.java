@@ -31,12 +31,14 @@ public class TimeTableTopicManager extends AbstractDynamicTopicManager<TimeTable
 	 * <Long, Topic> := Long -> {@link TimeTable#getId()}, Topic -> Topic of Timeslot
 	 */
 	HashMap<Long, Topic> timeTableTopicHashMap;
+	HashMap<Long, TopicSession> timeTableSessionHashMap;
 	
 	@Autowired
 	@Builder
 	public TimeTableTopicManager(final TopicConnection timeTableConnection) {
 		this.timeTableConnection = timeTableConnection;
 		this.timeTableTopicHashMap = new HashMap<>();
+		this.timeTableSessionHashMap = new HashMap<>();
 	}
 	
 	@Override
@@ -49,6 +51,7 @@ public class TimeTableTopicManager extends AbstractDynamicTopicManager<TimeTable
 			topic = topicSession.createTopic(topicName);
 			log.info(String.format(" + created topic: %s", topic.toString()));
 			this.timeTableTopicHashMap.put(obj.getId(), topic);
+			this.timeTableSessionHashMap.put(obj.getId(), topicSession);
 			
 			topicSession.createSubscriber(topic).setMessageListener(message -> {
 				try {
@@ -60,11 +63,34 @@ public class TimeTableTopicManager extends AbstractDynamicTopicManager<TimeTable
 			topicSession.createPublisher(topic)
 						.publish(topicSession.createTextMessage(String.format("TimeTable %s: Topic %s is now alive", obj.getId(), topicName)));
 			
+		} catch(NullPointerException e) {
+			log.error(String.format("Could not create Topic for null."));
+			return null;
 		} catch(JMSException e) {
 			log.error(String.format("Could not create Topic for TimeTable %s.", obj.getId()));
 			return null;
 		}
 		return topic;
+	}
+	
+	@Override
+	public Topic getTopic(Long id) {
+		return this.timeTableTopicHashMap.get(id);
+	}
+	
+	@Override
+	public Topic getTopic(TimeTable obj) {
+		return this.getTopic(obj.getId());
+	}
+	
+	@Override
+	public TopicSession getSession(Long id) {
+		return this.timeTableSessionHashMap.get(id);
+	}
+	
+	@Override
+	public TopicSession getSession(TimeTable obj) {
+		return this.getSession(obj.getId());
 	}
 	
 }

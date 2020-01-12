@@ -31,13 +31,14 @@ public class ModuleTopicManager extends AbstractDynamicTopicManager<Module> {
 	 * <Long, Topic> := Long -> {@link Module#}, Topic -> Topic of Module
 	 */
 	HashMap<Long, Topic> moduleTopicHashMap;
+	HashMap<Long, TopicSession> moduleSesstionHashMap;
 	
 	@Autowired
 	@Builder
-	public ModuleTopicManager(final TopicConnection moduleConnection
-							 ) {
+	public ModuleTopicManager(final TopicConnection moduleConnection) {
 		this.moduleConnection = moduleConnection;
 		this.moduleTopicHashMap = new HashMap<>();
+		this.moduleSesstionHashMap = new HashMap<>();
 	}
 	
 	@Override
@@ -50,6 +51,7 @@ public class ModuleTopicManager extends AbstractDynamicTopicManager<Module> {
 			topic = topicSession.createTopic(topicName);
 			log.info(String.format(" + created topic: %s", topic.toString()));
 			this.moduleTopicHashMap.put(obj.getId(), topic);
+			this.moduleSesstionHashMap.put(obj.getId(), topicSession);
 			
 			topicSession.createSubscriber(topic).setMessageListener(message -> {
 				try {
@@ -61,11 +63,35 @@ public class ModuleTopicManager extends AbstractDynamicTopicManager<Module> {
 			topicSession.createPublisher(topic)
 						.publish(topicSession.createTextMessage(String.format("Module %s: Topic %s is now alive", obj.getId(), topicName)));
 			
+		} catch(NullPointerException e) {
+			log.error(String.format("Could not create Topic for null."));
+			return null;
 		} catch(JMSException e) {
 			log.error(String.format("Could not create Topic for Module %s.", obj.getId()));
 			return null;
 		}
 		return topic;
 	}
+	
+	@Override
+	public Topic getTopic(Long id) {
+		return this.moduleTopicHashMap.get(id);
+	}
+	
+	@Override
+	public Topic getTopic(Module obj) {
+		return this.getTopic(obj.getId());
+	}
+	
+	@Override
+	public TopicSession getSession(Long id) {
+		return this.moduleSesstionHashMap.get(id);
+	}
+	
+	@Override
+	public TopicSession getSession(Module obj) {
+		return this.getSession(obj.getId());
+	}
+	
 	
 }

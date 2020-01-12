@@ -17,6 +17,7 @@ public abstract class AbstractDynamicTopicManager<T> implements DynamicTopicMana
 	 * @return a string which is formed out of {@link #TOPIC_NAME_BASE}.
 	 */
 	String createTopicName(final Long id) {
+		if(id == null) return null;
 		return String.format(TOPIC_NAME_BASE, ((Class) type).getSimpleName(), id);
 	}
 }

@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 
 import javax.jms.Topic;
+import javax.jms.TopicSession;
 
 /**
  * An interface for classes which manage {@link Topic Topics} created at Runtime.
@@ -23,5 +24,13 @@ public interface DynamicTopicManager<T> {
 	 * @return a simple {@link Topic}.
 	 */
 	Topic createTopic(final T obj);
+	
+	Topic getTopic(Long id);
+	
+	Topic getTopic(T obj);
+	
+	TopicSession getSession(Long id);
+	
+	TopicSession getSession(T obj);
 	
 }
