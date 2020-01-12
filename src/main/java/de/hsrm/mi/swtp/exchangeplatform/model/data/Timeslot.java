@@ -48,6 +48,7 @@ public class Timeslot implements Model {
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "MODULE_ID")
+	@JsonBackReference
 	Module module;
 	
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

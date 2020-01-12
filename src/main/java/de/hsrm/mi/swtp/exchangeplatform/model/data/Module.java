@@ -1,6 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -22,7 +22,7 @@ public class Module implements Model {
 	private String name;
 	
 	@OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnore
+	@JsonManagedReference
 	private List<Timeslot> timeslots;
 	
 	@JoinColumn(name = "po_id")
