@@ -122,30 +122,43 @@ public class PersonalConnectionManagerTest {
 	@Test
 	@Order(6)
 	public void testGetConnectionNullUser() {
-		assertNull(personalConnectionManager.getConnection(null));
+		assertNull(personalConnectionManager.getQueue((User) null));
 	}
 	
 	@Test
 	@Order(7)
-	public void testGetConnectionNonExistent() {
-		assertNull(personalConnectionManager.getQueue(this.adminUser));
+	public void testGetConnectionNullLong() {
+		assertNull(personalConnectionManager.getQueue((Long) null));
 	}
 	
 	@Test
 	@Order(8)
+	public void testGetConnectionNonExistent() {
+		assertNull(personalConnectionManager.getQueue(this.adminUser));
+	}
+	
+	
+	@Test
+	@Order(9)
+	public void testGetConnectionNonExistentId() {
+		assertNull(personalConnectionManager.getQueue(this.adminUser.getId()));
+	}
+	
+	@Test
+	@Order(10)
 	public void testCloseConnection() throws JMSException {
 		personalConnectionManager.createNewConnection(this.adminUser);
 		assertTrue(personalConnectionManager.closeConnection(this.adminUser));
 	}
 	
 	@Test
-	@Order(9)
+	@Order(11)
 	public void testCloseConnectionNull() throws JMSException {
 		assertFalse(personalConnectionManager.closeConnection(null));
 	}
 	
 	@Test
-	@Order(10)
+	@Order(12)
 	public void testCloseConnectionNonExistent() throws JMSException {
 		assertFalse(personalConnectionManager.closeConnection(this.adminUser));
 	}
