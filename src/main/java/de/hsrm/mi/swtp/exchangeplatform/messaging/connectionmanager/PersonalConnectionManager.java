@@ -8,13 +8,11 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LoginSuccessfulMessage
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.jms.*;
@@ -104,15 +102,15 @@ public class PersonalConnectionManager {
 		return String.format(FORMAT, userId, username);
 	}
 	
-	public ActiveMQQueue getConnection(User user) {
+	public ActiveMQQueue getQueue(User user) {
 		final String queueName = createPersonalQueueName(user);
 		if(!this.userConnectionMap.containsKey(queueName)) return null;
 		return this.userConnectionMap.get(queueName).getPersonalQueue();
 	}
 	
-	public ActiveMQQueue getConnection(Long userId) {
+	public ActiveMQQueue getQueue(Long userId) {
 		try {
-			return this.getConnection(this.getUserById(userId));
+			return this.getQueue(this.getUserById(userId));
 		}
 		catch(NotFoundException e) {
 			return null;

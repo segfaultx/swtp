@@ -11,9 +11,7 @@ import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQQueue;
 import org.assertj.core.api.Assertions;
-import org.junit.Before;
 import org.junit.Rule;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
@@ -116,7 +114,7 @@ public class PersonalConnectionManagerTest {
 	@Order(5)
 	public void testGetConnection() throws JMSException {
 		personalConnectionManager.createNewConnection(this.adminUser);
-		ActiveMQQueue personalQueue = personalConnectionManager.getConnection(this.adminUser);
+		ActiveMQQueue personalQueue = personalConnectionManager.getQueue(this.adminUser);
 		assertNotNull(personalQueue);
 		assertTrue(personalQueue.isQueue());
 	}
@@ -130,7 +128,7 @@ public class PersonalConnectionManagerTest {
 	@Test
 	@Order(7)
 	public void testGetConnectionNonExistent() {
-		assertNull(personalConnectionManager.getConnection(this.adminUser));
+		assertNull(personalConnectionManager.getQueue(this.adminUser));
 	}
 	
 	@Test

@@ -24,11 +24,11 @@ public class PersonalMessageSender {
 	JmsTemplate jmsTemplate;
 	
 	public void send(User user, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
-		this.send(personalConnectionManager.getConnection(user), tradeOfferSuccessfulMessage);
+		this.send(personalConnectionManager.getQueue(user), tradeOfferSuccessfulMessage);
 	}
 	
 	public void send(Long userId, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
-		this.send(personalConnectionManager.getConnection(userId), tradeOfferSuccessfulMessage);
+		this.send(personalConnectionManager.getQueue(userId), tradeOfferSuccessfulMessage);
 	}
 	
 	public void send(ActiveMQQueue userQueue, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
