@@ -2,6 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalConnection;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LoginSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import javax.jms.*;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Manages {@link PersonalConnection PersonalConnections}.
@@ -108,6 +110,15 @@ public class PersonalConnectionManager {
 		return this.userConnectionMap.get(queueName).getPersonalQueue();
 	}
 	
+	public ActiveMQQueue getConnection(Long userId) {
+		try {
+			return this.getConnection(this.getUserById(userId));
+		}
+		catch(NotFoundException e) {
+			return null;
+		}
+	}
+	
 	/**
 	 * Sends a message to the dynamically created {@link Queue} of a {@link User}.
 	 * If the {@link User} has no {@link PersonalConnection} in the {@link #userConnectionMap} nothing happens.
@@ -119,6 +130,15 @@ public class PersonalConnectionManager {
 		PersonalConnection personalConnection = this.userConnectionMap.get(createPersonalQueueName(user));
 		if(personalConnection == null) return;
 		personalConnection.getMessageProducer().send(personalConnection.getSession().createTextMessage(message));
+	}
+	
+	private User getUserById(Long id) throws NotFoundException {
+		Optional<PersonalConnection> userOpt = this.userConnectionMap.values()
+																	 .stream()
+																	 .filter(personalConnection -> personalConnection.getUser().getId().equals(id))
+																	 .findFirst();
+		if(userOpt.isEmpty()) throw new NotFoundException();
+		return userOpt.get().getUser();
 	}
 	
 }

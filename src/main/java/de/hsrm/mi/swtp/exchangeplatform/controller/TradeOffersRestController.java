@@ -1,11 +1,15 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
+import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
@@ -27,10 +31,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/trades")
@@ -43,6 +44,9 @@ public class TradeOffersRestController {
 	TradeOfferService tradeOfferService;
 	UserService userService;
 	AdminSettingsService adminSettingsService;
+	JWTTokenUtils jwtTokenUtils;
+	PersonalConnectionManager personalConnectionManager;
+	PersonalMessageSender personalMessageSender;
 	
 	/**
 	 * DELETE request handler.
@@ -128,14 +132,32 @@ public class TradeOffersRestController {
 							@ApiResponse(code = 403, message = "unauthorized trade attempt"),
 							@ApiResponse(code = 400, message = "malformed trade request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<TimeTable> requestTrade(@Valid @RequestBody TradeRequest tradeRequest) throws Exception {
+	public ResponseEntity<TimeTable> requestTrade(@Valid @RequestBody TradeRequest tradeRequest, @RequestHeader("Authorization") String token) throws Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
 								  ));
+			String username = jwtTokenUtils.getUsernameFromToken(JWTTokenUtils.tokenWithoutPrefix(token)).replace("Bearer ", "");
+			log.info(username);
+			Optional<User> acceptingUserOpt = userService.getByUsername(username);
+			if(acceptingUserOpt.isEmpty()) return null;
+			User acceptingUser = acceptingUserOpt.get();
+			log.info(acceptingUser.toString());
 			var timeslot = tradeOfferService.tradeTimeslots(tradeRequest.getOfferedByStudentMatriculationNumber(), tradeRequest.getOfferedTimeslotId(),
 															tradeRequest.getWantedTimeslotId()
 														   );
+			
+			
+			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(), TradeOfferSuccessfulMessage.builder()
+																			   .leftTimeslotId(tradeRequest.getOfferedTimeslotId())
+																			   .newTimeslotId(tradeRequest.getWantedTimeslotId())
+																			   .build());
+			personalMessageSender.send(acceptingUser, TradeOfferSuccessfulMessage.builder()
+																			   .leftTimeslotId(tradeRequest.getWantedTimeslotId())
+																			   .newTimeslotId(tradeRequest.getOfferedTimeslotId())
+																			   .build());
+			
+			
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
 			timetable.setDateEnd(LocalDate.now()); // DIRTY QUICK FIX

@@ -58,8 +58,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 								   "/configuration/security",
 								   "/swagger-ui.html",
 								   "/webjars/**",
-								   "/h2-console/**",
-								   "/actuator/**");
+								   "/actuator/**",
+								   "/actuator/hawtio/**",
+								   "/h2-console/**");
 	}
 	
 	@Override
