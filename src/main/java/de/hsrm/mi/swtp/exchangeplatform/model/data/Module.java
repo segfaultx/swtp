@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.hsrm.mi.swtp.exchangeplatform.model.serializer.ModuleSerializer;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -13,6 +14,7 @@ import java.util.List;
 @ToString(exclude = {"po", "timeslots"})
 @RequiredArgsConstructor
 @Table(name = "my_module")
+@JsonSerialize(using = ModuleSerializer.class)
 public class Module implements Model {
 	
 	@Id
@@ -22,7 +24,6 @@ public class Module implements Model {
 	private String name;
 	
 	@OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference
 	private List<Timeslot> timeslots;
 	
 	@JoinColumn(name = "po_id")
