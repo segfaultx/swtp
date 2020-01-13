@@ -36,19 +36,28 @@ public class User implements Model {
 	@JsonProperty("staff_number")
 	Long staffNumber;
 	
+	@JsonProperty("cp")
+	int cp;
+	
+	@JsonProperty("fairness")
+	int fairness;
+	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JsonIgnore
 	AuthenticationInformation authenticationInformation;
+	
 	
 	@JsonProperty("user_type")
 	@OneToOne(cascade = CascadeType.ALL)
 	@JsonManagedReference
 	UserType userType;
 	
+	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JsonManagedReference
 	List<Timeslot> timeslots = new ArrayList<>();
 	
+	@JsonIgnore
 	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
 	List<TradeOffer> tradeoffers = new ArrayList<>();
 }
