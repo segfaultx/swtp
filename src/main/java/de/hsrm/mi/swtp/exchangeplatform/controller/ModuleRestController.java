@@ -37,10 +37,6 @@ public class ModuleRestController {
 	String BASEURL = "/api/v1/modules";
 	ModuleService moduleService;
 	
-	public ResponseEntity<List<Module>> getAll() {
-		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
-	}
-	
 	@GetMapping("/{moduleId}")
 	@ApiOperation(value = "get module by id", nickname = "getModuleById")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved module"),
@@ -54,5 +50,17 @@ public class ModuleRestController {
 				.orElseThrow(NotFoundException::new);
 		return new ResponseEntity<>(module, HttpStatus.OK);
 
+	}
+	
+	@GetMapping
+	@ApiOperation(value = "get all modules", nickname = "getAllModules")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved modules"),
+							@ApiResponse(code = 403, message = "unauthorized fetch attempt"),
+							@ApiResponse(code = 400, message = "malformed ID") })
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<Module>> getAll() {
+		log.info(String.format("GET // " + BASEURL));
+		
+		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
 	}
 }
