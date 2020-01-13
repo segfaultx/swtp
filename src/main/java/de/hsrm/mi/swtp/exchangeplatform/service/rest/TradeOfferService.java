@@ -1,10 +1,11 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
@@ -38,6 +39,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	//Tradeilter filterService; //TODO: wait for filter fix
 	AdminTradeService adminTradeService;
 	AdminSettingsService adminSettingsService;
+	TradeService tradeService;
 	ModuleRepository moduleRepository;
 	
 	/**
@@ -84,24 +86,34 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 *
 	 * @throws Exception if lookup fails
 	 */
-	public Map<String, List<Timeslot>> getTradeOffersForModule(long id) throws Exception {
+	public Map<String, List<Timeslot>> getTradeOffersForModule(long id, User user) throws Exception {
 		Map<String, List<Timeslot>> out = new HashMap<>();
 		List<Timeslot> instantTrades = new ArrayList<>();
 		List<Timeslot> regularTrades = new ArrayList<>();
 		List<Timeslot> remaining = new ArrayList<>();
+		List<Timeslot> ownOffers = new ArrayList<>();
 		var offeredTimeslot = timeSlotRepository.findById(id).orElseThrow();
 		var trades = tradeOfferRepository.findAllBySeek(offeredTimeslot);
 		trades.forEach(trade -> {
-			if(trade.isInstantTrade()) instantTrades.add(trade.getOffer());
-			else regularTrades.add(trade.getOffer());
+			if(trade.getId() != id) {
+				if(trade.isInstantTrade()) instantTrades.add(trade.getOffer());
+				else regularTrades.add(trade.getOffer());
+			}
+			
 		});
+		for(TradeOffer to : tradeOfferRepository.findAllByOfferer(user)) {
+			if(!ownOffers.contains(to.getSeek())) ownOffers.add(to.getSeek());
+		}
 		var allTimeslots = timeSlotRepository.findAllByModule(offeredTimeslot.getModule());
 		allTimeslots.forEach(timeslot -> {
-			if(!instantTrades.contains(timeslot) && !regularTrades.contains(timeslot)) remaining.add(timeslot);
+			if(timeslot.getId() != id && timeslot.getTimeSlotType() != TypeOfTimeslots.VORLESUNG && !ownOffers.contains(timeslot)) {
+				if(!instantTrades.contains(timeslot) && !regularTrades.contains(timeslot)) remaining.add(timeslot);
+			}
 		});
 		out.put("instant", instantTrades);
 		out.put("trades", regularTrades);
 		out.put("remaining", remaining);
+		out.put("ownOffers", ownOffers);
 		return out;
 	}
 	
@@ -117,49 +129,32 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	@Transactional
 	public Timeslot tradeTimeslots(long requesterId, long offeredTimeslot, long requestedTimeslot) throws Exception {
 		log.info(String.format("Performing Trade for requester: %d, offered: %d, wanted: %d", requesterId, offeredTimeslot, requestedTimeslot));
-		var requester = userRepository.findById(requesterId).orElseThrow(() -> {
-			log.info(String.format("Error fetching Student from repository with ID: %d", requesterId));
-			return new NotFoundException(requesterId);
-		});
-		var timeslot = timeSlotRepository.findById(requestedTimeslot).orElseThrow(NotFoundException::new);
-		var trade = tradeOfferRepository.findAllBySeek(timeslot);
-		TradeOffer tradeOffer = trade.get(0); // TODO: add actual trade logic here
-		requester.getTimeslots().remove(tradeOffer.getSeek());
-		requester.getTimeslots().add(tradeOffer.getOffer());
-		var tradePartner = tradeOffer.getOfferer();
-		tradePartner.getTimeslots().remove(tradeOffer.getOffer());
-		tradePartner.getTimeslots().add(tradeOffer.getSeek());
-		
-		// send message to user's personal queue telling that the trade was successful
-		personalMessageSender.send(tradeOffer.getOfferer(), TradeOfferSuccessfulMessage.builder()
-																					   .tradeOfferId(tradeOffer.getId())
-																					   .build());
-		return tradeOffer.getOffer();
+		if(tradeService.doTrade(requesterId, offeredTimeslot, requestedTimeslot)) {
+			return timeSlotRepository.findById(requestedTimeslot).orElseThrow();
+		}
+		throw new RuntimeException();
 	}
 	
 	/**
 	 * Method to delete a given {@link TradeOffer} by id of a student
 	 *
 	 * @param studentId delete requester's id
-	 * @param tradeId   tradeId of item which is supposed to be deleted
+	 * @param seekId    seekId of item which is supposed to be deleted
 	 *
 	 * @return true if successful
 	 *
 	 * @throws RuntimeException if tradeoffer cannot be looked up or requester isnt owner of the requested trade
 	 */
-	public boolean deleteTradeOffer(long studentId, long tradeId) throws Exception {
-		log.info(String.format("Looking up Tradeoffer with id: %d. Requester: %d", tradeId, studentId));
-		tradeOfferRepository.findById(tradeId).ifPresentOrElse(tradeOffer -> {
-			if(tradeOffer.getOfferer().getStudentNumber() != studentId) {
-				log.info(String.format("Error: Requester is not owner of trade with id: %d, requester: %d", tradeId, studentId));
-				throw new RuntimeException("not your tradeoffer");
-			}
-			log.info(String.format("Successfully deleted tradeoffer with id: %d of student: %d", tradeId, studentId));
-			tradeOfferRepository.delete(tradeOffer);
-		}, () -> {
-			log.info(String.format("Error: could not find tradeoffer with id: %d of student: %d", tradeId, studentId));
-			throw new RuntimeException();
-		});
+	
+	public boolean deleteTradeOffer(long studentId, long seekId) throws Exception {
+		log.info(String.format("Looking up Tradeoffer with seekId: %d. Requester: %d", seekId, studentId));
+		
+		var found = tradeOfferRepository.findByOffererAndSeek(userRepository.findById(studentId).orElseThrow(),
+																		timeSlotRepository.findById(seekId).orElseThrow()
+																	   );
+		if(found == null) throw new NotFoundException();
+		log.info(String.format("Successfully deleted tradeoffer with seekId: %d of student: %d", seekId, studentId));
+		tradeOfferRepository.delete(found);
 		return true;
 	}
 	

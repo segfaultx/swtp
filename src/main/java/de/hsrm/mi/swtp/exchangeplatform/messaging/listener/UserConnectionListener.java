@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jms.annotation.EnableJms;
+import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Component;
 
 import javax.jms.JMSException;
@@ -19,9 +20,11 @@ import javax.jms.TextMessage;
 @RequiredArgsConstructor
 public class UserConnectionListener implements MessageListener {
 	
+	@JmsListener(destination = "usr:1006333-jjoen001")
 	@Override
 	public void onMessage(Message message) {
 		try {
+			log.info("USERUSERUESUREURSEUSEUSUERURES");
 			log.info(((TextMessage) message).getText());
 		} catch(JMSException e) {
 			log.info("RECEOVED SOME ERROR MESSAGE");

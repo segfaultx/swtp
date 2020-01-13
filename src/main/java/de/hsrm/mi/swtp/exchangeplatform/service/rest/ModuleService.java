@@ -1,7 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.ModuleMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import lombok.AccessLevel;
@@ -20,7 +19,6 @@ import java.util.Optional;
 public class ModuleService {
 	
 	ModuleRepository repository;
-	ModuleMessageSender messageSender;
 	
 	public List<Module> getAll() {
 		return repository.findAll();
@@ -37,13 +35,11 @@ public class ModuleService {
 			throw new NotCreatedException(module);
 		}
 		repository.save(module);
-		messageSender.send(String.format("SUCCESS: Module %s created", module));
 		log.info(String.format("SUCCESS: Module %s created", module));
 	}
 	
 	public void delete(Module module) throws IllegalArgumentException {
 		repository.delete(module);
-		messageSender.send(String.format("SUCCESS: Module %s deleted", module));
 		log.info(String.format("SUCCESS: Module %s deleted", module));
 	}
 }

@@ -3,7 +3,6 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginResponseBody;
-import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutResponseBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.WhoAmI;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
@@ -14,6 +13,10 @@ import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,6 +33,10 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RestController
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@SecurityScheme(name = "Authorization",
+        type = SecuritySchemeType.APIKEY,
+		in = SecuritySchemeIn.HEADER)
+@SecurityRequirement(name = "Authorization")
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
@@ -43,14 +50,14 @@ public class AuthenticationController {
 	@ApiOperation(value = "login to application", nickname = "login")
 	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully logged in"),
 							@ApiResponse(code = 400, message = "malformed login request") })
-	public ResponseEntity<?> login(@RequestBody LoginRequestBody authenticationRequest) throws Exception {
+	public ResponseEntity<LoginResponseBody> login(@RequestBody LoginRequestBody authenticationRequest) throws Exception {
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		
 		UserDetails userDetails = authenticationService.loadUserByUsername(authenticationRequest.getUsername());
 		String password = authenticationRequest.getPassword();
 		
 		if(!authenticationService.isLoginValid(password, userDetails))
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid Credentials");
+			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		try {
 			LoginResponseBody responseBody = authenticationService.loginUser(authenticationRequest);
 			return ResponseEntity.ok(responseBody);
