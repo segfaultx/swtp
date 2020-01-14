@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.model.serializer;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
@@ -31,7 +32,7 @@ public class TimeslotSerializer extends StdSerializer<Timeslot> {
 		gen.writeNumberField("capacity", value.getCapacity());
 		gen.writeObjectField("time_start", value.getTimeStart());
 		gen.writeObjectField("time_end", value.getTimeEnd());
-		gen.writeNumberField("module_id", value.getModule().getId());
+		gen.writeNumberField("module", value.getModule());
 		gen.writeFieldName("attendees");
 		final List<User> students = value.getAttendees()
 								   .stream()
