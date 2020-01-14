@@ -32,7 +32,7 @@ public class TimeslotSerializer extends StdSerializer<Timeslot> {
 		gen.writeNumberField("capacity", value.getCapacity());
 		gen.writeObjectField("time_start", value.getTimeStart());
 		gen.writeObjectField("time_end", value.getTimeEnd());
-		gen.writeNumberField("module", value.getModule());
+		gen.writeObjectField("module", value.getModule());
 		gen.writeFieldName("attendees");
 		final List<User> students = value.getAttendees()
 								   .stream()
