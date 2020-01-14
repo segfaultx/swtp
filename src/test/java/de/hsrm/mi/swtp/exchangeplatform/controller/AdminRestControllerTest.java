@@ -25,7 +25,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 @ExtendWith(SpringExtension.class)
 @AutoConfigureMockMvc
 @SpringBootTest
-public class AdminSettingsTest {
+public class AdminRestControllerTest {
 	@Autowired
 	MockMvc mockmvc;
 	@Autowired
@@ -62,7 +62,7 @@ public class AdminSettingsTest {
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	@Transactional
-	void testFalseAdminsettingsPost() throws Exception{
+	void testFalseAdminsettingsPost() throws Exception {
 		mockmvc.perform(post("/api/v1/admin/settings")
 								.contentType(MediaType.APPLICATION_JSON).content("null"))
 			   .andExpect(status().isBadRequest());
