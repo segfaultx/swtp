@@ -68,7 +68,7 @@ public class AuthenticationController {
 	
 	@PostMapping("/logout")
 	public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) throws Exception {
-		if(!JWTTokenUtils.isValidToken(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
+		if(!JWTTokenUtils.isValidToken(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); //TODO: handle exception if jwt token is malformed
 		
 		String jwtToken = JWTTokenUtils.tokenWithoutPrefix(token);
 		String usernameFromToken = jwtTokenUtil.getUsernameFromToken(jwtToken);
