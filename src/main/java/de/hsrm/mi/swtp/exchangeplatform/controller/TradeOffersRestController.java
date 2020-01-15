@@ -202,4 +202,16 @@ public class TradeOffersRestController {
 	public ResponseEntity<List<TradeOffer>> getAllTradeoffersForTest() {
 		return new ResponseEntity<>(tradeOfferService.getAll(), HttpStatus.OK);
 	}
+
+	@GetMapping("/mytradefffers")
+	@Operation(description = "get TradeOffers for student", operationId = "getMyTradeOffers")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved tradeoffers"),
+							@ApiResponse(responseCode = "403", description = "unauthorized request"),
+							@ApiResponse(responseCode = "400", description = "malformed request") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
+	public ResponseEntity<List<TradeOffer>> getMyTradeOffers(Principal principal) throws Exception {
+		log.info(String.format("GET REQUEST TRADEOFFERS FOR Student BY USER: %s", principal.getName()));
+		var out = tradeOfferService.getAllTradeoffersForStudent(userService.getByUsername(principal.getName()).orElseThrow());
+		return new ResponseEntity<List<TradeOffer>>(out, HttpStatus.OK);
+	}
 }
