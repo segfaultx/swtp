@@ -36,10 +36,8 @@ public class Timeslot implements Model {
 	@Enumerated(EnumType.STRING)
 	DayOfWeek day;
 	
-	@JsonSerialize(using = LocalTimeSerializer.class)
 	LocalTime timeStart;
 	
-	@JsonSerialize(using = LocalTimeSerializer.class)
 	LocalTime timeEnd;
 	
 	TypeOfTimeslots timeSlotType;
