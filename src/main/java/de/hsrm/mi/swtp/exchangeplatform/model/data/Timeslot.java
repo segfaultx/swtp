@@ -1,10 +1,8 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
-import de.hsrm.mi.swtp.exchangeplatform.model.serializer.LocalTimeSerializer;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.ToString;
@@ -36,10 +34,8 @@ public class Timeslot implements Model {
 	@Enumerated(EnumType.STRING)
 	DayOfWeek day;
 	
-	@JsonSerialize(using = LocalTimeSerializer.class)
 	LocalTime timeStart;
 	
-	@JsonSerialize(using = LocalTimeSerializer.class)
 	LocalTime timeEnd;
 	
 	TypeOfTimeslots timeSlotType;
