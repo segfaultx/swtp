@@ -12,6 +12,7 @@ import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Data
@@ -34,8 +35,10 @@ public class Timeslot implements Model {
 	@Enumerated(EnumType.STRING)
 	DayOfWeek day;
 	
+	@Schema( type = "string", format = "partial-time")
 	LocalTime timeStart;
 	
+	@Schema( type = "string", format = "partial-time")
 	LocalTime timeEnd;
 	
 	TypeOfTimeslots timeSlotType;
