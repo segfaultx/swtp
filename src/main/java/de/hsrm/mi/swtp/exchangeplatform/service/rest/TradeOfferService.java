@@ -212,6 +212,12 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		return tradeOfferRepository.findById(aLong).orElseThrow(() -> new NotFoundException(aLong));
 	}
 	
+	public List<TradeOffer> getAllTradeoffersForStudent(User user) {
+		
+		return tradeOfferRepository.findAllByOfferer(user);
+	}
+	
+	
 	/**
 	 * Method to save a given {@link TradeOffer}
 	 *
