@@ -28,13 +28,12 @@ public class ModuleService {
 		return repository.findById(moduleId);
 	}
 	
-	public void save(Module module) {
+	public Module save(Module module) {
 		if(repository.existsById(module.getId())) {
 			log.info(String.format("FAIL: Module %s not created", module));
 			throw new NotCreatedException(module);
 		}
-		repository.save(module);
-		log.info(String.format("SUCCESS: Module %s created", module));
+		return repository.save(module);
 	}
 	
 	public void delete(Module module) throws IllegalArgumentException {
