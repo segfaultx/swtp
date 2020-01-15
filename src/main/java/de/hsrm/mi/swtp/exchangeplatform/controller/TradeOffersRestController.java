@@ -181,7 +181,7 @@ public class TradeOffersRestController {
 	 * @throws Exception if failure
 	 */
 	
-	@PostMapping
+	@PostMapping("/admin")
 	@Operation(description = "force admin trade", operationId = "adminForceTrade")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully processed traderequest"),
 							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
