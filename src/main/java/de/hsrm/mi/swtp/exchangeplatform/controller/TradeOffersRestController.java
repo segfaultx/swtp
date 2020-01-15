@@ -44,7 +44,6 @@ public class TradeOffersRestController {
 	TradeOfferService tradeOfferService;
 	UserService userService;
 	AdminSettingsService adminSettingsService;
-	JWTTokenUtils jwtTokenUtils;
 	PersonalConnectionManager personalConnectionManager;
 	PersonalMessageSender personalMessageSender;
 	
