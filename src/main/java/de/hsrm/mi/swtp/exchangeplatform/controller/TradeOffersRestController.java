@@ -148,17 +148,16 @@ public class TradeOffersRestController {
 															tradeRequest.getWantedTimeslotId()
 														   );
 			
-			
-			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(), TradeOfferSuccessfulMessage.builder()
-																														 .leftTimeslotId(
-																																 tradeRequest.getOfferedTimeslotId())
-																														 .newTimeslotId(
-																																 tradeRequest.getWantedTimeslotId())
-																														 .build());
-			personalMessageSender.send(acceptingUser, TradeOfferSuccessfulMessage.builder()
-																				 .leftTimeslotId(tradeRequest.getWantedTimeslotId())
-																				 .newTimeslotId(tradeRequest.getOfferedTimeslotId())
-																				 .build());
+			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
+									   TradeOfferSuccessfulMessage.builder()
+																  .leftTimeslotId(tradeRequest.getOfferedTimeslotId())
+																  .newTimeslotId(tradeRequest.getWantedTimeslotId())
+																  .build());
+			personalMessageSender.send(acceptingUser,
+									   TradeOfferSuccessfulMessage.builder()
+																  .leftTimeslotId(tradeRequest.getWantedTimeslotId())
+																  .newTimeslotId(tradeRequest.getOfferedTimeslotId())
+																  .build());
 			
 			
 			TimeTable timetable = new TimeTable();
@@ -171,6 +170,34 @@ public class TradeOffersRestController {
 			return new ResponseEntity<>(timetable, HttpStatus.OK);
 		} else return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
 	}
+	
+	/**
+	 * POST Request handler
+	 *
+	 * provides an endpoint to {@link User} admins to force trades
+	 * @param tradeRequest object containing transaction information
+	 * @param principal admin principal
+	 * @return {@link HttpStatus#OK} if success
+	 * @throws Exception if failure
+	 */
+	
+	@PostMapping("/admin")
+	@Operation(description = "force admin trade", operationId = "adminForceTrade")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully processed traderequest"),
+							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed trade request") })
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity requestAdminTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws
+			Exception {
+		log.info(String.format("Traderequest of admin: %s for timeslot: %d, offer: %d", principal.getName(),
+							   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()));
+		tradeOfferService.adminTrade(tradeRequest.getOfferedByStudentMatriculationNumber(),
+									 tradeRequest.getOfferedTimeslotId(),
+									 tradeRequest.getWantedTimeslotId(),
+									 userService.getByUsername(principal.getName()).orElseThrow().getId());
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
 	
 	/**
 	 * GET request handler
