@@ -171,6 +171,16 @@ public class TradeOffersRestController {
 		} else return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 	
+	/**
+	 * POST Request handler
+	 *
+	 * provides an endpoint to {@link User} admins to force trades
+	 * @param tradeRequest object containing transaction information
+	 * @param principal admin principal
+	 * @return {@link HttpStatus#OK} if success
+	 * @throws Exception if failure
+	 */
+	
 	@PostMapping
 	@Operation(description = "force admin trade", operationId = "adminForceTrade")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully processed traderequest"),
