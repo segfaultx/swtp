@@ -28,13 +28,14 @@ public class Module implements Model {
 	@JsonBackReference
 	User user;
 	
-	@ManyToMany(mappedBy = "modules", fetch = FetchType.LAZY)
-	@JsonBackReference
-	List<User> attendees = new ArrayList<>();
-	
 	@OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	private List<Timeslot> timeslots;
+	
+	@ManyToMany(mappedBy = "modules", fetch = FetchType.EAGER)
+	@JsonBackReference
+	List<User> attendees = new ArrayList<>();
+	
 	
 	@JoinColumn(name = "po_id")
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

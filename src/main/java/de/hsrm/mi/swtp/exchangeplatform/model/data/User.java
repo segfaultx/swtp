@@ -14,7 +14,7 @@ import java.util.List;
 
 @Entity
 @Data
-@ToString(exclude = {"authenticationInformation", "userType", "timeslots", "tradeoffers"})
+@ToString(exclude = {"authenticationInformation", "userType", "timeslots", "tradeoffers", "modules"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User implements Model {
 	
@@ -56,6 +56,11 @@ public class User implements Model {
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JsonManagedReference
 	List<Timeslot> timeslots = new ArrayList<>();
+	
+	@JsonIgnore
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JsonManagedReference
+	List<Module> modules = new ArrayList<>();
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
