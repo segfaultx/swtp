@@ -2,18 +2,11 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.JsonPath;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.WhoAmI;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.util.AssertionErrors.assertEquals;
 import static org.springframework.test.util.AssertionErrors.assertNotNull;
@@ -21,17 +14,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
-@AutoConfigureMockMvc
-@SpringBootTest
-public class AuthenticationRestControllerTest {
-
-	@Autowired
-	MockMvc mockMvc;
+public class AuthenticationRestControllerTest extends BaseRestTest {
 	
+	private String username = "wweit001";
+	private String pass = "wweit001";
+
 	@Test
 	void testLogin() throws Exception{
-		var response = getLoginToken();
+		var response = getLoginToken(username, pass);
 		assertNotNull("JWT Null",response);
 	}
 	
@@ -48,7 +38,7 @@ public class AuthenticationRestControllerTest {
 	
 	@Test
 	void testLogout() throws Exception {
-		var token = getLoginToken();
+		var token = getLoginToken(username, pass);
 		mockMvc.perform(post("/api/v1/auth/logout")
 					   .header("Authorization","Bearer "+ token))
 			   .andExpect(status().isOk());
@@ -56,7 +46,7 @@ public class AuthenticationRestControllerTest {
 	
 	//TODO: wait for exception handling
 	void testFailedLogout() throws Exception {
-		var token = getLoginToken();
+		var token = getLoginToken(username, pass);
 		var failToken = token.replace("a", "e");
 		mockMvc.perform(post("/ap1/v1/auth/logout")
 									.header("Authorization","Bearer " + failToken))
@@ -65,7 +55,7 @@ public class AuthenticationRestControllerTest {
 	
 	@Test
 	void testWhoAmI() throws Exception {
-		var token = getLoginToken();
+		var token = getLoginToken(username, pass);
 		var response = mockMvc.perform(get("/api/v1/auth/whoami")
 											   .header("Authorization", "Bearer " + token))
 							  .andExpect(status().isOk())
@@ -74,18 +64,5 @@ public class AuthenticationRestControllerTest {
 		assertEquals("WhoAmI equals USERNAME", out.getUsername(), "wweit001");
 		assertEquals("WhoAmI equals ROLE", out.getRole(), Roles.ADMIN);
 	}
-	
-	private String getLoginToken() throws Exception {
-		LoginRequestBody json = new LoginRequestBody();
-		json.setUsername("wweit001");
-		json.setPassword("wweit001");
-		var result = mockMvc.perform(post("/api/v1/auth/login")
-											 .contentType(MediaType.APPLICATION_JSON)
-											 .content(new ObjectMapper().writeValueAsString(json)))
-							.andExpect(status().isOk())
-							.andReturn()
-							.getResponse()
-							.getContentAsString();
-		return JsonPath.read(result, "$.tokenResponse.token");
-	}
+
 }
