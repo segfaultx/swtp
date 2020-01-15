@@ -61,7 +61,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the requested {@link Timeslot} instance if it is found. Otherwise will return {@link HttpStatus#BAD_REQUEST}
 	 */
 	@GetMapping("/{id}")
-	@Operation(description = "get user by id", operationId = "getUserById")
+	@Operation(description = "get user by id", operationId = "getTimeslotById")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved user"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed userID") })
