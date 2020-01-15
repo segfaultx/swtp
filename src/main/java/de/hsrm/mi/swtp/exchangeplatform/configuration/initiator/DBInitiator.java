@@ -384,6 +384,10 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// END TRADEOFFER JOENDHARD
 		
+		List<Module> completedModulesDennis = new ArrayList<>();
+		completedModulesDennis.add(prog3);
+		dennis.setCompletedModules(completedModulesDennis);
+		
 		
 		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception

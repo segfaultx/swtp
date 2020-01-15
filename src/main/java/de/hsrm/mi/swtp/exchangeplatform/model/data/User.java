@@ -46,7 +46,6 @@ public class User implements Model {
 	@JsonIgnore
 	AuthenticationInformation authenticationInformation;
 	
-	
 	@JsonProperty("user_type")
 	@OneToOne(cascade = CascadeType.ALL)
 	@JsonManagedReference
@@ -60,4 +59,8 @@ public class User implements Model {
 	@JsonIgnore
 	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
 	List<TradeOffer> tradeoffers = new ArrayList<>();
+	
+	@JsonProperty("completed_modules")
+	@OneToMany(cascade = CascadeType.ALL)
+	List<Module> completedModules = new ArrayList<>();
 }
