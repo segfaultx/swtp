@@ -7,26 +7,25 @@ import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CollisionFilt
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CapacityFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.NoOfferFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.OfferFilter;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.annotation.Secured;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Data
+@Getter
+@Setter
 @Entity
 @RequiredArgsConstructor
 @Slf4j
 public class AdminSettings {
 	
 	@Id
-	@GeneratedValue
 	long id;
 	
 	boolean tradesActive = true;
@@ -80,10 +79,18 @@ public class AdminSettings {
 		this.activeFilters.clear();
 		activeFilters.forEach(filterVal -> this.activeFilters.add(Filters.valueOf(filterVal)));
 	}
+	
 	@JsonIgnore
-	public List<Filter> getCurrentActiveFilters(){
+	public List<Filter> getCurrentActiveFilters() {
 		List<Filter> out = new ArrayList<>();
 		activeFilters.forEach(item -> out.add(item.getFilter()));
 		return out;
+	}
+	
+	@Override
+	public boolean equals(Object other) {
+		if(!(other instanceof AdminSettings)) return false;
+		return this.tradesActive == ((AdminSettings) other).tradesActive
+				&& Arrays.equals(this.activeFilters.toArray(), ((AdminSettings) other).activeFilters.toArray());
 	}
 }

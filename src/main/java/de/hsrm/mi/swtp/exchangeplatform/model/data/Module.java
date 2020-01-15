@@ -30,4 +30,7 @@ public class Module implements Model {
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private PO po;
 	
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY)
+	private User user;
 }
