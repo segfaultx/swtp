@@ -6,6 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -17,7 +18,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
 
@@ -53,10 +53,10 @@ public class ModuleRestController {
 	}
 	
 	@GetMapping
-	@ApiOperation(value = "get all modules", nickname = "getAllModules")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved modules"),
-							@ApiResponse(code = 403, message = "unauthorized fetch attempt"),
-							@ApiResponse(code = 400, message = "malformed ID") })
+	@Operation(description = "get all modules", operationId = "getAllModules")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved modules"),
+							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed ID") })
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<List<Module>> getAll() {
 		log.info(String.format("GET // " + BASEURL));
