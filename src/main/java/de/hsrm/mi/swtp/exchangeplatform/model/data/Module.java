@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.ModuleSerializer;
 import lombok.Data;
