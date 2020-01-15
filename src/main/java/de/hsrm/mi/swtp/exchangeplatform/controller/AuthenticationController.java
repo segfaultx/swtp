@@ -10,11 +10,11 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Status;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.AuthenticationService;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import lombok.AccessLevel;
@@ -47,9 +47,9 @@ public class AuthenticationController {
 	JWTTokenUtils jwtTokenUtil;
 	
 	@PostMapping("/login")
-	@ApiOperation(value = "login to application", nickname = "login")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully logged in"),
-							@ApiResponse(code = 400, message = "malformed login request") })
+	@Operation(description = "login to application", operationId = "login")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully logged in"),
+							@ApiResponse(responseCode = "400", description = "malformed login request") })
 	public ResponseEntity<LoginResponseBody> login(@RequestBody LoginRequestBody authenticationRequest) throws Exception {
 		authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
 		
@@ -83,9 +83,9 @@ public class AuthenticationController {
 	}
 	
 	@GetMapping("/whoami")
-	@ApiOperation(value = "whoami", nickname = "whoami")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully fetched authentitacion info"),
-							@ApiResponse(code = 400, message = "malformed authinfo fetch request") })
+	@Operation(description = "whoami", operationId = "whoami")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully fetched authentitacion info"),
+							@ApiResponse(responseCode = "400", description = "malformed authinfo fetch request") })
 	public ResponseEntity<WhoAmI> getUser(@RequestHeader("Authorization") String token) throws Exception {
 		if(!JWTTokenUtils.isValidToken(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
 		

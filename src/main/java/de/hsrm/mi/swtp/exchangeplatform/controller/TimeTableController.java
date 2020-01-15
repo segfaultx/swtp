@@ -1,12 +1,11 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +34,10 @@ public class TimeTableController {
 	TimeTableService timeTableService;
 	
 	@GetMapping
-	@ApiOperation(value = "get all timetables", nickname = "getAllTimetables")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved timetables"),
-							@ApiResponse(code = 403, message = "unauthorized fetch attempt"),
-							@ApiResponse(code = 400, message = "malformed request") })
+	@Operation(description = "get all timetables", operationId = "getAllTimetables")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved timetables"),
+							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<List<TimeTable>> getAll() {
 		return new ResponseEntity<>(timeTableService.getAll(), HttpStatus.OK);
