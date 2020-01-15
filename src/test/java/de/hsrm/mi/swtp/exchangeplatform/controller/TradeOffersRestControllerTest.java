@@ -36,8 +36,8 @@ public class TradeOffersRestControllerTest {
 		var token = getLoginToken();
 		TradeRequest json = new TradeRequest();
 		json.setOfferedByStudentMatriculationNumber(8);
-		json.setOfferedTimeslotId(11);
-		json.setWantedTimeslotId(23);
+		json.setOfferedTimeslotId(13);
+		json.setWantedTimeslotId(24);
 		var result = mockMvc.perform(post("/api/v1/trades/create")
 											 .contentType(MediaType.APPLICATION_JSON)
 											 .content(new ObjectMapper().writeValueAsString(json))
@@ -48,10 +48,11 @@ public class TradeOffersRestControllerTest {
 		var tradeofferId = JsonPath.read(jsonString, "$.id");
 		var persistedTradeoffer = tradeOfferRepository.findById(Integer.toUnsignedLong((Integer)tradeofferId)).orElseThrow();
 		assertNotNull("Tradeoffer null", persistedTradeoffer);
-		assertEquals("Tradeoffer offered id",11L, persistedTradeoffer.getOffer().getId());
-		assertEquals("Tradeoffer seek id",23L, persistedTradeoffer.getSeek().getId());
+		assertEquals("Tradeoffer offered id",13L, persistedTradeoffer.getOffer().getId());
+		assertEquals("Tradeoffer seek id",24L, persistedTradeoffer.getSeek().getId());
 		assertEquals("Offerer ID",8L, persistedTradeoffer.getOfferer().getId());
 		tradeOfferRepository.delete(persistedTradeoffer);
+		tradeOfferRepository.flush();
 	}
 	
 	@Test
@@ -59,8 +60,8 @@ public class TradeOffersRestControllerTest {
 		var token = getLoginToken();
 		TradeRequest json = new TradeRequest();
 		json.setOfferedByStudentMatriculationNumber(8);
-		json.setOfferedTimeslotId(11);
-		json.setWantedTimeslotId(23);
+		json.setOfferedTimeslotId(13);
+		json.setWantedTimeslotId(24);
 		var result = mockMvc.perform(post("/api/v1/trades/create")
 											 .contentType(MediaType.APPLICATION_JSON)
 											 .content(new ObjectMapper().writeValueAsString(json))
@@ -68,7 +69,7 @@ public class TradeOffersRestControllerTest {
 							.andExpect(status().isOk())
 							.andReturn();
 		var jsonString = result.getResponse().getContentAsString();
-		mockMvc.perform(delete("/api/v1/trades/8/23")
+		mockMvc.perform(delete("/api/v1/trades/8/24")
 								.header("Authorization", "Bearer " + token))
 			   .andExpect(status().isOk());
 	}
@@ -76,7 +77,7 @@ public class TradeOffersRestControllerTest {
 	@Test
 	void testGetTradeOffersForModule() throws Exception {
 		var token = getLoginToken();
-		var result = mockMvc.perform(get("/api/v1/trades/23")
+		var result = mockMvc.perform(get("/api/v1/trades/24")
 									.header("Authorization", "Bearer " + token)).andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
 		var deserializedResult = new ObjectMapper().readValue(result, Map.class);
