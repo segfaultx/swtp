@@ -9,7 +9,6 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import javax.annotation.Nullable;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
