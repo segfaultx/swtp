@@ -7,9 +7,9 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,10 +37,10 @@ public class UserRestController {
 	PersonalConnectionManager personalConnectionManager;
 	
 	@GetMapping("")
-	@ApiOperation(value = "get all users", nickname = "getAllUsers")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved users"),
-							@ApiResponse(code = 403, message = "unauthorized fetch attempt"),
-							@ApiResponse(code = 400, message = "malformed fetch request") })
+	@Operation(description = "get all users", operationId = "getAllUsers")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved users"),
+							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed fetch request") })
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> getAll(@RequestParam(value = "username", required = false) String username) throws NotFoundException {
 		log.info("GET // " + BASEURL);
@@ -53,10 +53,10 @@ public class UserRestController {
 	}
 	
 	@GetMapping("/{userId}")
-	@ApiOperation(value = "get user by id", nickname = "getUserById")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved user"),
-							@ApiResponse(code = 403, message = "unauthorized fetch attempt"),
-							@ApiResponse(code = 400, message = "malformed fetch request") })
+	@Operation(description = "get user by id", operationId = "getUserById")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved user"),
+							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed fetch request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<User> getById(@PathVariable Long userId) throws NotFoundException, JMSException {
 		log.info(String.format("GET // " + BASEURL + "/%s", userId));

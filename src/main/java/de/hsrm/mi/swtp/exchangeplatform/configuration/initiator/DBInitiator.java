@@ -393,6 +393,7 @@ public class DBInitiator implements ApplicationRunner {
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
 		
 		AdminSettings adminSettings = new AdminSettings();
+		adminSettings.setId(1);
 		List<String> filters = new ArrayList<>();
 		filters.add("COLLISION");
 		filters.add("CAPACITY");
