@@ -132,13 +132,13 @@ public class TradeOffersRestController {
 							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed trade request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<TimeTable> requestTrade(@Valid @RequestBody TradeRequest tradeRequest, @RequestHeader("Authorization") String token) throws
+	public ResponseEntity<TimeTable> requestTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws
 			Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
 								  ));
-			String username = jwtTokenUtils.getUsernameFromToken(JWTTokenUtils.tokenWithoutPrefix(token)).replace("Bearer ", "");
+			String username = principal.getName();
 			log.info(username);
 			Optional<User> acceptingUserOpt = userService.getByUsername(username);
 			if(acceptingUserOpt.isEmpty()) return null;
