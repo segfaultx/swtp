@@ -9,6 +9,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
+import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
@@ -43,6 +44,7 @@ public class TradeOffersRestController {
 	TradeOfferService tradeOfferService;
 	UserService userService;
 	AdminSettingsService adminSettingsService;
+	JWTTokenUtils jwtTokenUtils;
 	PersonalConnectionManager personalConnectionManager;
 	PersonalMessageSender personalMessageSender;
 	
@@ -146,17 +148,16 @@ public class TradeOffersRestController {
 															tradeRequest.getWantedTimeslotId()
 														   );
 			
-			
-			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(), TradeOfferSuccessfulMessage.builder()
-																														 .leftTimeslotId(
-																																 tradeRequest.getOfferedTimeslotId())
-																														 .newTimeslotId(
-																																 tradeRequest.getWantedTimeslotId())
-																														 .build());
-			personalMessageSender.send(acceptingUser, TradeOfferSuccessfulMessage.builder()
-																				 .leftTimeslotId(tradeRequest.getWantedTimeslotId())
-																				 .newTimeslotId(tradeRequest.getOfferedTimeslotId())
-																				 .build());
+			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
+									   TradeOfferSuccessfulMessage.builder()
+																  .leftTimeslotId(tradeRequest.getOfferedTimeslotId())
+																  .newTimeslotId(tradeRequest.getWantedTimeslotId())
+																  .build());
+			personalMessageSender.send(acceptingUser,
+									   TradeOfferSuccessfulMessage.builder()
+																  .leftTimeslotId(tradeRequest.getWantedTimeslotId())
+																  .newTimeslotId(tradeRequest.getOfferedTimeslotId())
+																  .build());
 			
 			
 			TimeTable timetable = new TimeTable();
@@ -169,6 +170,24 @@ public class TradeOffersRestController {
 			return new ResponseEntity<>(timetable, HttpStatus.OK);
 		} else return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
 	}
+	
+	@PostMapping
+	@Operation(description = "force admin trade", operationId = "adminForceTrade")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully processed traderequest"),
+							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed trade request") })
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity requestAdminTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws
+			Exception {
+		log.info(String.format("Traderequest of admin: %s for timeslot: %d, offer: %d", principal.getName(),
+							   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()));
+		tradeOfferService.adminTrade(tradeRequest.getOfferedByStudentMatriculationNumber(),
+									 tradeRequest.getOfferedTimeslotId(),
+									 tradeRequest.getWantedTimeslotId(),
+									 userService.getByUsername(principal.getName()).orElseThrow().getId());
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
 	
 	/**
 	 * GET request handler
