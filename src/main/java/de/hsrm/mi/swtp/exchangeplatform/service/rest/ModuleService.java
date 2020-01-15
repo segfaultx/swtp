@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
@@ -31,6 +32,21 @@ public class ModuleService {
 	public Optional<Module> getById(Long moduleId) {
 		Optional<Module> moduleOptional = this.repository.findById(moduleId);
 		return moduleOptional;
+	}
+	
+	public void addAttendeeToModule(Long moduleId, User student) throws NotFoundException {
+		Module module = this.getById(moduleId)
+				.orElseThrow(NotFoundException::new);
+		
+	
+		if(module.getAttendees().contains(student)) {
+			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
+			throw new UserIsAlreadyAttendeeException(student);
+		}
+			
+			module.getAttendees().add(student);
+			this.save(module);
+			log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), moduleId));
 	}
 	
 	public void removeStudentFromModule(Long moduleId, User student) throws NotFoundException {

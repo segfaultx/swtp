@@ -1,6 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.NoTimeslotCapacityException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.TimeslotNotCreatedException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
@@ -8,7 +11,6 @@ import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -22,10 +24,7 @@ import java.util.Optional;
 public class TimeslotService {
 
 	TimeslotRepository repository;
-
-	@NonFinal
-	private Integer attendeeCount = 0; // TODO: remove; is just for testing
-
+	
 	public List<Timeslot> getAll() {
 		return repository.findAll();
 	}
@@ -33,18 +32,18 @@ public class TimeslotService {
 	public void addAttendeeToTimeslot(Long timeslotId, User student) throws NotFoundException {
 		Timeslot timeslot = getById(timeslotId)
 				.orElseThrow(NotFoundException::new);
-
-		// TODO: Anpassen nach Model Umstellung
-//		if(timeslot.getAttendees().contains(student)) {
-//			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentId()));
-//			throw new StudentIsAlreadyAttendeeException(student);
-//		}
-//
-//		if(!this.checkCapacity(timeslot) && !timeslot.addAttendee(student)) {
-//			log.info(String.format("FAIL: Student %s not added to appointment %s", student.getStudentId(), timeslotId));
-//			throw new NoTimeslotCapacityException(timeslot);
-//		}
-		attendeeCount++;
+		
+			if(timeslot.getAttendees().contains(student)) {
+				log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
+				throw new UserIsAlreadyAttendeeException(student);
+			}
+	
+			if(!this.checkCapacity(timeslot)){
+				log.info(String.format("FAIL: Student %s not added to appointment %s", student.getStudentNumber(), timeslotId));
+				throw new NoTimeslotCapacityException(timeslot);
+			}
+		
+		timeslot.getAttendees().add(student);
 		this.save(timeslot);
 		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), timeslotId));
 	}
@@ -63,23 +62,19 @@ public class TimeslotService {
 	}
 
 	public void removeAttendeeFromTimeslot(Long timeslotId, User student) throws NotFoundException {
-//		Timeslot timeslot = this.getById(timeslotId)
-//				.orElseThrow(NotFoundException::new);
-//
-//		// TODO: Anpassen nach Model umstellung
-//		if(!timeslot.removeAttendee(student)) {
-//			log.info(String.format("FAIL: Student %s not removed", student.getStudentId()));
-//			throw new ModelNotFoundException(student);
-//		}
-//		attendeeCount--;
-//		messageSender.send(timeslot);
-//		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), timeslotId));
+		Timeslot timeslot = this.getById(timeslotId)
+				.orElseThrow(NotFoundException::new);
+		
+		if(!timeslot.getAttendees().contains(student)) {
+			log.info(String.format("FAIL: Student %s not removed", student.getStudentNumber()));
+			throw new ModelNotFoundException(student);
+		}
+		timeslot.getAttendees().remove(student);
+		this.save(timeslot);
+		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), timeslotId));
 	}
-
-
+	
 	public boolean checkCapacity(Timeslot timeslot) {
-		return attendeeCount < timeslot.getCapacity();
+		return timeslot.getAttendees().size() < timeslot.getCapacity();
 	}
-
-
 }

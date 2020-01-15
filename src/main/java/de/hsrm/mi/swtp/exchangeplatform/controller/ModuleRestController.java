@@ -1,8 +1,11 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.ModuleRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.TimeslotRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
@@ -56,6 +59,38 @@ public class ModuleRestController {
 				.orElseThrow(NotFoundException::new);
 		return new ResponseEntity<>(module, HttpStatus.OK);
 
+	}
+	
+	/**
+	 * POST request handler.
+	 * Provides an endpoint to {@code '/api/v1/module/join'} through which a user ({@link User}) may join a {@link Module}.
+	 *
+	 * @param moduleRequestBody is an object which contains the id of an {@link Module} and the student ID of a {@link User}.
+	 *
+	 * @return {@link HttpStatus#OK} and the updated module if the user joined successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
+	 */
+	@PostMapping("/join")
+	@ApiOperation(value = "join module", nickname = "joinModule")
+	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully joined appointment"),
+							@ApiResponse(code = 403, message = "unauthorized join attempt"),
+							@ApiResponse(code = 400, message = "malformed request") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
+	public ResponseEntity<Module> joinAppointment(@RequestBody ModuleRequestBody moduleRequestBody, BindingResult result) throws NotFoundException {
+		log.info("POST // " + BASEURL + "/join");
+		log.info(moduleRequestBody.toString());
+		if(result.hasErrors()) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+		
+		User user = userService.getById(moduleRequestBody.getStudentId())
+							   .orElseThrow(NotFoundException::new);
+		
+		try {
+			moduleService.addAttendeeToModule(moduleRequestBody.getModuleId(), user);
+			Module module = moduleService.getById(moduleRequestBody.getStudentId())
+											   .orElseThrow(NotFoundException::new);
+			return ResponseEntity.ok(module);
+		} catch(UserIsAlreadyAttendeeException e) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 	}
 	
 	/**
