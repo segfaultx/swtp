@@ -209,6 +209,14 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// END Modul AFS
 		
+		// START Modul CG
+		
+		Module cg = new Module();
+		cg.setName("Computergrafiken");
+		cg.setPo(po2017);
+		
+		// END Modul AFS
+		
 		// START Modul Programmieren 3
 		
 		Module prog3 = new Module();

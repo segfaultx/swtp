@@ -60,6 +60,11 @@ public class User implements Model {
 	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL)
 	@JsonManagedReference
+	List<Timeslot> waitLists = new ArrayList<>();
+	
+	@JsonIgnore
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JsonManagedReference
 	List<Module> modules = new ArrayList<>();
 	
 	@JsonIgnore

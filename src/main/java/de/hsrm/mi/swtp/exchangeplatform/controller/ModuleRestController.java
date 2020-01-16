@@ -42,6 +42,7 @@ public class ModuleRestController {
 	ModuleService moduleService;
 	UserService userService;
 	
+	@GetMapping("")
 	public ResponseEntity<List<Module>> getAll() {
 		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
 	}
@@ -85,7 +86,7 @@ public class ModuleRestController {
 		
 		try {
 			moduleService.addAttendeeToModule(moduleRequestBody.getModuleId(), user);
-			Module module = moduleService.getById(moduleRequestBody.getStudentId())
+			Module module = moduleService.getById(moduleRequestBody.getModuleId())
 											   .orElseThrow(NotFoundException::new);
 			return ResponseEntity.ok(module);
 		} catch(UserIsAlreadyAttendeeException e) {
@@ -107,7 +108,7 @@ public class ModuleRestController {
 							@ApiResponse(code = 403, message = "unauthorized leave attempt"),
 							@ApiResponse(code = 400, message = "malformed leave request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<Module> leaveModule(@RequestBody ModuleRequestBody moduleRequestBody, BindingResult result) throws NotFoundException {
+	public ResponseEntity<HttpStatus> leaveModule(@RequestBody ModuleRequestBody moduleRequestBody, BindingResult result) throws NotFoundException {
 		log.info("POST // " + BASEURL + "/leave");
 		log.info(moduleRequestBody.toString());
 		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -119,6 +120,6 @@ public class ModuleRestController {
 		
 		Module module = moduleService.getById(moduleRequestBody.getModuleId())
 										   .orElseThrow(NotFoundException::new);
-		return ResponseEntity.ok(module);
+		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
 }

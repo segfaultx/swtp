@@ -53,10 +53,10 @@ public class TimeslotService {
 	}
 
 	public void save(Timeslot timeslot) {
-		if(this.repository.existsById(timeslot.getId())) {
+		/*if(this.repository.existsById(timeslot.getId())) {
 			log.info(String.format("FAIL: Appointment %s not created", timeslot));
 			throw new TimeslotNotCreatedException(timeslot);
-		}
+		} */
 		repository.save(timeslot);
 		log.info(String.format("SUCCESS: Appointment %s created", timeslot));
 	}
@@ -70,6 +70,11 @@ public class TimeslotService {
 			throw new ModelNotFoundException(student);
 		}
 		timeslot.getAttendees().remove(student);
+		if(!timeslot.getWaitList().isEmpty()){
+			User nextStudent = timeslot.getWaitList().get(0);
+			timeslot.getWaitList().remove(nextStudent);
+			timeslot.getAttendees().add(nextStudent);
+		}
 		this.save(timeslot);
 		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), timeslotId));
 	}

@@ -13,6 +13,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -53,7 +54,7 @@ public class ModuleService {
 		Module module = this.getById(moduleId)
 							.orElseThrow(NotFoundException::new);
 		
-		List<Timeslot> allTimeSlots = module.getTimeslots();
+		List<Timeslot> allTimeSlots = new ArrayList<>(module.getTimeslots());
 		for(Timeslot timeslot : allTimeSlots){
 			if(timeslot.getAttendees().contains(student)){
 				timeslotService.removeAttendeeFromTimeslot(timeslot.getId(), student);
@@ -61,13 +62,15 @@ public class ModuleService {
 		}
 		
 		module.getAttendees().remove(student);
+		this.save(module);
 	}
 	
 	public void save(Module module) {
-		if(this.repository.existsById(module.getId())) {
+		/*if(this.repository.existsById(module.getId())) {
 			log.info(String.format("FAIL: Module %s not created", module));
 			throw new NotCreatedException(module);
-		}
+		} */
+		
 		repository.save(module);
 		log.info(String.format("SUCCESS: Module %s created", module));
 	}
