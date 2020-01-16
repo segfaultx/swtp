@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.configuration.initiator;
 
+import com.github.javafaker.Faker;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
@@ -7,9 +8,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
-import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.RoomRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.*;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +21,7 @@ import org.springframework.stereotype.Component;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -37,6 +37,42 @@ public class DBInitiator implements ApplicationRunner {
 	
 	AdminSettingsRepository adminSettingsRepository;
 	
+	ModuleRepository moduleRepository;
+	
+	PORepository poRepository;
+	
+	private final Faker faker = Faker.instance();
+	
+	
+	private PO initPO(boolean isDual) {
+		PO po = new PO();
+		po.setIsDual(isDual);
+		po.setMajor(faker.educator().course());
+		po.setValidSinceYear(faker.random().nextInt(2020, 2031).toString());
+		log.info(" + CREATED DAMN PO: " + po.getMajor());
+		return po;
+	}
+	
+	private Module createModule() {
+		Module module = new Module();
+		module.setName(faker.pokemon().name() + " Studies");
+		return module;
+	}
+	
+	private Timeslot createTimeslot(final TimeTable timeTable, final Module module, final Room room) {
+		Timeslot timeslot = new Timeslot();
+		timeslot.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
+		timeslot.setCapacity(new Random().nextInt(100));
+		timeslot.setModule(module);
+		DayOfWeek dayOfWeekRndm = DayOfWeek.values()[new Random().nextInt(DayOfWeek.values().length)];
+		timeslot.setDay(dayOfWeekRndm);
+		timeslot.setTimeStart(LocalTime.of(8, 15));
+		timeslot.setTimeEnd(LocalTime.of(9, 45));
+		timeslot.setRoom(room);
+		timeslot.setTimeTable(timeTable);
+		
+		return timeslot;
+	}
 	
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
@@ -203,19 +239,33 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// START Modul AFS
 		
+		PO nonDual = initPO(false);
 		Module afs = new Module();
 		afs.setName("Automaten und formale Sprachen");
-		afs.setPo(po2017);
+		afs.setPo(nonDual);
 		
 		// END Modul AFS
 		
 		// START Modul Programmieren 3
 		
+		PO dual = initPO(true);
 		Module prog3 = new Module();
 		prog3.setName("Programmieren 3");
-		prog3.setPo(po2017);
+		prog3.setPo(dual);
 		
 		// END Modul Programmieren 3
+		
+//		// START DYNAMIC POs
+//
+//		ArrayList<Module> modules = new ArrayList<>();
+//		modules.add(createModule());
+//		PO nonDual = initPO(false, modules);
+//
+//		ArrayList<Module> modulesDual = new ArrayList<>();
+//		modulesDual.add(createModule());
+//		PO dual = initPO(true, modulesDual);
+//
+//		// END DYNAMIC POs
 		
 		// START ROOM D12
 		Room d12 = new Room();
