@@ -23,7 +23,7 @@ public class POSerializer extends StdSerializer<PO> {
 		gen.writeStartObject();
 		gen.writeNumberField("id", value.getId());
 		gen.writeStringField("major", value.getMajor());
-		gen.writeStringField("valid_since_year", value.getValidSinceYear());
+		gen.writeNumberField("valid_since_year", value.getValidSinceYear());
 		gen.writeFieldName("modules");
 		gen.writeStartArray();
 		for(Module module : value.getModules()) {

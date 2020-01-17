@@ -18,6 +18,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,9 +47,11 @@ public class DBInitiator implements ApplicationRunner {
 	
 	private PO initPO(boolean isDual) {
 		PO po = new PO();
+		po.setTitle(faker.starTrek().specie());
+		po.setDateStart(LocalDate.now().plusMonths(faker.random().nextInt(1, 14)));
 		po.setIsDual(isDual);
 		po.setMajor(faker.educator().course());
-		po.setValidSinceYear(faker.random().nextInt(2020, 2031).toString());
+		po.setValidSinceYear(Long.valueOf(faker.random().nextInt(2020, 2031)));
 		log.info(" + CREATED DAMN PO: " + po.getMajor());
 		return po;
 	}
@@ -232,8 +235,10 @@ public class DBInitiator implements ApplicationRunner {
 		// START PO 2017
 		
 		PO po2017 = new PO();
+		po2017.setTitle(faker.starTrek().specie());
 		po2017.setMajor("Medieninformatik");
-		po2017.setValidSinceYear("2017");
+		po2017.setValidSinceYear(2017L);
+		po2017.setDateStart(LocalDate.now());
 		
 		// END PO 2017
 		
