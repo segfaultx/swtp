@@ -1,6 +1,5 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -73,8 +72,7 @@ public class PO implements Model {
 	/**
 	 * A flag which will tell whether the {@link PO} is for a dual study only.
 	 */
-	@Column(nullable = true)
-	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@Column(nullable = false)
 	@Schema(name = "is_dual",
 			nullable = true,
 			required = false,
