@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.model.data;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @Table(name = "po")
 @Slf4j
+@Schema(name = "PO", description = "A PO is a PO is a PO is a PO.")
 public class PO implements Model {
 	@Id
 	@GeneratedValue
@@ -44,6 +46,11 @@ public class PO implements Model {
 	
 	@Column(nullable = true, name = "po_modules")
 	@OneToMany(mappedBy = "po", cascade = CascadeType.ALL, orphanRemoval = true)
+	@Schema(name = "modules_ids",
+			nullable = false,
+			defaultValue = "[]",
+			format = "int64",
+			description = "A list containing all ids of 'Modules' which are part of the specific 'PO'." )
 	@JsonManagedReference
 	List<Module> modules;
 	
