@@ -165,6 +165,81 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// END CHANDLER
 		
+		// START FRODO
+		
+		User frodo = new User();
+		frodo.setFirstName("Frodo");
+		frodo.setLastName("Beutlin");
+		frodo.setStudentNumber(1035123L);
+		frodo.setEmail("frodo.beutlin@student.hs-rm.de");
+		frodo.setStaffNumber(null);
+		
+		AuthenticationInformation frodoAuthInfo = new AuthenticationInformation();
+		frodoAuthInfo.setRole(Roles.MEMBER);
+		frodoAuthInfo.setUser(frodo);
+		frodoAuthInfo.setPassword("fbeut001");
+		frodoAuthInfo.setUsername("fbeut001");
+		
+		frodo.setAuthenticationInformation(frodoAuthInfo);
+		
+		UserType frodoType = new UserType();
+		frodoType.setType(TypeOfUsers.STUDENT);
+		frodoType.setUser(frodo);
+		
+		frodo.setUserType(frodoType);
+		
+		// END FRODO
+		
+		// START GANDALF
+		
+		User gandalf = new User();
+		gandalf.setFirstName("Gandalf");
+		gandalf.setLastName("Der_Graue");
+		gandalf.setStudentNumber(1035146L);
+		gandalf.setEmail("gandalf.der_graue@student.hs-rm.de");
+		gandalf.setStaffNumber(null);
+		
+		AuthenticationInformation gandalfAuthInfo = new AuthenticationInformation();
+		gandalfAuthInfo.setRole(Roles.MEMBER);
+		gandalfAuthInfo.setUser(gandalf);
+		gandalfAuthInfo.setPassword("gderg001");
+		gandalfAuthInfo.setUsername("gderg001");
+		
+		gandalf.setAuthenticationInformation(gandalfAuthInfo);
+		
+		UserType gandalfType = new UserType();
+		gandalfType.setType(TypeOfUsers.STUDENT);
+		gandalfType.setUser(gandalf);
+		
+		gandalf.setUserType(gandalfType);
+		
+		// END GANDALF
+		
+		// START SAMWEIS
+		
+		User samweis = new User();
+		samweis.setFirstName("Samweis");
+		samweis.setLastName("Gamdschie");
+		samweis.setStudentNumber(1035233L);
+		samweis.setEmail("Samweis.Gamdschie@student.hs-rm.de");
+		samweis.setStaffNumber(null);
+		
+		AuthenticationInformation samweisAuthInfo = new AuthenticationInformation();
+		samweisAuthInfo.setRole(Roles.MEMBER);
+		samweisAuthInfo.setUser(gandalf);
+		samweisAuthInfo.setPassword("sgamd001");
+		samweisAuthInfo.setUsername("sgamd001");
+		
+		samweis.setAuthenticationInformation(samweisAuthInfo);
+		
+		UserType samweisType = new UserType();
+		samweisType.setType(TypeOfUsers.STUDENT);
+		samweisType.setUser(samweis);
+		
+		samweis.setUserType(samweisType);
+		
+		// END SAMWEIS
+		
 		// START KRECHEL
 		User krechel = new User();
 		krechel.setFirstName("Dirk");
@@ -216,6 +291,16 @@ public class DBInitiator implements ApplicationRunner {
 		prog3.setPo(po2017);
 		
 		// END Modul Programmieren 3
+		
+		
+		// START Modul Programmieren 2
+		
+		Module prog2 = new Module();
+		prog2.setName("Programmieren 2");
+		prog2.setPo(po2017);
+		
+		// END Modul Programmieren 2
+		
 		
 		// START ROOM D12
 		Room d12 = new Room();
