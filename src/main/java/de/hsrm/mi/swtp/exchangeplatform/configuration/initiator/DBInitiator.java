@@ -42,6 +42,8 @@ public class DBInitiator implements ApplicationRunner {
 	
 	PORepository poRepository;
 	
+	PORestrictionRepository poRestrictionRepository;
+	
 	private final Faker faker = Faker.instance();
 	
 	
@@ -52,8 +54,21 @@ public class DBInitiator implements ApplicationRunner {
 		po.setIsDual(isDual);
 		po.setMajor(faker.educator().course());
 		po.setValidSinceYear(Long.valueOf(faker.random().nextInt(2020, 2031)));
+		
 		log.info(" + CREATED DAMN PO: " + po.getMajor());
 		return po;
+	}
+	
+	private PORestriction createRestriction(boolean isDual) {
+		PORestriction poRestriction = new PORestriction();
+		poRestriction.setByCP(new PORestriction.PORestrictionByCP());
+		poRestriction.setBySemester(new PORestriction.PORestrictionBySemester());
+		poRestriction.setByProgressiveRegulation(new PORestriction.PORestrictionByProgressiveRegulation());
+		poRestriction.getByCP().setIsActive(true);
+		poRestriction.getByCP().setMaxCP(40L);
+		poRestriction.getByProgressiveRegulation().setIsActive(false);
+		poRestriction.getBySemester().setIsActive(false);
+		return poRestriction;
 	}
 	
 	private Module createModule() {
@@ -234,17 +249,31 @@ public class DBInitiator implements ApplicationRunner {
 		// END KRECHEL
 		// START PO 2017
 		
+		PORestriction restriction2017 = createRestriction(false);
+		restriction2017.getByCP().setIsActive(true);
+		restriction2017.getByCP().setMaxCP(40L);
+		restriction2017.getByProgressiveRegulation().setIsActive(true);
+		
 		PO po2017 = new PO();
+		restriction2017.setPo(po2017);
+		
 		po2017.setTitle(faker.starTrek().specie());
 		po2017.setMajor("Medieninformatik");
 		po2017.setValidSinceYear(2017L);
 		po2017.setDateStart(LocalDate.now());
+		po2017.setPoRestriction(restriction2017);
+		poRepository.save(po2017);
 		
 		// END PO 2017
 		
 		// START Modul AFS
 		
+		PORestriction restrictionNonDual = createRestriction(false);
+		
 		PO nonDual = initPO(false);
+		nonDual.setPoRestriction(restrictionNonDual);
+		restriction2017.setPo(nonDual);
+		
 		Module afs = new Module();
 		afs.setName("Automaten und formale Sprachen");
 		afs.setPo(nonDual);
@@ -253,7 +282,12 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// START Modul Programmieren 3
 		
+		PORestriction restrictionDual = createRestriction(true);
+		
 		PO dual = initPO(true);
+		dual.setPoRestriction(restrictionDual);
+		restrictionDual.setPo(dual);
+		
 		Module prog3 = new Module();
 		prog3.setName("Programmieren 3");
 		prog3.setPo(dual);

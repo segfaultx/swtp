@@ -14,30 +14,46 @@ import java.util.List;
 
 @Entity
 @Data
-@RequiredArgsConstructor
 @Table(name = "po")
-@Slf4j
 @Schema(name = "PO", description = "A PO is a PO is a PO is a PO.")
+@RequiredArgsConstructor
+@Slf4j
 public class PO implements Model {
 	@Id
 	@GeneratedValue
+	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	Long id;
 	
-	@JsonProperty("title")
-	@Column(unique = true, nullable = false, name = "po_title", updatable = true)
-//	@Schema(nullable = false, name = "po_title", required = true)
+	@Column(name = "po_title", nullable = false, unique = true)
+	@Schema(name = "po_title",
+			nullable = false,
+			required = true,
+			description = "A unique human friendly title of a 'PO'.")
+	@JsonProperty(value = "title", access = JsonProperty.Access.READ_ONLY)
 	String title;
 	
 	@Column(nullable = false)
+	@Schema(name = "valid_since_year", nullable = false)
 	@JsonProperty("valid_since_year")
 	Long validSinceYear;
 	
+	@Column(nullable = false)
+	@Schema(name = "semester_count",
+			nullable = false,
+			format = "int64",
+			defaultValue = "6",
+			minimum = "1")
+	@JsonProperty(value = "semester_count", defaultValue = "6")
+	Long semesterCount = 6L;
+	
 	@Column(name = "date_start", nullable = false)
-//	@Schema(nullable = false, name = "date_start", required = true)
+	@Schema(name = "date_start", nullable = false, required = true)
+	@JsonProperty("date_start")
 	LocalDate dateStart = LocalDate.now();
 	
 	@Column(name = "date_end", nullable = true)
-//	@Schema(nullable = true, name = "date_end", required = false)
+	@Schema(nullable = true, name = "date_end", required = false)
+	@JsonProperty("date_end")
 	LocalDate dateEnd;
 	
 	@Column(nullable = false)
@@ -58,9 +74,19 @@ public class PO implements Model {
 	 * A flag which will tell whether the {@link PO} is for a dual study only.
 	 */
 	@Column(nullable = true)
-	@JsonInclude(JsonInclude.Include.CUSTOM)
-	@JsonProperty("is_dual")
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	@Schema(name = "is_dual",
+			nullable = true,
+			required = false,
+			defaultValue = "null")
+	@JsonProperty(value = "is_dual", defaultValue = "null")
 	Boolean isDual;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JsonManagedReference
+	@Schema(required = true, nullable = false)
+	@JsonProperty(value = "restriction", required = true)
+	PORestriction poRestriction;
 	
 	/**
 	 * Custom setter. Will set {@link #isDual} to {@code null} if the given arg is not true. When {@link #isDual} is set to
@@ -78,4 +104,5 @@ public class PO implements Model {
 	public void setDateEnd(LocalDate dateEnd) {
 		this.dateEnd = dateEnd == null || dateEnd.isBefore(this.dateStart) ? this.dateStart.plusMonths(6) : this.dateEnd;
 	}
+	
 }
