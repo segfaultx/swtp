@@ -72,7 +72,7 @@ public class PO implements Model {
 	/**
 	 * A flag which will tell whether the {@link PO} is for a dual study only.
 	 */
-	@Column(nullable = false)
+	@Column(nullable = true)
 	@Schema(name = "is_dual",
 			nullable = true,
 			required = false,
