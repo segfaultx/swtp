@@ -814,8 +814,16 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// END SET TIMESLOTS FOR USERS
 		
-		
-		
+		// START USERS LIST
+		List<User> usersToSave = new ArrayList<>();
+		usersToSave.add(dennis);
+		usersToSave.add(chandler);
+		usersToSave.add(joendhard);
+		usersToSave.add(willi);
+		usersToSave.add(frodo);
+		usersToSave.add(samweis);
+		usersToSave.add(gandalf);
+		//END USERS LIST
 		
 		// START TRADEOFFER DENNIS
 		
@@ -842,25 +850,12 @@ public class DBInitiator implements ApplicationRunner {
 		completedModulesDennis.add(prog3);
 		dennis.setCompletedModules(completedModulesDennis);
 		
-		
-		List<Module> completedModulesGandalf = new ArrayList<>();
+	/*	List<Module> completedModulesGandalf = new ArrayList<>();
 		completedModulesGandalf.add(ads);
 		completedModulesGandalf.add(afs);
 		completedModulesGandalf.add(prog3);
 		completedModulesGandalf.add(dbs);
-		gandalf.setCompletedModules(completedModulesGandalf);
-		
-		
-		// START USERS LIST
-		List<User> usersToSave = new ArrayList<>();
-		usersToSave.add(dennis);
-		usersToSave.add(chandler);
-		usersToSave.add(joendhard);
-		usersToSave.add(willi);
-		usersToSave.add(frodo);
-		usersToSave.add(samweis);
-		usersToSave.add(gandalf);
-		//END USERS LIST
+		gandalf.setCompletedModules(completedModulesGandalf);*/
 		
 		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
