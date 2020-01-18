@@ -51,7 +51,7 @@ public class PO implements Model {
 	LocalDate dateStart = LocalDate.now();
 	
 	@Column(name = "date_end", nullable = true)
-	@Schema(nullable = true, name = "date_end", required = false)
+//	@Schema(nullable = true, name = "date_end", required = false)
 	@JsonProperty("date_end")
 	LocalDate dateEnd;
 	
@@ -61,10 +61,10 @@ public class PO implements Model {
 	
 	@Column(nullable = true, name = "po_modules")
 	@OneToMany(mappedBy = "po", cascade = CascadeType.ALL, orphanRemoval = true)
-	@Schema(name = "modules_ids",
+	@Schema(name = "po_modules",
 			nullable = false,
 			defaultValue = "[]",
-			format = "int64",
+//			format = "int64",
 			description = "A list containing all ids of 'Modules' which are part of the specific 'PO'." )
 	@JsonManagedReference
 	List<Module> modules;
