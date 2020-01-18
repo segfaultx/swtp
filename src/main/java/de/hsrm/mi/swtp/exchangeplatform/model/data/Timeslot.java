@@ -3,7 +3,9 @@ package de.hsrm.mi.swtp.exchangeplatform.model.data;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -12,7 +14,6 @@ import javax.persistence.*;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
 @Data
@@ -47,6 +48,7 @@ public class Timeslot implements Model {
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "MODULE_ID")
+	@JsonBackReference
 	Module module;
 	
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

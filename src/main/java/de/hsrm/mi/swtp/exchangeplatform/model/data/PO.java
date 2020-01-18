@@ -74,8 +74,4 @@ public class PO implements Model {
 	@JsonProperty(value = "restriction", required = true)
 	PORestriction poRestriction;
 	
-	public void setDateEnd(LocalDate dateEnd) {
-		this.dateEnd = dateEnd == null || dateEnd.isBefore(this.dateStart) ? this.dateStart.plusMonths(6) : this.dateEnd;
-	}
-	
 }

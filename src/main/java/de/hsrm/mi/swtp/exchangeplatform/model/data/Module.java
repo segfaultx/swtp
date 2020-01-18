@@ -2,9 +2,8 @@ package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
@@ -24,6 +23,7 @@ public class Module implements Model {
 	
 	@OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
+	@JsonManagedReference
 	private List<Timeslot> timeslots;
 	
 	@JoinColumn(name = "po_id")
@@ -33,5 +33,5 @@ public class Module implements Model {
 	
 	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY)
-	private User user;
+	private User lecturer;
 }
