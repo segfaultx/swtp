@@ -139,6 +139,52 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// END WEITZ
 		
+		// START FRITZ
+		
+		User fritz = new User();
+		fritz.setFirstName("Fritzchen");
+		fritz.setLastName("Fritz");
+		fritz.setStudentNumber(null);
+		fritz.setStaffNumber(16161616L);
+		fritz.setEmail("fritzchen.Fritz@hs-rm.de");
+		
+		AuthenticationInformation fritzInformation = new AuthenticationInformation();
+		fritzInformation.setUsername("ffrit001");
+		fritzInformation.setPassword("ffrit001");
+		fritzInformation.setRole(Roles.MEMBER);
+		fritzInformation.setUser(fritz);
+		fritz.setAuthenticationInformation(fritzInformation);
+		
+		UserType fritzType = new UserType();
+		fritzType.setType(TypeOfUsers.LECTURER);
+		fritzType.setUser(fritz);
+		fritz.setUserType(fritzType);
+		
+		// END fritz
+		
+		// START Schwanecke
+		
+		User schwanecke = new User();
+		schwanecke.setFirstName("Ulrich");
+		schwanecke.setLastName("Schwanecke");
+		schwanecke.setStudentNumber(null);
+		schwanecke.setStaffNumber(16161616L);
+		schwanecke.setEmail("ulrich.schwanecke@hs-rm.de");
+		
+		AuthenticationInformation schwaneckeInformation = new AuthenticationInformation();
+		schwaneckeInformation.setUsername("uschw001");
+		schwaneckeInformation.setPassword("uschw001");
+		schwaneckeInformation.setRole(Roles.ADMIN);
+		schwaneckeInformation.setUser(schwanecke);
+		schwanecke.setAuthenticationInformation(schwaneckeInformation);
+		
+		UserType schwaneckeType = new UserType();
+		schwaneckeType.setType(TypeOfUsers.LECTURER);
+		schwaneckeType.setUser(schwanecke);
+		schwanecke.setUserType(schwaneckeType);
+		
+		// END schwanecke
+		
 		// START CHANDLER
 		
 		User chandler = new User();
@@ -265,42 +311,50 @@ public class DBInitiator implements ApplicationRunner {
 		
 		krechel.setAuthenticationInformation(krechelAuthInfo);
 		//END KRECHEL AUTHINFO
-		
-		
 		// END KRECHEL
-		// START PO 2017
 		
+		// START PO 2017
 		PO po2017 = new PO();
 		po2017.setMajor("Medieninformatik");
 		po2017.setValidSinceYear("2017");
-		
 		// END PO 2017
 		
 		// START Modul AFS
-		
 		Module afs = new Module();
 		afs.setName("Automaten und formale Sprachen");
 		afs.setPo(po2017);
-		
 		// END Modul AFS
 		
 		// START Modul Programmieren 3
-		
 		Module prog3 = new Module();
 		prog3.setName("Programmieren 3");
 		prog3.setPo(po2017);
-		
 		// END Modul Programmieren 3
 		
 		
-		// START Modul Programmieren 2
+		// START Modul Datenbanksysteme
+		Module dbs = new Module();
+		dbs.setName("Datenbanksysteme");
+		dbs.setPo(po2017);
+		// END Modul Datenbanksysteme
 		
-		Module prog2 = new Module();
-		prog2.setName("Programmieren 2");
-		prog2.setPo(po2017);
+		// START Modul Algorithmen und Datenstrukturen
+		Module ads = new Module();
+		ads.setName("Algorithmen und Datenstrukturen");
+		ads.setPo(po2017);
+		// END Modul Algorithmen und Datenstrukturen
 		
-		// END Modul Programmieren 2
+		// START Einführung in die Medieninformatik
+		Module eim = new Module();
+		eim.setName("Einführung in die Medieninformatik");
+		eim.setPo(po2017);
+		// END Modul Einführung in die Medieninformatik
 		
+		// START Einführung in die Medieninformatik
+		Module swt = new Module();
+		swt.setName("Softwaretechnik");
+		swt.setPo(po2017);
+		// END Modul Einführung in die Medieninformatik
 		
 		// START ROOM D12
 		Room d12 = new Room();
@@ -310,9 +364,24 @@ public class DBInitiator implements ApplicationRunner {
 		
 		var d12_out = roomRepository.save(d12);
 		
+		//Start ROOM D11
+		Room d11 = new Room();
+		d11.setLocation("Unter den Eichen");
+		d11.setRoomNumber("D11");
+		d11.setTimeslots(null);
+		
+		var d11_out = roomRepository.save(d11);
+		
+		//Start ROOM D13
+		Room d13 = new Room();
+		d13.setLocation("Unter den Eichen");
+		d13.setRoomNumber("D13");
+		d13.setTimeslots(null);
+		
+		var d13_out = roomRepository.save(d13);
 		
 		// START AFS Timeslots
-		
+		// START AFS VL
 		Timeslot afsVorlesung = new Timeslot();
 		afsVorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
 		afsVorlesung.setCapacity(100);
@@ -321,9 +390,9 @@ public class DBInitiator implements ApplicationRunner {
 		afsVorlesung.setTimeStart(LocalTime.of(8, 15));
 		afsVorlesung.setTimeEnd(LocalTime.of(9, 45));
 		
-		afsVorlesung.setRoom(d12_out);
+		afsVorlesung.setRoom(d11_out);
 		afsVorlesung.setTimeTable(null);
-		
+		// END AFS VL
 		
 		// START AFS UEBUNG 1
 		Timeslot afsUebung = new Timeslot();
@@ -336,11 +405,9 @@ public class DBInitiator implements ApplicationRunner {
 		
 		afsUebung.setRoom(d12_out);
 		afsUebung.setTimeTable(null);
-		
 		// END AFS UEBUNG 1
 		
 		// START AFS UEBUNG 2
-		
 		Timeslot afsUebung2 = new Timeslot();
 		afsUebung2.setTimeSlotType(TypeOfTimeslots.UEBUNG);
 		afsUebung2.setCapacity(50);
@@ -384,51 +451,356 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// END AFS UEBUNG 4
 		
+		// START SWT Timeslots
+		// START SWT VL
+		Timeslot swtVorlesung = new Timeslot();
+		swtVorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
+		swtVorlesung.setCapacity(100);
+		swtVorlesung.setModule(swt);
+		swtVorlesung.setDay(DayOfWeek.TUESDAY);
+		swtVorlesung.setTimeStart(LocalTime.of(8, 15));
+		swtVorlesung.setTimeEnd(LocalTime.of(9, 45));
 		
+		swtVorlesung.setRoom(d11_out);
+		swtVorlesung.setTimeTable(null);
+		// END swt VL
+		
+		// START swt Prakt 1
+		Timeslot swtPraktikum = new Timeslot();
+		swtPraktikum.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
+		swtPraktikum.setCapacity(20);
+		swtPraktikum.setModule(swt);
+		swtPraktikum.setDay(DayOfWeek.TUESDAY);
+		swtPraktikum.setTimeStart(LocalTime.of(10, 0));
+		swtPraktikum.setTimeEnd(LocalTime.of(11, 30));
+		
+		swtPraktikum.setRoom(d12_out);
+		swtPraktikum.setTimeTable(null);
+		// END swt Prakt 1
+		
+		// START swt Prakt 2
+		Timeslot swtPraktikum2 = new Timeslot();
+		swtPraktikum2.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
+		swtPraktikum2.setCapacity(20);
+		swtPraktikum2.setModule(swt);
+		swtPraktikum2.setDay(DayOfWeek.WEDNESDAY);
+		swtPraktikum2.setTimeStart(LocalTime.of(11, 45));
+		swtPraktikum2.setTimeEnd(LocalTime.of(13, 15));
+		
+		swtPraktikum2.setRoom(d12_out);
+		swtPraktikum2.setTimeTable(null);
+		// END swt Prakt 2
+		
+		// START DBS Timeslots
+		// START DBS VL
+		Timeslot dbsVorlesung = new Timeslot();
+		dbsVorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
+		dbsVorlesung.setCapacity(100);
+		dbsVorlesung.setModule(dbs);
+		dbsVorlesung.setDay(DayOfWeek.FRIDAY);
+		dbsVorlesung.setTimeStart(LocalTime.of(8, 15));
+		dbsVorlesung.setTimeEnd(LocalTime.of(9, 45));
+		
+		dbsVorlesung.setRoom(d11_out);
+		dbsVorlesung.setTimeTable(null);
+		// END DBS VL
+		
+		// START DBS Prakt 1
+		Timeslot dbsPraktikum = new Timeslot();
+		dbsPraktikum.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
+		dbsPraktikum.setCapacity(30);
+		dbsPraktikum.setModule(dbs);
+		dbsPraktikum.setDay(DayOfWeek.FRIDAY);
+		dbsPraktikum.setTimeStart(LocalTime.of(10, 0));
+		dbsPraktikum.setTimeEnd(LocalTime.of(11, 30));
+		
+		dbsPraktikum.setRoom(d13_out);
+		dbsPraktikum.setTimeTable(null);
+		// END DBS Prakt 1
+		
+		// START dbs Prakt 2
+		Timeslot dbsPraktikum2 = new Timeslot();
+		dbsPraktikum2.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
+		dbsPraktikum2.setCapacity(30);
+		dbsPraktikum2.setModule(dbs);
+		dbsPraktikum2.setDay(DayOfWeek.FRIDAY);
+		dbsPraktikum2.setTimeStart(LocalTime.of(11, 45));
+		dbsPraktikum2.setTimeEnd(LocalTime.of(13, 15));
+		
+		dbsPraktikum2.setRoom(d13_out);
+		dbsPraktikum2.setTimeTable(null);
+		// END dbs Prakt 2
+		
+		
+		// START PROG3 Timeslots
+		// START PROG3 VL
+		Timeslot prog3Vorlesung = new Timeslot();
+		prog3Vorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
+		prog3Vorlesung.setCapacity(100);
+		prog3Vorlesung.setModule(prog3);
+		prog3Vorlesung.setDay(DayOfWeek.MONDAY);
+		prog3Vorlesung.setTimeStart(LocalTime.of(8, 15));
+		prog3Vorlesung.setTimeEnd(LocalTime.of(9, 45));
+		
+		prog3Vorlesung.setRoom(d11_out);
+		prog3Vorlesung.setTimeTable(null);
+		// END PROG3 VL
+		
+		// START PROG3 Prakt 1
+		Timeslot prog3Praktikum = new Timeslot();
+		prog3Praktikum.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
+		prog3Praktikum.setCapacity(30);
+		prog3Praktikum.setModule(prog3);
+		prog3Praktikum.setDay(DayOfWeek.MONDAY);
+		prog3Praktikum.setTimeStart(LocalTime.of(10, 0));
+		prog3Praktikum.setTimeEnd(LocalTime.of(11, 30));
+		
+		prog3Praktikum.setRoom(d12_out);
+		prog3Praktikum.setTimeTable(null);
+		// END PROG3 Prakt 1
+		
+		// START PROG3 Prakt 2
+		Timeslot prog3Praktikum2 = new Timeslot();
+		prog3Praktikum2.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
+		prog3Praktikum2.setCapacity(30);
+		prog3Praktikum2.setModule(prog3);
+		prog3Praktikum2.setDay(DayOfWeek.MONDAY);
+		prog3Praktikum2.setTimeStart(LocalTime.of(11, 45));
+		prog3Praktikum2.setTimeEnd(LocalTime.of(13, 15));
+		
+		prog3Praktikum2.setRoom(d13_out);
+		prog3Praktikum2.setTimeTable(null);
+		// END PROG3 Prakt 2
+		
+		// START PROG3 Prakt 3
+		Timeslot prog3Praktikum3 = new Timeslot();
+		prog3Praktikum3.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
+		prog3Praktikum3.setCapacity(30);
+		prog3Praktikum3.setModule(prog3);
+		prog3Praktikum3.setDay(DayOfWeek.MONDAY);
+		prog3Praktikum3.setTimeStart(LocalTime.of(10, 0));
+		prog3Praktikum3.setTimeEnd(LocalTime.of(11, 30));
+		
+		prog3Praktikum3.setRoom(d13_out);
+		prog3Praktikum3.setTimeTable(null);
+		// END PROG3 Prakt 3
+		
+		// START PROG3 Prakt 4
+		Timeslot prog3Praktikum4 = new Timeslot();
+		prog3Praktikum4.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
+		prog3Praktikum4.setCapacity(30);
+		prog3Praktikum4.setModule(prog3);
+		prog3Praktikum4.setDay(DayOfWeek.MONDAY);
+		prog3Praktikum4.setTimeStart(LocalTime.of(11, 45));
+		prog3Praktikum4.setTimeEnd(LocalTime.of(13, 15));
+		
+		prog3Praktikum4.setRoom(d12_out);
+		prog3Praktikum4.setTimeTable(null);
+		// END PROG3 Prakt 4
+		
+		
+		// START ADS Timeslots
+		// START ADS VL
+		Timeslot adsVorlesung = new Timeslot();
+		adsVorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
+		adsVorlesung.setCapacity(100);
+		adsVorlesung.setModule(ads);
+		adsVorlesung.setDay(DayOfWeek.WEDNESDAY);
+		adsVorlesung.setTimeStart(LocalTime.of(10, 00));
+		adsVorlesung.setTimeEnd(LocalTime.of(11, 30));
+		
+		adsVorlesung.setRoom(d11_out);
+		adsVorlesung.setTimeTable(null);
+		// END ads VL
+		
+		// START ADS Prakt 1
+		Timeslot adsPraktikum = new Timeslot();
+		adsPraktikum.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
+		adsPraktikum.setCapacity(30);
+		adsPraktikum.setModule(ads);
+		adsPraktikum.setDay(DayOfWeek.WEDNESDAY);
+		adsPraktikum.setTimeStart(LocalTime.of(11, 30));
+		adsPraktikum.setTimeEnd(LocalTime.of(13, 15));
+		
+		prog3Praktikum.setRoom(d13_out);
+		prog3Praktikum.setTimeTable(null);
+		// END ads Prakt 1
+		
+		// START ads Prakt 2
+		Timeslot adsPraktikum2 = new Timeslot();
+		adsPraktikum2.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
+		adsPraktikum2.setCapacity(30);
+		adsPraktikum2.setModule(ads);
+		adsPraktikum2.setDay(DayOfWeek.WEDNESDAY);
+		adsPraktikum2.setTimeStart(LocalTime.of(14, 15));
+		adsPraktikum2.setTimeEnd(LocalTime.of(15, 45));
+		
+		adsPraktikum2.setRoom(d13_out);
+		adsPraktikum2.setTimeTable(null);
+		// END ads Prakt 2
+		
+		
+		// SAVE Lecturers first so attendees can reference them
+		// KRECHEL
 		var krechel_out = userRepository.save(krechel);
 		afsUebung.setUser(krechel_out);
 		afsUebung2.setUser(krechel_out);
+		afsUebung3.setUser(krechel_out);
+		afsUebung4.setUser(krechel_out);
 		afsVorlesung.setUser(krechel_out);
-		userRepository.save(weitz);
-		// SAVE Lecturers first so attendees can reference them
+		
+		dbsVorlesung.setUser(krechel_out);
+		dbsPraktikum.setUser(krechel_out);
+		dbsPraktikum2.setUser(krechel_out);
+		
+		//WEITZ
+		var weitz_out = userRepository.save(weitz);
+		swtVorlesung.setUser(weitz_out);
+		swtPraktikum.setUser(weitz_out);
+		swtPraktikum2.setUser(weitz_out);
+		
+		prog3Vorlesung.setUser(weitz_out);
+		prog3Praktikum.setUser(weitz_out);
+		prog3Praktikum2.setUser(weitz_out);
+		
+		//FRITZ
+		var fritz_out = userRepository.save(fritz);
+		
+		prog3Praktikum3.setUser(fritz_out);
+		prog3Praktikum4.setUser(fritz_out);
 		
 		
-		List<Timeslot> toSave = new ArrayList<>();
-		toSave.add(afsVorlesung);
-		toSave.add(afsUebung);
-		toSave.add(afsUebung2);
+		//Schwanecke
+		var schwanecke_out = userRepository.save(schwanecke);
 		
-		d12_out.setTimeslots(toSave);
+		adsVorlesung.setUser(schwanecke_out);
+		adsPraktikum.setUser(schwanecke_out);
+		adsPraktikum2.setUser(schwanecke_out);
+		
+		// SAVE TIMESLOTS TO ROOMS
+		// D12
+		List<Timeslot> toSaveD12 = new ArrayList<>();
+		toSaveD12.add(afsUebung);
+		toSaveD12.add(afsUebung2);
+		toSaveD12.add(afsUebung3);
+		toSaveD12.add(afsUebung4);
+		toSaveD12.add(swtPraktikum);
+		toSaveD12.add(swtPraktikum2);
+		toSaveD12.add(prog3Praktikum);
+		toSaveD12.add(prog3Praktikum4);
+		
+		d12_out.setTimeslots(toSaveD12);
+		
+		//D11
+		List<Timeslot> toSaveD11 = new ArrayList<>();
+		toSaveD11.add(afsVorlesung);
+		toSaveD11.add(swtVorlesung);
+		toSaveD11.add(dbsVorlesung);
+		toSaveD11.add(prog3Vorlesung);
+		toSaveD11.add(adsVorlesung);
+		
+		d11_out.setTimeslots(toSaveD11);
+		
+		//D13
+		List<Timeslot> toSaveD13 = new ArrayList<>();
+		toSaveD13.add(dbsPraktikum);
+		toSaveD13.add(dbsPraktikum2);
+		toSaveD13.add(prog3Praktikum2);
+		toSaveD13.add(prog3Praktikum3);
+		toSaveD13.add(adsPraktikum);
+		toSaveD13.add(adsPraktikum2);
+		
+		d13_out.setTimeslots(toSaveD13);
+		
 		
 		// START ADD TIMESLOTS DENNIS
-		
 		List<Timeslot> dennisTimeslots = new ArrayList<>();
 		dennisTimeslots.add(afsUebung);
 		dennisTimeslots.add(afsVorlesung);
-		
+		dennisTimeslots.add(dbsVorlesung);
+		dennisTimeslots.add(dbsPraktikum2);
+		dennisTimeslots.add(swtVorlesung);
+		dennisTimeslots.add(swtPraktikum);
+		dennisTimeslots.add(adsVorlesung);
+		dennisTimeslots.add(adsPraktikum2);
 		// END ADD TIMESLOTS DENNIS
 		
 		// START ADD TIMESLOTS CHANDLER
-		
 		List<Timeslot> chandlerTimeslots = new ArrayList<>();
 		chandlerTimeslots.add(afsVorlesung);
 		chandlerTimeslots.add(afsUebung2);
-		
+		chandlerTimeslots.add(dbsVorlesung);
+		chandlerTimeslots.add(dbsPraktikum2);
+		chandlerTimeslots.add(swtVorlesung);
+		chandlerTimeslots.add(swtPraktikum);
+		chandlerTimeslots.add(adsVorlesung);
+		chandlerTimeslots.add(adsPraktikum2);
+		chandlerTimeslots.add(prog3Vorlesung);
+		chandlerTimeslots.add(prog3Praktikum3);
 		// END ADD TIMESLOTS CHANDLER
 		
 		// START ADD TIMESLOTS WILLI
 		List<Timeslot> williTimeslots = new ArrayList<>();
 		williTimeslots.add(afsVorlesung);
 		williTimeslots.add(afsUebung3);
-		
+		williTimeslots.add(dbsVorlesung);
+		williTimeslots.add(dbsPraktikum2);
+		williTimeslots.add(swtVorlesung);
+		williTimeslots.add(swtPraktikum2);
+		williTimeslots.add(adsVorlesung);
+		williTimeslots.add(adsPraktikum2);
+		williTimeslots.add(prog3Vorlesung);
+		williTimeslots.add(prog3Praktikum2);
 		// END ADD TIMESLOTS WILLI
 		
 		// START ADD TIMESLOTS JÖNDHARD
 		List<Timeslot> joendhardTimeslots = new ArrayList<>();
 		joendhardTimeslots.add(afsVorlesung);
 		joendhardTimeslots.add(afsUebung4);
-		
+		joendhardTimeslots.add(dbsVorlesung);
+		joendhardTimeslots.add(dbsPraktikum);
+		joendhardTimeslots.add(swtVorlesung);
+		joendhardTimeslots.add(swtPraktikum);
+		joendhardTimeslots.add(adsVorlesung);
+		joendhardTimeslots.add(adsPraktikum);
+		joendhardTimeslots.add(prog3Vorlesung);
+		joendhardTimeslots.add(prog3Praktikum);
 		// END ADD TIMESLOTS JÖNDHARD
+		
+		// START ADD TIMESLOTS JÖNDHARD
+		List<Timeslot> frodoTimeslots = new ArrayList<>();
+		frodoTimeslots.add(afsVorlesung);
+		frodoTimeslots.add(afsUebung4);
+		frodoTimeslots.add(dbsVorlesung);
+		frodoTimeslots.add(dbsPraktikum2);
+		frodoTimeslots.add(swtVorlesung);
+		frodoTimeslots.add(swtPraktikum2);
+		frodoTimeslots.add(adsVorlesung);
+		frodoTimeslots.add(adsPraktikum2);
+		frodoTimeslots.add(prog3Vorlesung);
+		frodoTimeslots.add(prog3Praktikum4);
+		// END ADD TIMESLOTS JÖNDHARD
+		
+		
+		// START ADD TIMESLOTS SAMWEIS
+		List<Timeslot> samweisTimeslots = new ArrayList<>();
+		samweisTimeslots.add(afsVorlesung);
+		samweisTimeslots.add(afsUebung4);
+		samweisTimeslots.add(dbsVorlesung);
+		samweisTimeslots.add(dbsPraktikum2);
+		samweisTimeslots.add(swtVorlesung);
+		samweisTimeslots.add(swtPraktikum2);
+		samweisTimeslots.add(adsVorlesung);
+		samweisTimeslots.add(adsPraktikum2);
+		samweisTimeslots.add(prog3Vorlesung);
+		samweisTimeslots.add(prog3Praktikum4);
+		// END ADD TIMESLOTS SAMWEIS
+		
+		
+		// START ADD TIMESLOTS GANDALF
+		List<Timeslot> gandalfTimeslots = new ArrayList<>();
+		gandalfTimeslots.add(swtVorlesung);
+		gandalfTimeslots.add(swtPraktikum);
 		
 		// START SET TIMESLOTS FOR USERS
 		
@@ -436,18 +808,14 @@ public class DBInitiator implements ApplicationRunner {
 		chandler.setTimeslots(chandlerTimeslots);
 		joendhard.setTimeslots(joendhardTimeslots);
 		willi.setTimeslots(williTimeslots);
+		frodo.setTimeslots(frodoTimeslots);
+		samweis.setTimeslots(samweisTimeslots);
+		gandalf.setTimeslots(gandalfTimeslots);
 		
 		// END SET TIMESLOTS FOR USERS
 		
-		// START USERS LIST
 		
-		List<User> usersToSave = new ArrayList<>();
-		usersToSave.add(dennis);
-		usersToSave.add(chandler);
-		usersToSave.add(joendhard);
-		usersToSave.add(willi);
 		
-		//END USERS LIST
 		
 		// START TRADEOFFER DENNIS
 		
@@ -470,9 +838,29 @@ public class DBInitiator implements ApplicationRunner {
 		// END TRADEOFFER JOENDHARD
 		
 		List<Module> completedModulesDennis = new ArrayList<>();
+		completedModulesDennis.add(eim);
 		completedModulesDennis.add(prog3);
 		dennis.setCompletedModules(completedModulesDennis);
 		
+		
+		List<Module> completedModulesGandalf = new ArrayList<>();
+		completedModulesGandalf.add(ads);
+		completedModulesGandalf.add(afs);
+		completedModulesGandalf.add(prog3);
+		completedModulesGandalf.add(dbs);
+		gandalf.setCompletedModules(completedModulesGandalf);
+		
+		
+		// START USERS LIST
+		List<User> usersToSave = new ArrayList<>();
+		usersToSave.add(dennis);
+		usersToSave.add(chandler);
+		usersToSave.add(joendhard);
+		usersToSave.add(willi);
+		usersToSave.add(frodo);
+		usersToSave.add(samweis);
+		usersToSave.add(gandalf);
+		//END USERS LIST
 		
 		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
