@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,10 @@ public class PORestriction implements Model {
 	@JsonProperty("by_progressive_regulation")
 	@OneToOne(cascade = CascadeType.ALL)
 	PORestrictionByProgressiveRegulation byProgressiveRegulation;
+	
+	@JsonProperty("dual_po")
+	@OneToOne(cascade = CascadeType.ALL)
+	DualPO dualPO;
 	
 	@JsonBackReference
 	@OneToOne(cascade = CascadeType.ALL)
@@ -115,6 +120,38 @@ public class PORestriction implements Model {
 				nullable = false)
 		@Column(name = "is_active", nullable = false, updatable = true)
 		Boolean isActive = false;
+	}
+	
+	@Entity
+	@Data
+	@ToString(exclude = { "id" })
+	@RequiredArgsConstructor
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public static class DualPO {
+		@Id
+		@GeneratedValue
+		@Schema(hidden = true)
+		@JsonIgnore
+		Long id;
+		
+		/**
+		 * A flag which will tell whether the {@link PO} is for a dual study only.
+		 */
+		@JsonProperty("is_active")
+		@Schema(name = "is_active",
+				defaultValue = "false",
+				required = true,
+				nullable = false)
+		@Column(name = "is_active", nullable = false, updatable = true)
+		Boolean isActive = false;
+		
+		@Column(nullable = true, name = "free_dual_day")
+		@Schema(name = "free_dual_day",
+				nullable = true,
+				required = false,
+				defaultValue = "TUESDAY")
+		@JsonProperty(value = "free_dual_day", defaultValue = "TUESDAY")
+		DayOfWeek freeDualDay = DayOfWeek.TUESDAY;
 	}
 	
 }

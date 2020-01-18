@@ -69,17 +69,6 @@ public class PO implements Model {
 	@JsonManagedReference
 	List<Module> modules;
 	
-	/**
-	 * A flag which will tell whether the {@link PO} is for a dual study only.
-	 */
-	@Column(nullable = true)
-	@Schema(name = "is_dual",
-			nullable = true,
-			required = false,
-			defaultValue = "false")
-	@JsonProperty(value = "is_dual", defaultValue = "false")
-	Boolean isDual = false;
-	
 	@OneToOne(cascade = CascadeType.ALL)
 	@Schema(required = true, nullable = false, name = "restriction")
 	@JsonProperty(value = "restriction", required = true)

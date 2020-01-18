@@ -54,7 +54,6 @@ public class DBInitiator implements ApplicationRunner {
 		PO po = new PO();
 		po.setTitle(faker.starTrek().specie());
 		po.setDateStart(LocalDate.now().plusMonths(faker.random().nextInt(1, 14)));
-		po.setIsDual(isDual);
 		po.setMajor(faker.educator().course());
 //		Long.valueOf(faker.random().nextInt(2020, 2031))
 		Date date = faker.date().future(faker.random().nextInt(365*4, 365*10), TimeUnit.DAYS);
@@ -74,6 +73,12 @@ public class DBInitiator implements ApplicationRunner {
 		poRestriction.getByCP().setMaxCP(40L);
 		poRestriction.getByProgressiveRegulation().setIsActive(false);
 		poRestriction.getBySemester().setIsActive(false);
+		
+		PORestriction.DualPO dualPO = new PORestriction.DualPO();
+		dualPO.setIsActive(isDual);
+		if(isDual) dualPO.setFreeDualDay(DayOfWeek.values()[new Random().nextInt(5)]);
+		poRestriction.setDualPO(dualPO);
+		
 		return poRestriction;
 	}
 	
@@ -259,6 +264,7 @@ public class DBInitiator implements ApplicationRunner {
 		restriction2017.getByCP().setIsActive(true);
 		restriction2017.getByCP().setMaxCP(40L);
 		restriction2017.getByProgressiveRegulation().setIsActive(true);
+		restriction2017.getDualPO().setIsActive(false);
 		
 		PO po2017 = new PO();
 //		restriction2017.setPo(po2017);
