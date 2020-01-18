@@ -63,7 +63,7 @@ public class PO implements Model {
 	@OneToMany(mappedBy = "po", cascade = CascadeType.ALL, orphanRemoval = true)
 	@Schema(name = "po_modules",
 			nullable = false,
-			defaultValue = "[]",
+//			defaultValue = "[]",
 //			format = "int64",
 			description = "A list containing all ids of 'Modules' which are part of the specific 'PO'." )
 	@JsonManagedReference
