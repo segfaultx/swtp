@@ -622,8 +622,8 @@ public class DBInitiator implements ApplicationRunner {
 		adsPraktikum.setTimeStart(LocalTime.of(11, 30));
 		adsPraktikum.setTimeEnd(LocalTime.of(13, 15));
 		
-		prog3Praktikum.setRoom(d13_out);
-		prog3Praktikum.setTimeTable(null);
+		adsPraktikum.setRoom(d13_out);
+		adsPraktikum.setTimeTable(null);
 		// END ads Prakt 1
 		
 		// START ads Prakt 2
