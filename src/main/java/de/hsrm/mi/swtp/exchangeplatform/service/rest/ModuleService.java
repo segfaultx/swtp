@@ -1,7 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +21,7 @@ import java.util.Optional;
 public class ModuleService {
 	
 	ModuleRepository repository;
+	ModuleLookupService moduleLookupService;
 	
 	public List<Module> getAll() {
 		return repository.findAll();
@@ -41,5 +44,16 @@ public class ModuleService {
 	public void delete(Module module) throws IllegalArgumentException {
 		repository.delete(module);
 		log.info(String.format("SUCCESS: Module %s deleted", module));
+	}
+	
+	/**
+	 * Method to lookup potential modules for {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} student
+	 * @param usrname username of student
+	 * @return list of timeslots of potential modules
+	 * @throws NotFoundException if username looup fails
+	 */
+	public List<Timeslot> lookUpAvailableModulesForStudent(String usrname) throws NotFoundException {
+		log.info(String.format("Looking up modules for Student: %s", usrname));
+		return moduleLookupService.lookUpTimeslotsForStudent(usrname);
 	}
 }
