@@ -12,13 +12,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.NonNull;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import javax.jms.JMSException;
 import java.util.List;
 
 @Slf4j
@@ -49,10 +46,19 @@ public class PORestController {
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed fetch request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<PO> getById(@PathVariable Long poId) throws NotFoundException, JMSException {
-		log.info(String.format("GET // " + BASEURL + "/%s", poId));
-		PO po = poService.getById(poId).orElseThrow(NotFoundException::new);
-		return ResponseEntity.ok(po);
+	public ResponseEntity<PO> getById(@PathVariable Long poId) throws NotFoundException {
+		return ResponseEntity.ok(poService.getById(poId));
+	}
+	
+	@PutMapping
+	@Operation(description = "update a po", operationId = "updatePO")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully updated PO"),
+							@ApiResponse(responseCode = "403", description = "unauthorized update attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed update request") })
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<PO> updatePOById(@RequestBody(required = true) @NonNull final PO po) throws NotFoundException {
+		poService.update(po);
+		return ResponseEntity.ok(poService.getById(po.getId()));
 	}
 	
 }

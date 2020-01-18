@@ -28,13 +28,13 @@ public class PO implements Model {
 			nullable = false,
 			required = true,
 			description = "A unique human friendly title of a 'PO'.")
-	@JsonProperty(value = "title", access = JsonProperty.Access.READ_ONLY)
+	@JsonProperty(value = "title")
 	String title;
 	
-	@Column(nullable = false)
-	@Schema(name = "valid_since_year", nullable = false)
-	@JsonProperty("valid_since_year")
-	Long validSinceYear;
+	@Column(name = "valid_since", nullable = false)
+	@Schema(name = "valid_since", nullable = false)
+	@JsonProperty("valid_since")
+	LocalDate validSince = LocalDate.now();
 	
 	@Column(nullable = false)
 	@Schema(name = "semester_count",
@@ -76,28 +76,14 @@ public class PO implements Model {
 	@Schema(name = "is_dual",
 			nullable = true,
 			required = false,
-			defaultValue = "null")
-	@JsonProperty(value = "is_dual", defaultValue = "null")
-	Boolean isDual;
+			defaultValue = "false")
+	@JsonProperty(value = "is_dual", defaultValue = "false")
+	Boolean isDual = false;
 	
 	@OneToOne(cascade = CascadeType.ALL)
-	@JsonManagedReference
-	@Schema(required = true, nullable = false)
+	@Schema(required = true, nullable = false, name = "restriction")
 	@JsonProperty(value = "restriction", required = true)
 	PORestriction poRestriction;
-	
-	/**
-	 * Custom setter. Will set {@link #isDual} to {@code null} if the given arg is not true. When {@link #isDual} is set to
-	 * {@code null} it will not be visible in its JSON/toString representation.
-	 *
-	 * @param isDual a flag which may either be {@code true}  signifying that the given {@link PO} is only applicable to dual
-	 *             study students or {@code null} if it's applicable to non dual
-	 *             study students.
-	 */
-	public void setIsDual(Boolean isDual) {
-		this.isDual = isDual ? true : null;
-		log.info(String.format("SETTING isDual through '%s' to '%s'", isDual, this.isDual));
-	}
 	
 	public void setDateEnd(LocalDate dateEnd) {
 		this.dateEnd = dateEnd == null || dateEnd.isBefore(this.dateStart) ? this.dateStart.plusMonths(6) : this.dateEnd;

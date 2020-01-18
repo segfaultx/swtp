@@ -20,9 +20,12 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -53,7 +56,10 @@ public class DBInitiator implements ApplicationRunner {
 		po.setDateStart(LocalDate.now().plusMonths(faker.random().nextInt(1, 14)));
 		po.setIsDual(isDual);
 		po.setMajor(faker.educator().course());
-		po.setValidSinceYear(Long.valueOf(faker.random().nextInt(2020, 2031)));
+//		Long.valueOf(faker.random().nextInt(2020, 2031))
+		Date date = faker.date().future(faker.random().nextInt(365*4, 365*10), TimeUnit.DAYS);
+		LocalDate localDate = LocalDate.ofInstant(date.toInstant(), ZoneId.systemDefault());
+		po.setValidSince(localDate);
 		
 		log.info(" + CREATED DAMN PO: " + po.getMajor());
 		return po;
@@ -255,11 +261,11 @@ public class DBInitiator implements ApplicationRunner {
 		restriction2017.getByProgressiveRegulation().setIsActive(true);
 		
 		PO po2017 = new PO();
-		restriction2017.setPo(po2017);
+//		restriction2017.setPo(po2017);
 		
 		po2017.setTitle(faker.starTrek().specie());
 		po2017.setMajor("Medieninformatik");
-		po2017.setValidSinceYear(2017L);
+		po2017.setValidSince(LocalDate.now());
 		po2017.setDateStart(LocalDate.now());
 		po2017.setPoRestriction(restriction2017);
 		poRepository.save(po2017);
@@ -272,7 +278,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		PO nonDual = initPO(false);
 		nonDual.setPoRestriction(restrictionNonDual);
-		restriction2017.setPo(nonDual);
+//		restriction2017.setPo(nonDual);
 		
 		Module afs = new Module();
 		afs.setName("Automaten und formale Sprachen");
@@ -286,7 +292,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		PO dual = initPO(true);
 		dual.setPoRestriction(restrictionDual);
-		restrictionDual.setPo(dual);
+//		restrictionDual.setPo(dual);
 		
 		Module prog3 = new Module();
 		prog3.setName("Programmieren 3");
