@@ -30,7 +30,8 @@ public class BasicTradeService implements TradeService{
 	public boolean doTrade(long studentId, long offeredId, long wantedId) throws NotFoundException {
 		var student = userRepository.findById(studentId).orElseThrow();
 		var offered = timeslotRepository.findById(offeredId).orElseThrow();
-		var tradeOffers = tradeOfferRepository.findAllBySeek(offered);
+		var seek = timeslotRepository.findById(wantedId).orElseThrow();
+		var tradeOffers = tradeOfferRepository.findAllByOfferAndSeek(seek, offered);
 		var acceptedTrade = tradeOffers.get(0);
 		student.getTimeslots().remove(offered);
 		student.getTimeslots().add(acceptedTrade.getOffer());
