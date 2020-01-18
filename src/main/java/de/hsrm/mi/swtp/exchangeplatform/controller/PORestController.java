@@ -24,6 +24,7 @@ import java.util.List;
 @SecurityRequirement(name = "Authorization")
 @RestController
 @RequestMapping("/api/v1/pos")
+@PreAuthorize("hasRole('ADMIN')")
 public class PORestController {
 	
 	String BASEURL = "/api/v1/pos";
@@ -34,7 +35,6 @@ public class PORestController {
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved POs"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed fetch request") })
-	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<List<PO>> getAll() {
 		log.info("GET // " + BASEURL);
 		return ResponseEntity.ok(poService.getAll());
@@ -45,7 +45,7 @@ public class PORestController {
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved POs"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed fetch request") })
-	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
+	
 	public ResponseEntity<PO> getById(@PathVariable Long poId) throws NotFoundException {
 		return ResponseEntity.ok(poService.getById(poId));
 	}
@@ -54,8 +54,9 @@ public class PORestController {
 	@Operation(description = "update a po", operationId = "updatePO")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully updated PO"),
 							@ApiResponse(responseCode = "403", description = "unauthorized update attempt"),
-							@ApiResponse(responseCode = "400", description = "malformed update request") })
-	@PreAuthorize("hasRole('ADMIN')")
+							@ApiResponse(responseCode = "400", description = "malformed update request"),
+							@ApiResponse(responseCode = "409", description = "the exchangeplatform is still active. it needs to be inactive before updating any po settings.")
+	})
 	public ResponseEntity<PO> updatePOById(@RequestBody(required = true) @NonNull final PO po) throws NotFoundException {
 		poService.update(po);
 		return ResponseEntity.ok(poService.getById(po.getId()));
