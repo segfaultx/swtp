@@ -11,7 +11,6 @@ import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.POService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import lombok.AccessLevel;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -30,26 +29,7 @@ public class POUpdateService {
 	PORepository repository;
 	POService poService;
 	AdminSettingsService adminSettingsService;
-	@Getter
 	Map<Long, ChangedRestriction> updatedRestrictions;
-
-	private boolean hasRestrictionChanges(final PO original, final PO update) {
-		boolean differ = areDifferent(original, update);
-		if (differ) {
-			ChangedRestriction changedRestriction = ChangedRestriction.builder()
-					.changedRestrictions(affectedRestrictions(original, update))
-					.updatedPO(update)
-					.build();
-			updatedRestrictions.put(original.getId(), changedRestriction);
-		}
-
-		return differ;
-	}
-
-	public boolean hasRestrictionChanges(final PO update) throws NotFoundException {
-		final PO original = poService.getById(update.getId());
-		return hasRestrictionChanges(original, update);
-	}
 
 	private PO applyChanges(final PO original, final PO update) throws NotFoundException {
 		original.setTitle(update.getTitle());
@@ -68,7 +48,7 @@ public class POUpdateService {
 	 * @param update   the {@link PORestriction} which has to be applied to the original restrictions if they differ.
 	 * @return a boolean which tells whether the restrictions of the given {@link PO POs} are identical or not.
 	 */
-	private boolean areDifferent(final PO original, final PO update) {
+	private boolean areRestrictionsDifferent(final PO original, final PO update) {
 		final PORestriction originalRestrictions = original.getRestriction();
 		final PORestriction updatedRestrictions = update.getRestriction();
 
@@ -105,9 +85,14 @@ public class POUpdateService {
 
 		final PO updatedPO = applyChanges(original, update);
 
-		if (hasRestrictionChanges(original, update)) {
+		if (areRestrictionsDifferent(original, update)) {
 			log.info("PORestriction changes detected.");
 			original.setRestriction(update.getRestriction());
+			ChangedRestriction changedRestriction = ChangedRestriction.builder()
+					.changedRestrictions(affectedRestrictions(original, update))
+					.updatedPO(update)
+					.build();
+			updatedRestrictions.put(original.getId(), changedRestriction);
 			log.info("PORestriction changes applied.");
 		}
 
@@ -115,6 +100,10 @@ public class POUpdateService {
 		log.info("PO changes applied.");
 
 		return true;
+	}
+
+	public List<ChangedRestriction> getAllChangedPOs() {
+		return new ArrayList<>(this.updatedRestrictions.values());
 	}
 
 }

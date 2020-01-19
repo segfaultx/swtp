@@ -4,10 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
-import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.RestrictionViolationProcessor;
+import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionViolationProcessor;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.POService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +35,10 @@ public class AdminSettingsService {
 	@Autowired
 	ObjectMapper objectMapper;
 	@Autowired
-	RestrictionViolationProcessor restrictionViolationProcessor;
+	PORestrictionViolationProcessor poRestrictionViolationProcessor;
 	@Autowired
 	POService poService;
-	
+
 	/**
 	 *
 	 * @param adminSettingsRepository
@@ -52,7 +51,7 @@ public class AdminSettingsService {
 			this.adminSettings = tmp.get(); // TODO: throw exception if settings not present at application startup, changed to this so DBInitiator can fill DB
 		else log.info(String.format("Couldnt lookup admin settings with ID: %d", adminSettingsId));
 	}
-	
+
 	/**
 	 * Method to provide trades restendpoint information if trades are active
 	 *
@@ -61,8 +60,8 @@ public class AdminSettingsService {
 	public boolean isTradesActive() {
 		return adminSettings.isTradesActive();
 	}
-	
-	
+
+
 	/**
 	 * Method to set the admin settings on startup, used for dev purposes
 	 * @param adminSettings adminsettings from db
@@ -70,18 +69,15 @@ public class AdminSettingsService {
 	public void setAdminSettings(AdminSettings adminSettings) {
 		this.adminSettings = adminSettings;
 	}
-	
+
 	@PreAuthorize("hasRole('ADMIN')")
 	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
 		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
-		
+
 		if(tradesActive) {
-			List<PO> allPOs = poService.getAll();
-			for(PO po : allPOs) {
-				restrictionViolationProcessor.filterByCP(po);
-			}
+			poRestrictionViolationProcessor.startPorcessing();
 		}
-		
+
 		jmsTopicTemplate.send(TOPICNAME, session -> {
 			try {
 				return session.createTextMessage(
@@ -94,7 +90,7 @@ public class AdminSettingsService {
 		adminSettingsRepository.save(adminSettings);
 		return true;
 	}
-	
+
 	/**
 	 *
 	 * @return

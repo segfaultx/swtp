@@ -15,8 +15,8 @@ import java.util.List;
 @Builder
 @Slf4j
 public class ChangedRestriction {
-	
+
 	PO updatedPO;
 	List<RestrictionType> changedRestrictions;
-	
+
 }

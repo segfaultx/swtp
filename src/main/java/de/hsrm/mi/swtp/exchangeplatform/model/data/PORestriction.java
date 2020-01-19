@@ -40,7 +40,7 @@ public class PORestriction implements Model {
 	@ToString(exclude = { "id" })
 	@RequiredArgsConstructor
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public static class PORestrictionByCP {
+	public static class PORestrictionByCP implements PORestrictionType {
 		@Id
 		@GeneratedValue
 		@Schema(hidden = true)
@@ -60,7 +60,7 @@ public class PORestriction implements Model {
 	@Data
 	@ToString(exclude = { "id" })
 	@RequiredArgsConstructor
-	public static class PORestrictionBySemester {
+	public static class PORestrictionBySemester implements PORestrictionType {
 		@Id
 		@GeneratedValue
 		@Schema(hidden = true)
@@ -82,7 +82,7 @@ public class PORestriction implements Model {
 	@ToString(exclude = { "id" })
 	@RequiredArgsConstructor
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public static class PORestrictionByProgressiveRegulation {
+	public static class PORestrictionByProgressiveRegulation implements PORestrictionType {
 		@Id
 		@GeneratedValue
 		@Schema(hidden = true)
