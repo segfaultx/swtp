@@ -28,7 +28,7 @@ public class PO implements Model {
 	@GeneratedValue
 	@Schema(accessMode = Schema.AccessMode.READ_ONLY)
 	Long id;
-	
+
 	@Column(name = "po_title", nullable = false, unique = true)
 	@Schema(name = "po_title",
 			nullable = false,
@@ -36,12 +36,12 @@ public class PO implements Model {
 			description = "A unique human friendly title of a 'PO'.")
 	@JsonProperty(value = "title")
 	String title;
-	
+
 	@Column(name = "valid_since", nullable = false)
 	@Schema(name = "valid_since", nullable = false)
 	@JsonProperty("valid_since")
 	LocalDate validSince = LocalDate.now();
-	
+
 	@Column(nullable = false)
 	@Schema(name = "semester_count",
 			nullable = false,
@@ -50,39 +50,38 @@ public class PO implements Model {
 			minimum = "1")
 	@JsonProperty(value = "semester_count", defaultValue = "6")
 	Long semesterCount = 6L;
-	
+
 	@Column(name = "date_start", nullable = false)
 	@Schema(name = "date_start", nullable = false, required = true)
 	@JsonProperty("date_start")
 	LocalDate dateStart = LocalDate.now();
-	
+
 	@Column(name = "date_end", nullable = false)
 //	@Schema(nullable = true, name = "date_end", required = false)
 	@JsonProperty("date_end")
 	LocalDate dateEnd;
-	
+
 	@Column(nullable = false)
 	@JsonProperty("major")
 	String major;
-	
+
 	@JsonProperty("modules")
 	@OneToMany(cascade = CascadeType.ALL)
-//	@JoinColumn(name = "po_modules")
+	@JoinColumn(name = "po_modules")
 	@JsonManagedReference("po-modules")
 	@JsonIgnore
 	List<Module> modules;
-	
+
 	@JsonProperty("students")
 	@OneToMany(cascade = CascadeType.ALL)
-//	@JoinColumn(name = "po_modules")
+	@JoinColumn(name = "po_students")
 	@JsonManagedReference("po-students")
 	@JsonIgnore
 	List<User> students;
-	
+
 	@OneToOne(cascade = CascadeType.ALL)
 	@Schema(required = true, nullable = false, name = "restriction")
 	@JsonProperty(value = "restriction", required = true)
-	@JsonManagedReference("po-restriction")
-	PORestriction poRestriction;
-	
+	PORestriction restriction;
+
 }

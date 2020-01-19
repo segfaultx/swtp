@@ -8,15 +8,15 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
 import java.io.IOException;
 
 public class POSerializer extends StdSerializer<PO> {
-	
+
 	public POSerializer() {
 		this(null);
 	}
-	
+
 	public POSerializer(Class<PO> t) {
 		super(t);
 	}
-	
+
 	@Override
 	public void serialize(PO value, JsonGenerator gen, SerializerProvider provider) throws IOException {
 		gen.writeStartObject();
@@ -27,7 +27,7 @@ public class POSerializer extends StdSerializer<PO> {
 		gen.writeStringField("date_start", String.valueOf(value.getDateStart()));
 		gen.writeStringField("date_end", String.valueOf(value.getDateEnd()));
 		gen.writeStringField("major", value.getMajor());
-		gen.writeObjectField("restriction", value.getPoRestriction());
+		gen.writeObjectField("restriction", value.getRestriction());
 		gen.writeEndObject();
 	}
 }

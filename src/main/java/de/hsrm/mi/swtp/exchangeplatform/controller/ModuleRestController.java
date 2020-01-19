@@ -37,6 +37,12 @@ public class ModuleRestController {
 	String BASEURL = "/api/v1/modules";
 	ModuleService moduleService;
 	
+	@GetMapping
+	@Operation(description = "get all modules", operationId= "getAllModules")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved modules"),
+							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed ID") })
+	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<List<Module>> getAll() {
 		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
 	}

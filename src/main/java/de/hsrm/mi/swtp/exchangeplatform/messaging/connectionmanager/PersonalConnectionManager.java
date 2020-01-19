@@ -61,6 +61,16 @@ public class PersonalConnectionManager {
 		connection.start();
 		userConnectionMap.put(queueName, personalConnection);
 		
+		QueueReceiver receiver = session.createReceiver(queue);
+		receiver.setMessageListener(message -> {
+			try {
+				log.info("\n::" + username);
+				log.info("\n::received" + ((TextMessage) message).getText());
+			} catch(JMSException e) {
+				e.printStackTrace();
+			}
+		});
+		
 		try {
 			messageProducer.send(session.createTextMessage(objectMapper.writeValueAsString(new LoginSuccessfulMessage())));
 		} catch(JsonProcessingException e) {

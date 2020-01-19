@@ -37,7 +37,8 @@ public class POService {
 
 		if(!repository.existsById(update.getId())) throw new NotFoundException();
 		repository.save(update);
-		return false;
+
+		return true;
 	}
 
 }
