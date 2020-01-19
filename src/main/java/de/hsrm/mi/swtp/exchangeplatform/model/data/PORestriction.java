@@ -1,6 +1,8 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -18,7 +20,6 @@ public class PORestriction implements Model {
 	@Id
 	@GeneratedValue
 	@Schema(hidden = true)
-	@JsonIgnore
 	Long id;
 	
 	@JsonProperty("by_credit_points")
@@ -50,7 +51,6 @@ public class PORestriction implements Model {
 		@Id
 		@GeneratedValue
 		@Schema(hidden = true)
-		@JsonIgnore
 		Long id;
 		
 		@JsonProperty("is_active")
@@ -67,12 +67,10 @@ public class PORestriction implements Model {
 	@Data
 	@ToString(exclude = { "id" })
 	@RequiredArgsConstructor
-	@JsonInclude(JsonInclude.Include.NON_NULL)
 	public static class PORestrictionBySemester {
 		@Id
 		@GeneratedValue
 		@Schema(hidden = true)
-		@JsonIgnore
 		Long id;
 		
 		@JsonProperty("is_active")
@@ -95,7 +93,6 @@ public class PORestriction implements Model {
 		@Id
 		@GeneratedValue
 		@Schema(hidden = true)
-		@JsonIgnore
 		Long id;
 		
 		@JsonProperty("is_active")
@@ -109,11 +106,10 @@ public class PORestriction implements Model {
 	@ToString(exclude = { "id" })
 	@RequiredArgsConstructor
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public static class DualPO {
+	public static class DualPO implements Comparable<DualPO> {
 		@Id
 		@GeneratedValue
 		@Schema(hidden = true)
-		@JsonIgnore
 		Long id;
 		
 		/**
@@ -128,6 +124,13 @@ public class PORestriction implements Model {
 		@Schema(name = "free_dual_day", nullable = true, required = false, defaultValue = "TUESDAY")
 		@JsonProperty(value = "free_dual_day", defaultValue = "TUESDAY")
 		DayOfWeek freeDualDay = DayOfWeek.TUESDAY;
+		
+		@Override
+		public int compareTo(DualPO dualPO) {
+			String str1 = String.format("%s-%s-%s", this.getId(), this.getIsActive(), this.getFreeDualDay());
+			String str2 = String.format("%s-%s-%s", dualPO.getId(), dualPO.getIsActive(), dualPO.getFreeDualDay());
+			return str1.compareToIgnoreCase(str2);
+		}
 	}
 	
 }

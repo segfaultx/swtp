@@ -2,17 +2,18 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.WhoAmI;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -42,6 +43,9 @@ public class UserService {
 	
 	public List<User> getAllByLastName(String lastName){ return repository.findAllByLastNameContainingIgnoreCase(lastName);}
 	
+	public List<User> getAllByPO(PO po) {
+		return repository.findAllByPoIs(po);
+	}
 
 	public void save(User user) throws IllegalArgumentException {
 		if(repository.existsById(user.getStudentNumber())) {

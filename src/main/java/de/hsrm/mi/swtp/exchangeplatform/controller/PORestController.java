@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ExchangeplatformStillActiveException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
+import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.POUpdateService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.POService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -30,6 +31,7 @@ public class PORestController {
 	
 	String BASEURL = "/api/v1/pos";
 	POService poService;
+	POUpdateService poUpdateService;
 	
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN')")
@@ -61,6 +63,10 @@ public class PORestController {
 							@ApiResponse(responseCode = "400", description = "malformed update request"),
 							@ApiResponse(responseCode = "409", description = "the exchangeplatform is still active. it needs to be inactive before updating any po settings.") })
 	public ResponseEntity<PO> updatePOById(@RequestBody PO po, BindingResult bindingResult) throws NotFoundException, ExchangeplatformStillActiveException {
+		// will only perform update if changes to restrictions are existent
+		if(!poUpdateService.hasRestrictionChanges(po)) {
+			return ResponseEntity.ok().build();
+		}
 		poService.update(po);
 		return ResponseEntity.ok(poService.getById(po.getId()));
 	}
