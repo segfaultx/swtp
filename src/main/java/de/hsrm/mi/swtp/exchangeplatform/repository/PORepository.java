@@ -10,4 +10,6 @@ public interface PORepository extends JpaRepository<PO, Long> {
 	
 	List<PO> findAllByValidSinceEquals(LocalDate date);
 	
+	PO findByTitleIs(String title);
+	
 }

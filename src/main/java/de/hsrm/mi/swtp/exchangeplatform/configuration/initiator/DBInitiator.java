@@ -274,6 +274,7 @@ public class DBInitiator implements ApplicationRunner {
 		po2017.setValidSince(LocalDate.now());
 		po2017.setDateStart(LocalDate.now());
 		po2017.setPoRestriction(restriction2017);
+		
 		poRepository.save(po2017);
 		
 		// END PO 2017
@@ -492,6 +493,22 @@ public class DBInitiator implements ApplicationRunner {
 		
 		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
+		
+		PO po2017Repo = poRepository.findByTitleIs(po2017.getTitle());
+		
+		ArrayList<User> po2017Students = new ArrayList<>();
+		User dennisRepo = userRepository.findByStudentNumber(dennis.getStudentNumber());
+		dennisRepo.setPo(po2017Repo);
+		User williRepo = userRepository.findByStudentNumber(willi.getStudentNumber());
+		williRepo.setPo(po2017Repo);
+		
+		po2017Students.add(dennisRepo);
+		po2017Students.add(williRepo);
+		po2017Repo.setStudents(po2017Students);
+		
+		poRepository.save(po2017Repo);
+		poRepository.save(po2017Repo);
+		poRepository.save(po2017Repo);
 		
 		AdminSettings adminSettings = new AdminSettings();
 		adminSettings.setId(1);

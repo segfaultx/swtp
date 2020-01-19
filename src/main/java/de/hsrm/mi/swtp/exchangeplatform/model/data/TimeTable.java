@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -29,6 +30,7 @@ public class TimeTable implements Model {
 	LocalDate dateEnd;
 	
 	@OneToMany(mappedBy = "timeTable", cascade = CascadeType.ALL, orphanRemoval = true)
+	@JsonManagedReference("timetable-timeslots")
 	List<Timeslot> timeslots = new ArrayList<>();
 	
 }

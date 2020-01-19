@@ -14,30 +14,30 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Slf4j
-@Service
+@Service("poService")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class POService {
-	
+
 	PORepository repository;
 	AdminSettingsService adminSettingsService;
-	
+
 	public PO getById(Long poId) throws NotFoundException {
 		return repository.findById(poId).orElseThrow(NotFoundException::new);
 	}
-	
+
 	public List<PO> getAll() {
 		return repository.findAll();
 	}
-	
+
 	public boolean update(PO update) throws IllegalArgumentException, NotFoundException {
 		if(adminSettingsService.isTradesActive()) {
 			throw new ExchangeplatformStillActiveException();
 		}
-		
+
 		if(!repository.existsById(update.getId())) throw new NotFoundException();
 		repository.save(update);
 		return false;
 	}
-	
+
 }

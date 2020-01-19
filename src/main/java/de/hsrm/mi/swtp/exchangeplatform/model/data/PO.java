@@ -1,10 +1,14 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.hsrm.mi.swtp.exchangeplatform.model.serializer.POSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
@@ -13,10 +17,12 @@ import java.util.List;
 
 @Entity
 @Data
+@ToString(exclude = { "modules" })
 @Table(name = "po")
 @Schema(name = "PO", description = "A PO is a PO is a PO is a PO.")
 @RequiredArgsConstructor
 @Slf4j
+@JsonSerialize(using = POSerializer.class)
 public class PO implements Model {
 	@Id
 	@GeneratedValue
@@ -59,19 +65,24 @@ public class PO implements Model {
 	@JsonProperty("major")
 	String major;
 	
-	@Column(nullable = true, name = "po_modules")
-	@OneToMany(mappedBy = "po", cascade = CascadeType.ALL, orphanRemoval = true)
-	@Schema(name = "po_modules",
-			nullable = false,
-//			defaultValue = "[]",
-//			format = "int64",
-			description = "A list containing all ids of 'Modules' which are part of the specific 'PO'." )
-	@JsonManagedReference
+	@JsonProperty("modules")
+	@OneToMany(cascade = CascadeType.ALL)
+//	@JoinColumn(name = "po_modules")
+	@JsonManagedReference("po-modules")
+	@JsonIgnore
 	List<Module> modules;
+	
+	@JsonProperty("students")
+	@OneToMany(cascade = CascadeType.ALL)
+//	@JoinColumn(name = "po_modules")
+	@JsonManagedReference("po-students")
+	@JsonIgnore
+	List<User> students;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@Schema(required = true, nullable = false, name = "restriction")
 	@JsonProperty(value = "restriction", required = true)
+	@JsonManagedReference("po-restriction")
 	PORestriction poRestriction;
 	
 }

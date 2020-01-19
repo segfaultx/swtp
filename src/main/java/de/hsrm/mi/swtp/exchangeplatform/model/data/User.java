@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -47,20 +48,26 @@ public class User implements Model {
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonManagedReference("user-authinformation")
 	AuthenticationInformation authenticationInformation;
 	
 	@JsonProperty("user_type")
 	@OneToOne(cascade = CascadeType.ALL)
-	@JsonManagedReference
+	@JsonManagedReference("user-usertype")
 	UserType userType;
+	
+	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@JsonBackReference("po-students")
+	PO po;
 	
 	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JsonManagedReference
+	@JsonManagedReference("user-timeslots")
 	List<Timeslot> timeslots = new ArrayList<>();
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
+	@JsonManagedReference("user-tradeoffers")
 	List<TradeOffer> tradeoffers = new ArrayList<>();
 	
 	@JsonProperty("completed_modules")

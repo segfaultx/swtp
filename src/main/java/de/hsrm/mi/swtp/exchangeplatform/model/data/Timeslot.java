@@ -5,7 +5,6 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
@@ -31,6 +30,7 @@ public class Timeslot implements Model {
     User user;
 	
 	@ManyToOne
+	@JsonBackReference("room-timeslots")
 	Room room;
 	
 	@Enumerated(EnumType.STRING)
@@ -46,17 +46,17 @@ public class Timeslot implements Model {
 	
 	Integer capacity;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "MODULE_ID")
-	@JsonBackReference
+	@JsonBackReference("module-timeslots")
 	Module module;
 	
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "TIMETABLE_ID")
-	@JsonBackReference
+	@JsonBackReference("timetable-timeslots")
 	TimeTable timeTable;
 	
 	@ManyToMany(mappedBy = "timeslots", fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonBackReference("user-timeslots")
 	List<User> attendees = new ArrayList<>();
 }
