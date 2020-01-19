@@ -1,9 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.UserType;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import org.junit.jupiter.api.Test;
@@ -23,7 +21,10 @@ public class BasicTradeServiceTest {
 	
 	@Autowired
 	private BasicTradeService service;
+	
+	@Autowired
 	private UserRepository repository;
+	
 	@Test
 	public void testDoTradeInvalidStudentIdThrowsNotFoundException() {
 		assertThrows(NotFoundException.class, () -> {
@@ -40,6 +41,7 @@ public class BasicTradeServiceTest {
 		for(User user: users) {
 			if(user.getUserType().getType() == TypeOfUsers.STUDENT) {
 				student = user;
+				break;
 			}
 		}
 		
