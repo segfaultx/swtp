@@ -4,9 +4,13 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
+import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.RestrictionViolationProcessor;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.POService;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,7 @@ import static de.hsrm.mi.swtp.exchangeplatform.messaging.listener.Exchangeplatfo
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AdminSettingsService {
 	AdminSettingsRepository adminSettingsRepository;
@@ -30,6 +35,10 @@ public class AdminSettingsService {
 	JmsTemplate jmsTopicTemplate;
 	@Autowired
 	ObjectMapper objectMapper;
+	@Autowired
+	RestrictionViolationProcessor restrictionViolationProcessor;
+	@Autowired
+	POService poService;
 	
 	/**
 	 *
@@ -65,6 +74,14 @@ public class AdminSettingsService {
 	@PreAuthorize("hasRole('ADMIN')")
 	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
 		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
+		
+		if(tradesActive) {
+			List<PO> allPOs = poService.getAll();
+			for(PO po : allPOs) {
+				restrictionViolationProcessor.filterByCP(po);
+			}
+		}
+		
 		jmsTopicTemplate.send(TOPICNAME, session -> {
 			try {
 				return session.createTextMessage(

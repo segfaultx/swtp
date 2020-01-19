@@ -273,6 +273,7 @@ public class DBInitiator implements ApplicationRunner {
 		po2017.setMajor("Medieninformatik");
 		po2017.setValidSince(LocalDate.now());
 		po2017.setDateStart(LocalDate.now());
+		po2017.setDateEnd(LocalDate.now());
 		po2017.setPoRestriction(restriction2017);
 		
 		poRepository.save(po2017);
@@ -285,6 +286,8 @@ public class DBInitiator implements ApplicationRunner {
 		
 		PO nonDual = initPO(false);
 		nonDual.setPoRestriction(restrictionNonDual);
+		nonDual.setDateStart(LocalDate.now());
+		nonDual.setDateEnd(LocalDate.now());
 //		restriction2017.setPo(nonDual);
 		
 		Module afs = new Module();
@@ -299,6 +302,8 @@ public class DBInitiator implements ApplicationRunner {
 		
 		PO dual = initPO(true);
 		dual.setPoRestriction(restrictionDual);
+		dual.setDateStart(LocalDate.now());
+		dual.setDateEnd(LocalDate.now());
 //		restrictionDual.setPo(dual);
 		
 		Module prog3 = new Module();

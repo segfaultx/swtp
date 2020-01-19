@@ -56,7 +56,7 @@ public class PO implements Model {
 	@JsonProperty("date_start")
 	LocalDate dateStart = LocalDate.now();
 	
-	@Column(name = "date_end", nullable = true)
+	@Column(name = "date_end", nullable = false)
 //	@Schema(nullable = true, name = "date_end", required = false)
 	@JsonProperty("date_end")
 	LocalDate dateEnd;
