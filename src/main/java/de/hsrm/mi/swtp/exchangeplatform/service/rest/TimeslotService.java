@@ -60,6 +60,20 @@ public class TimeslotService {
 		repository.save(timeslot);
 		log.info(String.format("SUCCESS: Appointment %s created", timeslot));
 	}
+	
+	public void addAttendeeToWaitlist(Long timeslotId, User student) throws NotFoundException {
+		Timeslot timeslot = getById(timeslotId)
+				.orElseThrow(NotFoundException::new);
+		
+		if(timeslot.getWaitList().contains(student) || timeslot.getAttendees().contains(student)) {
+			log.info(String.format("FAIL: Student %s is already an attendee or on the waitlist", student.getStudentNumber()));
+			throw new UserIsAlreadyAttendeeException(student);
+		}
+		
+		timeslot.getWaitList().add(student);
+		this.save(timeslot);
+		log.info(String.format("SUCCESS: Student %s added to waitlist %s", student.getStudentNumber(), timeslotId));
+	}
 
 	public void removeAttendeeFromTimeslot(Long timeslotId, User student) throws NotFoundException {
 		Timeslot timeslot = this.getById(timeslotId)
@@ -75,6 +89,20 @@ public class TimeslotService {
 			timeslot.getWaitList().remove(nextStudent);
 			timeslot.getAttendees().add(nextStudent);
 		}
+		this.save(timeslot);
+		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), timeslotId));
+	}
+	
+	public void removeAttendeeFromWaitlist(Long timeslotId, User student) throws NotFoundException {
+		Timeslot timeslot = this.getById(timeslotId)
+								.orElseThrow(NotFoundException::new);
+		
+		if(!timeslot.getWaitList().contains(student)) {
+			log.info(String.format("FAIL: Student %s not removed", student.getStudentNumber()));
+			throw new ModelNotFoundException(student);
+		}
+		
+		timeslot.getWaitList().remove(student);
 		this.save(timeslot);
 		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), timeslotId));
 	}

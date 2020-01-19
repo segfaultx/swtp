@@ -70,4 +70,8 @@ public class User implements Model {
 	@JsonIgnore
 	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
 	List<TradeOffer> tradeoffers = new ArrayList<>();
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
+	List<TradeOffer> tradeofferSeeks = new ArrayList<>();
 }
