@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -31,9 +32,11 @@ public class User implements Model {
 	String lastName;
 	
 	@JsonProperty("student_number")
+	@Schema(nullable = true)
 	Long studentNumber;
 	
 	@JsonProperty("staff_number")
+	@Schema(nullable = true)
 	Long staffNumber;
 	
 	@JsonProperty("cp")
@@ -70,6 +73,10 @@ public class User implements Model {
 	@JsonIgnore
 	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
 	List<TradeOffer> tradeoffers = new ArrayList<>();
+	
+	@JsonProperty("completed_modules")
+	@OneToMany(cascade = CascadeType.ALL)
+	List<Module> completedModules = new ArrayList<>();
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)

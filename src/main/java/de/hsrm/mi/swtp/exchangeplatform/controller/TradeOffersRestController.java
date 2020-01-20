@@ -13,10 +13,6 @@ import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,6 +23,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 
 import javax.validation.Valid;
 import java.security.Principal;
@@ -53,19 +53,19 @@ public class TradeOffersRestController {
 	 * provides an endpoint to {@code '/api/v1/trades/<id>/<id>'} through which an {student} may delete his {@link TradeOffer}.
 	 *
 	 * @param studentId studentId of requester
-	 * @param seekId   tradeId of tradeoffer which is to be deleted.
+	 * @param seekId    tradeId of tradeoffer which is to be deleted.
 	 *
 	 * @return {@link HttpStatus#OK} if tradeoffer was deleted, {@link HttpStatus#NOT_FOUND} if tradeoffer wasnt found,
 	 * {@link HttpStatus#FORBIDDEN} if requester isnt owner of the tradeoffer.
 	 */
 	@DeleteMapping("/{studentId}/{seekId}")
-	@ApiOperation(value = "Delete tradeoffer with seekId of student", nickname = "deleteTradeOfferOfStudent")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully deleted tradeoffer"),
-							@ApiResponse(code = 403, message = "unauthorized delete attempt"),
-							@ApiResponse(code = 404, message = "tradeoffer not found") })
+	@Operation(description = "Delete tradeoffer with seekId of student", operationId = "deleteTradeOfferOfStudent")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully deleted tradeoffer"),
+							@ApiResponse(responseCode = "403", description = "unauthorized delete attempt"),
+							@ApiResponse(responseCode = "404", description = "tradeoffer not found") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity deleteTradeOffer(@ApiParam(value = "Numeric ID of the student", required = true) @PathVariable("studentId") long studentId,
-										   @ApiParam(value = "Numeric ID of the tradeoffer", required = true) @PathVariable("seekId") long seekId
+	public ResponseEntity deleteTradeOffer(@Parameter(description = "Numeric ID of the student", required = true) @PathVariable("studentId") long studentId,
+										   @Parameter(description = "Numeric ID of the tradeoffer", required = true) @PathVariable("seekId") long seekId
 										  ) throws Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("DELETE Request Student: %d TradeOffer: %d", studentId, seekId));
@@ -89,13 +89,13 @@ public class TradeOffersRestController {
 	 */
 	
 	@PostMapping("/create")
-	@ApiOperation(value = "create tradeoffer for student", nickname = "createTradeOfferForStudent")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully created tradeoffer"),
-							@ApiResponse(code = 403, message = "unauthorized create attempt"),
-							@ApiResponse(code = 400, message = "malformed trade request") })
+	@Operation(description = "create tradeoffer for student", operationId = "createTradeOfferForStudent")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully created tradeoffer"),
+							@ApiResponse(responseCode = "403", description = "unauthorized create attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed trade request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<TradeOffer> createTradeOffer(
-			@ApiParam(value = "Object containing ID's of student, wanted and offered timeslot", required = true) @Valid @RequestBody TradeRequest tradeRequest,
+			@Parameter(description = "Object containing ID's of student, wanted and offered timeslot", required = true) @Valid @RequestBody TradeRequest tradeRequest,
 			BindingResult bindingResult
 													  ) throws NotFoundException {
 		if(adminSettingsService.isTradesActive()) {
@@ -127,17 +127,18 @@ public class TradeOffersRestController {
 	 * @return new timetable if trade was successful
 	 */
 	@PostMapping
-	@ApiOperation(value = "request trade", nickname = "requestTrade")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully processed traderequest"),
-							@ApiResponse(code = 403, message = "unauthorized trade attempt"),
-							@ApiResponse(code = 400, message = "malformed trade request") })
+	@Operation(description = "request trade", operationId = "requestTrade")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully processed traderequest"),
+							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed trade request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<TimeTable> requestTrade(@Valid @RequestBody TradeRequest tradeRequest, @RequestHeader("Authorization") String token) throws Exception {
+	public ResponseEntity<TimeTable> requestTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws
+			Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
 								  ));
-			String username = jwtTokenUtils.getUsernameFromToken(JWTTokenUtils.tokenWithoutPrefix(token)).replace("Bearer ", "");
+			String username = principal.getName();
 			log.info(username);
 			Optional<User> acceptingUserOpt = userService.getByUsername(username);
 			if(acceptingUserOpt.isEmpty()) return null;
@@ -147,15 +148,16 @@ public class TradeOffersRestController {
 															tradeRequest.getWantedTimeslotId()
 														   );
 			
-			
-			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(), TradeOfferSuccessfulMessage.builder()
-																			   .leftTimeslotId(tradeRequest.getOfferedTimeslotId())
-																			   .newTimeslotId(tradeRequest.getWantedTimeslotId())
-																			   .build());
-			personalMessageSender.send(acceptingUser, TradeOfferSuccessfulMessage.builder()
-																			   .leftTimeslotId(tradeRequest.getWantedTimeslotId())
-																			   .newTimeslotId(tradeRequest.getOfferedTimeslotId())
-																			   .build());
+			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
+									   TradeOfferSuccessfulMessage.builder()
+																  .leftTimeslotId(tradeRequest.getOfferedTimeslotId())
+																  .newTimeslotId(tradeRequest.getWantedTimeslotId())
+																  .build());
+			personalMessageSender.send(acceptingUser,
+									   TradeOfferSuccessfulMessage.builder()
+																  .leftTimeslotId(tradeRequest.getWantedTimeslotId())
+																  .newTimeslotId(tradeRequest.getOfferedTimeslotId())
+																  .build());
 			
 			
 			TimeTable timetable = new TimeTable();
@@ -170,6 +172,34 @@ public class TradeOffersRestController {
 	}
 	
 	/**
+	 * POST Request handler
+	 *
+	 * provides an endpoint to {@link User} admins to force trades
+	 * @param tradeRequest object containing transaction information
+	 * @param principal admin principal
+	 * @return {@link HttpStatus#OK} if success
+	 * @throws Exception if failure
+	 */
+	
+	@PostMapping("/admin")
+	@Operation(description = "force admin trade", operationId = "adminForceTrade")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully processed traderequest"),
+							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed trade request") })
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity requestAdminTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws
+			Exception {
+		log.info(String.format("Traderequest of admin: %s for timeslot: %d, offer: %d", principal.getName(),
+							   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()));
+		tradeOfferService.adminTrade(tradeRequest.getOfferedByStudentMatriculationNumber(),
+									 tradeRequest.getOfferedTimeslotId(),
+									 tradeRequest.getWantedTimeslotId(),
+									 userService.getByUsername(principal.getName()).orElseThrow().getId());
+		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	
+	/**
 	 * GET request handler
 	 * <p>
 	 * provides an endpoint to {@link User}s to receive tradeoffers for a given timeslot
@@ -181,14 +211,34 @@ public class TradeOffersRestController {
 	 * @throws Exception if lookups fail
 	 */
 	@GetMapping("/{id}")
-	@ApiOperation(value = "request tradeOffers", nickname = "getTradesForTimeslot")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully retrieved tradeoffers"),
-							@ApiResponse(code = 403, message = "unauthorized tradeOffer request"),
-							@ApiResponse(code = 400, message = "malformed tradeOffers request") })
+	@Operation(description = "request tradeOffers", operationId = "getTradesForTimeslot")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved tradeoffers"),
+							@ApiResponse(responseCode = "403", description = "unauthorized tradeOffer request"),
+							@ApiResponse(responseCode = "400", description = "malformed tradeOffers request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<Map<String, List<Timeslot>>> getTradesForModule(@PathVariable("id") long id, Principal principal) throws Exception {
 		log.info(String.format("GET REQUEST TRADEOFFERS FOR TIMESLOT WITH ID: %d BY USER: %s", id, principal.getName()));
 		var out = tradeOfferService.getTradeOffersForModule(id, userService.getByUsername(principal.getName()).orElseThrow());
 		return new ResponseEntity<>(out, HttpStatus.OK);
+	}
+	
+	@GetMapping("/all")
+	@Operation(description = "request all tradeOffers", operationId = "getAllTradeOffers")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved tradeoffers") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
+	public ResponseEntity<List<TradeOffer>> getAllTradeoffersForTest() {
+		return new ResponseEntity<>(tradeOfferService.getAll(), HttpStatus.OK);
+	}
+
+	@GetMapping("/mytradefffers")
+	@Operation(description = "get TradeOffers for student", operationId = "getMyTradeOffers")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved tradeoffers"),
+							@ApiResponse(responseCode = "403", description = "unauthorized request"),
+							@ApiResponse(responseCode = "400", description = "malformed request") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
+	public ResponseEntity<List<TradeOffer>> getMyTradeOffers(Principal principal) throws Exception {
+		log.info(String.format("GET REQUEST TRADEOFFERS FOR Student BY USER: %s", principal.getName()));
+		var out = tradeOfferService.getAllTradeoffersForStudent(userService.getByUsername(principal.getName()).orElseThrow());
+		return new ResponseEntity<List<TradeOffer>>(out, HttpStatus.OK);
 	}
 }
