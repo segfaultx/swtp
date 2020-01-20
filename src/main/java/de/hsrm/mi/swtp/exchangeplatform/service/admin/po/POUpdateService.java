@@ -87,11 +87,11 @@ public class POUpdateService {
 
 		if (areRestrictionsDifferent(original, update)) {
 			log.info("PORestriction changes detected.");
-			original.setRestriction(update.getRestriction());
 			ChangedRestriction changedRestriction = ChangedRestriction.builder()
-					.changedRestrictions(affectedRestrictions(original, update))
-					.updatedPO(update)
-					.build();
+																	  .changedRestrictions(affectedRestrictions(original, update))
+																	  .updatedPO(update)
+																	  .build();
+			original.setRestriction(update.getRestriction());
 			updatedRestrictions.put(original.getId(), changedRestriction);
 			log.info("PORestriction changes applied.");
 		}
@@ -104,6 +104,10 @@ public class POUpdateService {
 
 	public List<ChangedRestriction> getAllChangedPOs() {
 		return new ArrayList<>(this.updatedRestrictions.values());
+	}
+	
+	public void flush() {
+		this.updatedRestrictions.clear();
 	}
 
 }

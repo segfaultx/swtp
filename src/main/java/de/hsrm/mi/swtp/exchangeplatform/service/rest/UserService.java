@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.WhoAmI;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import lombok.AccessLevel;
@@ -45,6 +46,12 @@ public class UserService {
 	
 	public List<User> getAllByPO(PO po) {
 		return repository.findAllByPoIs(po);
+	}
+	
+	public Long getUserTotalCPSelected(final User user) {
+		Long totalCP = 0L;
+		for(Timeslot timeslot : user.getTimeslots()) totalCP += timeslot.getModule().getCreditPoints();
+		return totalCP;
 	}
 
 	public void save(User user) throws IllegalArgumentException {

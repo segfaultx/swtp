@@ -74,7 +74,7 @@ public class PORestriction implements Model {
 		@Schema(name = "min_semesters", defaultValue = "0", nullable = true, description = "All modules have to be passed from the first semester up until this given (inclusive).")
 		@Column(nullable = false, name = "min_semesters")
 		@JsonProperty(value = "min_semesters", defaultValue = "0")
-		Integer minSemesters = 0;
+		Long minSemesters = 0L;
 	}
 
 	@Entity

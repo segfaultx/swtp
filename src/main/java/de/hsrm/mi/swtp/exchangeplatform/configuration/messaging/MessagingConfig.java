@@ -49,8 +49,6 @@ public class MessagingConfig {
 		broker.setBrokerName("exchangeplatform-broker");
 		broker.deleteAllMessages();
 		broker.setUseShutdownHook(false);
-		broker.setPersistent(false);
-		broker.setUseJmx(false);
 		broker.start(true);
 		return broker;
 	}

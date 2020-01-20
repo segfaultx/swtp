@@ -75,7 +75,7 @@ public class AdminSettingsService {
 		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
 
 		if(tradesActive) {
-			poRestrictionViolationProcessor.startPorcessing();
+			poRestrictionViolationProcessor.startProcessing();
 		}
 
 		jmsTopicTemplate.send(TOPICNAME, session -> {

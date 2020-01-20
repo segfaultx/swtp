@@ -29,6 +29,10 @@ public class Module implements Model {
 	@JsonProperty(value = "credit_points", defaultValue = "5")
 	private Long creditPoints = 5L;
 	
+	@Schema(defaultValue = "1", name = "semester", nullable = false)
+	@JsonProperty(value = "semester", defaultValue = "1")
+	private Long semester = 4L;
+	
 	@OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
 	@JsonManagedReference("module-timeslots")

@@ -2,6 +2,8 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -42,4 +45,12 @@ public class ModuleService {
 		repository.delete(module);
 		log.info(String.format("SUCCESS: Module %s deleted", module));
 	}
+	
+	public List<Module> getAllModulesByStudent(final User student) {
+		return student.getTimeslots()
+					  .stream()
+					  .map(Timeslot::getModule)
+					  .collect(Collectors.toList());
+	}
+	
 }
