@@ -3,6 +3,8 @@ package de.hsrm.mi.swtp.exchangeplatform.model.data;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
@@ -22,6 +24,10 @@ public class Module implements Model {
 	private Long id;
 	
 	private String name;
+	
+	@Schema(defaultValue = "5", name = "credit_points", nullable = false)
+	@JsonProperty(value = "credit_points", defaultValue = "5")
+	private Long creditPoints = 5L;
 	
 	@OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonIgnore
