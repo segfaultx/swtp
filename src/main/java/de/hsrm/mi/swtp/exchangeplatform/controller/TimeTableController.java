@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,6 +37,7 @@ public class TimeTableController {
 	
 	UserService userService;
 	TimeTableService timeTableService;
+	ModuleService moduleService;
 	
 	@GetMapping
 	@Operation(description = "get all timetables", operationId = "getAllTimetables")
@@ -56,7 +58,7 @@ public class TimeTableController {
 		return ResponseEntity.ok(timeTable);
 	}
 	
-/*	@GetMapping("/modulesforstudent/{studentId}")
+	@GetMapping("/modulesforstudent/{studentId}")
 	@Operation(description = "get potential modules for student", operationId = "getModulesForStudent")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "sucessfully fetched modules for student"),
@@ -70,9 +72,9 @@ public class TimeTableController {
 							   principal.getName(), studentId));
 		var potentialModules = moduleService.lookUpAvailableModulesForStudent(principal.getName());
 		return new ResponseEntity<>(potentialModules, HttpStatus.OK);
-	}*/
+	}
 	
-	
+
 	@GetMapping("/suggestedTimetable/{timeslotid}")
 	@Operation(description = "get suggested timetable per Module for student", operationId = "getSuggestedTimetable")
 	@ApiResponses(value = {
@@ -84,9 +86,7 @@ public class TimeTableController {
 	public ResponseEntity<TimeTable> getSuggestedTimetableForStudent(@PathVariable("timeslotid") Long timeslotID,
 																	 Principal principal) throws NotFoundException {
 		log.info(String.format("GET REQUEST: getSuggestedTimetableForStudent, by user: %s, for timeslotid: %d", principal.getName(), timeslotID));
-		
-		return null;
+		var potentialTimeTable = timeTableService.getSuggestedTimetable(timeslotID, principal.getName());
+		return new ResponseEntity<>(potentialTimeTable, HttpStatus.OK);
 	}
-	
-	
 }
