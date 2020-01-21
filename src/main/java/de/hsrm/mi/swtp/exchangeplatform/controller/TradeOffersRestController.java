@@ -141,7 +141,7 @@ public class TradeOffersRestController {
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
 								  ));
 			String username = principal.getName();
-			log.info(username);
+
 			User acceptingUser = userService.getByUsername(username)
 					.orElseThrow(NotFoundException::new);
 			
