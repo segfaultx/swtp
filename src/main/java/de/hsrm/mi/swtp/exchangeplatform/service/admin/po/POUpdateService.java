@@ -48,9 +48,13 @@ public class POUpdateService {
 	 * @param update   the {@link PORestriction} which has to be applied to the original restrictions if they differ.
 	 * @return a boolean which tells whether the restrictions of the given {@link PO POs} are identical or not.
 	 */
-	private boolean areRestrictionsDifferent(final PO original, final PO update) {
+	private boolean areRestrictionsDifferent(final PO original, final PO update) throws OriginalRestrictionIsNullException {
 		final PORestriction originalRestrictions = original.getRestriction();
 		final PORestriction updatedRestrictions = update.getRestriction();
+		
+		if(originalRestrictions == null && updatedRestrictions != null) {
+			throw new OriginalRestrictionIsNullException();
+		}
 
 		return !(originalRestrictions.getByCP().equals(updatedRestrictions.getByCP()) && originalRestrictions.getByProgressiveRegulation()
 				.equals(updatedRestrictions.getByProgressiveRegulation()) && originalRestrictions
@@ -85,15 +89,22 @@ public class POUpdateService {
 
 		final PO updatedPO = applyChanges(original, update);
 
-		if (areRestrictionsDifferent(original, update)) {
-			log.info("PORestriction changes detected.");
-			ChangedRestriction changedRestriction = ChangedRestriction.builder()
-																	  .changedRestrictions(affectedRestrictions(original, update))
-																	  .updatedPO(update)
-																	  .build();
-			original.setRestriction(update.getRestriction());
-			updatedRestrictions.put(original.getId(), changedRestriction);
-			log.info("PORestriction changes applied.");
+		boolean restrictionsAreDifferent;
+		try {
+			restrictionsAreDifferent = areRestrictionsDifferent(original, update);
+			if (restrictionsAreDifferent) {
+				log.info("PORestriction changes detected.");
+				ChangedRestriction changedRestriction = ChangedRestriction.builder()
+																		  .changedRestrictions(affectedRestrictions(original, update))
+																		  .updatedPO(update)
+																		  .build();
+				original.setRestriction(update.getRestriction());
+				updatedRestrictions.put(original.getId(), changedRestriction);
+				log.info("PORestriction changes applied.");
+			}
+		} catch(OriginalRestrictionIsNullException e) {
+			restrictionsAreDifferent = true;
+			original.setRestriction(updatedPO.getRestriction());
 		}
 
 		repository.save(updatedPO);
@@ -109,5 +120,6 @@ public class POUpdateService {
 	public void flush() {
 		this.updatedRestrictions.clear();
 	}
-
+	
+	private class OriginalRestrictionIsNullException extends Throwable {}
 }

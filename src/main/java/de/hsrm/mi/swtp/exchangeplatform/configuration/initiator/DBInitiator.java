@@ -19,6 +19,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -315,8 +316,10 @@ public class DBInitiator implements ApplicationRunner {
 		
 		// START PO 2017
 		PO po2017 = new PO();
+		po2017.setTitle("Medieninformatik PO17");
 		po2017.setMajor("Medieninformatik");
-		po2017.setValidSinceYear("2017");
+		po2017.setValidSince(LocalDate.now().minusYears(3L));
+		po2017.setDateEnd(LocalDate.now().plusYears(3L));
 		// END PO 2017
 		
 		// START Modul AFS
