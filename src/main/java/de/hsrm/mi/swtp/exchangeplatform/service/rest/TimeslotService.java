@@ -55,7 +55,7 @@ public class TimeslotService {
 
 
 	public void removeAttendeeFromTimeslot(Long timeslotId, User student) throws NotFoundException {
-		Timeslot timeslot = this.getById(timeslotId)
+		Timeslot timeslot = getById(timeslotId)
 								.orElseThrow(NotFoundException::new);
 		
 		List<User> attendees = timeslot.getAttendees();
