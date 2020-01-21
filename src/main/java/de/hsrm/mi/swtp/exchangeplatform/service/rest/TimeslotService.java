@@ -2,7 +2,6 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.TimeslotNotCreatedException;
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
@@ -40,9 +39,7 @@ public class TimeslotService {
 		return repository.findById(timeslotId);
 	}
 	
-	public void addAttendeeToTimeslot(Long timeslotId, User student) throws NotFoundException {
-		Timeslot timeslot = getById(timeslotId)
-				.orElseThrow(NotFoundException::new);
+	public void addAttendeeToTimeslot(Timeslot timeslot, User student) {
 		
 		if(timeslot.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
@@ -50,13 +47,11 @@ public class TimeslotService {
 		}
 		
 		save(timeslot);
-		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), timeslotId));
+		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), timeslot.getId()));
 	}
 
 
-	public void removeAttendeeFromTimeslot(Long timeslotId, User student) throws NotFoundException {
-		Timeslot timeslot = getById(timeslotId)
-								.orElseThrow(NotFoundException::new);
+	public void removeAttendeeFromTimeslot(Timeslot timeslot, User student) {
 		
 		List<User> attendees = timeslot.getAttendees();
 		attendees.remove(student);

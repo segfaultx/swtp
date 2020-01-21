@@ -10,6 +10,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
@@ -47,6 +48,7 @@ public class TradeOffersRestController {
 	JWTTokenUtils jwtTokenUtils;
 	PersonalConnectionManager personalConnectionManager;
 	PersonalMessageSender personalMessageSender;
+	TimeslotService timeslotService;
 	
 	/**
 	 * DELETE request handler.
@@ -140,13 +142,19 @@ public class TradeOffersRestController {
 								  ));
 			String username = principal.getName();
 			log.info(username);
-			Optional<User> acceptingUserOpt = userService.getByUsername(username);
-			if(acceptingUserOpt.isEmpty()) return null;
-			User acceptingUser = acceptingUserOpt.get();
-			log.info(acceptingUser.toString());
-			var timeslot = tradeOfferService.tradeTimeslots(tradeRequest.getOfferedByStudentMatriculationNumber(), tradeRequest.getOfferedTimeslotId(),
-															tradeRequest.getWantedTimeslotId()
-														   );
+			User acceptingUser = userService.getByUsername(username)
+					.orElseThrow(NotFoundException::new);
+			
+			User offeringUser = userService.getAllByStudentNumber(
+					String.valueOf(tradeRequest.getOfferedByStudentMatriculationNumber())).get(0);
+			
+			Timeslot offeringTimeslot = timeslotService.getById(tradeRequest.getOfferedTimeslotId())
+					.orElseThrow(NotFoundException::new);
+			
+			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId())
+					.orElseThrow(NotFoundException::new);
+			
+			var timeslot = tradeOfferService.tradeTimeslots(offeringUser, acceptingUser, offeringTimeslot, requestingTimeslot);
 			
 			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
 									   TradeOfferSuccessfulMessage.builder()

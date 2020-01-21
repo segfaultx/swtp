@@ -1,6 +1,5 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.TimeslotRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
@@ -10,6 +9,7 @@ import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
 
@@ -94,15 +93,14 @@ public class TimeslotRestController {
 		
 		User user = userService.getById(timeslotRequestBody.getStudentId())
 							   .orElseThrow(NotFoundException::new);
+		
+		Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
+				.orElseThrow(NotFoundException::new);
+		
+		timeslotService.addAttendeeToTimeslot(timeslot, user);
 
-		try {
-			timeslotService.addAttendeeToTimeslot(timeslotRequestBody.getTimeslotId(), user);
-			Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getStudentId())
-											   .orElseThrow(NotFoundException::new);
-			return ResponseEntity.ok(timeslot);
-		} catch(UserIsAlreadyAttendeeException e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
+		return ResponseEntity.ok(timeslot);
+
 	}
 
 	/**
@@ -126,11 +124,10 @@ public class TimeslotRestController {
 		
 		User user = userService.getById(timeslotRequestBody.getStudentId())
 							   .orElseThrow(NotFoundException::new);
-		
-		timeslotService.removeAttendeeFromTimeslot(timeslotRequestBody.getTimeslotId(), user);
-		
-		Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getStudentId())
+		Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
 				.orElseThrow(NotFoundException::new);
+		timeslotService.removeAttendeeFromTimeslot(timeslot, user);
+
 		return ResponseEntity.ok(timeslot);
 	}
 

@@ -1,8 +1,8 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,28 +16,24 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BasicTradeService implements TradeService{
-
-	UserService userService;
+	
 	TimeslotService timeslotService;
-	TradeOfferService tradeOfferService;
 	
 	@Override
 	@Transactional
-	public boolean doTrade(long studentId, long offeredTimeSlotId, long wantedTimeSlotId) throws NotFoundException {
-		User student1 = userService.getById(studentId)
-				.orElseThrow(NotFoundException::new);
+	public boolean doTrade(User student1, User student2, Timeslot timeslot1, Timeslot timeslot2) {
 		
-		timeslotService.addAttendeeToTimeslot(wantedTimeSlotId, student1);
-		timeslotService.removeAttendeeFromTimeslot(offeredTimeSlotId, student1);
+		if(!student1.getUserType().getType().equals(TypeOfUsers.STUDENT) ||
+				!student2.getUserType().getType().equals(TypeOfUsers.STUDENT)) {
+			log.info("Trade failed: One or both Users are not Students");
+			return false;
+		}
 		
-		TradeOffer tradeOffer = tradeOfferService.getById(offeredTimeSlotId);
+		timeslotService.addAttendeeToTimeslot(timeslot2, student1);
+		timeslotService.removeAttendeeFromTimeslot(timeslot1, student1);
 		
-		// TODO: Connect active filters and return false if trade did not succeed
-		
-		User student2 = tradeOffer.getOfferer();
-		
-		timeslotService.addAttendeeToTimeslot(offeredTimeSlotId, student2);
-		timeslotService.removeAttendeeFromTimeslot(wantedTimeSlotId, student2);
+		timeslotService.addAttendeeToTimeslot(timeslot1, student2);
+		timeslotService.removeAttendeeFromTimeslot(timeslot2, student2);
 		
 		// send message to user's personal queue telling that the trade was successful
 		/*personalMessageSender.send(acceptedTrade.getOfferer(), TradeOfferSuccessfulMessage.builder()
