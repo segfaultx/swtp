@@ -101,7 +101,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			}
 			
 		});
-		for(TradeOffer to : tradeOfferRepository.findAllByOfferer(user)) {
+		for(TradeOffer to : tradeOfferRepository.findAllByOffererAndOffer(user, offeredTimeslot)) {
 			if(!ownOffers.contains(to.getSeek())) ownOffers.add(to.getSeek());
 		}
 		var allTimeslots = timeSlotRepository.findAllByModule(offeredTimeslot.getModule());

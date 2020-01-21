@@ -1,8 +1,11 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
+import de.hsrm.mi.swtp.exchangeplatform.model.serializer.TimeslotSerializer;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -18,6 +21,7 @@ import java.util.List;
 @Data
 @ToString(exclude = { "user", "room", "module", "timeTable", "attendees"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonSerialize(using = TimeslotSerializer.class)
 public class Timeslot implements Model {
 	
 	@Id

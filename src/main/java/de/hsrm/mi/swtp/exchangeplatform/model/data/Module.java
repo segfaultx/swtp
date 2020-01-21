@@ -1,9 +1,12 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import de.hsrm.mi.swtp.exchangeplatform.model.serializer.ModuleSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -14,9 +17,10 @@ import java.util.List;
 
 @Entity
 @Data
-@ToString(exclude = {"po", "timeslots"})
+@ToString(exclude = { "po", "timeslots" })
 @RequiredArgsConstructor
 @Table(name = "my_module")
+@JsonSerialize(using = ModuleSerializer.class)
 public class Module implements Model {
 	
 	@Id
@@ -33,9 +37,8 @@ public class Module implements Model {
 	@JsonProperty(value = "semester", defaultValue = "1")
 	private Long semester = 4L;
 	
+	@JsonIdentityReference
 	@OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonIgnore
-	@JsonManagedReference("module-timeslots")
 	private List<Timeslot> timeslots;
 	
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)

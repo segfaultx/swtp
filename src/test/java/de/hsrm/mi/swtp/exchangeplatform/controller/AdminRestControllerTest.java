@@ -4,15 +4,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
 
 
 import javax.transaction.Transactional;
@@ -22,12 +17,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
-@ExtendWith(SpringExtension.class)
-@AutoConfigureMockMvc
-@SpringBootTest
-public class AdminRestControllerTest {
-	@Autowired
-	MockMvc mockmvc;
+public class AdminRestControllerTest extends BaseRestTest {
 	@Autowired
 	AdminSettingsRepository adminSettingsRepository;
 	
@@ -36,7 +26,7 @@ public class AdminRestControllerTest {
 	@WithMockUser(roles = "ADMIN")
 	@Transactional
 	void testGetAdminsettings() throws Exception {
-		var result = mockmvc.perform(get("/api/v1/admin/settings")).andExpect(status().isOk()).andReturn();
+		var result = mockMvc.perform(get("/api/v1/admin/settings")).andExpect(status().isOk()).andReturn();
 		var deserialized_result = new ObjectMapper().readValue(result.getResponse().getContentAsString(), AdminSettings.class);
 		var actual_setting = adminSettingsRepository.findById(1L).orElseThrow();
 		assertEquals("Adminsettings get equals", actual_setting, deserialized_result);
@@ -50,7 +40,7 @@ public class AdminRestControllerTest {
 		AdminSettings newAdminsetting = new AdminSettings();
 		BeanUtils.copyProperties(actual_setting, newAdminsetting);
 		newAdminsetting.setTradesActive(false);
-		var result = mockmvc.perform(
+		var result = mockMvc.perform(
 				post("/api/v1/admin/settings").contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(newAdminsetting)))
 							.andExpect(status().isOk())
 							.andReturn();
@@ -63,13 +53,13 @@ public class AdminRestControllerTest {
 	@WithMockUser(roles = "ADMIN")
 	@Transactional
 	void testFalseAdminsettingsPost() throws Exception {
-		mockmvc.perform(post("/api/v1/admin/settings")
+		mockMvc.perform(post("/api/v1/admin/settings")
 								.contentType(MediaType.APPLICATION_JSON).content("null"))
 			   .andExpect(status().isBadRequest());
 	}
 	@Test
 	@WithMockUser(roles = "USER")
 	void testUnauthorized() throws Exception {
-		mockmvc.perform(get("/api/v1/admin/settings")).andExpect(status().is4xxClientError());
+		mockMvc.perform(get("/api/v1/admin/settings")).andExpect(status().is4xxClientError());
 	}
 }
