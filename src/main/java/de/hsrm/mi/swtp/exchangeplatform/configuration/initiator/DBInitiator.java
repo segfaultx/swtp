@@ -23,6 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -315,11 +316,18 @@ public class DBInitiator implements ApplicationRunner {
 		// END KRECHEL
 		
 		// START PO 2017
+		PORestriction restriction2017 = createRestriction(false);
+		restriction2017.getByCP().setIsActive(true);
+		restriction2017.getByCP().setMaxCP(40L);
+		restriction2017.getByProgressiveRegulation().setIsActive(true);
+		restriction2017.getDualPO().setIsActive(false);
+		
 		PO po2017 = new PO();
 		po2017.setTitle("Medieninformatik PO17");
 		po2017.setMajor("Medieninformatik");
 		po2017.setValidSince(LocalDate.now().minusYears(3L));
 		po2017.setDateEnd(LocalDate.now().plusYears(3L));
+		po2017.setRestriction(restriction2017);
 		// END PO 2017
 		
 		// START Modul AFS
@@ -874,6 +882,24 @@ public class DBInitiator implements ApplicationRunner {
 		adminSettingsService.setAdminSettings(persistedSettings);
 		
 		log.info("Done saving timeTable...");
+	}
+	
+	private PORestriction createRestriction(boolean isDual) {
+		PORestriction poRestriction = new PORestriction();
+		poRestriction.setByCP(new PORestriction.PORestrictionByCP());
+		poRestriction.setBySemester(new PORestriction.PORestrictionBySemester());
+		poRestriction.setByProgressiveRegulation(new PORestriction.PORestrictionByProgressiveRegulation());
+		poRestriction.getByCP().setIsActive(true);
+		poRestriction.getByCP().setMaxCP(40L);
+		poRestriction.getByProgressiveRegulation().setIsActive(false);
+		poRestriction.getBySemester().setIsActive(false);
+		
+		PORestriction.DualPO dualPO = new PORestriction.DualPO();
+		dualPO.setIsActive(isDual);
+		if(isDual) dualPO.setFreeDualDay(DayOfWeek.values()[new Random().nextInt(5)]);
+		poRestriction.setDualPO(dualPO);
+		
+		return poRestriction;
 	}
 	
 }

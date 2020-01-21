@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * A wrapper which contains an instance of {@link PORestrictionViolationProcessor} and a {@link TaskExecutor}.
- * This executor is used to run a the {@link PORestrictionViolationProcessor#startProcessing()} method in a separate, non-blocking Thread.
+ * This executor is used to run a the {@link PORestrictionViolationProcessor#startProcessing()} method in a separate, non-blo
  */
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
