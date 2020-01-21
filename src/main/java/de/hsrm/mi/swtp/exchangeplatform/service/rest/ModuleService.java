@@ -25,17 +25,15 @@ public class ModuleService {
 	}
 	
 	public Optional<Module> getById(Long moduleId) {
-		Optional<Module> moduleOptional = this.repository.findById(moduleId);
-		return moduleOptional;
+		return repository.findById(moduleId);
 	}
 	
-	public void save(Module module) {
-		if(this.repository.existsById(module.getId())) {
+	public Module save(Module module) {
+		if(repository.existsById(module.getId())) {
 			log.info(String.format("FAIL: Module %s not created", module));
 			throw new NotCreatedException(module);
 		}
-		repository.save(module);
-		log.info(String.format("SUCCESS: Module %s created", module));
+		return repository.save(module);
 	}
 	
 	public void delete(Module module) throws IllegalArgumentException {
