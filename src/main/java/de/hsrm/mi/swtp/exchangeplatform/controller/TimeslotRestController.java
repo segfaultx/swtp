@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.TimeslotRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
@@ -21,6 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -134,4 +136,18 @@ public class TimeslotRestController {
 		return ResponseEntity.ok(timeslot);
 	}
 
+	@GetMapping("/suggestedTimeslots/{timeslotid}")
+	@Operation(description = "get suggested timeslots per Module for student", operationId = "getSuggestedTimeslots")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "successfully fetched suggested timeslots for student"),
+			@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
+			@ApiResponse(responseCode = "404", description = "unkown timeslot id"),
+			@ApiResponse(responseCode = "400", description = "bad request")})
+	@PreAuthorize("hasRole('MEMBER')")
+	public ResponseEntity<List<Timeslot>> getSuggestedTimetableForStudent(@PathVariable("timeslotid") Long timeslotID,
+																	 Principal principal) throws NotFoundException {
+		log.info(String.format("GET REQUEST: getSuggestedTimeslotsForStudent, by user: %s, for timeslotid: %d", principal.getName(), timeslotID));
+		var potentialTimeTable = timeslotService.getSuggestedTimeslots(timeslotID, principal.getName());
+		return new ResponseEntity<>(potentialTimeTable, HttpStatus.OK);
+	}
 }

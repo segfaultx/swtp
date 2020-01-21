@@ -73,20 +73,4 @@ public class TimeTableController {
 		var potentialModules = moduleService.lookUpAvailableModulesForStudent(principal.getName());
 		return new ResponseEntity<>(potentialModules, HttpStatus.OK);
 	}
-	
-
-	@GetMapping("/suggestedTimetable/{timeslotid}")
-	@Operation(description = "get suggested timetable per Module for student", operationId = "getSuggestedTimetable")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "successfully fetched suggested timetable for student"),
-			@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
-			@ApiResponse(responseCode = "404", description = "unkown timeslot id"),
-			@ApiResponse(responseCode = "400", description = "bad request")})
-	@PreAuthorize("hasRole('MEMBER')")
-	public ResponseEntity<TimeTable> getSuggestedTimetableForStudent(@PathVariable("timeslotid") Long timeslotID,
-																	 Principal principal) throws NotFoundException {
-		log.info(String.format("GET REQUEST: getSuggestedTimetableForStudent, by user: %s, for timeslotid: %d", principal.getName(), timeslotID));
-		var potentialTimeTable = timeTableService.getSuggestedTimetable(timeslotID, principal.getName());
-		return new ResponseEntity<>(potentialTimeTable, HttpStatus.OK);
-	}
 }
