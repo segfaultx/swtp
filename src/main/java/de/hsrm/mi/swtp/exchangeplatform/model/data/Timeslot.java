@@ -60,4 +60,9 @@ public class Timeslot implements Model {
 	@ManyToMany(mappedBy = "timeslots", fetch = FetchType.LAZY)
 	@JsonBackReference
 	List<User> attendees = new ArrayList<>();
+	
+	@ManyToMany(mappedBy = "waitLists", fetch = FetchType.EAGER)
+	@JsonBackReference
+	List<User> waitList = new ArrayList<>();
+	
 }

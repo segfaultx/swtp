@@ -30,6 +30,10 @@ public class UserService {
 		return repository.findById(userId);
 	}
 	
+	public Optional<User> getByStudentNumber(Long studentNumber) {
+		return repository.findByStudentNumber(studentNumber);
+	}
+	
 	public Optional<User> getByUsername(String username) {
 		return repository.findByUsername(username);
 	}
