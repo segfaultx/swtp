@@ -6,7 +6,6 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.TimeslotSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.ToString;
@@ -34,7 +33,6 @@ public class Timeslot implements Model {
     User user;
 	
 	@ManyToOne
-	@JsonBackReference("room-timeslots")
 	Room room;
 	
 	@Enumerated(EnumType.STRING)

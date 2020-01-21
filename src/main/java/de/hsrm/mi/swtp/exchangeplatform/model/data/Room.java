@@ -1,7 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +26,6 @@ public class Room implements Model {
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
-	@JsonManagedReference("room-timeslots")
 	private List<Timeslot> timeslots;
 	
 }
