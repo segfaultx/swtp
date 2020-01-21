@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
@@ -21,7 +22,7 @@ public class BasicTradeService implements TradeService{
 	
 	@Override
 	@Transactional
-	public boolean doTrade(User student1, User student2, Timeslot timeslot1, Timeslot timeslot2) {
+	public boolean doTrade(User student1, User student2, Timeslot timeslot1, Timeslot timeslot2) throws NotFoundException {
 		
 		if(!student1.getUserType().getType().equals(TypeOfUsers.STUDENT) ||
 				!student2.getUserType().getType().equals(TypeOfUsers.STUDENT)) {
@@ -29,11 +30,11 @@ public class BasicTradeService implements TradeService{
 			return false;
 		}
 		
-		timeslotService.addAttendeeToTimeslot(timeslot2, student1);
-		timeslotService.removeAttendeeFromTimeslot(timeslot1, student1);
+		timeslotService.addAttendeeToTimeslot(timeslot2.getId(), student1);
+		timeslotService.removeAttendeeFromTimeslot(timeslot1.getId(), student1);
 		
-		timeslotService.addAttendeeToTimeslot(timeslot1, student2);
-		timeslotService.removeAttendeeFromTimeslot(timeslot2, student2);
+		timeslotService.addAttendeeToTimeslot(timeslot1.getId(), student2);
+		timeslotService.removeAttendeeFromTimeslot(timeslot2.getId(), student2);
 		
 		// send message to user's personal queue telling that the trade was successful
 		/*personalMessageSender.send(acceptedTrade.getOfferer(), TradeOfferSuccessfulMessage.builder()

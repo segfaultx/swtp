@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.TimeslotRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
