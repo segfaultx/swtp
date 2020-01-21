@@ -1,11 +1,8 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,26 +17,28 @@ import javax.transaction.Transactional;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BasicTradeService implements TradeService{
 
-	UserRepository userRepository;
-	TradeOfferRepository tradeOfferRepository;
-	TimeslotRepository timeslotRepository;
-	PersonalMessageSender personalMessageSender;
+	UserService userService;
+	TimeslotService timeslotService;
+	TradeOfferService tradeOfferService;
 	
 	@Override
 	@Transactional
-	public boolean doTrade(long studentId, long offeredId, long wantedId) throws NotFoundException {
-		var student = userRepository.findById(studentId).orElseThrow(NotFoundException::new);
-		var offered = timeslotRepository.findById(offeredId).orElseThrow(NotFoundException::new);
-		var tradeOffers = tradeOfferRepository.findAllBySeek(offered);
-		var acceptedTrade = tradeOffers.get(0);
-		student.getTimeslots().remove(offered);
-		student.getTimeslots().add(acceptedTrade.getOffer());
-		var student2 = acceptedTrade.getOfferer();
-		student2.getTimeslots().remove(acceptedTrade.getOffer());
-		student2.getTimeslots().add(offered);
-		userRepository.save(student);
-		userRepository.save(student2);
-		tradeOfferRepository.delete(acceptedTrade);
+	public boolean doTrade(long studentId, long offeredTimeSlotId, long wantedTimeSlotId) throws NotFoundException {
+		User student1 = userService.getById(studentId)
+				.orElseThrow(NotFoundException::new);
+		
+		timeslotService.addAttendeeToTimeslot(wantedTimeSlotId, student1);
+		timeslotService.removeAttendeeFromTimeslot(offeredTimeSlotId, student1);
+		
+		TradeOffer tradeOffer = tradeOfferService.getById(offeredTimeSlotId);
+		
+		// TODO: Connect active filters and return false if trade did not succeed
+		
+		User student2 = tradeOffer.getOfferer();
+		
+		timeslotService.addAttendeeToTimeslot(offeredTimeSlotId, student2);
+		timeslotService.removeAttendeeFromTimeslot(wantedTimeSlotId, student2);
+		
 		// send message to user's personal queue telling that the trade was successful
 		/*personalMessageSender.send(acceptedTrade.getOfferer(), TradeOfferSuccessfulMessage.builder()
 																					   .tradeOfferId(acceptedTrade.getId())
