@@ -38,11 +38,9 @@ public class PORestrictionViolationProcessor {
 		for(ChangedRestriction changedRestriction : changedRestrictions) {
 			final List<User> students = userService.getAllByPO(changedRestriction.getUpdatedPO());
 			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.CREDIT_POINTS)) {
-				log.info(" // RestrictionType.CREDIT_POINTS");
 				filterByCP(changedRestriction.getUpdatedPO().getRestriction().getByCP(), students);
 			}
 			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.MINIMUM_SEMESTER)) {
-				log.info(" // RestrictionType.MINIMUM_SEMESTER");
 				filterBySemester(changedRestriction.getUpdatedPO().getRestriction().getBySemester(), students);
 			}
 			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.PROGRESSIVE_REGULATION)) {
@@ -55,6 +53,7 @@ public class PORestrictionViolationProcessor {
 	
 	public void filterByCP(final PORestriction.PORestrictionByCP restriction, final List<User> students) {
 		if(!restriction.getIsActive()) return;
+		log.info(" // RestrictionType.CREDIT_POINTS");
 		final Long maxCp = restriction.getMaxCP();
 		for(User student : students) {
 			log.info(" // FILTERING: " + student.getAuthenticationInformation().getUsername());
@@ -70,6 +69,7 @@ public class PORestrictionViolationProcessor {
 	
 	public void filterBySemester(final PORestriction.PORestrictionBySemester restriction, final List<User> students) {
 		if(!restriction.getIsActive()) return;
+		log.info(" // RestrictionType.MINIMUM_SEMESTER");
 		final Long minSemester = restriction.getMinSemesters();
 		final List<Module> allModulesTillMinSemester = moduleRepository.findModulesBySemesterIsLessThanEqual(minSemester);
 		final List<Long> exptctedModulesIds = allModulesTillMinSemester.stream().map(Module::getId).collect(Collectors.toList());

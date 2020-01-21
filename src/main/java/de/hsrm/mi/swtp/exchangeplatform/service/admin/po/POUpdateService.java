@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -66,6 +67,10 @@ public class POUpdateService {
 		final ArrayList<RestrictionType> affectedRestrictions = new ArrayList<>();
 		final PORestriction originalRestrictions = original.getRestriction();
 		final PORestriction updatedRestrictions = update.getRestriction();
+		
+		if(originalRestrictions == null) {
+			return Arrays.asList(RestrictionType.values());
+		}
 
 		if (!(originalRestrictions.getByCP().equals(updatedRestrictions.getByCP())))
 			affectedRestrictions.add(RestrictionType.CREDIT_POINTS);
@@ -92,19 +97,19 @@ public class POUpdateService {
 		boolean restrictionsAreDifferent;
 		try {
 			restrictionsAreDifferent = areRestrictionsDifferent(original, update);
-			if (restrictionsAreDifferent) {
-				log.info("PORestriction changes detected.");
-				ChangedRestriction changedRestriction = ChangedRestriction.builder()
-																		  .changedRestrictions(affectedRestrictions(original, update))
-																		  .updatedPO(update)
-																		  .build();
-				original.setRestriction(update.getRestriction());
-				updatedRestrictions.put(original.getId(), changedRestriction);
-				log.info("PORestriction changes applied.");
-			}
 		} catch(OriginalRestrictionIsNullException e) {
 			restrictionsAreDifferent = true;
-			original.setRestriction(updatedPO.getRestriction());
+		}
+		
+		if (restrictionsAreDifferent) {
+			log.info("PORestriction changes detected.");
+			ChangedRestriction changedRestriction = ChangedRestriction.builder()
+																	  .changedRestrictions(affectedRestrictions(original, update))
+																	  .updatedPO(update)
+																	  .build();
+			original.setRestriction(update.getRestriction());
+			updatedRestrictions.put(original.getId(), changedRestriction);
+			log.info("PORestriction changes applied.");
 		}
 
 		repository.save(updatedPO);
