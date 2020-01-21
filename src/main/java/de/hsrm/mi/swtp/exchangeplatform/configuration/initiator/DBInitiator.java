@@ -3,9 +3,8 @@ package de.hsrm.mi.swtp.exchangeplatform.configuration.initiator;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
+import de.hsrm.mi.swtp.exchangeplatform.model.factory.UserFactory;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.RoomRepository;
@@ -32,13 +31,10 @@ import java.util.Random;
 public class DBInitiator implements ApplicationRunner {
 	
 	UserRepository userRepository;
-	
 	RoomRepository roomRepository;
-	
 	AdminSettingsService adminSettingsService;
-	
 	AdminSettingsRepository adminSettingsRepository;
-	
+	UserFactory userFactory;
 	
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
@@ -46,273 +42,47 @@ public class DBInitiator implements ApplicationRunner {
 		log.info("Filling Database with dark magic");
 		
 		// START Dennis
-		
-		User dennis = new User();
-		dennis.setFirstName("Dennis");
-		dennis.setLastName("Schad");
-		dennis.setStaffNumber(null);
-		dennis.setStudentNumber(1006351L);
-		dennis.setEmail("dennis.schad@student.hs-rm.de");
-		
-		AuthenticationInformation dennisInformation = new AuthenticationInformation();
-		dennisInformation.setUsername("dscha001");
-		dennisInformation.setPassword("dscha001");
-		dennisInformation.setRole(Roles.MEMBER);
-		dennisInformation.setUser(dennis);
-		
-		UserType dennisType = new UserType();
-		dennisType.setType(TypeOfUsers.STUDENT);
-		dennisType.setUser(dennis);
-		
-		dennis.setAuthenticationInformation(dennisInformation);
-		dennis.setUserType(dennisType);
-		
+		User dennis = UserFactory.createStudent("Dennis", "Schad", 1006351L);
 		// END Dennis
 		
 		// START Willi
-		
-		User willi = new User();
-		willi.setFirstName("Willi");
-		willi.setLastName("Wusel");
-		willi.setStaffNumber(null);
-		willi.setStudentNumber(1006555L);
-		willi.setEmail("willi.wusel@student.hs-rm.de");
-		
-		AuthenticationInformation williInformation = new AuthenticationInformation();
-		williInformation.setUsername("wwuse001");
-		williInformation.setPassword("wwuse001");
-		williInformation.setRole(Roles.MEMBER);
-		williInformation.setUser(willi);
-		
-		UserType williType = new UserType();
-		williType.setType(TypeOfUsers.STUDENT);
-		williType.setUser(willi);
-		
-		willi.setAuthenticationInformation(williInformation);
-		willi.setUserType(williType);
-		
+		User willi = UserFactory.createStudent("Willi", "Wusel", 1006555L);
 		// END Willi
 		
 		// START Jöndhard
-		
-		User joendhard = new User();
-		joendhard.setFirstName("Jöndhard");
-		joendhard.setLastName("Joendhardson");
-		joendhard.setStaffNumber(null);
-		joendhard.setStudentNumber(1006333L);
-		joendhard.setEmail("joendhard.joendhardson@student.hs-rm.de");
-		
-		AuthenticationInformation joendhardInformation = new AuthenticationInformation();
-		joendhardInformation.setUsername("jjoen001");
-		joendhardInformation.setPassword("jjoen001");
-		joendhardInformation.setRole(Roles.MEMBER);
-		joendhardInformation.setUser(joendhard);
-		
-		UserType joendhardType = new UserType();
-		joendhardType.setType(TypeOfUsers.STUDENT);
-		joendhardType.setUser(joendhard);
-		
-		joendhard.setAuthenticationInformation(joendhardInformation);
-		joendhard.setUserType(joendhardType);
-		
+		User joendhard = UserFactory.createStudent("Jöndhard", "Joendhardson", 1006333L);
 		// END Jöndhard
 		
-		
 		// START Weitz
-		
-		User weitz = new User();
-		weitz.setFirstName("Wolfgang");
-		weitz.setLastName("Weitz");
-		weitz.setStudentNumber(null);
-		weitz.setStaffNumber(171717171717L);
-		weitz.setEmail("wolfgang.weitz@hs-rm.de");
-		
-		AuthenticationInformation weitzInformation = new AuthenticationInformation();
-		weitzInformation.setUsername("wweit001");
-		weitzInformation.setPassword("wweit001");
-		weitzInformation.setRole(Roles.ADMIN);
-		weitzInformation.setUser(weitz);
-		weitz.setAuthenticationInformation(weitzInformation);
-		
-		UserType weitzType = new UserType();
-		weitzType.setType(TypeOfUsers.LECTURER);
-		weitzType.setUser(weitz);
-		weitz.setUserType(weitzType);
-		
+		User weitz = UserFactory.createLecturerADMIN("Wolfgang", "Weitz", 171717171717L);
 		// END WEITZ
 		
 		// START FRITZ
-		
-		User fritz = new User();
-		fritz.setFirstName("Fritzchen");
-		fritz.setLastName("Fritz");
-		fritz.setStudentNumber(null);
-		fritz.setStaffNumber(16161616L);
-		fritz.setEmail("fritzchen.Fritz@hs-rm.de");
-		
-		AuthenticationInformation fritzInformation = new AuthenticationInformation();
-		fritzInformation.setUsername("ffrit001");
-		fritzInformation.setPassword("ffrit001");
-		fritzInformation.setRole(Roles.MEMBER);
-		fritzInformation.setUser(fritz);
-		fritz.setAuthenticationInformation(fritzInformation);
-		
-		UserType fritzType = new UserType();
-		fritzType.setType(TypeOfUsers.LECTURER);
-		fritzType.setUser(fritz);
-		fritz.setUserType(fritzType);
-		
+		User fritz = UserFactory.createLecturer("Fritzchen", "Fritz", 16161616L);
 		// END fritz
 		
 		// START Schwanecke
-		
-		User schwanecke = new User();
-		schwanecke.setFirstName("Ulrich");
-		schwanecke.setLastName("Schwanecke");
-		schwanecke.setStudentNumber(null);
-		schwanecke.setStaffNumber(16161616L);
-		schwanecke.setEmail("ulrich.schwanecke@hs-rm.de");
-		
-		AuthenticationInformation schwaneckeInformation = new AuthenticationInformation();
-		schwaneckeInformation.setUsername("uschw001");
-		schwaneckeInformation.setPassword("uschw001");
-		schwaneckeInformation.setRole(Roles.ADMIN);
-		schwaneckeInformation.setUser(schwanecke);
-		schwanecke.setAuthenticationInformation(schwaneckeInformation);
-		
-		UserType schwaneckeType = new UserType();
-		schwaneckeType.setType(TypeOfUsers.LECTURER);
-		schwaneckeType.setUser(schwanecke);
-		schwanecke.setUserType(schwaneckeType);
-		
+		User schwanecke = UserFactory.createLecturerADMIN("Ulrich", "Schwanecke", 16161616L);
 		// END schwanecke
 		
 		// START CHANDLER
-		
-		User chandler = new User();
-		chandler.setFirstName("Chandler");
-		chandler.setLastName("Bing");
-		chandler.setStudentNumber(1005917L);
-		chandler.setEmail("chandler.bing@student.hs-rm.de");
-		chandler.setStaffNumber(null);
-		
-		AuthenticationInformation chandlerAuthInfo = new AuthenticationInformation();
-		chandlerAuthInfo.setRole(Roles.MEMBER);
-		chandlerAuthInfo.setUser(chandler);
-		chandlerAuthInfo.setPassword("chandler123");
-		chandlerAuthInfo.setUsername("cbing001");
-		
-		chandler.setAuthenticationInformation(chandlerAuthInfo);
-		
-		UserType chandlerType = new UserType();
-		chandlerType.setType(TypeOfUsers.STUDENT);
-		chandlerType.setUser(chandler);
-		
-		chandler.setUserType(chandlerType);
-		
-		
+		User chandler = UserFactory.createStudent("Chandler", "Bing", 1005917L);
 		// END CHANDLER
 		
 		// START FRODO
-		
-		User frodo = new User();
-		frodo.setFirstName("Frodo");
-		frodo.setLastName("Beutlin");
-		frodo.setStudentNumber(1035123L);
-		frodo.setEmail("frodo.beutlin@student.hs-rm.de");
-		frodo.setStaffNumber(null);
-		
-		AuthenticationInformation frodoAuthInfo = new AuthenticationInformation();
-		frodoAuthInfo.setRole(Roles.MEMBER);
-		frodoAuthInfo.setUser(frodo);
-		frodoAuthInfo.setPassword("fbeut001");
-		frodoAuthInfo.setUsername("fbeut001");
-		
-		frodo.setAuthenticationInformation(frodoAuthInfo);
-		
-		UserType frodoType = new UserType();
-		frodoType.setType(TypeOfUsers.STUDENT);
-		frodoType.setUser(frodo);
-		
-		frodo.setUserType(frodoType);
-		
+		User frodo = UserFactory.createStudent("Frodo", "Beutlin", 1035123L);
 		// END FRODO
 		
 		// START GANDALF
-		
-		User gandalf = new User();
-		gandalf.setFirstName("Gandalf");
-		gandalf.setLastName("Der_Graue");
-		gandalf.setStudentNumber(1035146L);
-		gandalf.setEmail("gandalf.der_graue@student.hs-rm.de");
-		gandalf.setStaffNumber(null);
-		
-		AuthenticationInformation gandalfAuthInfo = new AuthenticationInformation();
-		gandalfAuthInfo.setRole(Roles.MEMBER);
-		gandalfAuthInfo.setUser(gandalf);
-		gandalfAuthInfo.setPassword("gderg001");
-		gandalfAuthInfo.setUsername("gderg001");
-		
-		gandalf.setAuthenticationInformation(gandalfAuthInfo);
-		
-		UserType gandalfType = new UserType();
-		gandalfType.setType(TypeOfUsers.STUDENT);
-		gandalfType.setUser(gandalf);
-		
-		gandalf.setUserType(gandalfType);
-		
+		User gandalf = UserFactory.createStudent("Gandalf", "Der_Graue", 1035146L);
 		// END GANDALF
 		
 		// START SAMWEIS
-		
-		User samweis = new User();
-		samweis.setFirstName("Samweis");
-		samweis.setLastName("Gamdschie");
-		samweis.setStudentNumber(1035233L);
-		samweis.setEmail("Samweis.Gamdschie@student.hs-rm.de");
-		samweis.setStaffNumber(null);
-		
-		AuthenticationInformation samweisAuthInfo = new AuthenticationInformation();
-		samweisAuthInfo.setRole(Roles.MEMBER);
-		samweisAuthInfo.setUser(gandalf);
-		samweisAuthInfo.setPassword("sgamd001");
-		samweisAuthInfo.setUsername("sgamd001");
-		
-		samweis.setAuthenticationInformation(samweisAuthInfo);
-		
-		UserType samweisType = new UserType();
-		samweisType.setType(TypeOfUsers.STUDENT);
-		samweisType.setUser(samweis);
-		
-		samweis.setUserType(samweisType);
-		
+		User samweis = UserFactory.createStudent("Samweis", "Gamdschie", 1035233L);
 		// END SAMWEIS
 		
 		// START KRECHEL
-		User krechel = new User();
-		krechel.setFirstName("Dirk");
-		krechel.setLastName("Krechel");
-		krechel.setEmail("dirk.krechel@hs-rm.de");
-		krechel.setStudentNumber(null);
-		krechel.setStaffNumber(12345678L);
-		krechel.setTimeslots(null);
-		
-		// KRECHEL USERTYPE
-		UserType krechelType = new UserType();
-		krechelType.setType(TypeOfUsers.LECTURER);
-		krechelType.setUser(krechel);
-		krechel.setUserType(krechelType);
-		// END KRECHEL USERTYPE
-		
-		// KRECHEL AUTHINFO
-		AuthenticationInformation krechelAuthInfo = new AuthenticationInformation();
-		krechelAuthInfo.setUsername("dkrec001");
-		krechelAuthInfo.setPassword("dkrec001");
-		krechelAuthInfo.setUser(krechel);
-		krechelAuthInfo.setRole(Roles.ADMIN);
-		
-		krechel.setAuthenticationInformation(krechelAuthInfo);
-		//END KRECHEL AUTHINFO
+		User krechel = UserFactory.createLecturerADMIN("Dirk", "Krechel", 12345678L);
 		// END KRECHEL
 		
 		// START PO 2017
