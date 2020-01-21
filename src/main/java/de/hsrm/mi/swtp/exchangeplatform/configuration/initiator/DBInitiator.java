@@ -7,6 +7,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.model.factory.UserFactory;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.RoomRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
@@ -35,6 +36,7 @@ public class DBInitiator implements ApplicationRunner {
 	AdminSettingsService adminSettingsService;
 	AdminSettingsRepository adminSettingsRepository;
 	UserFactory userFactory;
+	PORepository poRepository;
 	
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
@@ -89,7 +91,7 @@ public class DBInitiator implements ApplicationRunner {
 		PORestriction restriction2017 = createRestriction(false);
 		restriction2017.getByCP().setIsActive(true);
 		restriction2017.getByCP().setMaxCP(40L);
-		restriction2017.getByProgressiveRegulation().setIsActive(true);
+		restriction2017.getByProgressiveRegulation().setIsActive(false);
 		restriction2017.getDualPO().setIsActive(false);
 		
 		PO po2017 = new PO();
@@ -104,12 +106,14 @@ public class DBInitiator implements ApplicationRunner {
 		Module afs = new Module();
 		afs.setName("Automaten und formale Sprachen");
 		afs.setPo(po2017);
+		afs.setSemester(3L);
 		// END Modul AFS
 		
 		// START Modul Programmieren 3
 		Module prog3 = new Module();
 		prog3.setName("Programmieren 3");
 		prog3.setPo(po2017);
+		prog3.setSemester(3L);
 		// END Modul Programmieren 3
 		
 		
@@ -117,24 +121,28 @@ public class DBInitiator implements ApplicationRunner {
 		Module dbs = new Module();
 		dbs.setName("Datenbanksysteme");
 		dbs.setPo(po2017);
+		dbs.setSemester(3L);
 		// END Modul Datenbanksysteme
 		
 		// START Modul Algorithmen und Datenstrukturen
 		Module ads = new Module();
 		ads.setName("Algorithmen und Datenstrukturen");
 		ads.setPo(po2017);
+		ads.setSemester(3L);
 		// END Modul Algorithmen und Datenstrukturen
 		
 		// START Einführung in die Medieninformatik
 		Module eim = new Module();
 		eim.setName("Einführung in die Medieninformatik");
 		eim.setPo(po2017);
+		eim.setSemester(1L);
 		// END Modul Einführung in die Medieninformatik
 		
 		// START Einführung in die Medieninformatik
 		Module swt = new Module();
 		swt.setName("Softwaretechnik");
 		swt.setPo(po2017);
+		swt.setSemester(4L);
 		// END Modul Einführung in die Medieninformatik
 		
 		// START ROOM D12
@@ -640,8 +648,10 @@ public class DBInitiator implements ApplicationRunner {
 		
 		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
-		
 		AdminSettings adminSettings = new AdminSettings();
+		
+		poRepository.save(po2017);
+		
 		adminSettings.setId(1);
 		List<String> filters = new ArrayList<>();
 		filters.add("COLLISION");
@@ -650,6 +660,18 @@ public class DBInitiator implements ApplicationRunner {
 		
 		var persistedSettings = adminSettingsRepository.save(adminSettings);
 		adminSettingsService.setAdminSettings(persistedSettings);
+		
+		log.info("--> users " + usersToSave);
+		
+		PO po2017_repo = poRepository.findByTitleIs(po2017.getTitle());
+		ArrayList<User> students_repo = new ArrayList<>();
+		for(User student : usersToSave) {
+			User student_repo = userRepository.getOne(student.getId());
+			students_repo.add(student_repo);
+		}
+		po2017_repo.setStudents(students_repo);
+		
+		poRepository.save(po2017_repo);
 		
 		log.info("Done saving timeTable...");
 	}

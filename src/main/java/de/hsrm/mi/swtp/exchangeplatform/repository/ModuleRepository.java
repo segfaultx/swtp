@@ -11,4 +11,6 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
 	
 	List<Module> findModulesBySemesterIsLessThanEqual(final Long semester);
 	
+	List<Module> findModulesBySemesterIs(final Long semester);
+	
 }

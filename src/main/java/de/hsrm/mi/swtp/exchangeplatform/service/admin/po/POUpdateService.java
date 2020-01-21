@@ -105,9 +105,9 @@ public class POUpdateService {
 			log.info("PORestriction changes detected.");
 			ChangedRestriction changedRestriction = ChangedRestriction.builder()
 																	  .changedRestrictions(affectedRestrictions(original, update))
-																	  .updatedPO(update)
+																	  .updatedPO(updatedPO)
 																	  .build();
-			original.setRestriction(update.getRestriction());
+			updatedPO.setRestriction(update.getRestriction());
 			updatedRestrictions.put(original.getId(), changedRestriction);
 			log.info("PORestriction changes applied.");
 		}

@@ -2,6 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.ChangedRestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PORestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.RestrictionType;
@@ -16,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -32,7 +34,7 @@ public class PORestrictionViolationProcessor implements Runnable {
 	ModuleRepository moduleRepository;
 	PORestrictionViolationService poRestrictionViolationService;
 	
-	private void startProcessing() {
+	public void startProcessing() {
 		List<ChangedRestriction> changedRestrictions = poUpdateService.getAllChangedPOs();
 		if(changedRestrictions.size() > 0) log.info("...STARTED PROCESSING");
 		for(ChangedRestriction changedRestriction : changedRestrictions) {
@@ -44,7 +46,7 @@ public class PORestrictionViolationProcessor implements Runnable {
 				filterBySemester(changedRestriction.getUpdatedPO().getRestriction().getBySemester(), students);
 			}
 			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.PROGRESSIVE_REGULATION)) {
-				log.info(" // RestrictionType.PROGRESSIVE_REGULATION");
+				filterByProgressiveRegulation(changedRestriction.getUpdatedPO(), students);
 			}
 		}
 		poRestrictionViolationService.notifyUsersWithViolations();
@@ -108,8 +110,69 @@ public class PORestrictionViolationProcessor implements Runnable {
 		}
 	}
 	
+	public void filterByProgressiveRegulation(final PO po, final List<User> students) {
+		final PORestriction.PORestrictionByProgressiveRegulation restriction = po.getRestriction().getByProgressiveRegulation();
+		if(!restriction.getIsActive()) return;
+		log.info(" // RestrictionType.PROGRESSIVE_REGULATION");
+		final Long poSemesterCount = po.getSemesterCount();
+		final Long MIN_PROGRESSIVE_SEMESTER = 2L;
+		
+		for(User student : students) {
+			log.info(student.getAuthenticationInformation().getUsername() + " => // FILTERING: " + student.getAuthenticationInformation().getUsername());
+			
+			// an array which tells which semesters have been completed *FULLY*
+			final Boolean[] userPassedSemesters = new Boolean[Math.toIntExact(poSemesterCount)];
+			for(int semesterIdx = 0; semesterIdx < MIN_PROGRESSIVE_SEMESTER.intValue(); semesterIdx++) {
+				userPassedSemesters[semesterIdx] = userService.userPassedSemester(student, (long) (semesterIdx + 1));
+			}
+			
+			/** A list of modules a student has occupied which are dependent on previous semester */
+			final List<Module> dependantOccupiedModules = moduleService.getAllModulesByStudent(student)
+																	   .stream()
+																	   .filter(module -> module.getSemester() >= MIN_PROGRESSIVE_SEMESTER)
+																	   .collect(Collectors.toList());
+			
+			// check whether any occupied modules are dependant on previous semesters
+			if(dependantOccupiedModules.size() < 1) {
+				// if none found then there is no need to for validation
+				continue;
+			}
+			
+			// create a list with all modules ids of modules which the user is not allowed to take part in;
+			// reason being: not fulfilling PROGRESSIVE_REGULATION by missing modules of previous semesters
+			final ArrayList<Long> modulesNotAllowed = new ArrayList<>();
+			for(Module occupied : dependantOccupiedModules) {
+				final Long semester = occupied.getSemester();
+				final int semesterIdx = Math.toIntExact(semester - MIN_PROGRESSIVE_SEMESTER);
+				if(!userPassedSemesters[semesterIdx]) {
+					modulesNotAllowed.add(occupied.getId());
+				}
+			}
+
+			log.warn("\n==================================================================================");
+			log.info("__________________------------------- NOT ALLOWED TO MODULES::" + modulesNotAllowed);
+			log.info("__________________------------------- NOT ALLOWED TO MODULES::" + modulesNotAllowed);
+			log.info("__________________------------------- NOT ALLOWED TO MODULES::" + modulesNotAllowed);
+			log.warn("==================================================================================\n");
+
+//			log.info(student.getAuthenticationInformation().getUsername() + " => VIOLATION DETECTED:filterBySemester ======== ");
+//			poRestrictionViolationService.addViolation(student, RestrictionType.MINIMUM_SEMESTER, minSemester);
+		
+		}
+	}
+	
 	@Override
 	public void run() {
+		log.info("\n>>>>>> STARTED EXTERNAL THREAD");
+		log.info(">>>>>> BEAN::" + userService);
+		log.info(">>>>>> BEAN::" + moduleService);
+		log.info(">>>>>> BEAN::" + poUpdateService);
+		log.info(">>>>>> BEAN::" + userRepository);
+		log.info(">>>>>> BEAN::" + moduleRepository);
+		log.info(">>>>>> BEAN::" + moduleRepository);
+		log.info(">>>>>> BEAN::" + poRestrictionViolationService);
+		log.info(">>>>>> VALU::" + poUpdateService.getAllChangedPOs());
 		this.startProcessing();
+		log.info(">>>>>> ENDED EXTERNAL THREAD");
 	}
 }
