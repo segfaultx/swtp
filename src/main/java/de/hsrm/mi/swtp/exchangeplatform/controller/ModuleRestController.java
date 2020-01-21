@@ -3,11 +3,10 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.ModuleRequestBody;
-import de.hsrm.mi.swtp.exchangeplatform.model.TimeslotRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -19,10 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -72,10 +69,10 @@ public class ModuleRestController {
 	 * @return {@link HttpStatus#OK} and the updated module if the user joined successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/join")
-	@ApiOperation(value = "join module", nickname = "joinModule")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully joined appointment"),
-							@ApiResponse(code = 403, message = "unauthorized join attempt"),
-							@ApiResponse(code = 400, message = "malformed request") })
+	@Operation(description = "join module", operationId = "joinModule")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully joined appointment"),
+							@ApiResponse(responseCode = "403", description = "unauthorized join attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<Module> joinAppointment(@RequestBody ModuleRequestBody moduleRequestBody, BindingResult result) throws NotFoundException {
 		log.info("POST // " + BASEURL + "/join");
@@ -104,10 +101,10 @@ public class ModuleRestController {
 	 * @return {@link HttpStatus#OK} and the updated Module if the user left successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/leave")
-	@ApiOperation(value = "leave module", nickname = "leaveModule")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully left module"),
-							@ApiResponse(code = 403, message = "unauthorized leave attempt"),
-							@ApiResponse(code = 400, message = "malformed leave request") })
+	@Operation(description = "leave module", operationId = "leaveModule")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully left module"),
+							@ApiResponse(responseCode = "403", description = "unauthorized leave attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed leave request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<HttpStatus> leaveModule(@RequestBody ModuleRequestBody moduleRequestBody, BindingResult result) throws NotFoundException {
 		log.info("POST // " + BASEURL + "/leave");

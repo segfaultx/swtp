@@ -68,7 +68,7 @@ public class ModuleService {
 		/*if(this.repository.existsById(module.getId())) {
 			log.info(String.format("FAIL: Module %s not created", module));
 			throw new NotCreatedException(module);
-		}
+		} */
 		repository.save(module);
 		log.info(String.format("SUCCESS: Module %s created", module));
 	}

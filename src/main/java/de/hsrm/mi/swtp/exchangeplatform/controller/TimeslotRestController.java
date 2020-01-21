@@ -97,7 +97,7 @@ public class TimeslotRestController {
 
 		try {
 			timeslotService.addAttendeeToTimeslot(timeslotRequestBody.getTimeslotId(), user);
-			Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getStudentId())
+			Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
 											   .orElseThrow(NotFoundException::new);
 			return ResponseEntity.ok(timeslot);
 		} catch(UserIsAlreadyAttendeeException e) {
@@ -143,10 +143,10 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user joined successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/addToWaitlist")
-	@ApiOperation(value = "add to waitlist", nickname = "addWaitlist")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully added to waitlist"),
-							@ApiResponse(code = 403, message = "unauthorized add attempt"),
-							@ApiResponse(code = 400, message = "malformed request") })
+	@Operation(description = "add to waitlist", operationId = "addWaitlist")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully added to waitlist"),
+							@ApiResponse(responseCode = "403", description = "unauthorized add attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<Timeslot> addToWaitlist(@RequestBody TimeslotRequestBody timeslotRequestBody, BindingResult result) throws NotFoundException {
 		log.info("POST // " + BASEURL + "/join");
@@ -175,10 +175,10 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user left successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/removeFromWaitlist")
-	@ApiOperation(value = "remove from waitlist", nickname = "removeWaitlist")
-	@ApiResponses(value = { @ApiResponse(code = 200, message = "successfully left timeslot"),
-							@ApiResponse(code = 403, message = "unauthorized leave attempt"),
-							@ApiResponse(code = 400, message = "malformed leave request") })
+	@Operation(description = "remove from waitlist", operationId = "removeWaitlist")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully left timeslot"),
+							@ApiResponse(responseCode = "403", description = "unauthorized leave attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed leave request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<Timeslot> removeFromWaitlist(@RequestBody TimeslotRequestBody timeslotRequestBody, BindingResult result) throws NotFoundException {
 		log.info("POST // " + BASEURL + "/leave");
