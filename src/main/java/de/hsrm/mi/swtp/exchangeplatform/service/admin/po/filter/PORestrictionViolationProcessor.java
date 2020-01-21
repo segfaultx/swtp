@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Slf4j
-public class PORestrictionViolationProcessor {
+public class PORestrictionViolationProcessor implements Runnable {
 	
 	UserService userService;
 	ModuleService moduleService;
@@ -32,7 +32,7 @@ public class PORestrictionViolationProcessor {
 	ModuleRepository moduleRepository;
 	PORestrictionViolationService poRestrictionViolationService;
 	
-	public void startProcessing() {
+	private void startProcessing() {
 		List<ChangedRestriction> changedRestrictions = poUpdateService.getAllChangedPOs();
 		if(changedRestrictions.size() > 0) log.info("...STARTED PROCESSING");
 		for(ChangedRestriction changedRestriction : changedRestrictions) {
@@ -83,7 +83,8 @@ public class PORestrictionViolationProcessor {
 																			.collect(Collectors.toList());
 			
 			if(modulesOccupiedAboveMinSemester.size() < 1) {
-				log.info(student.getAuthenticationInformation().getUsername() + " => O.K.::SEMESTER CHECK; MAX SEMESTER OCCUPIED SMALLER THAN MINSEMESTER=" + minSemester);
+				log.info(student.getAuthenticationInformation()
+								.getUsername() + " => O.K.::SEMESTER CHECK; MAX SEMESTER OCCUPIED SMALLER THAN MINSEMESTER=" + minSemester);
 				// if the student hasn't occupied any modules above minSemester
 				// there won't be any Violation against the minSemester
 				continue;
@@ -107,4 +108,8 @@ public class PORestrictionViolationProcessor {
 		}
 	}
 	
+	@Override
+	public void run() {
+		this.startProcessing();
+	}
 }
