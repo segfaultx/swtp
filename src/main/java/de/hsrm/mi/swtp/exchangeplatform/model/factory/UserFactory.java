@@ -10,6 +10,13 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 
+/**
+ * A simple factory with three main creation methods:
+ * • {@link #createUser(Roles, TypeOfUsers, String, String, Long)}: returns a new generic {@link User} which accepts any {@link TypeOfUsers},
+ * • {@link #createStudent(String, String, Long)}: returns a new {@link User} of {@link TypeOfUsers#STUDENT type STUDENT},
+ * • {@link #createLecturer(String, String, Long)}: returns a new {@link User} of {@link TypeOfUsers#LECTURER type LECTURER}
+ * • {@link #createLecturerADMIN(String, String, Long)}: returns a new {@link User} of {@link TypeOfUsers#LECTURER type LECTURER}
+ */
 @Component("userFactory")
 public class UserFactory {
 	
@@ -17,18 +24,22 @@ public class UserFactory {
 	private final static Integer USERNAME_LNAME_SUBSTR = 4;
 	private final static String EMAIL_BASE = "%s.%s@hs-rm.de";
 	
+	/** @see UserFactory */
 	public static User createStudent(@NonNull final String fName, @NonNull final String lName, @NonNull final Long studentNumber) {
 		return createUser(Roles.MEMBER, TypeOfUsers.STUDENT, fName, lName, studentNumber);
 	}
 	
+	/** @see UserFactory */
 	public static User createLecturer(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber) {
 		return createUser(Roles.MEMBER, TypeOfUsers.LECTURER, fName, lName, staffNumber);
 	}
 	
+	/** @see UserFactory */
 	public static User createLecturerADMIN(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber) {
 		return createUser(Roles.ADMIN, TypeOfUsers.LECTURER, fName, lName, staffNumber);
 	}
 	
+	/** @see UserFactory */
 	public static User createUser(@NonNull final Roles role, @NonNull final TypeOfUsers typeOfUser, @NonNull final String fName, @NonNull final String lName,
 								  @NonNull final Long id
 								 ) {
@@ -63,14 +74,31 @@ public class UserFactory {
 		return user;
 	}
 	
+	/**
+	 * Generates a username.
+	 *
+	 * @param fName first name of the user.
+	 * @param lName last name of the user.
+	 *
+	 * @return a new username built like {@link #USERNAME_BASE}
+	 */
 	private static String genUsername(@NonNull final String fName, @NonNull final String lName) {
 		return replaceUlauts(String.format(USERNAME_BASE, fName.charAt(0), lName.substring(0, USERNAME_LNAME_SUBSTR)).toLowerCase());
 	}
 	
+	/**
+	 * Generates an email for a user.
+	 *
+	 * @param fName first name of the user.
+	 * @param lName last name of the user.
+	 *
+	 * @return a new email built like {@link #EMAIL_BASE}
+	 */
 	private static String genEmail(@NonNull final String fName, @NonNull final String lName) {
 		return replaceUlauts(String.format(EMAIL_BASE, fName, lName).toLowerCase());
 	}
 	
+	/** Small helper: Replaces German umlauts. */
 	private static String replaceUlauts(String str) {
 		return str.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss").replace("Ä", "Ae").replace("Ö", "Oe").replace("Ü", "Ue");
 	}
