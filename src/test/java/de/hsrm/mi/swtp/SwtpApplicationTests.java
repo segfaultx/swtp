@@ -4,8 +4,10 @@ import org.junit.jupiter.api.Test;
 import org.python.util.PythonInterpreter;
 import org.springframework.boot.test.context.SpringBootTest;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import org.springframework.test.annotation.DirtiesContext;
 
 @SpringBootTest
+@DirtiesContext
 class SwtpApplicationTests {
 	
 	@Test

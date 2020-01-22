@@ -158,13 +158,11 @@ public class TradeOffersRestController {
 			
 			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
 									   TradeOfferSuccessfulMessage.builder()
-																  .leftTimeslotId(tradeRequest.getOfferedTimeslotId())
-																  .newTimeslotId(tradeRequest.getWantedTimeslotId())
+																  .value(tradeRequest.getWantedTimeslotId())
 																  .build());
 			personalMessageSender.send(acceptingUser,
 									   TradeOfferSuccessfulMessage.builder()
-																  .leftTimeslotId(tradeRequest.getWantedTimeslotId())
-																  .newTimeslotId(tradeRequest.getOfferedTimeslotId())
+																  .value(tradeRequest.getOfferedTimeslotId())
 																  .build());
 			
 			

@@ -68,6 +68,8 @@ public class AdminRestController {
 	@Operation(description = "get trading active", operationId = "getTradingActive")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully received adminsettings"),
 							@ApiResponse(responseCode = "403", description = "unauthorized get settings attempt") })
-	public ResponseEntity<Boolean> getTradingActive() {return new ResponseEntity<>(adminSettingsService.isTradesActive(), HttpStatus.OK); }
+	public ResponseEntity<Boolean> getTradingActive() {
+		return new ResponseEntity<>(adminSettingsService.isTradesActive(), HttpStatus.OK);
+	}
 	
 }

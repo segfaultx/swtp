@@ -48,6 +48,7 @@ public class MessagingConfig {
 		BrokerService broker = BrokerFactory.createBroker(new URI(brokerUri));
 		broker.setBrokerName("exchangeplatform-broker");
 		broker.deleteAllMessages();
+		broker.setUseShutdownHook(false);
 		broker.start(true);
 		return broker;
 	}

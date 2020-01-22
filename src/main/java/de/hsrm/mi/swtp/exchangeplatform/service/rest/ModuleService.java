@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -77,4 +78,13 @@ public class ModuleService {
 		repository.delete(module);
 		log.info(String.format("SUCCESS: Module %s deleted", module));
 	}
+	
+	public List<Module> getAllModulesByStudent(final User student) {
+		return student.getTimeslots()
+					  .stream()
+					  .map(Timeslot::getModule)
+					  .distinct()
+					  .collect(Collectors.toList());
+	}
+	
 }

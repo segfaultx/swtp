@@ -26,7 +26,7 @@ public class CollisionFilter implements Filter {
         for(TradeOffer offer : offers) {
             for (Timeslot timeslot : offer.getSeeker().getTimeslots()) {
             	/// compare all filled timeslots of a student with all TradeOffers
-                if (!checkCollision(offer.getSeek(),timeslot)) {
+                if (checkCollision(offer.getSeek(),timeslot)) {
                     collisionList.add(offer);
                 }
             }
@@ -36,15 +36,27 @@ public class CollisionFilter implements Filter {
     
     
     public boolean checkCollision(Timeslot offer, Timeslot filled){
-		//long duration = Duration.between(filled.getTimeStart(),filled.getTimeEnd()).toMinutes();
-		if(offer.getDay() == filled.getDay()){
-			if(offer.getTimeStart() != filled.getTimeStart()){
-				if(offer.getTimeEnd().isBefore(filled.getTimeStart()) || offer.getTimeStart().isAfter(filled.getTimeEnd())){
-					//LocalTime block = offer.getTimeStart().plusMinutes(duration);
-					return true;
-				}
+		//check for same day
+		if(offer.getDay() == filled.getDay()) {
+			
+			if(offer.getTimeStart() == filled.getTimeStart()) {
+				return true;
+			} else if(offer.getTimeStart().isBefore(filled.getTimeStart()) && offer.getTimeEnd().isBefore(filled.getTimeEnd())) {
+				return true;
+			} else if(offer.getTimeStart().isBefore(filled.getTimeStart()) && offer.getTimeEnd().isAfter(filled.getTimeEnd())) {
+				return true;
+			} else if(offer.getTimeStart().isAfter(filled.getTimeStart()) && offer.getTimeEnd().isBefore(filled.getTimeEnd())) {
+				return true;
+			} else if(offer.getTimeStart().isAfter(filled.getTimeStart()) && offer.getTimeStart().isBefore(filled.getTimeEnd()) && offer.getTimeEnd()
+																																		.isAfter(
+																																				filled.getTimeEnd())) {
+				return true;
 			}
+			
+			return false;
 		}
+		
 		return false;
 	}
+	
 }
