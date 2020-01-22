@@ -130,14 +130,24 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 * @throws RuntimeException if either requesterId or tradeId cant be found
 	 */
 	@Transactional
-	public Timeslot tradeTimeslots(User offereringUser, User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot) throws Exception {
+	public Timeslot tradeTimeslots(User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot) throws Exception {
+		
+		TradeOffer tradeOffer = new TradeOffer(); // TODO: fetch alle Tradeoffers die matchen
+		
+		User offereringUser = tradeOffer.getOfferer();
+		
 		log.info("Performing Trade: From {} to {} with Timeslots {} and {}",
-							   offereringUser, requestingUser, offeredTimeslot, requestedTimeslot);
+				 offereringUser, requestingUser, offeredTimeslot, requestedTimeslot);
 		
 		if(tradeService.doTrade(offereringUser, requestingUser, offeredTimeslot, requestedTimeslot)) {
+			deleteTradeOffer(offereringUser.getStudentNumber(), offeredTimeslot.getId()); // TODO: evtl mit Tradeoffer statt ids refactorn
 			return timeSlotRepository.findById(requestedTimeslot.getId()).orElseThrow();
 		}
 		throw new RuntimeException();
+	}
+	
+	public TradeOffer findFinalTradeOffer() {
+		
 	}
 	
 	/**

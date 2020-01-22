@@ -142,11 +142,15 @@ public class TradeOffersRestController {
 								  ));
 			String username = principal.getName();
 
-			User acceptingUser = userService.getByUsername(username)
+			User requestingUser = userService.getByUsername(username)
 					.orElseThrow(NotFoundException::new);
 			
-			User offeringUser = userService.getAllByStudentNumber(
-					String.valueOf(tradeRequest.getOfferedByStudentMatriculationNumber())).get(0);
+//			User offeringUser = userService.getAllByStudentNumber(
+//					String.valueOf(tradeRequest.getOfferedByStudentMatriculationNumber())).get(0);
+			
+			TradeOffer tradeOffer = new TradeOffer()
+			
+			User offeringUser = userService.getOffererByTradeOffer(tradeOffer);
 			
 			Timeslot offeringTimeslot = timeslotService.getById(tradeRequest.getOfferedTimeslotId())
 					.orElseThrow(NotFoundException::new);
