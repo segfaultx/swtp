@@ -6,6 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.ModuleRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -39,6 +40,7 @@ public class ModuleRestController {
 	String BASEURL = "/api/v1/modules";
 	ModuleService moduleService;
 	UserService userService;
+	TimeTableService timeTableService;
 	
 	@GetMapping("")
 	public ResponseEntity<List<Module>> getAll() {
@@ -115,7 +117,6 @@ public class ModuleRestController {
 							   .orElseThrow(NotFoundException::new);
 		
 		moduleService.removeStudentFromModule(moduleRequestBody.getModuleId(), user);
-		
 		Module module = moduleService.getById(moduleRequestBody.getModuleId())
 										   .orElseThrow(NotFoundException::new);
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);

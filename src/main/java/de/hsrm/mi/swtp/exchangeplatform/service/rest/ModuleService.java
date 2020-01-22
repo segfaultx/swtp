@@ -58,6 +58,7 @@ public class ModuleService {
 		for(Timeslot timeslot : allTimeSlots){
 			if(timeslot.getAttendees().contains(student)){
 				timeslotService.removeAttendeeFromTimeslot(timeslot.getId(), student);
+				student.getTimeslots().remove(timeslot);
 			}
 		}
 		
