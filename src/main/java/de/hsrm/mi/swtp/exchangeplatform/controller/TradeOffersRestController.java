@@ -160,10 +160,12 @@ public class TradeOffersRestController {
 									   TradeOfferSuccessfulMessage.builder()
 																  .value(tradeRequest.getWantedTimeslotId())
 																  .build());
+			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + offeringUser.getAuthenticationInformation().getUsername());
 			personalMessageSender.send(acceptingUser,
 									   TradeOfferSuccessfulMessage.builder()
 																  .value(tradeRequest.getOfferedTimeslotId())
 																  .build());
+			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + acceptingUser.getAuthenticationInformation().getUsername());
 			
 			
 			TimeTable timetable = new TimeTable();
