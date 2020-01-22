@@ -18,6 +18,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 import static de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener.TOPICNAME;
@@ -102,5 +103,10 @@ public class AdminSettingsService {
 	@PreAuthorize("hasRole('ADMIN')")
 	public AdminSettings getAdminSettings() {
 		return adminSettings;
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	public List<String> getAllFilters(){
+		return adminSettings.getAllFilters();
 	}
 }
