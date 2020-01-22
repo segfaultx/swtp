@@ -7,6 +7,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +28,7 @@ public class UserService {
 	
 	UserRepository repository;
 	ModuleRepository moduleRepository;
+	PORepository poRepository;
 	
 	public List<User> getAll() {
 		return repository.findAll();
@@ -51,7 +53,7 @@ public class UserService {
 	public List<User> getAllByLastName(String lastName) { return repository.findAllByLastNameContainingIgnoreCase(lastName);}
 	
 	public List<User> getAllByPO(PO po) {
-		return repository.findAllByPoIs(po);
+		return poRepository.findByTitleIs(po.getTitle()).getStudents();
 	}
 	
 	public Long getUserTotalCPSelected(final User user) {
@@ -95,8 +97,7 @@ public class UserService {
 															   .stream()
 															   .filter(module -> module.getSemester().equals(semester))
 															   .collect(Collectors.toList());
-		
 		final List<Module> modulesBySemester = moduleRepository.findModulesBySemesterIs(semester);
-		return completedModulesOfSemester.size() == modulesBySemester.size();
+		return completedModulesOfSemester.size() >= modulesBySemester.size();
 	}
 }

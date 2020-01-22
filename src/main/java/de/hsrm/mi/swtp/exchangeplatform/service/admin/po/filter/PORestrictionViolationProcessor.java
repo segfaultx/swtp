@@ -121,8 +121,8 @@ public class PORestrictionViolationProcessor implements Runnable {
 			log.info(student.getAuthenticationInformation().getUsername() + " => // FILTERING: " + student.getAuthenticationInformation().getUsername());
 			
 			// an array which tells which semesters have been completed *FULLY*
-			final Boolean[] userPassedSemesters = new Boolean[Math.toIntExact(poSemesterCount)];
-			for(int semesterIdx = 0; semesterIdx < MIN_PROGRESSIVE_SEMESTER.intValue(); semesterIdx++) {
+			final Boolean[] userPassedSemesters = new Boolean[poSemesterCount.intValue()];
+			for(int semesterIdx = 0; semesterIdx < poSemesterCount.intValue(); semesterIdx++) {
 				userPassedSemesters[semesterIdx] = userService.userPassedSemester(student, (long) (semesterIdx + 1));
 			}
 			
