@@ -21,10 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -120,7 +117,6 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	/**
 	 * Method to process a requested trade transaction, transaction info is gathered from {@link TradeOffer}'s id
 	 *
-	 * @param offereringUser offering User
 	 * @param requestingUser requesting User
 	 * @param offeredTimeslot Timeslot that's been offered for trade
 	 * @param requestedTimeslot Timeslot that's been requested for trade
@@ -132,7 +128,11 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	@Transactional
 	public Timeslot tradeTimeslots(User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot) throws Exception {
 		
-		TradeOffer tradeOffer = new TradeOffer(); // TODO: fetch alle Tradeoffers die matchen
+		TradeOffer tradeOffer = findFinalTradeOffer(requestingUser, offeredTimeslot, requestedTimeslot);
+		
+		if (tradeOffer == null) {
+			throw new Exception("No final TradeOffer found");
+		}
 		
 		User offereringUser = tradeOffer.getOfferer();
 		
@@ -146,8 +146,25 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		throw new RuntimeException();
 	}
 	
-	public TradeOffer findFinalTradeOffer() {
+	public TradeOffer findFinalTradeOffer(User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot) { // TODO: Parameter setzen
+		List<TradeOffer> tradeOffers;
+		Random random = new Random();
 		
+		// Fetch a  List of all tradeoffers
+		tradeOffers = tradeOfferRepository.findAll();
+		
+		// Remove all tradeOffers where requested is not offered and offered is not seek
+		tradeOffers.removeIf(tradeOffer -> !(tradeOffer.getOffer() == requestedTimeslot && tradeOffer.getSeek() == offeredTimeslot));
+		// filter the list according to active filters
+		
+		// if more than one tradeoffer remains, then spit out a random one
+		if(tradeOffers.size() == 0) return null;
+		
+		if(tradeOffers.size() > 1) {
+			return tradeOffers.get(random.nextInt(tradeOffers.size() - 1));
+		} else {
+			return tradeOffers.get(0);
+		}
 	}
 	
 	/**
@@ -160,7 +177,6 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 *
 	 * @throws RuntimeException if tradeoffer cannot be looked up or requester isnt owner of the requested trade
 	 */
-	
 	public boolean deleteTradeOffer(long studentId, long seekId) throws Exception {
 		log.info(String.format("Looking up Tradeoffer with seekId: %d. Requester: %d", seekId, studentId));
 		
