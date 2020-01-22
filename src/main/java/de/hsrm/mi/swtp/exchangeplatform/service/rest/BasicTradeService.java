@@ -1,11 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -19,26 +17,25 @@ import javax.transaction.Transactional;
 @RequiredArgsConstructor
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class BasicTradeService implements TradeService{
-
-	UserRepository userRepository;
-	TradeOfferRepository tradeOfferRepository;
-	TimeslotRepository timeslotRepository;
-	PersonalMessageSender personalMessageSender;
+	
+	TimeslotService timeslotService;
 	
 	@Override
 	@Transactional
-	public boolean doTrade(long studentId, long offeredId, long wantedId) throws NotFoundException {
-		var student = userRepository.findById(studentId).orElseThrow();
-		var offered = timeslotRepository.findById(offeredId).orElseThrow();
-		var tradeOffers = tradeOfferRepository.findAllBySeek(offered);
-		var acceptedTrade = tradeOffers.get(0);
-		student.getTimeslots().remove(offered);
-		student.getTimeslots().add(acceptedTrade.getOffer());
-		var student2 = acceptedTrade.getOfferer();
-		student2.getTimeslots().remove(acceptedTrade.getOffer());
-		student2.getTimeslots().add(offered);
-		userRepository.save(student);
-		userRepository.save(student2);
+	public boolean doTrade(User student1, User student2, Timeslot timeslot1, Timeslot timeslot2) throws NotFoundException {
+		
+		if(!student1.getUserType().getType().equals(TypeOfUsers.STUDENT) ||
+				!student2.getUserType().getType().equals(TypeOfUsers.STUDENT)) {
+			log.info("Trade failed: One or both Users are not Students");
+			return false;
+		}
+		
+		timeslotService.addAttendeeToTimeslot(timeslot2.getId(), student1);
+		timeslotService.removeAttendeeFromTimeslot(timeslot1.getId(), student1);
+		
+		timeslotService.addAttendeeToTimeslot(timeslot1.getId(), student2);
+		timeslotService.removeAttendeeFromTimeslot(timeslot2.getId(), student2);
+		
 		// send message to user's personal queue telling that the trade was successful
 		/*personalMessageSender.send(acceptedTrade.getOfferer(), TradeOfferSuccessfulMessage.builder()
 																					   .tradeOfferId(acceptedTrade.getId())

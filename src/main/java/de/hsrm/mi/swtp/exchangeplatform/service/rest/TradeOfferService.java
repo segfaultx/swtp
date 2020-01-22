@@ -101,7 +101,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			}
 			
 		});
-		for(TradeOffer to : tradeOfferRepository.findAllByOfferer(user)) {
+		for(TradeOffer to : tradeOfferRepository.findAllByOffererAndOffer(user, offeredTimeslot)) {
 			if(!ownOffers.contains(to.getSeek())) ownOffers.add(to.getSeek());
 		}
 		var allTimeslots = timeSlotRepository.findAllByModule(offeredTimeslot.getModule());
@@ -120,17 +120,22 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	/**
 	 * Method to process a requested trade transaction, transaction info is gathered from {@link TradeOffer}'s id
 	 *
-	 * @param requesterId id of requester
+	 * @param offereringUser offering User
+	 * @param requestingUser requesting User
+	 * @param offeredTimeslot Timeslot that's been offered for trade
+	 * @param requestedTimeslot Timeslot that's been requested for trade
 	 *
-	 * @return new Timeslot of requester
+	 * @return new Timeslot of requesting User
 	 *
 	 * @throws RuntimeException if either requesterId or tradeId cant be found
 	 */
 	@Transactional
-	public Timeslot tradeTimeslots(long requesterId, long offeredTimeslot, long requestedTimeslot) throws Exception {
-		log.info(String.format("Performing Trade for requester: %d, offered: %d, wanted: %d", requesterId, offeredTimeslot, requestedTimeslot));
-		if(tradeService.doTrade(requesterId, offeredTimeslot, requestedTimeslot)) {
-			return timeSlotRepository.findById(requestedTimeslot).orElseThrow();
+	public Timeslot tradeTimeslots(User offereringUser, User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot) throws Exception {
+		log.info("Performing Trade: From {} to {} with Timeslots {} and {}",
+							   offereringUser, requestingUser, offeredTimeslot, requestedTimeslot);
+		
+		if(tradeService.doTrade(offereringUser, requestingUser, offeredTimeslot, requestedTimeslot)) {
+			return timeSlotRepository.findById(requestedTimeslot.getId()).orElseThrow();
 		}
 		throw new RuntimeException();
 	}

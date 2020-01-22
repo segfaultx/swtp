@@ -21,6 +21,11 @@ public class TradeOffer implements Model {
 	@GeneratedValue
 	Long id;
 	
+	@JsonProperty("seeker")
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JsonBackReference
+	User seeker;
+	
 	@JsonProperty("offerer")
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JsonBackReference

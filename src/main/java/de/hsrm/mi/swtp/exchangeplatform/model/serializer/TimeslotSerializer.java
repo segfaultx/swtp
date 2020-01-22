@@ -3,7 +3,6 @@ package de.hsrm.mi.swtp.exchangeplatform.model.serializer;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
@@ -24,7 +23,6 @@ public class TimeslotSerializer extends StdSerializer<Timeslot> {
 	
 	@Override
 	public void serialize(Timeslot value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-		// TODO: Prüfen, ob custom serialisierer noch benötigt wird
 		gen.writeStartObject();
 		gen.writeNumberField("id", value.getId());
 		gen.writeObjectField("room", value.getRoom());
@@ -32,7 +30,8 @@ public class TimeslotSerializer extends StdSerializer<Timeslot> {
 		gen.writeNumberField("capacity", value.getCapacity());
 		gen.writeObjectField("time_start", value.getTimeStart());
 		gen.writeObjectField("time_end", value.getTimeEnd());
-		gen.writeObjectField("module", value.getModule());
+		gen.writeStringField("timeslot_type", value.getTimeSlotType().name());
+		gen.writeNumberField("module", value.getModule().getId());
 		gen.writeFieldName("attendees");
 		final List<User> students = value.getAttendees()
 								   .stream()

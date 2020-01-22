@@ -15,7 +15,7 @@ import java.util.List;
 
 @Entity
 @Data
-@ToString(exclude = { "authenticationInformation", "userType", "timeslots", "tradeoffers" })
+@ToString(exclude = {"authenticationInformation", "userType", "timeslots", "tradeoffers", "modules"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User implements Model {
 	
@@ -49,6 +49,7 @@ public class User implements Model {
 	@JsonIgnore
 	AuthenticationInformation authenticationInformation;
 	
+	
 	@JsonProperty("user_type")
 	@OneToOne(cascade = CascadeType.ALL)
 	@JsonManagedReference
@@ -60,10 +61,24 @@ public class User implements Model {
 	List<Timeslot> timeslots = new ArrayList<>();
 	
 	@JsonIgnore
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JsonManagedReference
+	List<Timeslot> waitLists = new ArrayList<>();
+	
+	@JsonIgnore
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JsonManagedReference
+	List<Module> modules = new ArrayList<>();
+	
+	@JsonIgnore
 	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
 	List<TradeOffer> tradeoffers = new ArrayList<>();
 	
 	@JsonProperty("completed_modules")
 	@OneToMany(cascade = CascadeType.ALL)
 	List<Module> completedModules = new ArrayList<>();
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
+	List<TradeOffer> tradeofferSeeks = new ArrayList<>();
 }
