@@ -150,20 +150,22 @@ public class TradeOffersRestController {
 			
 			Timeslot offeringTimeslot = timeslotService.getById(tradeRequest.getOfferedTimeslotId())
 					.orElseThrow(NotFoundException::new);
-			
+
 			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId())
 					.orElseThrow(NotFoundException::new);
-			
+
 			var timeslot = tradeOfferService.tradeTimeslots(offeringUser, acceptingUser, offeringTimeslot, requestingTimeslot);
 			
 			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
 									   TradeOfferSuccessfulMessage.builder()
 																  .value(tradeRequest.getWantedTimeslotId())
 																  .build());
+			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + offeringUser.getAuthenticationInformation().getUsername());
 			personalMessageSender.send(acceptingUser,
 									   TradeOfferSuccessfulMessage.builder()
 																  .value(tradeRequest.getOfferedTimeslotId())
 																  .build());
+			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + acceptingUser.getAuthenticationInformation().getUsername());
 			
 			
 			TimeTable timetable = new TimeTable();
