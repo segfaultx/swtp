@@ -1,7 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
@@ -57,7 +56,8 @@ public class ModuleService {
 		List<Timeslot> allTimeSlots = new ArrayList<>(module.getTimeslots());
 		for(Timeslot timeslot : allTimeSlots){
 			if(timeslot.getAttendees().contains(student)){
-				timeslotService.removeAttendeeFromTimeslot(timeslot.getId(), student);
+				timeslotService.removeAttendeeFromTimeslot(timeslot, student);
+				student.getTimeslots().remove(timeslot);
 			}
 		}
 		

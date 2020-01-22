@@ -2,7 +2,6 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
@@ -14,6 +13,11 @@ import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,16 +27,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 
 import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/trades")
@@ -140,32 +140,31 @@ public class TradeOffersRestController {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
 								  ));
-			String username = principal.getName();
 
-			User acceptingUser = userService.getByUsername(username)
+			User requestingUser = userService.getByUsername(principal.getName())
 					.orElseThrow(NotFoundException::new);
-			
-			User offeringUser = userService.getAllByStudentNumber(
-					String.valueOf(tradeRequest.getOfferedByStudentMatriculationNumber())).get(0);
 			
 			Timeslot offeringTimeslot = timeslotService.getById(tradeRequest.getOfferedTimeslotId())
 					.orElseThrow(NotFoundException::new);
-
+			
 			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId())
 					.orElseThrow(NotFoundException::new);
-
-			var timeslot = tradeOfferService.tradeTimeslots(offeringUser, acceptingUser, offeringTimeslot, requestingTimeslot);
 			
-			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
-									   TradeOfferSuccessfulMessage.builder()
-																  .value(tradeRequest.getWantedTimeslotId())
-																  .build());
-			personalMessageSender.send(acceptingUser,
-									   TradeOfferSuccessfulMessage.builder()
-																  .value(tradeRequest.getOfferedTimeslotId())
-																  .build());
+			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot);
 			
+			// TODO: check if messaging still works
 			
+//			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
+//									   TradeOfferSuccessfulMessage.builder()
+//																  .value(tradeRequest.getWantedTimeslotId())
+//																  .build());
+//			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + offeringUser.getAuthenticationInformation().getUsername());
+//			personalMessageSender.send(acceptingUser,
+//									   TradeOfferSuccessfulMessage.builder()
+//																  .value(tradeRequest.getOfferedTimeslotId())
+//																  .build());
+//			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + acceptingUser.getAuthenticationInformation().getUsername());
+//
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
 			timetable.setDateEnd(LocalDate.now()); // DIRTY QUICK FIX

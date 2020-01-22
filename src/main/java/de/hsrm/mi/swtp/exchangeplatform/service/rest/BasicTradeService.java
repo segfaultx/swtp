@@ -30,11 +30,16 @@ public class BasicTradeService implements TradeService{
 			return false;
 		}
 		
-		timeslotService.addAttendeeToTimeslot(timeslot2.getId(), student1);
-		timeslotService.removeAttendeeFromTimeslot(timeslot1.getId(), student1);
-		
-		timeslotService.addAttendeeToTimeslot(timeslot1.getId(), student2);
-		timeslotService.removeAttendeeFromTimeslot(timeslot2.getId(), student2);
+		try {
+			timeslotService.addAttendeeToTimeslot(timeslot1, student1);
+			timeslotService.addAttendeeToTimeslot(timeslot2, student2);
+			
+			timeslotService.removeAttendeeFromTimeslot(timeslot2, student1);
+			timeslotService.removeAttendeeFromTimeslot(timeslot1, student2);
+		} catch(Exception e) {
+			log.info("fuck"); // TODO: sinnvolle Fehlerbehandlung
+		}
+
 		
 		// send message to user's personal queue telling that the trade was successful
 		/*personalMessageSender.send(acceptedTrade.getOfferer(), TradeOfferSuccessfulMessage.builder()
