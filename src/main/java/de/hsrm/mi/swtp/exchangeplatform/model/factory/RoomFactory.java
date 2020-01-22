@@ -12,26 +12,26 @@ import java.util.List;
 /**
  * A simple factory for creating a {@link Room} instance.
  */
-@Component("userFactory")
+@Component("roomFactory")
 public class RoomFactory {
 	
 	@Value("${exchangeplatform.default.room.location}")
-	private static String DEFAULT_LOCATION;
+	private String DEFAULT_LOCATION;
 	
 	/** @see RoomFactory */
-	public static Room createRoom(final String roomNumber) {
+	public Room createRoom(final String roomNumber) {
 		return createRoom(roomNumber, DEFAULT_LOCATION);
 	}
 	
 	/** @see RoomFactory */
-	public static Room createRoom(final String roomNumber,
+	public Room createRoom(final String roomNumber,
 								  final String location) {
 		return createRoom(roomNumber, location, new ArrayList<>());
 	}
 	
 	
 	/** @see RoomFactory */
-	public static Room createRoom(final String roomNumber,
+	public Room createRoom(final String roomNumber,
 								  final String location,
 								  @NonNull final List<Timeslot> timeslots) {
 		Room room = new Room();

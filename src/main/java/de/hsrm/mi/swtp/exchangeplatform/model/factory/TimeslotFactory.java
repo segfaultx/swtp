@@ -12,31 +12,31 @@ import java.time.LocalTime;
 /**
  * A simple factory for creating a {@link Timeslot} instance.
  */
-@Component("userFactory")
+@Component("timeslotFactory")
 public class TimeslotFactory {
 	
 	@Value("${exchangeplatform.default.timeslot.capacity.praktikum}")
-	private static Integer DEFAULT_CAPACITY_PRAKTIKUM;
+	Integer DEFAULT_CAPACITY_PRAKTIKUM;
 	
 	@Value("${exchangeplatform.default.timeslot.capacity.uebung}")
-	private static Integer DEFAULT_CAPACITY_UEBUNG;
+	Integer DEFAULT_CAPACITY_UEBUNG;
 	
 	@Value("${exchangeplatform.default.timeslot.capacity.vorlesung}")
-	private static Integer DEFAULT_CAPACITY_VORLESUNG;
+	Integer DEFAULT_CAPACITY_VORLESUNG;
 	
 	@Value("${exchangeplatform.default.timeslot.duration}")
-	private static Integer DEFAULT_DURATION;
+	Integer DEFAULT_DURATION;
 	
 	/** @see TimeslotFactory */
-	public static Timeslot createTimeslotPraktikum(final DayOfWeek dayOfWeek,
+	public Timeslot createTimeslotPraktikum(final DayOfWeek dayOfWeek,
 												   final Module module,
 												   final LocalTime timeStart,
 												   final Room room) {
-		return createTimeslotPraktikum(dayOfWeek, DEFAULT_CAPACITY_PRAKTIKUM, null, module, timeStart, timeStart.plusMinutes(DEFAULT_DURATION), room);
+		return createTimeslotPraktikum(dayOfWeek, module, timeStart, timeStart.plusMinutes(DEFAULT_DURATION), room);
 	}
 	
 	/** @see TimeslotFactory */
-	public static Timeslot createTimeslotPraktikum(final DayOfWeek dayOfWeek,
+	public Timeslot createTimeslotPraktikum(final DayOfWeek dayOfWeek,
 												   final Module module,
 												   final LocalTime timeStart,
 												   final LocalTime timeEnd,
@@ -45,7 +45,7 @@ public class TimeslotFactory {
 	}
 	
 	/** @see TimeslotFactory */
-	public static Timeslot createTimeslotPraktikum(final DayOfWeek dayOfWeek,
+	public Timeslot createTimeslotPraktikum(final DayOfWeek dayOfWeek,
 												   final Integer capacity,
 												   final User lecturer,
 												   final Module module,
@@ -56,15 +56,15 @@ public class TimeslotFactory {
 	}
 	
 	/** @see TimeslotFactory */
-	public static Timeslot createTimeslotUebung(final DayOfWeek dayOfWeek,
+	public Timeslot createTimeslotUebung(final DayOfWeek dayOfWeek,
 												   final Module module,
 												   final LocalTime timeStart,
 												   final Room room) {
-		return createTimeslotUebung(dayOfWeek, DEFAULT_CAPACITY_UEBUNG, null, module, timeStart, timeStart.plusMinutes(DEFAULT_DURATION), room);
+		return createTimeslotUebung(dayOfWeek, module, timeStart, timeStart.plusMinutes(DEFAULT_DURATION), room);
 	}
 	
 	/** @see TimeslotFactory */
-	public static Timeslot createTimeslotUebung(final DayOfWeek dayOfWeek,
+	public Timeslot createTimeslotUebung(final DayOfWeek dayOfWeek,
 												   final Module module,
 												   final LocalTime timeStart,
 												   final LocalTime timeEnd,
@@ -73,7 +73,7 @@ public class TimeslotFactory {
 	}
 	
 	/** @see TimeslotFactory */
-	public static Timeslot createTimeslotUebung(final DayOfWeek dayOfWeek,
+	public Timeslot createTimeslotUebung(final DayOfWeek dayOfWeek,
 												   final Integer capacity,
 												   final User lecturer,
 												   final Module module,
@@ -84,15 +84,15 @@ public class TimeslotFactory {
 	}
 	
 	/** @see TimeslotFactory */
-	public static Timeslot createTimeslotVorlesung(final DayOfWeek dayOfWeek,
+	public Timeslot createTimeslotVorlesung(final DayOfWeek dayOfWeek,
 												   final Module module,
 												   final LocalTime timeStart,
 												   final Room room) {
-		return createTimeslotVorlesung(dayOfWeek, DEFAULT_CAPACITY_VORLESUNG, null, module, timeStart, timeStart.plusMinutes(DEFAULT_DURATION), room);
+		return createTimeslotVorlesung(dayOfWeek, module, timeStart, timeStart.plusMinutes(DEFAULT_DURATION), room);
 	}
 	
 	/** @see TimeslotFactory */
-	public static Timeslot createTimeslotVorlesung(final DayOfWeek dayOfWeek,
+	public Timeslot createTimeslotVorlesung(final DayOfWeek dayOfWeek,
 												   final Module module,
 												   final LocalTime timeStart,
 												   final LocalTime timeEnd,
@@ -101,7 +101,7 @@ public class TimeslotFactory {
 	}
 	
 	/** @see TimeslotFactory */
-	public static Timeslot createTimeslotVorlesung(final DayOfWeek dayOfWeek,
+	public Timeslot createTimeslotVorlesung(final DayOfWeek dayOfWeek,
 												   final Integer capacity,
 												   final User lecturer,
 												   final Module module,
@@ -112,7 +112,7 @@ public class TimeslotFactory {
 	}
 	
 	/** @see TimeslotFactory */
-	public static Timeslot createTimeslot(final TypeOfTimeslots type,
+	public Timeslot createTimeslot(final TypeOfTimeslots type,
 										  final DayOfWeek dayOfWeek,
 										  final Integer capacity,
 										  final User lecturer,

@@ -14,30 +14,30 @@ import java.util.List;
 /**
  * A simple factory for creating a {@link Module} instance.
  */
-@Component("userFactory")
+@Component("moduleFactory")
 public class ModuleFactory {
 	
 	@Value("${exchangeplatform.default.module.semester}")
-	private static Long DEFAULT_SEMESTER;
+	Long DEFAULT_SEMESTER;
 	
 	@Value("${exchangeplatform.default.module.credit-points}")
-	private static Long DEFAULT_CREDIT_POINTS;
+	Long DEFAULT_CREDIT_POINTS;
 	
 	/** @see ModuleFactory */
-	public static Module createModule(final String name,
+	public Module createModule(final String name,
 									  final PO po) {
 		return createModule(name, null, po, DEFAULT_SEMESTER, DEFAULT_CREDIT_POINTS);
 	}
 	
 	/** @see ModuleFactory */
-	public static Module createModule(final String name,
+	public Module createModule(final String name,
 									  final PO po,
 									  final Long semester) {
 		return createModule(name, null, po, semester, DEFAULT_CREDIT_POINTS);
 	}
 	
 	/** @see ModuleFactory */
-	public static Module createModule(final String name,
+	public Module createModule(final String name,
 									  final User lecturer,
 									  final PO po,
 									  final Long semester,
@@ -46,7 +46,7 @@ public class ModuleFactory {
 	}
 	
 	/** @see ModuleFactory */
-	public static Module createModule(final String name,
+	public Module createModule(final String name,
 									  final User lecturer,
 									  final PO po,
 									  final Long semester,

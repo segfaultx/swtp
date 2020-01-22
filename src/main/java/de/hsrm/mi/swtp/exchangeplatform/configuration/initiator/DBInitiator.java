@@ -49,47 +49,47 @@ public class DBInitiator implements ApplicationRunner {
 		log.info("Filling Database with dark magic");
 		
 		// START Dennis
-		User dennis = UserFactory.createStudent("Dennis", "Schad", 1006351L);
+		User dennis = userFactory.createStudent("Dennis", "Schad", 1006351L);
 		// END Dennis
 		
 		// START Willi
-		User willi = UserFactory.createStudent("Willi", "Wusel", 1006555L);
+		User willi = userFactory.createStudent("Willi", "Wusel", 1006555L);
 		// END Willi
 		
 		// START Jöndhard
-		User joendhard = UserFactory.createStudent("Jöndhard", "Joendhardson", 1006333L);
+		User joendhard = userFactory.createStudent("Jöndhard", "Joendhardson", 1006333L);
 		// END Jöndhard
 		
 		// START Weitz
-		User weitz = UserFactory.createLecturerADMIN("Wolfgang", "Weitz", 171717171717L);
+		User weitz = userFactory.createLecturerADMIN("Wolfgang", "Weitz", 171717171717L);
 		// END WEITZ
 		
 		// START FRITZ
-		User fritz = UserFactory.createLecturer("Fritzchen", "Fritz", 16161616L);
+		User fritz = userFactory.createLecturer("Fritzchen", "Fritz", 16161616L);
 		// END fritz
 		
 		// START Schwanecke
-		User schwanecke = UserFactory.createLecturerADMIN("Ulrich", "Schwanecke", 16161616L);
+		User schwanecke = userFactory.createLecturerADMIN("Ulrich", "Schwanecke", 16161616L);
 		// END schwanecke
 		
 		// START CHANDLER
-		User chandler = UserFactory.createStudent("Chandler", "Bing", 1005917L);
+		User chandler = userFactory.createStudent("Chandler", "Bing", 1005917L);
 		// END CHANDLER
 		
 		// START FRODO
-		User frodo = UserFactory.createStudent("Frodo", "Beutlin", 1035123L);
+		User frodo = userFactory.createStudent("Frodo", "Beutlin", 1035123L);
 		// END FRODO
 		
 		// START GANDALF
-		User gandalf = UserFactory.createStudent("Gandalf", "Der_Graue", 1035146L);
+		User gandalf = userFactory.createStudent("Gandalf", "Der_Graue", 1035146L);
 		// END GANDALF
 		
 		// START SAMWEIS
-		User samweis = UserFactory.createStudent("Samweis", "Gamdschie", 1035233L);
+		User samweis = userFactory.createStudent("Samweis", "Gamdschie", 1035233L);
 		// END SAMWEIS
 		
 		// START KRECHEL
-		User krechel = UserFactory.createLecturerADMIN("Dirk", "Krechel", 12345678L);
+		User krechel = userFactory.createLecturerADMIN("Dirk", "Krechel", 12345678L);
 		// END KRECHEL
 		
 		// START PO 2017
@@ -108,126 +108,126 @@ public class DBInitiator implements ApplicationRunner {
 		// END PO 2017
 		
 		// START Modul AFS
-		Module afs = ModuleFactory.createModule("Automaten und formale Sprachen", po2017, 3L);
+		Module afs = moduleFactory.createModule("Automaten und formale Sprachen", po2017, 3L);
 		// END Modul AFS
 		
 		// START Modul CG
-		Module cg = ModuleFactory.createModule("Computergrafiken", po2017, 4L);
+		Module cg = moduleFactory.createModule("Computergrafiken", po2017, 4L);
 		// END Modul AFS
 		
 		// START Modul Programmieren 3
-		Module prog3 = ModuleFactory.createModule("Programmieren 3", po2017, 3L);
+		Module prog3 = moduleFactory.createModule("Programmieren 3", po2017, 3L);
 		// END Modul Programmieren 3
 		
 		// START Modul Datenbanksysteme
-		Module dbs = ModuleFactory.createModule("Datenbanksysteme", po2017, 3L);
+		Module dbs = moduleFactory.createModule("Datenbanksysteme", po2017, 3L);
 		// END Modul Datenbanksysteme
 		
 		// START Modul Algorithmen und Datenstrukturen
-		Module ads = ModuleFactory.createModule("Algorithmen und Datenstrukturen", po2017, 3L);
+		Module ads = moduleFactory.createModule("Algorithmen und Datenstrukturen", po2017, 3L);
 		// END Modul Algorithmen und Datenstrukturen
 		
 		// START Einführung in die Medieninformatik
-		Module eim = ModuleFactory.createModule("Einführung in die Medieninformatik", po2017);
+		Module eim = moduleFactory.createModule("Einführung in die Medieninformatik", po2017);
 		// END Modul Einführung in die Medieninformatik
 		
 		// START Einführung in die Medieninformatik
-		Module swt = ModuleFactory.createModule("Softwaretechnik", po2017, 4L);
+		Module swt = moduleFactory.createModule("Softwaretechnik", po2017, 4L);
 		// END Modul Einführung in die Medieninformatik
 		
 		// START ROOM D12
-		Room d12 = RoomFactory.createRoom("D12");
+		Room d12 = roomFactory.createRoom("D12");
 		var d12_out = roomRepository.save(d12);
 		
 		//Start ROOM D11
-		Room d11 = RoomFactory.createRoom("D11");
+		Room d11 = roomFactory.createRoom("D11");
 		var d11_out = roomRepository.save(d11);
 		
 		//Start ROOM D13
-		Room d13 = RoomFactory.createRoom("D13");
+		Room d13 = roomFactory.createRoom("D13");
 		var d13_out = roomRepository.save(d13);
 		
 		// START AFS Timeslots
 		// START AFS VL
-		Timeslot afsVorlesung = TimeslotFactory.createTimeslotVorlesung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(8, 15), d11_out);
+		Timeslot afsVorlesung = timeslotFactory.createTimeslotVorlesung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(8, 15), d11_out);
 		// END AFS VL
 		
 		// START AFS UEBUNG 1
-		Timeslot afsUebung = TimeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(10, 0), d12_out);
+		Timeslot afsUebung = timeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(10, 0), d12_out);
 		// END AFS UEBUNG 1
 		
 		// START AFS UEBUNG 2
-		Timeslot afsUebung2 = TimeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(11, 45), d12_out);
+		Timeslot afsUebung2 = timeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(11, 45), d12_out);
 		// END AFS UEBUNG 2
 		
 		// START AFS UEBUNG 3
-		Timeslot afsUebung3 = TimeslotFactory.createTimeslotUebung(DayOfWeek.MONDAY, afs, LocalTime.of(10, 0), d12_out);
+		Timeslot afsUebung3 = timeslotFactory.createTimeslotUebung(DayOfWeek.MONDAY, afs, LocalTime.of(10, 0), d12_out);
 		// END AFS UEBUNG 3
 		
 		// START AFS UEBUNG 4
-		Timeslot afsUebung4 = TimeslotFactory.createTimeslotUebung(DayOfWeek.FRIDAY, afs, LocalTime.of(11, 45), d12_out);
+		Timeslot afsUebung4 = timeslotFactory.createTimeslotUebung(DayOfWeek.FRIDAY, afs, LocalTime.of(11, 45), d12_out);
 		// END AFS UEBUNG 4
 		
 		// START SWT Timeslots
 		// START SWT VL
-		Timeslot swtVorlesung = TimeslotFactory.createTimeslotVorlesung(DayOfWeek.TUESDAY, swt, LocalTime.of(8, 15), d11_out);
+		Timeslot swtVorlesung = timeslotFactory.createTimeslotVorlesung(DayOfWeek.TUESDAY, swt, LocalTime.of(8, 15), d11_out);
 		// END swt VL
 		
 		// START swt Prakt 1
-		Timeslot swtPraktikum = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.TUESDAY, swt, LocalTime.of(10, 0), d12_out);
+		Timeslot swtPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.TUESDAY, swt, LocalTime.of(10, 0), d12_out);
 		// END swt Prakt 1
 		
 		// START swt Prakt 2
-		Timeslot swtPraktikum2 = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, swt, LocalTime.of(11, 45), d12_out);
+		Timeslot swtPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, swt, LocalTime.of(11, 45), d12_out);
 		// END swt Prakt 2
 		
 		// START DBS Timeslots
 		// START DBS VL
-		Timeslot dbsVorlesung = TimeslotFactory.createTimeslotVorlesung(DayOfWeek.FRIDAY, dbs, LocalTime.of(8, 15), d11_out);
+		Timeslot dbsVorlesung = timeslotFactory.createTimeslotVorlesung(DayOfWeek.FRIDAY, dbs, LocalTime.of(8, 15), d11_out);
 		// END DBS VL
 		
 		// START DBS Prakt 1
-		Timeslot dbsPraktikum = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY, dbs, LocalTime.of(10, 0), d13_out);
+		Timeslot dbsPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY, dbs, LocalTime.of(10, 0), d13_out);
 		// END DBS Prakt 1
 		
 		// START dbs Prakt 2
-		Timeslot dbsPraktikum2 = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY, dbs, LocalTime.of(11, 45), d13_out);
+		Timeslot dbsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY, dbs, LocalTime.of(11, 45), d13_out);
 		// END dbs Prakt 2
 		
 		
 		// START PROG3 Timeslots
 		// START PROG3 VL
-		Timeslot prog3Vorlesung = TimeslotFactory.createTimeslotVorlesung(DayOfWeek.MONDAY, prog3, LocalTime.of(8, 15), d11_out);
+		Timeslot prog3Vorlesung = timeslotFactory.createTimeslotVorlesung(DayOfWeek.MONDAY, prog3, LocalTime.of(8, 15), d11_out);
 		// END PROG3 VL
 		
 		// START PROG3 Prakt 1
-		Timeslot prog3Praktikum = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(10, 0), d12_out);
+		Timeslot prog3Praktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(10, 0), d12_out);
 		// END PROG3 Prakt 1
 		
 		// START PROG3 Prakt 2
-		Timeslot prog3Praktikum2 = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(11, 45), d13_out);
+		Timeslot prog3Praktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(11, 45), d13_out);
 		// END PROG3 Prakt 2
 		
 		// START PROG3 Prakt 3
-		Timeslot prog3Praktikum3 = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(10, 0), d13_out);
+		Timeslot prog3Praktikum3 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(10, 0), d13_out);
 		// END PROG3 Prakt 3
 		
 		// START PROG3 Prakt 4
-		Timeslot prog3Praktikum4 = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(11, 45), d12_out);
+		Timeslot prog3Praktikum4 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(11, 45), d12_out);
 		// END PROG3 Prakt 4
 		
 		
 		// START ADS Timeslots
 		// START ADS VL
-		Timeslot adsVorlesung = TimeslotFactory.createTimeslotVorlesung(DayOfWeek.WEDNESDAY, ads, LocalTime.of(10, 00), d11_out);
+		Timeslot adsVorlesung = timeslotFactory.createTimeslotVorlesung(DayOfWeek.WEDNESDAY, ads, LocalTime.of(10, 00), d11_out);
 		// END ads VL
 		
 		// START ADS Prakt 1
-		Timeslot adsPraktikum = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, ads, LocalTime.of(11, 30), d13_out);
+		Timeslot adsPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, ads, LocalTime.of(11, 30), d13_out);
 		// END ads Prakt 1
 		
 		// START ads Prakt 2
-		Timeslot adsPraktikum2 = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, ads, LocalTime.of(14, 15), d13_out);
+		Timeslot adsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, ads, LocalTime.of(14, 15), d13_out);
 		// END ads Prakt 2
 		
 		

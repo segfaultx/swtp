@@ -25,22 +25,22 @@ public class UserFactory {
 	private final static String EMAIL_BASE = "%s.%s@hs-rm.de";
 	
 	/** @see UserFactory */
-	public static User createStudent(@NonNull final String fName, @NonNull final String lName, @NonNull final Long studentNumber) {
+	public User createStudent(@NonNull final String fName, @NonNull final String lName, @NonNull final Long studentNumber) {
 		return createUser(Roles.MEMBER, TypeOfUsers.STUDENT, fName, lName, studentNumber);
 	}
 	
 	/** @see UserFactory */
-	public static User createLecturer(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber) {
+	public User createLecturer(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber) {
 		return createUser(Roles.MEMBER, TypeOfUsers.LECTURER, fName, lName, staffNumber);
 	}
 	
 	/** @see UserFactory */
-	public static User createLecturerADMIN(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber) {
+	public User createLecturerADMIN(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber) {
 		return createUser(Roles.ADMIN, TypeOfUsers.LECTURER, fName, lName, staffNumber);
 	}
 	
 	/** @see UserFactory */
-	public static User createUser(@NonNull final Roles role, @NonNull final TypeOfUsers typeOfUser, @NonNull final String fName, @NonNull final String lName,
+	public User createUser(@NonNull final Roles role, @NonNull final TypeOfUsers typeOfUser, @NonNull final String fName, @NonNull final String lName,
 								  @NonNull final Long id
 								 ) {
 		User user = new User();
@@ -82,7 +82,7 @@ public class UserFactory {
 	 *
 	 * @return a new username built like {@link #USERNAME_BASE}
 	 */
-	private static String genUsername(@NonNull final String fName, @NonNull final String lName) {
+	private String genUsername(@NonNull final String fName, @NonNull final String lName) {
 		return replaceUlauts(String.format(USERNAME_BASE, fName.charAt(0), lName.substring(0, USERNAME_LNAME_SUBSTR)).toLowerCase());
 	}
 	
@@ -94,12 +94,12 @@ public class UserFactory {
 	 *
 	 * @return a new email built like {@link #EMAIL_BASE}
 	 */
-	private static String genEmail(@NonNull final String fName, @NonNull final String lName) {
+	private String genEmail(@NonNull final String fName, @NonNull final String lName) {
 		return replaceUlauts(String.format(EMAIL_BASE, fName, lName).toLowerCase());
 	}
 	
 	/** Small helper: Replaces German umlauts. */
-	private static String replaceUlauts(String str) {
+	private String replaceUlauts(String str) {
 		return str.replace("ä", "ae").replace("ö", "oe").replace("ü", "ue").replace("ß", "ss").replace("Ä", "Ae").replace("Ö", "Oe").replace("Ü", "Ue");
 	}
 	
