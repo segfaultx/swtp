@@ -37,7 +37,14 @@ public class PersonalMessageSender {
 	}
 	
 	public void send(ActiveMQQueue userQueue, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
-		jmsTemplate.send(userQueue, session -> session.createTextMessage(tradeOfferSuccessfulMessage.toString()));
+		jmsTemplate.send(userQueue, session -> {
+			try {
+				return session.createTextMessage(objectMapper.writeValueAsString(tradeOfferSuccessfulMessage));
+			} catch(JsonProcessingException e) {
+				e.printStackTrace();
+			}
+			return session.createTextMessage("{}");
+		});
 	}
 	
 	public void send(UserOccupancyViolation userOccupancyViolation) {

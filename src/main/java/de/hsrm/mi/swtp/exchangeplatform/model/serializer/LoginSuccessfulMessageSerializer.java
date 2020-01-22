@@ -3,7 +3,6 @@ package de.hsrm.mi.swtp.exchangeplatform.model.serializer;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LoginSuccessfulMessage;
 
 import java.io.IOException;

@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class LoginSuccessfulMessage implements Serializable {
 	
 	@JsonProperty("type")
-	MessageType messageType;
+	MessageType messageType = MessageType.LOGIN;
 	
 	@JsonProperty(value = "message", defaultValue = "")
 	String message;
