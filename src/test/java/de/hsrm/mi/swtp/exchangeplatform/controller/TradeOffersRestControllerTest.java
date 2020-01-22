@@ -2,7 +2,6 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
@@ -78,16 +77,21 @@ public class TradeOffersRestControllerTest extends BaseRestTest{
 	@Test
 	@Transactional
 	void createAndDeleteTradeOffer() throws Exception {
-		
+
 		var token = getLoginToken(username, pass);
 		TradeRequest json = new TradeRequest();
 		var dennis = userRepository.findByUsername(username).orElseThrow();
+		tradeOfferRepository.deleteAll(tradeOfferRepository.findAllByOfferer(dennis));
+		
+		// lookup random timeslot of type praktikum to offer for trade
 		var tsDennis = dennis.getTimeslots()
 							 .stream()
 							 .filter(timeslot ->  timeslot.getTimeSlotType() != TypeOfTimeslots.PRAKTIKUM)
 							 .findFirst()
 							 .orElseThrow();
+		
 		var tsDennisModule = tsDennis.getModule();
+		// lookup other random timeslot to request a trade for, timeslot must be different from owned one
 		var tsOther = timeslotRepository.findAllByModule(tsDennisModule)
 										.stream()
 										.filter(ts -> !ts.getId().equals(tsDennis.getId())
@@ -98,6 +102,7 @@ public class TradeOffersRestControllerTest extends BaseRestTest{
 		json.setOfferedTimeslotId(tsDennis.getId());
 		json.setWantedTimeslotId(tsOther.getId());
 		
+		// create tradeoffer
 		var result = mockMvc.perform(post("/api/v1/trades/create")
 											 .contentType(MediaType.APPLICATION_JSON)
 											 .content(new ObjectMapper().writeValueAsString(json))
@@ -105,15 +110,26 @@ public class TradeOffersRestControllerTest extends BaseRestTest{
 							.andExpect(status().isOk())
 							.andReturn();
 		var jsonString = result.getResponse().getContentAsString();
-		mockMvc.perform(delete("/api/v1/trades/8/24")
+		
+		// delete tradeoffer
+		mockMvc.perform(delete("/api/v1/trades/"+dennis.getId()+"/"+tsOther.getId())
 								.header("Authorization", "Bearer " + token))
 			   .andExpect(status().isOk());
 	}
 	
 	@Test
-	void testGetTradeOffersForModule() throws Exception {
+	@Transactional
+	void testGetTradeOffersForTimeslot() throws Exception {
 		var token = getLoginToken(username, pass);
-		var result = mockMvc.perform(get("/api/v1/trades/24")
+		var dennis = userRepository.findByUsername("dscha001").orElseThrow();
+		var tsDennis = dennis.getTimeslots()
+							 .stream()
+							 .filter(timeslot ->  timeslot.getTimeSlotType() != TypeOfTimeslots.PRAKTIKUM)
+							 .findFirst()
+							 .orElseThrow();
+		
+		
+		var result = mockMvc.perform(get("/api/v1/trades/" + tsDennis.getId())
 									.header("Authorization", "Bearer " + token)).andExpect(status().isOk())
 				.andReturn().getResponse().getContentAsString();
 		var deserializedResult = new ObjectMapper().readValue(result, Map.class);
