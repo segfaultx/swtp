@@ -38,7 +38,7 @@ public class UserService {
 		return repository.findById(userId);
 	}
 	
-	public Optional<User> getByStudentNumber(Long studentNumber) {
+	public User getByStudentNumber(Long studentNumber) {
 		return repository.findByStudentNumber(studentNumber);
 	}
 	
