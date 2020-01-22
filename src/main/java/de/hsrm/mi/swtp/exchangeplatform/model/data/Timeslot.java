@@ -48,17 +48,18 @@ public class Timeslot implements Model {
 	
 	Integer capacity;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "MODULE_ID")
+	@JsonBackReference("module-timeslots")
 	Module module;
 	
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "TIMETABLE_ID")
-	@JsonBackReference
+	@JsonBackReference("timetable-timeslots")
 	TimeTable timeTable;
 	
 	@ManyToMany(mappedBy = "timeslots", fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonBackReference("user-timeslots")
 	List<User> attendees = new ArrayList<>();
 	
 	@ManyToMany(mappedBy = "waitLists", fetch = FetchType.EAGER)
