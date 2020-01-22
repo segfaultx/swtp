@@ -4,4 +4,5 @@ public enum RestrictionType {
 	CREDIT_POINTS,
 	MINIMUM_SEMESTER,
 	PROGRESSIVE_REGULATION,
+	DUAL,
 }

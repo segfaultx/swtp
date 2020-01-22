@@ -56,6 +56,10 @@ public class PORestrictionViolationProcessor implements Runnable {
 				filterByProgressiveRegulation(changedRestriction.getUpdatedPO(), students);
 				filterActionsTaken++;
 			}
+			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.DUAL)) {
+				filterByDual(changedRestriction.getUpdatedPO().getRestriction().getDualPO(), students);
+				filterActionsTaken++;
+			}
 			log.info("│├ STEPS TAKEN: " + filterActionsTaken);
 			log.info("│└ STARTED PROCESSING VIOLATIONS OF CHANGED PO-RESTRICTIONS: " + changedRestrictions);
 			filterActionsTakenTotal += filterActionsTaken;
@@ -172,6 +176,23 @@ public class PORestrictionViolationProcessor implements Runnable {
 			poRestrictionViolationService.addViolation(student,
 													   RestrictionType.PROGRESSIVE_REGULATION,
 													   message);
+		}
+	}
+	
+	public void filterByDual(final PORestriction.DualPO restriction, final List<User> students) {
+		if(!restriction.getIsActive()) return;
+		log.info(" // RestrictionType.DUAL");
+//		final Long maxCp = restriction.getMaxCP();
+		for(User student : students) {
+			log.info(" // FILTERING: " + student.getAuthenticationInformation().getUsername());
+			
+			
+			
+//			if(userCp >= maxCp) {
+//				log.info(student.getAuthenticationInformation().getUsername() + " => VIOLATION DETECTED:filterByCP ======== ");
+//				log.info(student.getAuthenticationInformation().getUsername() + " => // TOO MANY CP - more than " + maxCp);
+//				poRestrictionViolationService.addViolation(student, RestrictionType.CREDIT_POINTS, userCp);
+//			} else log.info(" // CAN HAVE MORE - has " + userCp);
 		}
 	}
 	

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Data
@@ -112,16 +113,26 @@ public class PORestriction implements Model {
 		@Schema(name = "is_active", defaultValue = "false", required = true, nullable = false)
 		@Column(name = "is_active", nullable = false, updatable = true)
 		Boolean isActive = false;
-
+		
 		@Column(nullable = true, name = "free_dual_day")
-		@Schema(name = "free_dual_day", nullable = true, required = false, defaultValue = "TUESDAY")
-		@JsonProperty(value = "free_dual_day", defaultValue = "TUESDAY")
-		DayOfWeek freeDualDay = DayOfWeek.TUESDAY;
-
+		@Schema(name = "free_dual_day_default", nullable = true, required = true, defaultValue = "TUESDAY")
+		@JsonProperty(value = "free_dual_day_default", defaultValue = "TUESDAY", required = true)
+		DayOfWeek freeDualDayDefault = DayOfWeek.TUESDAY;
+		
+		@ElementCollection(targetClass = DayOfWeek.class)
+		@Column(nullable = true, name = "free_dual_days")
+		@Schema(name = "free_dual_days", nullable = true, required = false, defaultValue = "[]")
+		@JsonProperty(value = "free_dual_days", defaultValue = "[]")
+		List<DayOfWeek> freeDualDays;
+		
+		public void setFreeDualDayDefault(DayOfWeek freeDualDayDefault) {
+			this.freeDualDayDefault = freeDualDayDefault == null ? DayOfWeek.WEDNESDAY : freeDualDayDefault;
+		}
+		
 		@Override
 		public int compareTo(DualPO dualPO) {
-			String str1 = String.format("%s-%s-%s", this.getId(), this.getIsActive(), this.getFreeDualDay());
-			String str2 = String.format("%s-%s-%s", dualPO.getId(), dualPO.getIsActive(), dualPO.getFreeDualDay());
+			String str1 = String.format("%s-%s-%s", this.getId(), this.getIsActive(), this.getFreeDualDayDefault());
+			String str2 = String.format("%s-%s-%s", dualPO.getId(), dualPO.getIsActive(), dualPO.getFreeDualDayDefault());
 			return str1.compareToIgnoreCase(str2);
 		}
 	}

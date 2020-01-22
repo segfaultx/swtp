@@ -24,6 +24,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -99,6 +101,11 @@ public class DBInitiator implements ApplicationRunner {
 		po2017.setMajor("Medieninformatik");
 		po2017.setValidSince(LocalDate.now().minusYears(3L));
 		po2017.setDateEnd(LocalDate.now().plusYears(3L));
+		
+		final List<DayOfWeek> freeDaysPerSemester = IntStream.iterate(0, i -> i < po2017.getSemesterCount(), i -> i + 1)
+													   .mapToObj(i -> DayOfWeek.TUESDAY)
+													   .collect(Collectors.toList());
+		restriction2017.getDualPO().setFreeDualDays(freeDaysPerSemester);
 		po2017.setRestriction(restriction2017);
 		// END PO 2017
 		
@@ -696,7 +703,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		PORestriction.DualPO dualPO = new PORestriction.DualPO();
 		dualPO.setIsActive(isDual);
-		if(isDual) dualPO.setFreeDualDay(DayOfWeek.values()[new Random().nextInt(5)]);
+		if(isDual) dualPO.setFreeDualDayDefault(DayOfWeek.values()[new Random().nextInt(5)]);
 		poRestriction.setDualPO(dualPO);
 		
 		return poRestriction;
