@@ -2,10 +2,8 @@ package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.ModuleSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -45,12 +43,12 @@ public class Module implements Model {
 	private List<Timeslot> timeslots;
 	
 	@ManyToMany(mappedBy = "modules", fetch = FetchType.EAGER)
-	@JsonBackReference
+	@JsonBackReference("attendee-module")
 	List<User> attendees = new ArrayList<>();
 	
 	
 	@JoinColumn(name = "po_id")
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JsonBackReference("po-modules")
 	private PO po;
 	

@@ -51,13 +51,12 @@ public class User implements Model {
 	@JsonManagedReference("user-authinformation")
 	AuthenticationInformation authenticationInformation;
 	
-	
 	@JsonProperty("user_type")
 	@OneToOne(cascade = CascadeType.ALL)
 	@JsonManagedReference("user-usertype")
 	UserType userType;
 	
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JsonBackReference("po-students")
 	PO po;
 	
@@ -68,17 +67,17 @@ public class User implements Model {
 	
 	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JsonManagedReference
+	@JsonManagedReference("student-waitlist")
 	List<Timeslot> waitLists = new ArrayList<>();
 	
 	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JsonManagedReference
+	@JsonManagedReference("attendee-module")
 	List<Module> modules = new ArrayList<>();
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
-	@JsonManagedReference("user-tradeoffers")
+	@JsonManagedReference("offerer-tradeoffers")
 	List<TradeOffer> tradeoffers = new ArrayList<>();
 	
 	@JsonProperty("completed_modules")
@@ -87,5 +86,6 @@ public class User implements Model {
 	
 	@JsonIgnore
 	@OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
+	@JsonManagedReference("seeker-tradeoffers")
 	List<TradeOffer> tradeofferSeeks = new ArrayList<>();
 }

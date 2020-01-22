@@ -18,7 +18,7 @@ import java.util.List;
 
 @Entity
 @Data
-@ToString(exclude = { "user", "room", "module", "timeTable", "attendees"})
+@ToString(exclude = { "user", "room", "module", "timeTable", "attendees", "waitList" })
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonSerialize(using = TimeslotSerializer.class)
 public class Timeslot implements Model {
@@ -29,8 +29,7 @@ public class Timeslot implements Model {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "USER_ID")
-	@JsonBackReference
-    User user;
+	User user;
 	
 	@ManyToOne
 	Room room;
@@ -38,10 +37,10 @@ public class Timeslot implements Model {
 	@Enumerated(EnumType.STRING)
 	DayOfWeek day;
 	
-	@Schema( type = "string", format = "partial-time")
+	@Schema(type = "string", format = "partial-time")
 	LocalTime timeStart;
 	
-	@Schema( type = "string", format = "partial-time")
+	@Schema(type = "string", format = "partial-time")
 	LocalTime timeEnd;
 	
 	TypeOfTimeslots timeSlotType;
@@ -53,7 +52,7 @@ public class Timeslot implements Model {
 	@JsonBackReference("module-timeslots")
 	Module module;
 	
-	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "TIMETABLE_ID")
 	@JsonBackReference("timetable-timeslots")
 	TimeTable timeTable;
@@ -62,8 +61,8 @@ public class Timeslot implements Model {
 	@JsonBackReference("user-timeslots")
 	List<User> attendees = new ArrayList<>();
 	
-	@ManyToMany(mappedBy = "waitLists", fetch = FetchType.EAGER)
-	@JsonBackReference
+	@ManyToMany(mappedBy = "waitLists", fetch = FetchType.LAZY)
+	@JsonBackReference("student-waitlist")
 	List<User> waitList = new ArrayList<>();
 	
 }
