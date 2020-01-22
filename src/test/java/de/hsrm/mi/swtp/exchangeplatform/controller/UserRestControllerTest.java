@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
@@ -16,12 +17,14 @@ public class UserRestControllerTest extends BaseRestTest {
 	@Autowired
 	MockMvc mockMvc;
 	
+	@Autowired
+	UserRepository userRepository;
 	
 	@Test
 	void testGetById() throws Exception {
+		var dennis = userRepository.findByUsername("dscha001").orElseThrow();
 		var token = getLoginToken("dscha001", "dscha001");
-		
-		var result = mockMvc.perform(get("/api/v1/users/8")
+		var result = mockMvc.perform(get("/api/v1/users/" + dennis.getId())
 									.header("Authorization", "Bearer " + token))
 				.andExpect(status().isOk())
 				.andReturn()
