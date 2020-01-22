@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.TimeslotSerializer;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -50,6 +51,7 @@ public class Timeslot implements Model {
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "MODULE_ID")
+	@Schema(type = "integer", format = "int64")
 	Module module;
 	
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
@@ -59,6 +61,7 @@ public class Timeslot implements Model {
 	
 	@ManyToMany(mappedBy = "timeslots", fetch = FetchType.LAZY)
 	@JsonBackReference
+	@ArraySchema(schema = @Schema(type = "integer", format = "int64"))
 	List<User> attendees = new ArrayList<>();
 	
 	@ManyToMany(mappedBy = "waitLists", fetch = FetchType.EAGER)
