@@ -130,6 +130,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		
 		TradeOffer tradeOffer = findFinalTradeOffer(requestingUser, offeredTimeslot, requestedTimeslot);
 		
+		// TODO: handle null
 		if (tradeOffer == null) {
 			throw new Exception("No final TradeOffer found");
 		}
@@ -154,12 +155,16 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		tradeOffers = tradeOfferRepository.findAll();
 		
 		// Remove all tradeOffers where requested is not offered and offered is not seek
-		tradeOffers.removeIf(tradeOffer -> !(tradeOffer.getOffer() == requestedTimeslot && tradeOffer.getSeek() == offeredTimeslot));
-		// filter the list according to active filters
+		tradeOffers.removeIf(tradeOffer ->
+									 !(tradeOffer.getOffer() == requestedTimeslot && tradeOffer.getSeek() == offeredTimeslot));
 		
-		// if more than one tradeoffer remains, then spit out a random one
+		// filter the list according to active filters
+		// TODO: iterate through filters and apply them
+		
+		// if no matching TradeOffer was found return null
 		if(tradeOffers.size() == 0) return null;
 		
+		// if more than one tradeoffer remains, then spit out a random one
 		if(tradeOffers.size() > 1) {
 			return tradeOffers.get(random.nextInt(tradeOffers.size() - 1));
 		} else {
@@ -178,6 +183,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 * @throws RuntimeException if tradeoffer cannot be looked up or requester isnt owner of the requested trade
 	 */
 	public boolean deleteTradeOffer(long studentId, long seekId) throws Exception {
+		// TODO: Re-implement method
 //		log.info(String.format("Looking up Tradeoffer with seekId: %d. Requester: %d", seekId, studentId));
 //
 //		var found = tradeOfferRepository.findByOffererAndSeek(userRepository.findById(studentId).orElseThrow(),

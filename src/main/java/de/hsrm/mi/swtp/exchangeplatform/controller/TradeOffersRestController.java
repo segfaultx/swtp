@@ -152,6 +152,8 @@ public class TradeOffersRestController {
 			
 			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot);
 			
+			// TODO: check if messaging still works
+			
 //			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
 //									   TradeOfferSuccessfulMessage.builder()
 //																  .value(tradeRequest.getWantedTimeslotId())

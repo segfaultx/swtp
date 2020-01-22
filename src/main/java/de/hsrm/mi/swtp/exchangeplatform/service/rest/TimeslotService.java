@@ -30,6 +30,8 @@ public class TimeslotService {
 
 	public Timeslot addAttendeeToTimeslot(Timeslot timeslot, User student) throws UserIsAlreadyAttendeeException, NoTimeslotCapacityException {
 		
+		// TODO: There is a bug, where timeSlots and attendees are not updated correct, check if bidirectional binding is the reason and fix by setting the new values
+		
 		if(timeslot.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
 			throw new UserIsAlreadyAttendeeException(student);
@@ -73,6 +75,8 @@ public class TimeslotService {
 	}
 
 	public Timeslot removeAttendeeFromTimeslot(Timeslot timeslot, User student) throws NotFoundException {
+		
+		// TODO: There is a bug, where timeSlots and attendees are not updated correct, check if bidirectional binding is the reason and fix by setting the new values
 		
 		if(!timeslot.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s not removed", student.getStudentNumber()));
