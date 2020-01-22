@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter;
 
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ProgressiveRegulationViolationMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.ChangedRestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
@@ -115,7 +116,7 @@ public class PORestrictionViolationProcessor implements Runnable {
 		if(!restriction.getIsActive()) return;
 		log.info(" // RestrictionType.PROGRESSIVE_REGULATION");
 		final Long poSemesterCount = po.getSemesterCount();
-		final Long MIN_PROGRESSIVE_SEMESTER = 2L;
+		final Long MIN_PROGRESSIVE_SEMESTER = poSemesterCount.intValue() >= 6 ? 4L : 2;
 		
 		for(User student : students) {
 			log.info(student.getAuthenticationInformation().getUsername() + " => // FILTERING: " + student.getAuthenticationInformation().getUsername());
@@ -130,6 +131,7 @@ public class PORestrictionViolationProcessor implements Runnable {
 			final List<Module> dependantOccupiedModules = moduleService.getAllModulesByStudent(student)
 																	   .stream()
 																	   .filter(module -> module.getSemester() >= MIN_PROGRESSIVE_SEMESTER)
+																	   .distinct()
 																	   .collect(Collectors.toList());
 			
 			// check whether any occupied modules are dependant on previous semesters
@@ -148,16 +150,17 @@ public class PORestrictionViolationProcessor implements Runnable {
 					modulesNotAllowed.add(occupied.getId());
 				}
 			}
-
-			log.warn("\n==================================================================================");
-			log.info("__________________------------------- NOT ALLOWED TO MODULES::" + modulesNotAllowed);
-			log.info("__________________------------------- NOT ALLOWED TO MODULES::" + modulesNotAllowed);
-			log.info("__________________------------------- NOT ALLOWED TO MODULES::" + modulesNotAllowed);
-			log.warn("==================================================================================\n");
-
-//			log.info(student.getAuthenticationInformation().getUsername() + " => VIOLATION DETECTED:filterBySemester ======== ");
-//			poRestrictionViolationService.addViolation(student, RestrictionType.MINIMUM_SEMESTER, minSemester);
-		
+			final ProgressiveRegulationViolationMessage message;
+			message = ProgressiveRegulationViolationMessage.builder()
+														   .modulesNotAllowed(modulesNotAllowed.stream()
+																							   .sorted()
+																							   .distinct()
+																							   .collect(Collectors.toList()))
+														   .build();
+			log.info(student.getAuthenticationInformation().getUsername() + " => VIOLATION DETECTED:filterBySemester ======== ");
+			poRestrictionViolationService.addViolation(student,
+													   RestrictionType.PROGRESSIVE_REGULATION,
+													   message);
 		}
 	}
 	

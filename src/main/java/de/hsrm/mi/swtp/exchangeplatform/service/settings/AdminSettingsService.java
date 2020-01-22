@@ -6,7 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
-import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionViolationProcessorExecutor;
+import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionViolationProcessor;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.POService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,8 @@ public class AdminSettingsService {
 	@Autowired
 	ObjectMapper objectMapper;
 	@Autowired
-	PORestrictionViolationProcessorExecutor poRestrictionViolationProcessorExecutor;
+	PORestrictionViolationProcessor poRestrictionViolationProcessor;
+//	PORestrictionViolationProcessorExecutor poRestrictionViolationProcessorExecutor;
 	@Autowired
 	POService poService;
 
@@ -77,7 +78,8 @@ public class AdminSettingsService {
 		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
 
 		if(tradesActive) {
-			poRestrictionViolationProcessorExecutor.execute();
+			poRestrictionViolationProcessor.startProcessing();
+//			poRestrictionViolationProcessorExecutor.execute();
 		}
 
 		jmsTopicTemplate.send(TOPICNAME, session -> {

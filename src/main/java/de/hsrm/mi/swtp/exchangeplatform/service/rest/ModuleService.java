@@ -50,6 +50,7 @@ public class ModuleService {
 		return student.getTimeslots()
 					  .stream()
 					  .map(Timeslot::getModule)
+					  .distinct()
 					  .collect(Collectors.toList());
 	}
 	
