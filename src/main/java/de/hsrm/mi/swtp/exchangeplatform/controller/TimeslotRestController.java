@@ -94,11 +94,12 @@ public class TimeslotRestController {
 		
 		User user = userService.getById(timeslotRequestBody.getStudentId())
 							   .orElseThrow(NotFoundException::new);
+		
+		Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
+				.orElseThrow(NotFoundException::new);
 
 		try {
-			timeslotService.addAttendeeToTimeslot(timeslotRequestBody.getTimeslotId(), user);
-			Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
-											   .orElseThrow(NotFoundException::new);
+			timeslot = timeslotService.addAttendeeToTimeslot(timeslot, user);
 			return ResponseEntity.ok(timeslot);
 		} catch(UserIsAlreadyAttendeeException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -127,10 +128,11 @@ public class TimeslotRestController {
 		User user = userService.getById(timeslotRequestBody.getStudentId())
 							   .orElseThrow(NotFoundException::new);
 		
-		timeslotService.removeAttendeeFromTimeslot(timeslotRequestBody.getTimeslotId(), user);
-		
 		Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
 				.orElseThrow(NotFoundException::new);
+		
+		timeslot = timeslotService.removeAttendeeFromTimeslot(timeslot, user);
+		
 		return ResponseEntity.ok(timeslot);
 	}
 	
