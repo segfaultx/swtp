@@ -23,12 +23,12 @@ public class TradeOffer implements Model {
 	
 	@JsonProperty("seeker")
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonBackReference("seeker-tradeoffers")
 	User seeker;
 	
 	@JsonProperty("offerer")
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonBackReference
+	@JsonBackReference("offerer-tradeoffers")
 	User offerer;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
