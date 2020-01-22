@@ -56,7 +56,7 @@ public class User implements Model {
 	@JsonManagedReference("user-usertype")
 	UserType userType;
 	
-	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@ManyToOne(cascade = CascadeType.ALL)
 	@JsonBackReference("po-students")
 	PO po;
 	

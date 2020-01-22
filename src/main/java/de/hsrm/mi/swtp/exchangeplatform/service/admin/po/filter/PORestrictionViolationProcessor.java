@@ -38,19 +38,29 @@ public class PORestrictionViolationProcessor implements Runnable {
 	
 	public void startProcessing() {
 		List<ChangedRestriction> changedRestrictions = poUpdateService.getAllChangedPOs();
-		if(changedRestrictions.size() > 0) log.info("...STARTED PROCESSING");
+		log.info("┌ STARTED PROCESSING VIOLATIONS OF CHANGED PO-RESTRICTIONS: " + changedRestrictions);
+		int filterActionsTakenTotal = 0;
 		for(ChangedRestriction changedRestriction : changedRestrictions) {
+			int filterActionsTaken = 0;
+			log.info("├┬ STARTED PROCESSING OF VIOLATIONS");
 			final List<User> students = userService.getAllByPO(changedRestriction.getUpdatedPO());
 			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.CREDIT_POINTS)) {
 				filterByCP(changedRestriction.getUpdatedPO().getRestriction().getByCP(), students);
+				filterActionsTaken++;
 			}
 			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.MINIMUM_SEMESTER)) {
 				filterBySemester(changedRestriction.getUpdatedPO().getRestriction().getBySemester(), students);
+				filterActionsTaken++;
 			}
 			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.PROGRESSIVE_REGULATION)) {
 				filterByProgressiveRegulation(changedRestriction.getUpdatedPO(), students);
+				filterActionsTaken++;
 			}
+			log.info("│├ STEPS TAKEN: " + filterActionsTaken);
+			log.info("│└ STARTED PROCESSING VIOLATIONS OF CHANGED PO-RESTRICTIONS: " + changedRestrictions);
+			filterActionsTakenTotal += filterActionsTaken;
 		}
+		log.info("└ ...FINISHED PROCESSING OF VIOLATIONS; FILTER STEPS TAKEN IN TOTAL=" + filterActionsTakenTotal);
 		poRestrictionViolationService.notifyUsersWithViolations();
 		poUpdateService.flush();
 	}
