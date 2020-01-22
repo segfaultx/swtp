@@ -3,7 +3,9 @@ package de.hsrm.mi.swtp.exchangeplatform.configuration.initiator;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
+import de.hsrm.mi.swtp.exchangeplatform.model.factory.ModuleFactory;
+import de.hsrm.mi.swtp.exchangeplatform.model.factory.RoomFactory;
+import de.hsrm.mi.swtp.exchangeplatform.model.factory.TimeslotFactory;
 import de.hsrm.mi.swtp.exchangeplatform.model.factory.UserFactory;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
@@ -36,6 +38,9 @@ public class DBInitiator implements ApplicationRunner {
 	AdminSettingsService adminSettingsService;
 	AdminSettingsRepository adminSettingsRepository;
 	UserFactory userFactory;
+	ModuleFactory moduleFactory;
+	RoomFactory roomFactory;
+	TimeslotFactory timeslotFactory;
 	PORepository poRepository;
 	
 	@Override
@@ -103,337 +108,126 @@ public class DBInitiator implements ApplicationRunner {
 		// END PO 2017
 		
 		// START Modul AFS
-		Module afs = new Module();
-		afs.setName("Automaten und formale Sprachen");
-		afs.setPo(po2017);
-		afs.setSemester(3L);
+		Module afs = ModuleFactory.createModule("Automaten und formale Sprachen", po2017, 3L);
 		// END Modul AFS
 		
 		// START Modul CG
-		
-		Module cg = new Module();
-		cg.setName("Computergrafiken");
-		cg.setPo(po2017);
-		
+		Module cg = ModuleFactory.createModule("Computergrafiken", po2017, 4L);
 		// END Modul AFS
 		
 		// START Modul Programmieren 3
-		Module prog3 = new Module();
-		prog3.setName("Programmieren 3");
-		prog3.setPo(po2017);
-		prog3.setSemester(3L);
+		Module prog3 = ModuleFactory.createModule("Programmieren 3", po2017, 3L);
 		// END Modul Programmieren 3
 		
-		
 		// START Modul Datenbanksysteme
-		Module dbs = new Module();
-		dbs.setName("Datenbanksysteme");
-		dbs.setPo(po2017);
-		dbs.setSemester(3L);
+		Module dbs = ModuleFactory.createModule("Datenbanksysteme", po2017, 3L);
 		// END Modul Datenbanksysteme
 		
 		// START Modul Algorithmen und Datenstrukturen
-		Module ads = new Module();
-		ads.setName("Algorithmen und Datenstrukturen");
-		ads.setPo(po2017);
-		ads.setSemester(3L);
+		Module ads = ModuleFactory.createModule("Algorithmen und Datenstrukturen", po2017, 3L);
 		// END Modul Algorithmen und Datenstrukturen
 		
 		// START Einführung in die Medieninformatik
-		Module eim = new Module();
-		eim.setName("Einführung in die Medieninformatik");
-		eim.setPo(po2017);
-		eim.setSemester(1L);
+		Module eim = ModuleFactory.createModule("Einführung in die Medieninformatik", po2017);
 		// END Modul Einführung in die Medieninformatik
 		
 		// START Einführung in die Medieninformatik
-		Module swt = new Module();
-		swt.setName("Softwaretechnik");
-		swt.setPo(po2017);
-		swt.setSemester(4L);
+		Module swt = ModuleFactory.createModule("Softwaretechnik", po2017, 4L);
 		// END Modul Einführung in die Medieninformatik
 		
 		// START ROOM D12
-		Room d12 = new Room();
-		d12.setLocation("Unter den Eichen");
-		d12.setRoomNumber("D12");
-		d12.setTimeslots(null);
-		
+		Room d12 = RoomFactory.createRoom("D12");
 		var d12_out = roomRepository.save(d12);
 		
 		//Start ROOM D11
-		Room d11 = new Room();
-		d11.setLocation("Unter den Eichen");
-		d11.setRoomNumber("D11");
-		d11.setTimeslots(null);
-		
+		Room d11 = RoomFactory.createRoom("D11");
 		var d11_out = roomRepository.save(d11);
 		
 		//Start ROOM D13
-		Room d13 = new Room();
-		d13.setLocation("Unter den Eichen");
-		d13.setRoomNumber("D13");
-		d13.setTimeslots(null);
-		
+		Room d13 = RoomFactory.createRoom("D13");
 		var d13_out = roomRepository.save(d13);
 		
 		// START AFS Timeslots
 		// START AFS VL
-		Timeslot afsVorlesung = new Timeslot();
-		afsVorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
-		afsVorlesung.setCapacity(100);
-		afsVorlesung.setModule(afs);
-		afsVorlesung.setDay(DayOfWeek.WEDNESDAY);
-		afsVorlesung.setTimeStart(LocalTime.of(8, 15));
-		afsVorlesung.setTimeEnd(LocalTime.of(9, 45));
-		
-		afsVorlesung.setRoom(d11_out);
-		afsVorlesung.setTimeTable(null);
+		Timeslot afsVorlesung = TimeslotFactory.createTimeslotVorlesung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(8, 15), d11_out);
 		// END AFS VL
 		
 		// START AFS UEBUNG 1
-		Timeslot afsUebung = new Timeslot();
-		afsUebung.setTimeSlotType(TypeOfTimeslots.UEBUNG);
-		afsUebung.setCapacity(50);
-		afsUebung.setModule(afs);
-		afsUebung.setDay(DayOfWeek.WEDNESDAY);
-		afsUebung.setTimeStart(LocalTime.of(10, 0));
-		afsUebung.setTimeEnd(LocalTime.of(11, 30));
-		
-		afsUebung.setRoom(d12_out);
-		afsUebung.setTimeTable(null);
+		Timeslot afsUebung = TimeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(10, 0), d12_out);
 		// END AFS UEBUNG 1
 		
 		// START AFS UEBUNG 2
-		Timeslot afsUebung2 = new Timeslot();
-		afsUebung2.setTimeSlotType(TypeOfTimeslots.UEBUNG);
-		afsUebung2.setCapacity(50);
-		afsUebung2.setModule(afs);
-		afsUebung2.setDay(DayOfWeek.WEDNESDAY);
-		afsUebung2.setTimeStart(LocalTime.of(11, 45));
-		afsUebung2.setTimeEnd(LocalTime.of(13, 15));
-		
-		afsUebung2.setRoom(d12_out);
-		afsUebung2.setTimeTable(null);
-		
+		Timeslot afsUebung2 = TimeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(11, 45), d12_out);
 		// END AFS UEBUNG 2
 		
 		// START AFS UEBUNG 3
-		
-		Timeslot afsUebung3 = new Timeslot();
-		afsUebung3.setTimeSlotType(TypeOfTimeslots.UEBUNG);
-		afsUebung3.setCapacity(50);
-		afsUebung3.setModule(afs);
-		afsUebung3.setDay(DayOfWeek.MONDAY);
-		afsUebung3.setTimeStart(LocalTime.of(10, 0));
-		afsUebung3.setTimeEnd(LocalTime.of(11, 30));
-		
-		afsUebung3.setRoom(d12_out);
-		afsUebung3.setTimeTable(null);
-		
+		Timeslot afsUebung3 = TimeslotFactory.createTimeslotUebung(DayOfWeek.MONDAY, afs, LocalTime.of(10, 0), d12_out);
 		// END AFS UEBUNG 3
 		
 		// START AFS UEBUNG 4
-		
-		Timeslot afsUebung4 = new Timeslot();
-		afsUebung4.setTimeSlotType(TypeOfTimeslots.UEBUNG);
-		afsUebung4.setCapacity(50);
-		afsUebung4.setModule(afs);
-		afsUebung4.setDay(DayOfWeek.FRIDAY);
-		afsUebung4.setTimeStart(LocalTime.of(11, 45));
-		afsUebung4.setTimeEnd(LocalTime.of(13, 15));
-		
-		afsUebung4.setRoom(d12_out);
-		afsUebung4.setTimeTable(null);
-		
+		Timeslot afsUebung4 = TimeslotFactory.createTimeslotUebung(DayOfWeek.FRIDAY, afs, LocalTime.of(11, 45), d12_out);
 		// END AFS UEBUNG 4
 		
 		// START SWT Timeslots
 		// START SWT VL
-		Timeslot swtVorlesung = new Timeslot();
-		swtVorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
-		swtVorlesung.setCapacity(100);
-		swtVorlesung.setModule(swt);
-		swtVorlesung.setDay(DayOfWeek.TUESDAY);
-		swtVorlesung.setTimeStart(LocalTime.of(8, 15));
-		swtVorlesung.setTimeEnd(LocalTime.of(9, 45));
-		
-		swtVorlesung.setRoom(d11_out);
-		swtVorlesung.setTimeTable(null);
+		Timeslot swtVorlesung = TimeslotFactory.createTimeslotVorlesung(DayOfWeek.TUESDAY, swt, LocalTime.of(8, 15), d11_out);
 		// END swt VL
 		
 		// START swt Prakt 1
-		Timeslot swtPraktikum = new Timeslot();
-		swtPraktikum.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
-		swtPraktikum.setCapacity(20);
-		swtPraktikum.setModule(swt);
-		swtPraktikum.setDay(DayOfWeek.TUESDAY);
-		swtPraktikum.setTimeStart(LocalTime.of(10, 0));
-		swtPraktikum.setTimeEnd(LocalTime.of(11, 30));
-		
-		swtPraktikum.setRoom(d12_out);
-		swtPraktikum.setTimeTable(null);
+		Timeslot swtPraktikum = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.TUESDAY, swt, LocalTime.of(10, 0), d12_out);
 		// END swt Prakt 1
 		
 		// START swt Prakt 2
-		Timeslot swtPraktikum2 = new Timeslot();
-		swtPraktikum2.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
-		swtPraktikum2.setCapacity(20);
-		swtPraktikum2.setModule(swt);
-		swtPraktikum2.setDay(DayOfWeek.WEDNESDAY);
-		swtPraktikum2.setTimeStart(LocalTime.of(11, 45));
-		swtPraktikum2.setTimeEnd(LocalTime.of(13, 15));
-		
-		swtPraktikum2.setRoom(d12_out);
-		swtPraktikum2.setTimeTable(null);
+		Timeslot swtPraktikum2 = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, swt, LocalTime.of(11, 45), d12_out);
 		// END swt Prakt 2
 		
 		// START DBS Timeslots
 		// START DBS VL
-		Timeslot dbsVorlesung = new Timeslot();
-		dbsVorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
-		dbsVorlesung.setCapacity(100);
-		dbsVorlesung.setModule(dbs);
-		dbsVorlesung.setDay(DayOfWeek.FRIDAY);
-		dbsVorlesung.setTimeStart(LocalTime.of(8, 15));
-		dbsVorlesung.setTimeEnd(LocalTime.of(9, 45));
-		
-		dbsVorlesung.setRoom(d11_out);
-		dbsVorlesung.setTimeTable(null);
+		Timeslot dbsVorlesung = TimeslotFactory.createTimeslotVorlesung(DayOfWeek.FRIDAY, dbs, LocalTime.of(8, 15), d11_out);
 		// END DBS VL
 		
 		// START DBS Prakt 1
-		Timeslot dbsPraktikum = new Timeslot();
-		dbsPraktikum.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
-		dbsPraktikum.setCapacity(30);
-		dbsPraktikum.setModule(dbs);
-		dbsPraktikum.setDay(DayOfWeek.FRIDAY);
-		dbsPraktikum.setTimeStart(LocalTime.of(10, 0));
-		dbsPraktikum.setTimeEnd(LocalTime.of(11, 30));
-		
-		dbsPraktikum.setRoom(d13_out);
-		dbsPraktikum.setTimeTable(null);
+		Timeslot dbsPraktikum = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY, dbs, LocalTime.of(10, 0), d13_out);
 		// END DBS Prakt 1
 		
 		// START dbs Prakt 2
-		Timeslot dbsPraktikum2 = new Timeslot();
-		dbsPraktikum2.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
-		dbsPraktikum2.setCapacity(30);
-		dbsPraktikum2.setModule(dbs);
-		dbsPraktikum2.setDay(DayOfWeek.FRIDAY);
-		dbsPraktikum2.setTimeStart(LocalTime.of(11, 45));
-		dbsPraktikum2.setTimeEnd(LocalTime.of(13, 15));
-		
-		dbsPraktikum2.setRoom(d13_out);
-		dbsPraktikum2.setTimeTable(null);
+		Timeslot dbsPraktikum2 = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY, dbs, LocalTime.of(11, 45), d13_out);
 		// END dbs Prakt 2
 		
 		
 		// START PROG3 Timeslots
 		// START PROG3 VL
-		Timeslot prog3Vorlesung = new Timeslot();
-		prog3Vorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
-		prog3Vorlesung.setCapacity(100);
-		prog3Vorlesung.setModule(prog3);
-		prog3Vorlesung.setDay(DayOfWeek.MONDAY);
-		prog3Vorlesung.setTimeStart(LocalTime.of(8, 15));
-		prog3Vorlesung.setTimeEnd(LocalTime.of(9, 45));
-		
-		prog3Vorlesung.setRoom(d11_out);
-		prog3Vorlesung.setTimeTable(null);
+		Timeslot prog3Vorlesung = TimeslotFactory.createTimeslotVorlesung(DayOfWeek.MONDAY, prog3, LocalTime.of(8, 15), d11_out);
 		// END PROG3 VL
 		
 		// START PROG3 Prakt 1
-		Timeslot prog3Praktikum = new Timeslot();
-		prog3Praktikum.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
-		prog3Praktikum.setCapacity(30);
-		prog3Praktikum.setModule(prog3);
-		prog3Praktikum.setDay(DayOfWeek.MONDAY);
-		prog3Praktikum.setTimeStart(LocalTime.of(10, 0));
-		prog3Praktikum.setTimeEnd(LocalTime.of(11, 30));
-		
-		prog3Praktikum.setRoom(d12_out);
-		prog3Praktikum.setTimeTable(null);
+		Timeslot prog3Praktikum = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(10, 0), d12_out);
 		// END PROG3 Prakt 1
 		
 		// START PROG3 Prakt 2
-		Timeslot prog3Praktikum2 = new Timeslot();
-		prog3Praktikum2.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
-		prog3Praktikum2.setCapacity(30);
-		prog3Praktikum2.setModule(prog3);
-		prog3Praktikum2.setDay(DayOfWeek.MONDAY);
-		prog3Praktikum2.setTimeStart(LocalTime.of(11, 45));
-		prog3Praktikum2.setTimeEnd(LocalTime.of(13, 15));
-		
-		prog3Praktikum2.setRoom(d13_out);
-		prog3Praktikum2.setTimeTable(null);
+		Timeslot prog3Praktikum2 = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(11, 45), d13_out);
 		// END PROG3 Prakt 2
 		
 		// START PROG3 Prakt 3
-		Timeslot prog3Praktikum3 = new Timeslot();
-		prog3Praktikum3.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
-		prog3Praktikum3.setCapacity(30);
-		prog3Praktikum3.setModule(prog3);
-		prog3Praktikum3.setDay(DayOfWeek.MONDAY);
-		prog3Praktikum3.setTimeStart(LocalTime.of(10, 0));
-		prog3Praktikum3.setTimeEnd(LocalTime.of(11, 30));
-		
-		prog3Praktikum3.setRoom(d13_out);
-		prog3Praktikum3.setTimeTable(null);
+		Timeslot prog3Praktikum3 = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(10, 0), d13_out);
 		// END PROG3 Prakt 3
 		
 		// START PROG3 Prakt 4
-		Timeslot prog3Praktikum4 = new Timeslot();
-		prog3Praktikum4.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
-		prog3Praktikum4.setCapacity(30);
-		prog3Praktikum4.setModule(prog3);
-		prog3Praktikum4.setDay(DayOfWeek.MONDAY);
-		prog3Praktikum4.setTimeStart(LocalTime.of(11, 45));
-		prog3Praktikum4.setTimeEnd(LocalTime.of(13, 15));
-		
-		prog3Praktikum4.setRoom(d12_out);
-		prog3Praktikum4.setTimeTable(null);
+		Timeslot prog3Praktikum4 = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(11, 45), d12_out);
 		// END PROG3 Prakt 4
 		
 		
 		// START ADS Timeslots
 		// START ADS VL
-		Timeslot adsVorlesung = new Timeslot();
-		adsVorlesung.setTimeSlotType(TypeOfTimeslots.VORLESUNG);
-		adsVorlesung.setCapacity(100);
-		adsVorlesung.setModule(ads);
-		adsVorlesung.setDay(DayOfWeek.WEDNESDAY);
-		adsVorlesung.setTimeStart(LocalTime.of(10, 00));
-		adsVorlesung.setTimeEnd(LocalTime.of(11, 30));
-		
-		adsVorlesung.setRoom(d11_out);
-		adsVorlesung.setTimeTable(null);
+		Timeslot adsVorlesung = TimeslotFactory.createTimeslotVorlesung(DayOfWeek.WEDNESDAY, ads, LocalTime.of(10, 00), d11_out);
 		// END ads VL
 		
 		// START ADS Prakt 1
-		Timeslot adsPraktikum = new Timeslot();
-		adsPraktikum.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
-		adsPraktikum.setCapacity(30);
-		adsPraktikum.setModule(ads);
-		adsPraktikum.setDay(DayOfWeek.WEDNESDAY);
-		adsPraktikum.setTimeStart(LocalTime.of(11, 30));
-		adsPraktikum.setTimeEnd(LocalTime.of(13, 15));
-		
-		adsPraktikum.setRoom(d13_out);
-		adsPraktikum.setTimeTable(null);
+		Timeslot adsPraktikum = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, ads, LocalTime.of(11, 30), d13_out);
 		// END ads Prakt 1
 		
 		// START ads Prakt 2
-		Timeslot adsPraktikum2 = new Timeslot();
-		adsPraktikum2.setTimeSlotType(TypeOfTimeslots.PRAKTIKUM);
-		adsPraktikum2.setCapacity(30);
-		adsPraktikum2.setModule(ads);
-		adsPraktikum2.setDay(DayOfWeek.WEDNESDAY);
-		adsPraktikum2.setTimeStart(LocalTime.of(14, 15));
-		adsPraktikum2.setTimeEnd(LocalTime.of(15, 45));
-		
-		adsPraktikum2.setRoom(d13_out);
-		adsPraktikum2.setTimeTable(null);
+		Timeslot adsPraktikum2 = TimeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, ads, LocalTime.of(14, 15), d13_out);
 		// END ads Prakt 2
 		
 		
