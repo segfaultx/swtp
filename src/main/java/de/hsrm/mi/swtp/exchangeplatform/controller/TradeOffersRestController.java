@@ -8,6 +8,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
+import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
@@ -49,6 +50,7 @@ public class TradeOffersRestController {
 	PersonalConnectionManager personalConnectionManager;
 	PersonalMessageSender personalMessageSender;
 	TimeslotService timeslotService;
+	TradeOfferRepository tradeOfferRepository;
 	
 	/**
 	 * DELETE request handler.
@@ -71,7 +73,17 @@ public class TradeOffersRestController {
 										  ) throws Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("DELETE Request Student: %d TradeOffer: %d", studentId, seekId));
-			if(tradeOfferService.deleteTradeOffer(studentId, seekId)) {
+			
+			User offerer = userService.getById(studentId)
+					.orElseThrow(NotFoundException::new);
+			
+			Timeslot timeslot = timeslotService.getById(seekId)
+		    		.orElseThrow(NotFoundException::new);
+			
+			TradeOffer tradeOffer =
+					tradeOfferRepository.findByOffererAndSeek(offerer, timeslot);
+					
+			if(tradeOfferService.deleteTradeOffer(tradeOffer)) {
 				log.info(String.format("DELETE Request successful Student: %d TradeOffer: %d", studentId, seekId));
 				return new ResponseEntity<>(HttpStatus.OK);
 			}
@@ -235,7 +247,7 @@ public class TradeOffersRestController {
 		return new ResponseEntity<>(tradeOfferService.getAll(), HttpStatus.OK);
 	}
 
-	@GetMapping("/mytradefffers")
+	@GetMapping("/mytradeoffers")
 	@Operation(description = "get TradeOffers for student", operationId = "getMyTradeOffers")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved tradeoffers"),
 							@ApiResponse(responseCode = "403", description = "unauthorized request"),
