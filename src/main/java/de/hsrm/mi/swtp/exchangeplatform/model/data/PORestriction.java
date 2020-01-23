@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.model.data;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -121,7 +122,7 @@ public class PORestriction implements Model {
 		
 		@ElementCollection(targetClass = DayOfWeek.class)
 		@Column(nullable = true, name = "free_dual_days")
-		@Schema(name = "free_dual_days", nullable = true, required = false, defaultValue = "[]")
+		@ArraySchema(schema = @Schema(name = "free_dual_days", nullable = true, required = false, defaultValue = "[]")) 
 		@JsonProperty(value = "free_dual_days", defaultValue = "[]")
 		List<DayOfWeek> freeDualDays;
 		
