@@ -141,7 +141,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 				 offereringUser, requestingUser, offeredTimeslot, requestedTimeslot);
 		
 		if(tradeService.doTrade(offereringUser, requestingUser, offeredTimeslot, requestedTimeslot)) {
-			deleteTradeOffer(offereringUser.getStudentNumber(), offeredTimeslot.getId()); // TODO: evtl mit Tradeoffer statt ids refactorn
+			deleteTradeOffer(tradeOffer);
 			return timeSlotRepository.findById(requestedTimeslot.getId()).orElseThrow();
 		}
 		throw new RuntimeException();
@@ -173,25 +173,17 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	}
 	
 	/**
-	 * Method to delete a given {@link TradeOffer} by id of a student
+	 * Method to delete a given {@link TradeOffer}
 	 *
-	 * @param studentId delete requester's id
-	 * @param seekId    seekId of item which is supposed to be deleted
+	 * @param tradeOffer delete given TradeOffer from Database
 	 *
 	 * @return true if successful
 	 *
-	 * @throws RuntimeException if tradeoffer cannot be looked up or requester isnt owner of the requested trade
 	 */
-	public boolean deleteTradeOffer(long studentId, long seekId) throws Exception {
-		// TODO: Re-implement method
-//		log.info(String.format("Looking up Tradeoffer with seekId: %d. Requester: %d", seekId, studentId));
-//
-//		var found = tradeOfferRepository.findByOffererAndSeek(userRepository.findById(studentId).orElseThrow(),
-//																		timeSlotRepository.findById(seekId).orElseThrow()
-//																	   );
-//		if(found == null) throw new NotFoundException();
-//		log.info(String.format("Successfully deleted tradeoffer with seekId: %d of student: %d", seekId, studentId));
-//		tradeOfferRepository.delete(found);
+	public boolean deleteTradeOffer(TradeOffer tradeOffer) {
+		if(tradeOffer == null) return false;
+		log.info("Successfully deleted tradeoffer with ID: {} of student: %d", tradeOffer.getId());
+		tradeOfferRepository.delete(tradeOffer);
 		return true;
 	}
 	
