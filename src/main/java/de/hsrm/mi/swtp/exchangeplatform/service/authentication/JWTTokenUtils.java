@@ -51,28 +51,46 @@ public class JWTTokenUtils {
 		return claimsResolver.apply(claims);
 	}
 	
-	//for retrieveing any information from token we will need the secret key
+	/**
+	 * Gets all claims in body of token, by using the secret key defined
+	 * @param token JWT
+	 * @return all claims in token
+	 */
 	private Claims getAllClaimsFromToken(String token) {
 		return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 	}
 	
-	//check if the token has expired
+	/**
+	 * Checks if token is expired
+	 * @param token JWT
+	 * @return true if expired, false if not
+	 */
 	public Boolean isTokenExpired(String token) {
 		final Date expiration = getExpirationDateFromToken(token);
 		return expiration.before(new Date());
 	}
 	
-	//generate token for user
+	/**
+	 * Generates JWT for user
+	 * @param user user that is authenticated and needs a token
+	 * @return JWT
+	 */
 	public String generateToken(User user) {
 		Map<String, Object> claims = new HashMap<>();
 		return doGenerateToken(claims, user.getAuthenticationInformation().getUsername());
 	}
 	
-	//while creating the token -
-	//1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID
-	//2. Sign the JWT using the HS512 algorithm and secret key.
-	//3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
-	//   compaction of the JWT to a URL-safe string
+	/**
+	 * Creating method of JWT
+	 *
+	 * Defines claims for the token
+	 * Sets creation and expiration date
+	 * Signs token with HS312 Hashing Algorithm
+	 * Compacts the token to a URL-safe string
+	 * @param claims claims for JWT
+	 * @param subject Username for JWT
+	 * @return JWT
+	 */
 	private String doGenerateToken(Map<String, Object> claims, String subject) {
 		return Jwts.builder()
 				   .setClaims(claims)
