@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ActiveToken class holds current logged in Users and non expired Tokens
+ */
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Component
