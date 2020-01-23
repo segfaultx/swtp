@@ -87,9 +87,9 @@ public class ModuleService {
 	 * @return list of timeslots of potential modules
 	 * @throws NotFoundException if username looup fails
 	 */
-	public List<Timeslot> lookUpAvailableModulesForStudent(String usrname) throws NotFoundException {
-		log.info(String.format("Looking up modules for Student: %s", usrname));
-		return moduleLookupService.lookUpTimeslotsForStudent(usrname);
+	public List<Timeslot> lookUpAvailableModulesForStudent(User user) throws NotFoundException {
+		log.info(String.format("Looking up modules for Student: %s", user.getAuthenticationInformation().getUsername()));
+		return moduleLookupService.lookUpTimeslotsForStudent(user);
 	}
 	
 	public List<Module> getAllModulesByStudent(final User student) {

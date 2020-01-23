@@ -136,7 +136,9 @@ public class ModuleRestController {
 																 Principal principal) throws NotFoundException {
 		log.info(String.format("GET REQUEST: getModulesForStudent, by user: %s, for studentid %d",
 							   principal.getName(), studentId));
-		var potentialModules = moduleService.lookUpAvailableModulesForStudent(principal.getName());
+		log.info(String.format("LOOKING UP USER WITH USERNAME: %s", principal.getName()));
+		var usr = userService.getByUsername(principal.getName()).orElseThrow(NotFoundException::new);
+		var potentialModules = moduleService.lookUpAvailableModulesForStudent(usr);
 		return new ResponseEntity<>(potentialModules, HttpStatus.OK);
 	}
 }
