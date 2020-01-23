@@ -42,4 +42,16 @@ public class FilterUtils {
 		return tradeOffers;
 	}
 	
+	public Map<String, Class<? extends Filter>> getMap() {
+		return map;
+	}
+	
+	public void addFilter(String key, Class<? extends Filter> filter) {
+		map.put(key, filter);
+	}
+	
+	public void removeFilter(String key) {
+		map.remove(key);
+	}
+	
 }
