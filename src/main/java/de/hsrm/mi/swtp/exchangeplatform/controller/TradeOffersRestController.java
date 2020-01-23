@@ -247,7 +247,7 @@ public class TradeOffersRestController {
 		return new ResponseEntity<>(tradeOfferService.getAll(), HttpStatus.OK);
 	}
 
-	@GetMapping("/mytradefffers")
+	@GetMapping("/mytradeoffers")
 	@Operation(description = "get TradeOffers for student", operationId = "getMyTradeOffers")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved tradeoffers"),
 							@ApiResponse(responseCode = "403", description = "unauthorized request"),
