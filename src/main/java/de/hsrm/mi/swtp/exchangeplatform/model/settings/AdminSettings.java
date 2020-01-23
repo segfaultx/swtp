@@ -29,41 +29,44 @@ public class AdminSettings {
 	long id;
 	
 	boolean tradesActive = true;
+
 	
 	@Getter
 	enum Filters {
-		COLLISION(new CollisionFilter(), "COLLISION"), CAPACITY(new CapacityFilter(), "CAPACITY"), OFFER(new OfferFilter(), "OFFER"), NOOFFER(
-				new NoOfferFilter(), "NOOFFER");
-		
+		COLLISION(new CollisionFilter(), "COLLISION"),
+		//CAPACITY(new CapacityFilter(), "CAPACITY"),
+		OFFER(new OfferFilter(), "OFFER"),
+		NOOFFER(new NoOfferFilter(), "NOOFFER");
+
 		Filters(Filter filter, String stringVal) {
 			this.filter = filter;
 			this.stringVal = stringVal;
 		}
-		
+
 		public Filters valueFromString(String value) throws NotFoundException {
 			for(Filters filter : Filters.values()) {
 				if(filter.stringVal.equals(value)) return filter;
 			}
 			throw new NotFoundException("Unknown Filter Type");
 		}
-		
+
 		private Filter filter;
 		private String stringVal;
-		
+
 		@Override
 		public String toString() {
 			return "Filters{" + "filter=" + filter + ", stringVal='" + stringVal + '\'' + '}';
 		}
-		
+
 		public Filter getFilter() {
 			return filter;
 		}
 	}
-	
+
 	@ElementCollection
 	@Enumerated(EnumType.STRING)
 	List<Filters> activeFilters = new ArrayList<>();
-	
+
 	/**
 	 * Method to update admin settings
 	 *
@@ -79,14 +82,14 @@ public class AdminSettings {
 		this.activeFilters.clear();
 		activeFilters.forEach(filterVal -> this.activeFilters.add(Filters.valueOf(filterVal)));
 	}
-	
+
 	@JsonIgnore
 	public List<Filter> getCurrentActiveFilters() {
 		List<Filter> out = new ArrayList<>();
 		activeFilters.forEach(item -> out.add(item.getFilter()));
 		return out;
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		if(!(other instanceof AdminSettings)) return false;
