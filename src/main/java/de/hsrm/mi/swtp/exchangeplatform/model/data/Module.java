@@ -35,7 +35,7 @@ public class Module implements Model {
 	
 	@Schema(defaultValue = "1", name = "semester", nullable = false)
 	@JsonProperty(value = "semester", defaultValue = "1")
-	private Long semester = 4L;
+	private Long semester = 1L;
 	
 	@JsonIdentityReference
 	@OneToMany(mappedBy = "module", cascade = CascadeType.ALL, orphanRemoval = true)
