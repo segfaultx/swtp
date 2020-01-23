@@ -12,7 +12,7 @@ import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.AdminTradeService;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CapacityFilter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @Service
@@ -160,10 +161,13 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 									 !(tradeOffer.getOffer() == requestedTimeslot && tradeOffer.getSeek() == offeredTimeslot));
 		
 		// filter the list according to active filters
-		// TODO: iterate through filters and apply them
-		Filter capacityFilter = new CapacityFilter();
-
-		tradeOffers = capacityFilter.filter(tradeOffers);
+		FilterUtils filterUtils = FilterUtils.getInstance();
+		try {
+			tradeOffers = filterUtils.getFilteredTradeOffers(tradeOffers);
+		} catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		
 		// if no matching TradeOffer was found return null
 		if(tradeOffers.size() == 0) return null;
 		
