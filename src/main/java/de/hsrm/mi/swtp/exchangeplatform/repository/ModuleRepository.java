@@ -10,4 +10,7 @@ import java.util.List;
 @Repository
 public interface ModuleRepository extends JpaRepository<Module, Long> {
 	List<Module> findAllByPo(PO po);
+	List<Module> findModulesBySemesterIsLessThanEqual(final Long semester);
+	List<Module> findModulesBySemesterIs(final Long semester);
+	
 }

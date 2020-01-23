@@ -3,7 +3,10 @@ package de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
+import org.apache.tomcat.jni.Local;
 
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,13 +24,39 @@ public class CollisionFilter implements Filter {
     public List<TradeOffer> filter(List<TradeOffer> offers){
         List<TradeOffer> collisionList = new ArrayList<>();
         for(TradeOffer offer : offers) {
-            for (Timeslot timeslot : offer.getOfferer().getTimeslots()) {
+            for (Timeslot timeslot : offer.getSeeker().getTimeslots()) {
             	/// compare all filled timeslots of a student with all TradeOffers
-                if (timeslot.getTimeStart() == offer.getSeek().getTimeStart()) {
+                if (checkCollision(offer.getSeek(),timeslot)) {
                     collisionList.add(offer);
                 }
             }
         }
         return collisionList;
     }
+    
+    
+    public boolean checkCollision(Timeslot offer, Timeslot filled){
+		//check for same day
+		if(offer.getDay() == filled.getDay()) {
+			
+			if(offer.getTimeStart() == filled.getTimeStart()) {
+				return true;
+			} else if(offer.getTimeStart().isBefore(filled.getTimeStart()) && offer.getTimeEnd().isBefore(filled.getTimeEnd())) {
+				return true;
+			} else if(offer.getTimeStart().isBefore(filled.getTimeStart()) && offer.getTimeEnd().isAfter(filled.getTimeEnd())) {
+				return true;
+			} else if(offer.getTimeStart().isAfter(filled.getTimeStart()) && offer.getTimeEnd().isBefore(filled.getTimeEnd())) {
+				return true;
+			} else if(offer.getTimeStart().isAfter(filled.getTimeStart()) && offer.getTimeStart().isBefore(filled.getTimeEnd()) && offer.getTimeEnd()
+																																		.isAfter(
+																																				filled.getTimeEnd())) {
+				return true;
+			}
+			
+			return false;
+		}
+		
+		return false;
+	}
+	
 }

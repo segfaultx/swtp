@@ -23,6 +23,6 @@ public class UserType {
 	TypeOfUsers type;
 	
 	@OneToOne(mappedBy = "userType")
-	@JsonBackReference
+	@JsonBackReference("user-usertype")
 	User user;
 }

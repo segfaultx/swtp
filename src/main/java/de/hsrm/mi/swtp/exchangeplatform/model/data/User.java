@@ -1,13 +1,14 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.ToString;
 import lombok.experimental.FieldDefaults;
-import io.swagger.v3.oas.annotations.media.Schema;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Entity
 @Data
-@ToString(exclude = { "authenticationInformation", "userType", "timeslots", "tradeoffers" })
+@ToString(exclude = {"authenticationInformation", "userType", "timeslots", "tradeoffers", "modules"})
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User implements Model {
 	
@@ -47,23 +48,44 @@ public class User implements Model {
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JsonIgnore
+	@JsonManagedReference("user-authinformation")
 	AuthenticationInformation authenticationInformation;
 	
 	@JsonProperty("user_type")
 	@OneToOne(cascade = CascadeType.ALL)
-	@JsonManagedReference
+	@JsonManagedReference("user-usertype")
 	UserType userType;
+	
+	@ManyToOne(cascade = CascadeType.ALL)
+	@JsonBackReference("po-students")
+	PO po;
 	
 	@JsonIgnore
 	@ManyToMany(cascade = CascadeType.ALL)
-	@JsonManagedReference
+	@JsonManagedReference("user-timeslots")
 	List<Timeslot> timeslots = new ArrayList<>();
 	
 	@JsonIgnore
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JsonManagedReference("student-waitlist")
+	List<Timeslot> waitLists = new ArrayList<>();
+	
+	@JsonIgnore
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JsonManagedReference("attendee-module")
+	List<Module> modules = new ArrayList<>();
+	
+	@JsonIgnore
 	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
+	@JsonManagedReference("offerer-tradeoffers")
 	List<TradeOffer> tradeoffers = new ArrayList<>();
 	
 	@JsonProperty("completed_modules")
 	@OneToMany(cascade = CascadeType.ALL)
 	List<Module> completedModules = new ArrayList<>();
+	
+	@JsonIgnore
+	@OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
+	@JsonManagedReference("seeker-tradeoffers")
+	List<TradeOffer> tradeofferSeeks = new ArrayList<>();
 }

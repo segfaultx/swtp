@@ -29,7 +29,9 @@ public class ActiveTokens {
 	 * @return updated List with all active tokens
 	 */
 	public List<String> addToken(String token) {
-		removeAllExpiredTokens();
+		
+		// TODO: Expirationdate from Token has a bug. Needs to be converted to LocalDateTime
+		//removeAllExpiredTokens();
 		
 		this.activeTokens.add(token);
 		return this.activeTokens;
@@ -42,7 +44,8 @@ public class ActiveTokens {
 	 */
 	public List<String> removeToken(String token) {
 		
-		removeAllExpiredTokens();
+		// TODO: Expirationdate from Token has a bug. Needs to be converted to LocalDateTime
+		//removeAllExpiredTokens();
 		
 		for(String elem: this.activeTokens) {
 			if(token.equals(elem)) {

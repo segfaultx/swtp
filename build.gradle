@@ -55,6 +55,7 @@ dependencies {
     }
 
     testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.2.1.RELEASE'
+    compile group: 'org.python', name: 'jython-standalone', version: '2.7.0'
 
     compile group: 'com.github.javafaker', name: 'javafaker', version: '1.0.1'
     compile group: 'net.kaczmarzyk' , name: 'specification-arg-resolver', version: '2.1.1'

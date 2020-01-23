@@ -2,7 +2,9 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.model.TimeslotRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 
 import static org.springframework.test.util.AssertionErrors.assertNotNull;
@@ -15,6 +17,8 @@ public class TimeSlotRestControllerTest extends BaseRestTest{
 	String username = "dscha001";
 	String pass = "dscha001";
 	
+	@Autowired
+	TimeslotRepository timeslotRepository;
 	
 	@Test
 	void testGetAll() throws Exception{
@@ -26,8 +30,9 @@ public class TimeSlotRestControllerTest extends BaseRestTest{
 	
 	@Test
 	void testGetById() throws Exception {
+		var ts = timeslotRepository.findAll().get(0);
 		var token = getLoginToken(username, pass);
-		var result = mockMvc.perform(get("/api/v1/timeslots/24")
+		var result = mockMvc.perform(get("/api/v1/timeslots/" + ts.getId())
 								.header("Authorization", "Bearer " + token))
 			   .andExpect(status().isOk())
 			   .andReturn().getResponse().getContentAsString();

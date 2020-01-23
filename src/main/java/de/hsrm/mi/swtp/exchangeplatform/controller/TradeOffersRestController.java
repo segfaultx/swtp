@@ -2,7 +2,6 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
@@ -10,9 +9,15 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
 import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -22,16 +27,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 
 import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/trades")
@@ -47,6 +48,7 @@ public class TradeOffersRestController {
 	JWTTokenUtils jwtTokenUtils;
 	PersonalConnectionManager personalConnectionManager;
 	PersonalMessageSender personalMessageSender;
+	TimeslotService timeslotService;
 	
 	/**
 	 * DELETE request handler.
@@ -138,28 +140,31 @@ public class TradeOffersRestController {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
 								  ));
-			String username = principal.getName();
-			log.info(username);
-			Optional<User> acceptingUserOpt = userService.getByUsername(username);
-			if(acceptingUserOpt.isEmpty()) return null;
-			User acceptingUser = acceptingUserOpt.get();
-			log.info(acceptingUser.toString());
-			var timeslot = tradeOfferService.tradeTimeslots(tradeRequest.getOfferedByStudentMatriculationNumber(), tradeRequest.getOfferedTimeslotId(),
-															tradeRequest.getWantedTimeslotId()
-														   );
+
+			User requestingUser = userService.getByUsername(principal.getName())
+					.orElseThrow(NotFoundException::new);
 			
-			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
-									   TradeOfferSuccessfulMessage.builder()
-																  .leftTimeslotId(tradeRequest.getOfferedTimeslotId())
-																  .newTimeslotId(tradeRequest.getWantedTimeslotId())
-																  .build());
-			personalMessageSender.send(acceptingUser,
-									   TradeOfferSuccessfulMessage.builder()
-																  .leftTimeslotId(tradeRequest.getWantedTimeslotId())
-																  .newTimeslotId(tradeRequest.getOfferedTimeslotId())
-																  .build());
+			Timeslot offeringTimeslot = timeslotService.getById(tradeRequest.getOfferedTimeslotId())
+					.orElseThrow(NotFoundException::new);
 			
+			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId())
+					.orElseThrow(NotFoundException::new);
 			
+			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot);
+			
+			// TODO: check if messaging still works
+			
+//			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
+//									   TradeOfferSuccessfulMessage.builder()
+//																  .value(tradeRequest.getWantedTimeslotId())
+//																  .build());
+//			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + offeringUser.getAuthenticationInformation().getUsername());
+//			personalMessageSender.send(acceptingUser,
+//									   TradeOfferSuccessfulMessage.builder()
+//																  .value(tradeRequest.getOfferedTimeslotId())
+//																  .build());
+//			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + acceptingUser.getAuthenticationInformation().getUsername());
+//
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
 			timetable.setDateEnd(LocalDate.now()); // DIRTY QUICK FIX
