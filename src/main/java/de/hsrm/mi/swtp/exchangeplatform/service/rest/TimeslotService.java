@@ -4,15 +4,19 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.NoTimeslotCapacityException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.time.LocalTime;
@@ -24,6 +28,7 @@ import java.time.LocalTime;
 public class TimeslotService {
 
 	TimeslotRepository repository;
+	UserRepository userRepository;
 	
 	public List<Timeslot> getAll() {
 		return repository.findAll();
@@ -106,7 +111,58 @@ public class TimeslotService {
 	public boolean checkCapacity(Timeslot timeslot) {
 		return timeslot.getAttendees().size() < timeslot.getCapacity();
 	}
+	/**
+	 *
+	 * @param timeslotID
+	 * @param username
+	 * @return
+	 */
+	public List<Timeslot> getSuggestedTimeslots(Long timeslotID, String username){
+		List<Timeslot> suggestedTimeslots = new ArrayList<>();
+		TimeTable tempTimetable = new TimeTable();
+		var user = userRepository.findByUsername(username).orElseThrow();
+		var timeslot = repository.findById(timeslotID).orElseThrow();
+		var module = timeslot.getModule();
+		var allTimeslotsOfModule = module.getTimeslots();
+		tempTimetable.setTimeslots(user.getTimeslots());
+		List<Timeslot> potentialTimeslots = new ArrayList<>();
+		allTimeslotsOfModule.forEach(ts -> { if (hasTimeslotSpace(ts)) potentialTimeslots.add(ts);}); //Wird geaendert sobald PO Restriktion steht
+		if(potentialTimeslots.size() < 2) return null;
+		if(potentialTimeslots.stream().noneMatch(item -> item.getTimeSlotType() == TypeOfTimeslots.VORLESUNG)) return null;
+		//TODO: Mit Micha klaeren, was passiert wenn VL mit Timetable kollidiert
+		//Vorlesung der temporaeren Timetable hinzufuegen und aus den potentialtimeslots loeschen
+		for(Timeslot ts: potentialTimeslots) {
+			if(ts.getTimeSlotType() == TypeOfTimeslots.VORLESUNG){
+				suggestedTimeslots.add(ts);
+				potentialTimeslots.remove(ts);
+				break;
+			}
+		}
+		//Ersten Timeslot der keine Kollision hat der suggestedTimeslots Liste hinzufuegen
+		for(Timeslot ts: potentialTimeslots) {
+			if(!hasCollisions(ts, tempTimetable)){
+				suggestedTimeslots.add(ts);
+				break;
+			}
+		}
+		return suggestedTimeslots;
+	}
 	
+	
+	/**
+	 *
+	 * @param timeslot
+	 * @param timeTable
+	 * @return
+	 */
+	public boolean hasCollisions(Timeslot timeslot, TimeTable timeTable){
+		for(Timeslot ts : timeTable.getTimeslots()) {
+			if (ts.getDay() == timeslot.getDay()){
+				if(hoursAreColliding(ts.getTimeEnd(), ts.getTimeStart(), timeslot.getTimeEnd(), timeslot.getTimeStart())) return true;
+			}
+		}
+		return false;
+	}
 	/**
 	 * Method to check if startTime and endTime of 2 Timeslots are colliding
 	 * @param aTimeEnd
