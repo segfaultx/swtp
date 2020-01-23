@@ -1,8 +1,12 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.sender;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalConnection;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.UserOccupancyViolation;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
@@ -22,6 +26,7 @@ public class PersonalMessageSender {
 	
 	PersonalConnectionManager personalConnectionManager;
 	JmsTemplate jmsTemplate;
+	ObjectMapper objectMapper;
 	
 	public void send(User user, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
 		this.send(personalConnectionManager.getQueue(user), tradeOfferSuccessfulMessage);
@@ -33,6 +38,35 @@ public class PersonalMessageSender {
 	
 	public void send(ActiveMQQueue userQueue, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
 		jmsTemplate.send(userQueue, session -> session.createTextMessage(tradeOfferSuccessfulMessage.toString()));
+	}
+	
+	public void send(UserOccupancyViolation userOccupancyViolation) {
+		User student = userOccupancyViolation.getStudent();
+		PersonalConnection personalConnection = personalConnectionManager.getPersonalConnection(student);
+		if(personalConnection == null) {
+			// user is not logged in; so send message which the user can receive later
+			jmsTemplate.send(personalConnectionManager.createPersonalQueueName(student),
+							 session -> {
+								 try {
+									 return session.createTextMessage(objectMapper.writeValueAsString(userOccupancyViolation));
+								 } catch(JsonProcessingException e) {
+									 e.printStackTrace();
+								 }
+								 return session.createTextMessage("{\"violations\": \"true\"}");
+							 });
+			log.info("SEND TO OFFLINE USER::" + personalConnectionManager.createPersonalQueueName(student) + "::MSG=" + userOccupancyViolation);
+			return;
+		}
+		jmsTemplate.send(personalConnection.getPersonalQueue(),
+						 session -> {
+							 try {
+								 return session.createTextMessage(objectMapper.writeValueAsString(userOccupancyViolation));
+							 } catch(JsonProcessingException e) {
+								 e.printStackTrace();
+							 }
+							 return session.createTextMessage("{\"violations\": \"true\"}");
+						 });
+		log.info("SEND TO ONLINE USER::" + personalConnection.getPersonalQueue().getQualifiedName() + "::MSG=" + userOccupancyViolation);
 	}
 	
 }

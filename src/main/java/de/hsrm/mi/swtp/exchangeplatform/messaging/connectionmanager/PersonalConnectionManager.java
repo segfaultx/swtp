@@ -61,6 +61,16 @@ public class PersonalConnectionManager {
 		connection.start();
 		userConnectionMap.put(queueName, personalConnection);
 		
+		QueueReceiver receiver = session.createReceiver(queue);
+//		receiver.setMessageListener(message -> {
+//			try {
+//				log.info("\n::" + username);
+//				log.info("\n::received" + ((TextMessage) message).getText());
+//			} catch(JMSException e) {
+//				e.printStackTrace();
+//			}
+//		});
+		
 		try {
 			messageProducer.send(session.createTextMessage(objectMapper.writeValueAsString(new LoginSuccessfulMessage())));
 		} catch(JsonProcessingException e) {
@@ -90,7 +100,7 @@ public class PersonalConnectionManager {
 	 *
 	 * @param user {@link User}
 	 */
-	private String createPersonalQueueName(final User user) {
+	public String createPersonalQueueName(final User user) {
 		if(user == null) return null;
 		if(user.getAuthenticationInformation() == null || user.getAuthenticationInformation().getUsername() == null || user.getLastName() == null) {
 			return null;
@@ -100,6 +110,12 @@ public class PersonalConnectionManager {
 		Long userId = user.getUserType().getType().equals(TypeOfUsers.STUDENT) ? user.getStudentNumber() : user.getStaffNumber();
 		String username = user.getAuthenticationInformation().getUsername();
 		return String.format(FORMAT, userId, username);
+	}
+	
+	public PersonalConnection getPersonalConnection(User user) {
+		final String queueName = createPersonalQueueName(user);
+		if(!this.userConnectionMap.containsKey(queueName)) return null;
+		return this.userConnectionMap.get(queueName);
 	}
 	
 	public ActiveMQQueue getQueue(User user) {

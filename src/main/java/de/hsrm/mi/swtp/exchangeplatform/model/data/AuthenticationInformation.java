@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ public class AuthenticationInformation {
 	Roles role;
 	
 	@OneToOne(mappedBy = "authenticationInformation")
+	@JsonBackReference("user-authinformation")
     User user;
 	
 }

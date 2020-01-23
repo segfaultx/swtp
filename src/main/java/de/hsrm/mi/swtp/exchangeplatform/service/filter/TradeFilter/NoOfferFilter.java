@@ -20,7 +20,7 @@ public class NoOfferFilter implements Filter {
     public List<TradeOffer> filter(List<TradeOffer> offers){
         List<TradeOffer> noOfferList = new ArrayList<>();
         /// check if empty
-        if(offers.isEmpty()){
+        if(offers == null || offers.isEmpty()){
             return noOfferList;
         }
         return offers;

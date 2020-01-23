@@ -28,12 +28,20 @@ public class JWTTokenUtils {
 	@Value("${jwt.secret}")
 	private String secret;
 	
-	//retrieve username from jwt token
+	/**
+	 * Retrieves the Username of the given token
+	 * @param token JWT
+	 * @return Username
+	 */
 	public String getUsernameFromToken(String token) {
 		return getClaimFromToken(token, Claims::getSubject);
 	}
 	
-	//retrieve expiration date from jwt token
+	/**
+	 * Retrieves expiration Date of given token
+	 * @param token JWT
+	 * @return Expiration date
+	 */
 	public Date getExpirationDateFromToken(String token) {
 		return getClaimFromToken(token, Claims::getExpiration);
 	}
@@ -75,7 +83,12 @@ public class JWTTokenUtils {
 				   .compact();
 	}
 	
-	//validate token
+	/**
+	 * Validates token with authenticated User, so that one does not simply change the claims
+	 * @param token JWT
+	 * @param userDetails authenticated UserDetails
+	 * @return true if valid, false if not
+	 */
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = getUsernameFromToken(token);
 		return (username.equals(userDetails.getUsername())
@@ -83,10 +96,20 @@ public class JWTTokenUtils {
 				&& activeTokens.getActiveTokens().contains(token));
 	}
 	
+	/**
+	 * Gets JWT without prefix
+	 * @param bearerToken Token with bearer token prefix in front
+	 * @return Substring without bearer token prefix
+	 */
 	public static String tokenWithoutPrefix(final String bearerToken) {
 		return bearerToken.replace(BEARER_TOKEN_PREFIX, "");
 	}
 	
+	/**
+	 * checks if JWT is not null and starts with bearer token prefix
+	 * @param token Token from header
+	 * @return true if valid, false if invalid
+	 */
 	public static boolean isValidToken(final String token) {
 		return token != null && token.startsWith(BEARER_TOKEN_PREFIX);
 	}
