@@ -37,7 +37,7 @@ public class BasicTradeService implements TradeService{
 			timeslotService.removeAttendeeFromTimeslot(timeslot2, student1);
 			timeslotService.removeAttendeeFromTimeslot(timeslot1, student2);
 		} catch(Exception e) {
-			log.info("fuck"); // TODO: sinnvolle Fehlerbehandlung
+			log.info("Something went wrong"); // TODO: sinnvolle Fehlerbehandlung
 		}
 
 		

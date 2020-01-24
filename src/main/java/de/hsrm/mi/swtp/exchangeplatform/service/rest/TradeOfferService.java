@@ -12,6 +12,7 @@ import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.AdminTradeService;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @Service
@@ -128,7 +130,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	@Transactional
 	public Timeslot tradeTimeslots(User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot) throws Exception {
 		
-		TradeOffer tradeOffer = findFinalTradeOffer(requestingUser, offeredTimeslot, requestedTimeslot);
+		TradeOffer tradeOffer = findFinalTradeOffer(offeredTimeslot, requestedTimeslot);
 		
 		// TODO: handle null
 		if (tradeOffer == null) {
@@ -147,7 +149,14 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		throw new RuntimeException();
 	}
 	
-	public TradeOffer findFinalTradeOffer(User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot) { // TODO: Parameter setzen
+	/**
+	 * Finds matching Tradeoffers for the offered and requested timeslots.
+	 * Filters those TradeOffers and returns a random one from the remaining.
+	 * @param offeredTimeslot {@link Timeslot} that's offered from active Tradeoffers
+	 * @param requestedTimeslot  {@link Timeslot} that's been requested by Principal
+	 * @return single TradeOffer that can be traded, or null if none are present or Filters killed all possible matching TradeOffers
+	 */
+	public TradeOffer findFinalTradeOffer(Timeslot offeredTimeslot, Timeslot requestedTimeslot) {
 		List<TradeOffer> tradeOffers;
 		Random random = new Random();
 		
@@ -159,7 +168,12 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 									 !(tradeOffer.getOffer() == requestedTimeslot && tradeOffer.getSeek() == offeredTimeslot));
 		
 		// filter the list according to active filters
-		// TODO: iterate through filters and apply them
+		FilterUtils filterUtils = FilterUtils.getInstance();
+		try {
+			tradeOffers = filterUtils.getFilteredTradeOffers(tradeOffers);
+		} catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 		
 		// if no matching TradeOffer was found return null
 		if(tradeOffers.size() == 0) return null;
