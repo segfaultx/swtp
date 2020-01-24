@@ -48,7 +48,7 @@ public class AdminRestController {
 							@ApiResponse(responseCode = "400", description = "malformed admin settings request") })
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<AdminSettings> updateAdminSettings(@RequestBody AdminSettingsRequest adminSettingsRequest, BindingResult bindingResult) throws
-			NotFoundException {
+			NotFoundException, ClassNotFoundException {
 		if(bindingResult.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		if(adminSettingsService.updateAdminSettings(adminSettingsRequest.isTradesActive(), adminSettingsRequest.getActiveFilters()))
 			return new ResponseEntity<>(adminSettingsService.getAdminSettings(), HttpStatus.OK);
