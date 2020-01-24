@@ -38,12 +38,13 @@ public class ModuleLookupService {
 				allModulesOfStudent.add(ts.getModule());
 		});
 		allModulesOfStudent.addAll(usr.getCompletedModules());
-		// TODO: Add PO to user to distinct module fetching
 		var allModules = moduleRepository.findAllByPo(usr.getPo());
 		List<Module> potentialModules = new ArrayList<>();
-		// First collect ALL potential Modules, ignoring if they are active / selectable etc.
+		// add modules to list if user can allocate
 		var restriction = usr.getPo().getRestriction();
-		allModules.forEach(mod -> {if (!allModulesOfStudent.contains(mod)) potentialModules.add(mod);});
+		allModules.forEach(mod -> {if (!allModulesOfStudent.contains(mod)
+				&& restriction.canAllocateModule(usr, mod))
+			potentialModules.add(mod);});
 		//TODO: add active flag to module?
 		var remainingModules = potentialModules
 				.stream()
@@ -52,7 +53,6 @@ public class ModuleLookupService {
 		List<Timeslot> out = new ArrayList<>();
 		
 		// just get timeslots of type VORLESUNG
-		//TODO: add term to modules, add restrictions to filter modules (e.g. Fortschrittsregelung MI)
 		remainingModules.forEach(module -> out
 				.add(module
 				.getTimeslots()
