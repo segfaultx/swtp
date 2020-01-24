@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -38,7 +37,7 @@ public class ModuleLookupService {
 				allModulesOfStudent.add(ts.getModule());
 		});
 		allModulesOfStudent.addAll(usr.getCompletedModules());
-		var allModules = moduleRepository.findAllByPo(usr.getPo());
+		var allModules = moduleRepository.findAllByPoAndIsActive(usr.getPo(), true);
 		List<Module> potentialModules = new ArrayList<>();
 		// add modules to list if user can allocate
 		var restriction = usr.getPo().getRestriction();
