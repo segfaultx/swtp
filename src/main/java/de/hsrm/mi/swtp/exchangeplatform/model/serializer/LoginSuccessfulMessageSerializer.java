@@ -21,6 +21,10 @@ public class LoginSuccessfulMessageSerializer extends StdSerializer<LoginSuccess
 	public void serialize(LoginSuccessfulMessage value, JsonGenerator gen, SerializerProvider provider) throws IOException {
 		gen.writeStartObject();
 		gen.writeStringField("message", value.getMessage());
+		gen.writeFieldName("value");
+		gen.writeStartObject();
+		gen.writeStringField("timestamp", value.getTimestampString());
+		gen.writeEndObject();
 		gen.writeEndObject();
 	}
 	

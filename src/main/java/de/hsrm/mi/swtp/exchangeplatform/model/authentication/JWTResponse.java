@@ -5,6 +5,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Helper class for JWTResponse that holds the token
+ */
 @Value
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor

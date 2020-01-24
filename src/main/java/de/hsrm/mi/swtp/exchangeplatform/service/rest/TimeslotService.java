@@ -28,29 +28,6 @@ public class TimeslotService {
 		return repository.findAll();
 	}
 
-	public Timeslot addAttendeeToTimeslot(Timeslot timeslot, User student) throws UserIsAlreadyAttendeeException, NoTimeslotCapacityException {
-		
-		// TODO: There is a bug, where timeSlots and attendees are not updated correct, check if bidirectional binding is the reason and fix by setting the new values
-		
-		if(timeslot.getAttendees().contains(student)) {
-			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
-			throw new UserIsAlreadyAttendeeException(student);
-		}
-
-		if(!this.checkCapacity(timeslot)){
-			log.info(String.format("FAIL: Student %s not added to appointment %s", student.getStudentNumber(), timeslot.getId()));
-			throw new NoTimeslotCapacityException(timeslot);
-		}
-			
-		List<User> attendees = timeslot.getAttendees();
-		attendees.add(student);
-		
-		timeslot.setAttendees(attendees);
-		
-		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), timeslot.getId()));
-		return save(timeslot);
-	}
-
 	public Optional<Timeslot> getById(Long timeslotId) {
 		return repository.findById(timeslotId);
 	}
@@ -73,20 +50,33 @@ public class TimeslotService {
 		this.save(timeslot);
 		log.info(String.format("SUCCESS: Student %s added to waitlist %s", student.getStudentNumber(), timeslotId));
 	}
+	
+	public Timeslot addAttendeeToTimeslot(Timeslot timeslot, User student) throws UserIsAlreadyAttendeeException, NoTimeslotCapacityException {
+		
+		if(timeslot.getAttendees().contains(student)) {
+			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
+			throw new UserIsAlreadyAttendeeException(student);
+		}
+		
+		if(!this.checkCapacity(timeslot)){
+			log.info(String.format("FAIL: Student %s not added to appointment %s", student.getStudentNumber(), timeslot.getId()));
+			throw new NoTimeslotCapacityException(timeslot);
+		}
+		
+		timeslot.addAttendee(student);
+		
+		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), timeslot.getId()));
+		return save(timeslot);
+	}
 
 	public Timeslot removeAttendeeFromTimeslot(Timeslot timeslot, User student) throws NotFoundException {
-		
-		// TODO: There is a bug, where timeSlots and attendees are not updated correct, check if bidirectional binding is the reason and fix by setting the new values
 		
 		if(!timeslot.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s not removed", student.getStudentNumber()));
 			throw new ModelNotFoundException(student);
 		}
 		
-		List<User> attendees = timeslot.getAttendees();
-		
-		attendees.remove(student);
-		timeslot.setAttendees(attendees);
+		timeslot.removeAttendee(student);
 		
 		if(!timeslot.getWaitList().isEmpty()){
 			User nextStudent = timeslot.getWaitList().get(0);

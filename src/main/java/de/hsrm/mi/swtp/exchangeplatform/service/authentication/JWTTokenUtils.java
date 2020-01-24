@@ -28,12 +28,20 @@ public class JWTTokenUtils {
 	@Value("${jwt.secret}")
 	private String secret;
 	
-	//retrieve username from jwt token
+	/**
+	 * Retrieves the Username of the given token
+	 * @param token JWT
+	 * @return Username
+	 */
 	public String getUsernameFromToken(String token) {
 		return getClaimFromToken(token, Claims::getSubject);
 	}
 	
-	//retrieve expiration date from jwt token
+	/**
+	 * Retrieves expiration Date of given token
+	 * @param token JWT
+	 * @return Expiration date
+	 */
 	public Date getExpirationDateFromToken(String token) {
 		return getClaimFromToken(token, Claims::getExpiration);
 	}
@@ -43,28 +51,46 @@ public class JWTTokenUtils {
 		return claimsResolver.apply(claims);
 	}
 	
-	//for retrieveing any information from token we will need the secret key
+	/**
+	 * Gets all claims in body of token, by using the secret key defined
+	 * @param token JWT
+	 * @return all claims in token
+	 */
 	private Claims getAllClaimsFromToken(String token) {
 		return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
 	}
 	
-	//check if the token has expired
+	/**
+	 * Checks if token is expired
+	 * @param token JWT
+	 * @return true if expired, false if not
+	 */
 	public Boolean isTokenExpired(String token) {
 		final Date expiration = getExpirationDateFromToken(token);
 		return expiration.before(new Date());
 	}
 	
-	//generate token for user
+	/**
+	 * Generates JWT for user
+	 * @param user user that is authenticated and needs a token
+	 * @return JWT
+	 */
 	public String generateToken(User user) {
 		Map<String, Object> claims = new HashMap<>();
 		return doGenerateToken(claims, user.getAuthenticationInformation().getUsername());
 	}
 	
-	//while creating the token -
-	//1. Define  claims of the token, like Issuer, Expiration, Subject, and the ID
-	//2. Sign the JWT using the HS512 algorithm and secret key.
-	//3. According to JWS Compact Serialization(https://tools.ietf.org/html/draft-ietf-jose-json-web-signature-41#section-3.1)
-	//   compaction of the JWT to a URL-safe string
+	/**
+	 * Creating method of JWT
+	 *
+	 * Defines claims for the token
+	 * Sets creation and expiration date
+	 * Signs token with HS312 Hashing Algorithm
+	 * Compacts the token to a URL-safe string
+	 * @param claims claims for JWT
+	 * @param subject Username for JWT
+	 * @return JWT
+	 */
 	private String doGenerateToken(Map<String, Object> claims, String subject) {
 		return Jwts.builder()
 				   .setClaims(claims)
@@ -75,7 +101,12 @@ public class JWTTokenUtils {
 				   .compact();
 	}
 	
-	//validate token
+	/**
+	 * Validates token with authenticated User, so that one does not simply change the claims
+	 * @param token JWT
+	 * @param userDetails authenticated UserDetails
+	 * @return true if valid, false if not
+	 */
 	public Boolean validateToken(String token, UserDetails userDetails) {
 		final String username = getUsernameFromToken(token);
 		return (username.equals(userDetails.getUsername())
@@ -83,10 +114,20 @@ public class JWTTokenUtils {
 				&& activeTokens.getActiveTokens().contains(token));
 	}
 	
+	/**
+	 * Gets JWT without prefix
+	 * @param bearerToken Token with bearer token prefix in front
+	 * @return Substring without bearer token prefix
+	 */
 	public static String tokenWithoutPrefix(final String bearerToken) {
 		return bearerToken.replace(BEARER_TOKEN_PREFIX, "");
 	}
 	
+	/**
+	 * checks if JWT is not null and starts with bearer token prefix
+	 * @param token Token from header
+	 * @return true if valid, false if invalid
+	 */
 	public static boolean isValidToken(final String token) {
 		return token != null && token.startsWith(BEARER_TOKEN_PREFIX);
 	}
