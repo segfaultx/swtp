@@ -2,12 +2,10 @@ package de.hsrm.mi.swtp.exchangeplatform.service.settings;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionViolationProcessor;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.POService;
 import lombok.AccessLevel;
@@ -77,7 +75,7 @@ public class AdminSettingsService {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException, ClassNotFoundException {
+	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws ClassNotFoundException {
 		adminSettings.setTradesActive(tradesActive);
 		
 		for(String filter: activeFilters) {
