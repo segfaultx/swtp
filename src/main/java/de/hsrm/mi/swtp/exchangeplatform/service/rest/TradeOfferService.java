@@ -149,6 +149,13 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		throw new RuntimeException();
 	}
 	
+	/**
+	 * Finds matching Tradeoffers for the offered and requested timeslots.
+	 * Filters those TradeOffers and returns a random one from the remaining.
+	 * @param offeredTimeslot {@link Timeslot} that's offered from active Tradeoffers
+	 * @param requestedTimeslot  {@link Timeslot} that's been requested by Principal
+	 * @return single TradeOffer that can be traded, or null if none are present or Filters killed all possible matching TradeOffers
+	 */
 	public TradeOffer findFinalTradeOffer(Timeslot offeredTimeslot, Timeslot requestedTimeslot) {
 		List<TradeOffer> tradeOffers;
 		Random random = new Random();

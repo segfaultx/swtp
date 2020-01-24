@@ -6,6 +6,9 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+/**
+ * Data object with userId, username, {@link TypeOfUsers} and {@link Roles}
+ */
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class WhoAmI {
