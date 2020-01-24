@@ -456,9 +456,6 @@ public class DBInitiator implements ApplicationRunner {
 		
 		adminSettings.setId(1);
 		List<String> filters = new ArrayList<>();
-		filters.add("COLLISION");
-		//filters.add("CAPACITY");
-		adminSettings.updateAdminSettings(true, filters);
 		
 		var persistedSettings = adminSettingsRepository.save(adminSettings);
 		adminSettingsService.setAdminSettings(persistedSettings);

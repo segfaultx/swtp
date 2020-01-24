@@ -7,6 +7,8 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatus
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionViolationProcessor;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.POService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class AdminSettingsService {
 	private final Long adminSettingsId = 1L;
 	AdminSettingsRepository adminSettingsRepository;
 	AdminSettings adminSettings;
+	FilterUtils filterUtils = FilterUtils.getInstance();
 	
 	@Autowired
 	JmsTemplate jmsTopicTemplate;
@@ -74,8 +77,16 @@ public class AdminSettingsService {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
-		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
+	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException, ClassNotFoundException {
+		adminSettings.setTradesActive(tradesActive);
+		
+		for(String filter: activeFilters) {
+			if(!filterUtils.filterExists(filter)) {
+				throw new ClassNotFoundException(String.format("Filter with name %s was not found", filter));
+			}
+		}
+		
+		adminSettings.setActiveFilters(activeFilters);
 
 		if(tradesActive) {
 			poRestrictionViolationProcessor.startProcessing();

@@ -6,9 +6,12 @@ import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CapacityFilte
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CollisionFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.NoOfferFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.OfferFilter;
+import lombok.extern.slf4j.Slf4j;
 
+import java.awt.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,6 +22,7 @@ import java.util.Map;
  * @author Dennis Schad
  *
  */
+@Slf4j
 public class FilterUtils {
 	
 	private static Map<String, Class<? extends Filter>> map;
@@ -63,6 +67,18 @@ public class FilterUtils {
 	}
 	
 	/**
+	 * Fetches all Entries in activeFilters and returns them as List of Strings
+	 * @return List of Strings with names of active Filters
+	 */
+	public List<String> getActiveFilterList() {
+		List<String> activeFilters = new ArrayList<>();
+		for(Map.Entry<String, Class<? extends Filter>> entry : map.entrySet()) {
+			activeFilters.add(entry.getKey());
+		}
+		return activeFilters;
+	}
+	
+	/**
 	 * Adds a new filter to the active filters
 	 * @param key Name of the filter
 	 * @param filter class of filter, this class should implement the Filter interface
@@ -77,6 +93,28 @@ public class FilterUtils {
 	 */
 	public void removeFilter(String key) {
 		map.remove(key);
+	}
+	
+	public boolean filterExists(String nameOfFilter) {
+		try {
+			Class.forName(nameOfFilter);
+			log.info("Class {}.class found in classpath", nameOfFilter);
+			return true;
+		} catch(ClassNotFoundException e) {
+			log.info("Class {}.class not found in classpath", nameOfFilter);
+			return false;
+		}
+	}
+	
+	/**
+	 * Gets class of Filter by given Name
+	 * @param nameOfFilter name of the Filter class
+	 * @return Class of Filter or null if not present
+	 * @throws ClassNotFoundException if class can not be found in Classpath
+	 */
+	public Class<? extends Filter> getFilterByName(String nameOfFilter) throws ClassNotFoundException {
+		if(filterExists(nameOfFilter)) return (Class<? extends Filter>) Class.forName(nameOfFilter);
+		return null;
 	}
 	
 }

@@ -52,8 +52,8 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		log.info("Creating unfiltered Map of tradeoffers");
 		Map<Timeslot, List<TradeOffer>> timeslotTradeOffers = new HashMap<>();
 		timeslots.forEach(timeslot -> timeslotTradeOffers.put(timeslot, tradeOfferRepository.findAllBySeek(timeslot)));
-		List<Filter> filters = new ArrayList<>();
-		filters.addAll(adminSettingsService.getAdminSettings().getCurrentActiveFilters());
+		List<String> filters = new ArrayList<>();
+		filters.addAll(adminSettingsService.getAdminSettings().getActiveFilters());
 		return null;//filterService.applyFilter(timeslotTradeOffers, filters); //TODO: use fixed filter function
 	}
 	
