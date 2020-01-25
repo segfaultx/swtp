@@ -4,12 +4,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.UserOccupancyViolation;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +27,21 @@ public class PersonalMessageSender {
 	PersonalQueueManager personalQueueManager;
 	JmsTemplate jmsTemplate;
 	ObjectMapper objectMapper;
+	
+	public void send(Long userId, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
+		this.send(personalQueueManager.getQueue(userId), tradeOfferSuccessfulMessage);
+	}
+	
+	public void send(ActiveMQQueue userQueue, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
+		jmsTemplate.send(userQueue, session -> {
+			try {
+				return session.createTextMessage(objectMapper.writeValueAsString(tradeOfferSuccessfulMessage));
+			} catch(JsonProcessingException e) {
+				e.printStackTrace();
+			}
+			return session.createTextMessage("{}");
+		});
+	}
 	
 	public void send(UserOccupancyViolation userOccupancyViolation) {
 		User student = userOccupancyViolation.getStudent();
