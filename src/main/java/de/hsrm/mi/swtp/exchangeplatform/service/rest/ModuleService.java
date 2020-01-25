@@ -5,6 +5,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.BatchModulesRequest;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,32 +31,33 @@ public class ModuleService {
 		return repository.findAll();
 	}
 	
+	public List<Module> getAllById(BatchModulesRequest batchModulesRequest) {
+		return repository.findDistinctByIdIsIn(batchModulesRequest.getModulesIDs());
+	}
+	
 	public Optional<Module> getById(Long moduleId) {
 		return repository.findById(moduleId);
 	}
 	
 	public void addAttendeeToModule(Long moduleId, User student) throws NotFoundException {
-		Module module = this.getById(moduleId)
-				.orElseThrow(NotFoundException::new);
+		Module module = this.getById(moduleId).orElseThrow(NotFoundException::new);
 		
-	
 		if(module.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
 			throw new UserIsAlreadyAttendeeException(student);
 		}
-			
-			module.getAttendees().add(student);
-			this.save(module);
-			log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), moduleId));
+		
+		module.getAttendees().add(student);
+		this.save(module);
+		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), moduleId));
 	}
 	
 	public void removeStudentFromModule(Long moduleId, User student) throws NotFoundException {
-		Module module = this.getById(moduleId)
-							.orElseThrow(NotFoundException::new);
+		Module module = this.getById(moduleId).orElseThrow(NotFoundException::new);
 		
 		List<Timeslot> allTimeSlots = new ArrayList<>(module.getTimeslots());
-		for(Timeslot timeslot : allTimeSlots){
-			if(timeslot.getAttendees().contains(student)){
+		for(Timeslot timeslot : allTimeSlots) {
+			if(timeslot.getAttendees().contains(student)) {
 				timeslotService.removeAttendeeFromTimeslot(timeslot, student);
 				student.getTimeslots().remove(timeslot);
 			}

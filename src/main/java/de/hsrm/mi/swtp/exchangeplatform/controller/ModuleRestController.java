@@ -5,6 +5,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.ModuleRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.BatchModulesRequest;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
@@ -42,8 +43,11 @@ public class ModuleRestController {
 	UserService userService;
 	TimeTableService timeTableService;
 	
-	@GetMapping("")
-	public ResponseEntity<List<Module>> getAll() {
+	@GetMapping
+	public ResponseEntity<List<Module>> getAll(@RequestBody BatchModulesRequest batchModulesRequest) {
+		if(batchModulesRequest != null || batchModulesRequest.getModulesIDs() != null){
+			return new ResponseEntity<>(moduleService.getAllById(batchModulesRequest), HttpStatus.OK);
+		}
 		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
 	}
 	
