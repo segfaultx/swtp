@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-//TODO: javadoc
+/**
+ * Timeslot service class for manipulationg timeslot data
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -41,7 +43,7 @@ public class TimeslotService {
 	public void addAttendeeToWaitlist(Long timeslotId, User student) throws NotFoundException {
 		Timeslot timeslot = getById(timeslotId)
 				.orElseThrow(NotFoundException::new);
-		
+		// check if student is on waitlist or already an attendee
 		if(timeslot.getWaitList().contains(student) || timeslot.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s is already an attendee or on the waitlist", student.getStudentNumber()));
 			throw new UserIsAlreadyAttendeeException(student);
@@ -53,12 +55,12 @@ public class TimeslotService {
 	}
 	
 	public Timeslot addAttendeeToTimeslot(Timeslot timeslot, User student) throws UserIsAlreadyAttendeeException, NoTimeslotCapacityException {
-		
+		// check if alreadx an attendee
 		if(timeslot.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
 			throw new UserIsAlreadyAttendeeException(student);
 		}
-		
+		// check if capacity has been reached
 		if(!this.checkCapacity(timeslot)){
 			log.info(String.format("FAIL: Student %s not added to appointment %s", student.getStudentNumber(), timeslot.getId()));
 			throw new NoTimeslotCapacityException(timeslot);
@@ -78,7 +80,7 @@ public class TimeslotService {
 		}
 		
 		timeslot.removeAttendee(student);
-		
+		// check waitlist and add first in line to timeslot
 		if(!timeslot.getWaitList().isEmpty()){
 			User nextStudent = timeslot.getWaitList().get(0);
 			timeslot.getWaitList().remove(nextStudent);
@@ -103,6 +105,7 @@ public class TimeslotService {
 		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), timeslotId));
 	}
 	
+	// check set capacity against seats filled
 	public boolean checkCapacity(Timeslot timeslot) {
 		return timeslot.getAttendees().size() < timeslot.getCapacity();
 	}

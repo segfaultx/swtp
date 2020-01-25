@@ -4,6 +4,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class CollisionFilter implements Filter {
 	 * @return a list of all TradeOffers which collide
 	 */
 	@Override
-    public List<TradeOffer> filter(List<TradeOffer> offers){
+    public List<TradeOffer> doFilter(List<TradeOffer> offers){
         List<TradeOffer> collisionList = new ArrayList<>();
         for(TradeOffer offer : offers) {
             for (Timeslot timeslot : offer.getSeeker().getTimeslots()) {
@@ -30,30 +31,33 @@ public class CollisionFilter implements Filter {
         }
         return collisionList;
     }
-    
-    
-    public boolean checkCollision(Timeslot offer, Timeslot filled){
-		//check for same day
+	
+	/**
+	 * Check for collisions, timeslot durations might differ. Method has to check all possibilities
+	 * @param offer timeslot user wants
+	 * @param filled timeslot user has (all of his timeslots must be compared to offer)
+	 * @return true for collision, else false
+	 */
+	public boolean checkCollision(Timeslot offer, Timeslot filled){
+		LocalTime offerStart = offer.getTimeStart();
+		LocalTime offerEnd = offer.getTimeEnd();
+		LocalTime filledStart = filled.getTimeStart();
+		LocalTime filledEnd = filled.getTimeEnd();
+		
+		//check for same day, if yes, check all possible crossovers:
 		if(offer.getDay() == filled.getDay()) {
-			
-			if(offer.getTimeStart() == filled.getTimeStart()) {
-				return true;
-			} else if(offer.getTimeStart().isBefore(filled.getTimeStart()) && offer.getTimeEnd().isBefore(filled.getTimeEnd())) {
-				return true;
-			} else if(offer.getTimeStart().isBefore(filled.getTimeStart()) && offer.getTimeEnd().isAfter(filled.getTimeEnd())) {
-				return true;
-			} else if(offer.getTimeStart().isAfter(filled.getTimeStart()) && offer.getTimeEnd().isBefore(filled.getTimeEnd())) {
-				return true;
-			} else if(offer.getTimeStart().isAfter(filled.getTimeStart()) && offer.getTimeStart().isBefore(filled.getTimeEnd()) && offer.getTimeEnd()
-																																		.isAfter(
-																																				filled.getTimeEnd())) {
-				return true;
-			}
+			// starts at the same time
+			if(offerStart == filledStart || offerEnd == filledEnd) return true;
+			// starts before filled but ends before filled is over
+			} else if(filledStart.isAfter(offerStart) && filledEnd.isAfter(offerEnd)) return true;
+			// starts before filled and ends after
+			else if(offerStart.isBefore(filledStart) && offerEnd.isAfter(filledEnd)) return true;
+			// starts after filled but ends before filled is over
+			else if(offerStart.isAfter(filledStart) && offerEnd.isBefore(filledEnd)) return true;
+			// starts after filled begins and ends after filled is over
+			else if(offerStart.isAfter(filledStart) && offerStart.isBefore(filledEnd) && offerEnd.isAfter(filledEnd)) return true;
 			
 			return false;
-		}
-		
-		return false;
 	}
 	
 }
