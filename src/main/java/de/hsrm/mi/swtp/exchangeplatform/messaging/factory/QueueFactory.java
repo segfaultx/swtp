@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.messaging;
+package de.hsrm.mi.swtp.exchangeplatform.messaging.factory;
 
 import lombok.Builder;
 import org.apache.activemq.ActiveMQConnectionFactory;

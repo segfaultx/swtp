@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 
 import com.google.common.reflect.TypeToken;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.factory.TopicFactory;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Model;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.command.ActiveMQTopic;
@@ -24,6 +25,7 @@ public abstract class AbstractDynamicTopicManager<T extends Model> implements Dy
 	 * @see TopicCreationDTO
 	 */
 	HashMap<Long, TopicCreationDTO> topicSessionMap;
+	TopicFactory topicFactory;
 	
 	public AbstractDynamicTopicManager() {
 		this.topicSessionMap = new HashMap<>();
@@ -52,14 +54,11 @@ public abstract class AbstractDynamicTopicManager<T extends Model> implements Dy
 	 */
 	TopicCreationDTO createTopic(final Long id, TopicConnection connection) throws JMSException {
 		final String topicName = this.createTopicName(id);
-		
-		final TopicSession topicSession = connection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
-		final Topic topic = topicSession.createTopic(topicName);
+		final TopicCreationDTO dto = topicFactory.createTopic(connection, topicName);
 		
 		log.info(String.format(" + created topic name: %s", topicName));
-		log.info(String.format(" + created topic: %s", topic.toString()));
+		log.info(String.format(" + created topic: %s", dto.getTopic().toString()));
 		
-		final TopicCreationDTO dto = TopicCreationDTO.builder().topic((ActiveMQTopic) topic).topicSession(topicSession).build();
 		return this.topicSessionMap.put(id, dto);
 	}
 	

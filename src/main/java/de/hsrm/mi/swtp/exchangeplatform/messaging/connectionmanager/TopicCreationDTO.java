@@ -11,7 +11,7 @@ import javax.jms.TopicSession;
 @Value
 @Builder
 @AllArgsConstructor
-class TopicCreationDTO {
+public class TopicCreationDTO {
 	TopicSession topicSession;
 	ActiveMQTopic topic;
 }
