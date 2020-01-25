@@ -72,6 +72,16 @@ public class PersonalQueueManager {
 		return personalQueue.getPersonalQueue();
 	}
 	
+	/** Creates a queue for an offline client. */
+	public ActiveMQQueue createQueueForOfflineUser(final User user) throws JMSException {
+		// TODO: manage queues for offline clients
+		final String queueName = createPersonalQueueName(user);
+		final String username = user.getAuthenticationInformation().getPassword();
+		QueueConnection connection = connectionFactory.createQueueConnection(username, username);
+		final QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
+		return (ActiveMQQueue) session.createQueue(queueName);
+	}
+	
 	/**
 	 * A helper method for closing an active messaging connection.
 	 *

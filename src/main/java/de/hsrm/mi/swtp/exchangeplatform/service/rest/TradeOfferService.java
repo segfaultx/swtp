@@ -1,6 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
@@ -31,7 +34,9 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	UserRepository userRepository;
 	AdminTradeService adminTradeService;
 	TradeService tradeService;
-
+	PersonalMessageSender personalMessageSender;
+	TimeslotTopicManager timeslotTopicManager;
+	
 	/**
 	 * Method to provide admins a forced trade / assignment of timeslot to a given student
 	 *
@@ -112,13 +117,39 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			throw new Exception("No final TradeOffer found");
 		}
 		
-		User offereringUser = tradeOffer.getOfferer();
+		final User offereringUser = tradeOffer.getOfferer();
 		
 		log.info("Performing Trade: From {} to {} with Timeslots {} and {}",
 				 offereringUser, requestingUser, offeredTimeslot, requestedTimeslot);
 		
 		if(tradeService.doTrade(offereringUser, requestingUser, offeredTimeslot, requestedTimeslot)) {
 			deleteTradeOffer(tradeOffer);
+			
+			// notify user who requests to trade with offerer
+			personalMessageSender.send(requestingUser.getId(),
+									   TradeOfferSuccessfulMessage.builder()
+																  .newTimteslot(requestedTimeslot)
+																  .oldTimeslotId(offeredTimeslot.getId())
+																  .topic(timeslotTopicManager.getTopic(requestedTimeslot))
+																  .build()
+									  );
+			
+			// notify offerer that his/her trade was resolved
+			personalMessageSender.send(offereringUser.getId(),
+									   TradeOfferSuccessfulMessage.builder()
+																  .newTimteslot(offeredTimeslot)
+																  .oldTimeslotId(requestedTimeslot.getId())
+																  .topic(timeslotTopicManager.getTopic(offeredTimeslot))
+																  .build()
+									  );
+			
+			
+			log.info("TRADING...");
+			log.info("┌─ TradeOfferSuccessfulMessage: SEND TO REQUESTING USER " + requestingUser.getAuthenticationInformation().getUsername());
+			log.info(String.format("├─→ Timeslot %s ↔ Timeslot %s", offeredTimeslot.getId(), requestedTimeslot.getId()));
+			log.info("└─ TradeOfferSuccessfulMessage: SEND TO OFFERING USER " + offereringUser.getAuthenticationInformation().getUsername());
+			
+			
 			return timeSlotRepository.findById(requestedTimeslot.getId()).orElseThrow();
 		}
 		throw new RuntimeException();
