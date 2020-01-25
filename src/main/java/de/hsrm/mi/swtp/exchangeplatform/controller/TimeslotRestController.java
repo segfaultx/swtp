@@ -2,6 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TimeslotRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
@@ -17,9 +18,16 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jms.core.JmsTemplate;
+import org.springframework.jms.core.MessageCreator;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.ObjectMessage;
+import javax.jms.Session;
 
 /**
  * A simple rest-controller which will handle any rest calls concerning {@link Timeslot Appointments}.
@@ -37,6 +45,8 @@ public class TimeslotRestController {
 	String BASEURL = "/api/v1/timeslots";
 	TimeslotService timeslotService;
 	UserService userService;
+	TimeslotTopicManager timeslotTopicManager;
+	JmsTemplate jmsTemplate;
 
 	/**
 	 * GET request handler.
@@ -86,6 +96,17 @@ public class TimeslotRestController {
 
 		try {
 			timeslot = timeslotService.addAttendeeToTimeslot(timeslot, user);
+			
+			Timeslot finalTimeslot = timeslot;
+			jmsTemplate.send(timeslotTopicManager.getTopic(timeslot), new MessageCreator() {
+				@Override
+				public Message createMessage(Session session) throws JMSException {
+					ObjectMessage objectMessage = session.createObjectMessage();
+					objectMessage.setObject(finalTimeslot);
+					return objectMessage;
+				}
+			});
+			
 			return ResponseEntity.ok(timeslot);
 		} catch(UserIsAlreadyAttendeeException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -119,6 +140,15 @@ public class TimeslotRestController {
 		
 		timeslot = timeslotService.removeAttendeeFromTimeslot(timeslot, user);
 		
+		Timeslot finalTimeslot = timeslot;
+		jmsTemplate.send(timeslotTopicManager.getTopic(timeslot), new MessageCreator() {
+			@Override
+			public Message createMessage(Session session) throws JMSException {
+				ObjectMessage objectMessage = session.createObjectMessage();
+				objectMessage.setObject(finalTimeslot);
+				return objectMessage;
+			}
+		});
 		return ResponseEntity.ok(timeslot);
 	}
 	
@@ -148,6 +178,16 @@ public class TimeslotRestController {
 			timeslotService.addAttendeeToWaitlist(timeslotRequestBody.getTimeslotId(), user);
 			Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getStudentId())
 											   .orElseThrow(NotFoundException::new);
+			
+			Timeslot finalTimeslot = timeslot;
+			jmsTemplate.send(timeslotTopicManager.getTopic(timeslot), new MessageCreator() {
+				@Override
+				public Message createMessage(Session session) throws JMSException {
+					ObjectMessage objectMessage = session.createObjectMessage();
+					objectMessage.setObject(finalTimeslot);
+					return objectMessage;
+				}
+			});
 			return ResponseEntity.ok(timeslot);
 		} catch(UserIsAlreadyAttendeeException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -180,6 +220,16 @@ public class TimeslotRestController {
 		
 		Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
 										   .orElseThrow(NotFoundException::new);
+		Timeslot finalTimeslot = timeslot;
+		jmsTemplate.send(timeslotTopicManager.getTopic(timeslot), new MessageCreator() {
+			@Override
+			public Message createMessage(Session session) throws JMSException {
+				ObjectMessage objectMessage = session.createObjectMessage();
+				objectMessage.setObject(finalTimeslot);
+				return objectMessage;
+			}
+		});
+		
 		return ResponseEntity.ok(timeslot);
 	}
 
