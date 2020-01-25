@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
@@ -18,7 +19,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-//TODO: javadoc
+/**
+ * A service class for manipulating module data
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -39,7 +42,7 @@ public class ModuleService {
 	
 	public void addAttendeeToModule(Long moduleId, User student) throws NotFoundException {
 		Module module = this.getById(moduleId).orElseThrow(NotFoundException::new);
-		
+		// check if student is an attendee
 		if(module.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
 			throw new UserIsAlreadyAttendeeException(student);
@@ -52,10 +55,11 @@ public class ModuleService {
 	
 	public void removeStudentFromModule(Long moduleId, User student) throws NotFoundException {
 		Module module = this.getById(moduleId).orElseThrow(NotFoundException::new);
-		
+		// check all timeslots of student and remove those which match with module
 		List<Timeslot> allTimeSlots = new ArrayList<>(module.getTimeslots());
 		for(Timeslot timeslot : allTimeSlots) {
 			if(timeslot.getAttendees().contains(student)) {
+				// remove timeslot from user and vice versa
 				timeslotService.removeAttendeeFromTimeslot(timeslot, student);
 				student.getTimeslots().remove(timeslot);
 			}

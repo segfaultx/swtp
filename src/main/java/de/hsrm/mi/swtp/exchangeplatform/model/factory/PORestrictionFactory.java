@@ -1,11 +1,14 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.factory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PORestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A simple factory for creating a {@link PORestriction} instance.
@@ -18,7 +21,7 @@ public class PORestrictionFactory {
 	@Value("${exchangeplatform.default.po.restriction.dual.default-free-day}")
 	String DUAL_FREE_DAY;
 	@Value("${exchangeplatform.default.po.restriction.dual.default-free-days}")
-	List<String> DUAL_FREE_DAYS;
+	String DUAL_FREE_DAYS;
 	
 	@Value("${exchangeplatform.default.po.restriction.cp.active}")
 	Boolean DEFAULT_CP_ACTIVE;
@@ -33,6 +36,8 @@ public class PORestrictionFactory {
 	@Value("${exchangeplatform.default.po.restriction.semester.min-semester}")
 	Long DEFAULT_SEMESTER_MIN;
 	
+	ObjectMapper objectMapper;
+	
 	/** @see PORestrictionFactory */
 	public PORestriction createPO() {
 		PORestriction restriction = new PORestriction();
@@ -46,7 +51,9 @@ public class PORestrictionFactory {
 	private PORestriction.DualPO restrictionDual(boolean isActive, DayOfWeek freeDay) {
 		PORestriction.DualPO dualPO = new PORestriction.DualPO();
 		dualPO.setIsActive(isActive);
-		dualPO.setFreeDualDay(freeDay);
+		dualPO.setFreeDualDayDefault(freeDay);
+		List<DayOfWeek> days = Arrays.stream(DUAL_FREE_DAYS.split(",")).map(DayOfWeek::valueOf).collect(Collectors.toList());
+		dualPO.setFreeDualDays(days);
 		return dualPO;
 	}
 	

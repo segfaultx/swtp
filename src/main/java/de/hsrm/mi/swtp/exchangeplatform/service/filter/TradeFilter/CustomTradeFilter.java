@@ -45,7 +45,7 @@ public class CustomTradeFilter {
 		
 		tradeMap.forEach((timeslot, tradeoffers) -> {
 			for(Filter subFilter : filters) {
-				filteredMap.put(subFilter.getClass().getName(), subFilter.filter(tradeoffers));
+				filteredMap.put(subFilter.getClass().getName(), subFilter.doFilter(tradeoffers));
 			}
 			trades.put(timeslot, filteredMap);
 		});
