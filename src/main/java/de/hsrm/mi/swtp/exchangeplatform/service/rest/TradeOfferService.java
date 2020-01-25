@@ -146,7 +146,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			
 			log.info("TRADING...");
 			log.info("┌─ TradeOfferSuccessfulMessage: SEND TO REQUESTING USER " + requestingUser.getAuthenticationInformation().getUsername());
-			log.info(String.format("├─→ Timeslot %s ↔ Timeslot %s", offeredTimeslot.getId(), requestedTimeslot.getId()));
+			log.info(String.format("├─→ Timeslot %s ↔ Timeslot %s", requestedTimeslot.getId(), offeredTimeslot.getId()));
 			log.info("└─ TradeOfferSuccessfulMessage: SEND TO OFFERING USER " + offereringUser.getAuthenticationInformation().getUsername());
 			
 			
