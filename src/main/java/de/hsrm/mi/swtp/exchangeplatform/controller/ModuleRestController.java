@@ -2,10 +2,9 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.ModuleRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.ModuleRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest.BatchModulesRequest;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;

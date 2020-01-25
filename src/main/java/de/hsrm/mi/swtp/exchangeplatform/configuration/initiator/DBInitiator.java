@@ -3,11 +3,8 @@ package de.hsrm.mi.swtp.exchangeplatform.configuration.initiator;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
-import de.hsrm.mi.swtp.exchangeplatform.model.factory.ModuleFactory;
-import de.hsrm.mi.swtp.exchangeplatform.model.factory.RoomFactory;
-import de.hsrm.mi.swtp.exchangeplatform.model.factory.TimeslotFactory;
-import de.hsrm.mi.swtp.exchangeplatform.model.factory.UserFactory;
-import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
+import de.hsrm.mi.swtp.exchangeplatform.model.factory.*;
+import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.RoomRepository;
@@ -33,15 +30,17 @@ import java.util.Random;
 @Component
 public class DBInitiator implements ApplicationRunner {
 	
-	UserRepository userRepository;
-	RoomRepository roomRepository;
-	AdminSettingsService adminSettingsService;
-	AdminSettingsRepository adminSettingsRepository;
-	UserFactory userFactory;
 	ModuleFactory moduleFactory;
+	POFactory poFactory;
+	PORestrictionFactory poRestrictionFactory;
 	RoomFactory roomFactory;
 	TimeslotFactory timeslotFactory;
+	UserFactory userFactory;
+	AdminSettingsRepository adminSettingsRepository;
+	UserRepository userRepository;
+	RoomRepository roomRepository;
 	PORepository poRepository;
+	AdminSettingsService adminSettingsService;
 	
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
@@ -93,17 +92,8 @@ public class DBInitiator implements ApplicationRunner {
 		// END KRECHEL
 		
 		// START PO 2017
-		PORestriction restriction2017 = createRestriction(false);
-		restriction2017.getByCP().setIsActive(true);
-		restriction2017.getByCP().setMaxCP(40L);
-		restriction2017.getByProgressiveRegulation().setIsActive(false);
-		restriction2017.getDualPO().setIsActive(false);
-		
-		PO po2017 = new PO();
-		po2017.setTitle("Medieninformatik PO17");
-		po2017.setMajor("Medieninformatik");
-		po2017.setValidSince(LocalDate.now().minusYears(3L));
-		po2017.setDateEnd(LocalDate.now().plusYears(3L));
+		PORestriction restriction2017 = poRestrictionFactory.createPO();
+		PO po2017 = poFactory.createPO(LocalDate.now().minusYears(3L), LocalDate.now().minusYears(3L), LocalDate.now().plusYears(3L));
 		po2017.setRestriction(restriction2017);
 		// END PO 2017
 		

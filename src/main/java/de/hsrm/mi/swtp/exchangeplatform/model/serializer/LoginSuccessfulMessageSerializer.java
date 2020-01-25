@@ -9,6 +9,10 @@ import java.io.IOException;
 
 public class LoginSuccessfulMessageSerializer extends StdSerializer<LoginSuccessfulMessage> {
 	
+	public LoginSuccessfulMessageSerializer() {
+		this(null);
+	}
+	
 	public LoginSuccessfulMessageSerializer(Class<LoginSuccessfulMessage> t) {
 		super(t);
 	}

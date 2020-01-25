@@ -1,7 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
+import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.BeanUtils;

@@ -9,6 +9,10 @@ import java.io.IOException;
 
 public class POSerializer extends StdSerializer<PO> {
 	
+	public POSerializer() {
+		this(null);
+	}
+	
 	public POSerializer(Class<PO> t) {
 		super(t);
 	}
