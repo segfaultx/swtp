@@ -434,8 +434,8 @@ public class DBInitiator implements ApplicationRunner {
 		// END TRADEOFFER JOENDHARD
 		
 		List<Module> completedModulesDennis = new ArrayList<>();
-		completedModulesDennis.add(eim);
-		completedModulesDennis.add(prog3);
+//		completedModulesDennis.add(eim);
+//		completedModulesDennis.add(prog3);
 		dennis.setCompletedModules(completedModulesDennis);
 		
 	/*	List<Module> completedModulesGandalf = new ArrayList<>();
