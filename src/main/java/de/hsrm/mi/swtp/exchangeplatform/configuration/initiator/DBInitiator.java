@@ -19,6 +19,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -447,8 +448,9 @@ public class DBInitiator implements ApplicationRunner {
 		adminSettings.setId(1);
 		List<String> filters = new ArrayList<>();
 		filters.add("COLLISION");
-		//filters.add("CAPACITY");
-		adminSettings.updateAdminSettings(true, filters);
+		LocalDateTime dateStartTrades = LocalDateTime.now();
+		LocalDateTime dateEndTrades = LocalDateTime.now().plusDays(15);
+		adminSettings.updateAdminSettings(true, filters, dateStartTrades, dateEndTrades);
 		
 		var persistedSettings = adminSettingsRepository.save(adminSettings);
 		adminSettingsService.setAdminSettings(persistedSettings);
