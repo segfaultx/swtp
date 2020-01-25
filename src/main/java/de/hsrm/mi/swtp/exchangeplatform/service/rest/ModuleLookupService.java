@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
@@ -23,6 +24,7 @@ import static java.util.stream.Collectors.toList;
 public class ModuleLookupService {
 	
 	ModuleRepository moduleRepository;
+	TimeslotService timeslotService;
 	
 	/**
 	 * Method to lookup potential Modules for {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} student
@@ -50,6 +52,15 @@ public class ModuleLookupService {
 				.filter(module -> !module.getTimeslots().isEmpty())
 				.collect(toList());
 		List<Timeslot> out = new ArrayList<>();
+		
+		for(Module module : remainingModules){
+			for(Timeslot ts : module.getTimeslots()){
+				if((ts.getTimeSlotType() != TypeOfTimeslots.VORLESUNG) && timeslotService.hasCollisions(ts, usr.getTimeslots())){
+					remainingModules.remove(module);
+					break;
+				}
+			}
+		}
 		
 		// just get timeslots of type VORLESUNG
 		remainingModules.forEach(module -> out

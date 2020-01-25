@@ -186,6 +186,8 @@ public class TimeslotRestController {
 		return ResponseEntity.ok(timeslot);
 	}
 
+	
+	
 	@GetMapping("/suggestedTimeslots/{timeslotid}")
 	@Operation(description = "get suggested timeslots per Module for student", operationId = "getSuggestedTimeslots")
 	@ApiResponses(value = {
@@ -200,4 +202,5 @@ public class TimeslotRestController {
 		var potentialTimeTable = timeslotService.getSuggestedTimeslots(timeslotID, principal.getName());
 		return new ResponseEntity<>(potentialTimeTable, HttpStatus.OK);
 	}
+	
 }

@@ -77,12 +77,13 @@ public class ModuleService {
 	
 	/**
 	 * Method to lookup potential modules for {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} student
-	 * @param usrname username of student
+	 * @param user username of student
 	 * @return list of timeslots of potential modules
 	 * @throws NotFoundException if username looup fails
 	 */
 	public List<Timeslot> lookUpAvailableModulesForStudent(User user) throws NotFoundException {
 		log.info(String.format("Looking up modules for Student: %s", user.getAuthenticationInformation().getUsername()));
+		
 		return moduleLookupService.lookUpTimeslotsForStudent(user);
 	}
 	
