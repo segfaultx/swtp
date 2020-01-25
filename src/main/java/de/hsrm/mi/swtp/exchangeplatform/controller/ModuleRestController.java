@@ -22,7 +22,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 /**
  * A simple rest-controller which will handle any rest calls concerning {@link Module Modules}.
@@ -40,14 +39,6 @@ public class ModuleRestController {
 	String BASEURL = "/api/v1/modules";
 	ModuleService moduleService;
 	UserService userService;
-	
-	@GetMapping
-	public ResponseEntity<List<Module>> getAll(@RequestBody BatchModulesRequest batchModulesRequest) {
-		if(batchModulesRequest != null || batchModulesRequest.getModulesIDs() != null){
-			return new ResponseEntity<>(moduleService.getAllById(batchModulesRequest), HttpStatus.OK);
-		}
-		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
-	}
 	
 	@GetMapping("/{moduleId}")
 	@Operation(description = "get module by id", operationId= "getModuleById")
