@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.model;
+package de.hsrm.mi.swtp.exchangeplatform.model.rest;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;

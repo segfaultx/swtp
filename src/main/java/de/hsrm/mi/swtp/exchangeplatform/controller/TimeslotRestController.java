@@ -2,7 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.TimeslotRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.TimeslotRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
@@ -20,8 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * A simple rest-controller which will handle any rest calls concerning {@link Timeslot Appointments}.
