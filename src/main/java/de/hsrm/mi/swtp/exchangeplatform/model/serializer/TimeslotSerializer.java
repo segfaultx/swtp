@@ -11,11 +11,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//TODO: javadoc
 public class TimeslotSerializer extends StdSerializer<Timeslot> {
-	
-	public TimeslotSerializer() {
-		this(null);
-	}
 	
 	public TimeslotSerializer(Class<Timeslot> t) {
 		super(t);

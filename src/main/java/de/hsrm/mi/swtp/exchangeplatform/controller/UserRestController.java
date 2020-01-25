@@ -2,8 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
@@ -34,7 +33,7 @@ public class UserRestController {
 	String BASEURL = "/api/v1/users";
 	UserService userService;
 	TradeOfferService tradeOfferService;
-	PersonalConnectionManager personalConnectionManager;
+	PersonalQueueManager personalQueueManager;
 	
 	@GetMapping("")
 	@Operation(description = "get all users", operationId = "getAllUsers")
@@ -62,7 +61,7 @@ public class UserRestController {
 		log.info(String.format("GET // " + BASEURL + "/%s", userId));
 		User user = userService.getById(userId)
 									.orElseThrow(NotFoundException::new);
-		personalConnectionManager.send(user, "You got got.");
+		personalQueueManager.send(user, "You got got.");
 		return ResponseEntity.ok(user);
 	}
 	
@@ -82,42 +81,5 @@ public class UserRestController {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 	}
-	
-	@DeleteMapping("/admin/{userId}")
-	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<User> delete(@PathVariable Long userId) throws NotFoundException {
-		log.info(String.format("DELETE // " + BASEURL + "/admin/%s", userId));
-		
-		User user = userService.getById(userId)
-									.orElseThrow(NotFoundException::new);
-		
-		userService.delete(user);
-		return ResponseEntity.ok(user);
-	}
-	
-	/**
-	 * GET request handler.
-	 * Provides an endpoint to {@code '/api/v1/student/<id>/personalizedTimetable'} through which an student
-	 * may get his personalized timetable.
-	 *
-	 * @param studentId studentId to fetch timetable for
-	 *
-	 * @return {@link HttpStatus#OK}
-	 */
-	@GetMapping("/{studentId}/personalizedTimetable")
-	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<TimeTable> getPersonalizedTimeTable(@PathVariable("studentId") long studentId) {
-		log.info(String.format("Getting personalized Timetable for student: %d", studentId));
-		TimeTable timeTable = new TimeTable();
-		log.info(String.format("Looking up possible Tradeoffers for student: %d", studentId));
-		try {
-			//TODO: checken, ob route in dieser form noch benötigt wird
-			return new ResponseEntity<>(timeTable, HttpStatus.OK);
-		} catch(RuntimeException ex) {
-			log.info(String.format("Error creating dersonalized timetable for student: %d", studentId));
-			return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
-	
 	
 }

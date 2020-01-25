@@ -44,18 +44,6 @@ public class TimeslotRestController {
 
 	/**
 	 * GET request handler.
-	 * Will handle any request GET request on {@code '/api/v1/timeslot'}.
-	 *
-	 * @return a JSON made up of a list containing all available {@link Timeslot Appointments}.
-	 * If there are none will return an empty list.
-	 */
-	@GetMapping("")
-	public ResponseEntity<List<Timeslot>> getAll() {
-		return new ResponseEntity<>(timeslotService.getAll(), HttpStatus.OK);
-	}
-
-	/**
-	 * GET request handler.
 	 * Will handle any request GET request to {@code '/api/v1/timeslot/<id>'}.
 	 *
 	 * @param id is the id of an {@link Timeslot}.

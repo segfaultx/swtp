@@ -1,15 +1,12 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
-import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
@@ -46,9 +43,6 @@ public class TradeOffersRestController {
 	TradeOfferService tradeOfferService;
 	UserService userService;
 	AdminSettingsService adminSettingsService;
-	JWTTokenUtils jwtTokenUtils;
-	PersonalConnectionManager personalConnectionManager;
-	PersonalMessageSender personalMessageSender;
 	TimeslotService timeslotService;
 	TradeOfferRepository tradeOfferRepository;
 	
@@ -256,6 +250,6 @@ public class TradeOffersRestController {
 	public ResponseEntity<List<TradeOffer>> getMyTradeOffers(Principal principal) throws Exception {
 		log.info(String.format("GET REQUEST TRADEOFFERS FOR Student BY USER: %s", principal.getName()));
 		var out = tradeOfferService.getAllTradeoffersForStudent(userService.getByUsername(principal.getName()).orElseThrow());
-		return new ResponseEntity<List<TradeOffer>>(out, HttpStatus.OK);
+		return new ResponseEntity<>(out, HttpStatus.OK);
 	}
 }

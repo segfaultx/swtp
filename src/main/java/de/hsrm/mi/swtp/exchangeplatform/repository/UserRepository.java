@@ -1,6 +1,5 @@
 package de.hsrm.mi.swtp.exchangeplatform.repository;
 
-import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,8 +25,6 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	List<User> findAllByFirstNameContainingIgnoreCase(String firstName);
 	
 	List<User> findAllByLastNameContainingIgnoreCase(String lastName);
-	
-	List<User> findAllByPoIs(PO po);
 	
 	User findByStudentNumber(Long studentnumber);
 }

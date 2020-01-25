@@ -15,12 +15,12 @@ import javax.jms.QueueSession;
  * A class holding information about a logged in/an online {@link User}.
  * Contains information such as the user itself and the {@link Connection} in which its {@link ActiveMQQueue} is active.
  * <p>
- * This object is mainly used for management purposes {@link de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager}.
+ * This object is mainly used for management purposes {@link de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager}.
  */
 @Builder
 @Value
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class PersonalConnection {
+public class PersonalQueue {
 	
 	User user;
 	ActiveMQQueue personalQueue;

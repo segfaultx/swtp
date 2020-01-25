@@ -4,19 +4,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.*;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CollisionFilter;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CapacityFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.NoOfferFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.OfferFilter;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.annotation.Secured;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
+//TODO: javadoc
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter

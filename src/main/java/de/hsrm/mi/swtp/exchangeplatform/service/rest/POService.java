@@ -30,6 +30,7 @@ public class POService {
 		return repository.findAll();
 	}
 
+	//TODO: check if needed, not used
 	public boolean update(PO update) throws IllegalArgumentException, NotFoundException {
 		if(adminSettingsService.isTradesActive()) {
 			throw new ExchangeplatformStillActiveException();
