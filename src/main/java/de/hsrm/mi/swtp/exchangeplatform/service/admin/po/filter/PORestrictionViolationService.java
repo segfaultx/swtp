@@ -1,6 +1,5 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter;
 
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.RestrictionType;
@@ -20,7 +19,6 @@ import java.util.Map;
 public class PORestrictionViolationService {
 
 	Map<Long, UserOccupancyViolation> userOccupancyViolations;
-	PersonalConnectionManager personalConnectionManager;
 	PersonalMessageSender personalMessageSender;
 
 	/** Add a new violation for a given {@link User student object}. A pre-existing violation entry will be extended with the given arguments. */
@@ -57,7 +55,7 @@ public class PORestrictionViolationService {
 									 .build();
 	}
 	
-	/** Calls {@link de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager#send(de.hsrm.mi.swtp.exchangeplatform.model.data.User, java.lang.String)} to notify all students with violations. */
+	/** Calls {@link de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager#send(de.hsrm.mi.swtp.exchangeplatform.model.data.User, java.lang.String)} to notify all students with violations. */
 	public void notifyUsersWithViolations() {
 		for(UserOccupancyViolation userOccupancyViolation : this.userOccupancyViolations.values()) {
 			log.info(" // SEND VIOLATIONS TO STUDENT ==> " +userOccupancyViolation.getStudent().getAuthenticationInformation().getUsername());

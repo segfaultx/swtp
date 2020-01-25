@@ -3,7 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalConnection;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LoginSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
@@ -20,16 +20,16 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Manages {@link PersonalConnection PersonalConnections}.
+ * Manages {@link PersonalQueue PersonalConnections}.
  * Can create a connection for each logged {@link User} and close those when the user goes offline.
  */
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Component
-public class PersonalConnectionManager {
+public class PersonalQueueManager {
 	
-	Map<String, PersonalConnection> userConnectionMap;
+	Map<String, PersonalQueue> userConnectionMap;
 	ActiveMQConnectionFactory connectionFactory;
 	ObjectMapper objectMapper;
 	
@@ -52,15 +52,15 @@ public class PersonalConnectionManager {
 		final ActiveMQQueue queue = (ActiveMQQueue) session.createQueue(queueName);
 		
 		final QueueSender messageProducer = session.createSender(queue);
-		final PersonalConnection personalConnection = PersonalConnection.builder()
-																		.connection(connection)
-																		.session(session)
-																		.personalQueue(queue)
-																		.messageProducer(messageProducer)
-																		.user(user)
-																		.build();
+		final PersonalQueue personalQueue = PersonalQueue.builder()
+														 .connection(connection)
+														 .session(session)
+														 .personalQueue(queue)
+														 .messageProducer(messageProducer)
+														 .user(user)
+														 .build();
 		connection.start();
-		userConnectionMap.put(queueName, personalConnection);
+		userConnectionMap.put(queueName, personalQueue);
 		
 		try {
 			messageProducer.send(session.createTextMessage(objectMapper.writeValueAsString(new LoginSuccessfulMessage())));
@@ -68,7 +68,7 @@ public class PersonalConnectionManager {
 			messageProducer.send(session.createTextMessage(new LoginSuccessfulMessage().getMessage()));
 		}
 		
-		return personalConnection.getPersonalQueue();
+		return personalQueue.getPersonalQueue();
 	}
 	
 	/**
@@ -80,9 +80,9 @@ public class PersonalConnectionManager {
 	 * closed successfully or not.
 	 */
 	public boolean closeConnection(final User user) throws JMSException {
-		PersonalConnection personalConnection = this.userConnectionMap.remove(createPersonalQueueName(user));
-		if(personalConnection == null) return false;
-		personalConnection.getConnection().close();
+		PersonalQueue personalQueue = this.userConnectionMap.remove(createPersonalQueueName(user));
+		if(personalQueue == null) return false;
+		personalQueue.getConnection().close();
 		return true;
 	}
 	
@@ -103,7 +103,7 @@ public class PersonalConnectionManager {
 		return String.format(FORMAT, userId, username);
 	}
 	
-	public PersonalConnection getPersonalConnection(User user) {
+	public PersonalQueue getPersonalConnection(User user) {
 		final String queueName = createPersonalQueueName(user);
 		if(!this.userConnectionMap.containsKey(queueName)) return null;
 		return this.userConnectionMap.get(queueName);
@@ -126,22 +126,22 @@ public class PersonalConnectionManager {
 	
 	/**
 	 * Sends a message to the dynamically created {@link Queue} of a {@link User}.
-	 * If the {@link User} has no {@link PersonalConnection} in the {@link #userConnectionMap} nothing happens.
+	 * If the {@link User} has no {@link PersonalQueue} in the {@link #userConnectionMap} nothing happens.
 	 *
 	 * @param user {@link User}
 	 * @param message the message which is to be sent to the {@link User}
 	 */
 	public void send(User user, String message) throws JMSException {
-		PersonalConnection personalConnection = this.userConnectionMap.get(createPersonalQueueName(user));
-		if(personalConnection == null) return;
-		personalConnection.getMessageProducer().send(personalConnection.getSession().createTextMessage(message));
+		PersonalQueue personalQueue = this.userConnectionMap.get(createPersonalQueueName(user));
+		if(personalQueue == null) return;
+		personalQueue.getMessageProducer().send(personalQueue.getSession().createTextMessage(message));
 	}
 	
 	private User getUserById(Long id) throws NotFoundException {
-		Optional<PersonalConnection> userOpt = this.userConnectionMap.values()
-																	 .stream()
-																	 .filter(personalConnection -> personalConnection.getUser().getId().equals(id))
-																	 .findFirst();
+		Optional<PersonalQueue> userOpt = this.userConnectionMap.values()
+																.stream()
+																.filter(personalQueue -> personalQueue.getUser().getId().equals(id))
+																.findFirst();
 		if(userOpt.isEmpty()) throw new NotFoundException();
 		return userOpt.get().getUser();
 	}

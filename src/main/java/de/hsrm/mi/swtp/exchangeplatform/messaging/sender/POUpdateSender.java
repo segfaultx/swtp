@@ -1,7 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.sender;
 
 
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.POUpdateService;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 public class POUpdateSender {
 	
 	POUpdateService poUpdateService;
-	PersonalConnectionManager personalConnectionManager;
+	PersonalQueueManager personalQueueManager;
 	
 	public void notifyClients() {
 //		for()

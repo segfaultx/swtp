@@ -2,7 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
@@ -34,7 +34,7 @@ public class UserRestController {
 	String BASEURL = "/api/v1/users";
 	UserService userService;
 	TradeOfferService tradeOfferService;
-	PersonalConnectionManager personalConnectionManager;
+	PersonalQueueManager personalQueueManager;
 	
 	@GetMapping("")
 	@Operation(description = "get all users", operationId = "getAllUsers")
@@ -62,7 +62,7 @@ public class UserRestController {
 		log.info(String.format("GET // " + BASEURL + "/%s", userId));
 		User user = userService.getById(userId)
 									.orElseThrow(NotFoundException::new);
-		personalConnectionManager.send(user, "You got got.");
+		personalQueueManager.send(user, "You got got.");
 		return ResponseEntity.ok(user);
 	}
 	

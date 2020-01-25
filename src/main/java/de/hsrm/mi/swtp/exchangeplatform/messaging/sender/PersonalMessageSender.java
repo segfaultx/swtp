@@ -2,8 +2,8 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging.sender;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalConnection;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.UserOccupancyViolation;
@@ -24,16 +24,16 @@ import org.springframework.stereotype.Component;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PersonalMessageSender {
 	
-	PersonalConnectionManager personalConnectionManager;
+	PersonalQueueManager personalQueueManager;
 	JmsTemplate jmsTemplate;
 	ObjectMapper objectMapper;
 	
 	public void send(User user, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
-		this.send(personalConnectionManager.getQueue(user), tradeOfferSuccessfulMessage);
+		this.send(personalQueueManager.getQueue(user), tradeOfferSuccessfulMessage);
 	}
 	
 	public void send(Long userId, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
-		this.send(personalConnectionManager.getQueue(userId), tradeOfferSuccessfulMessage);
+		this.send(personalQueueManager.getQueue(userId), tradeOfferSuccessfulMessage);
 	}
 	
 	public void send(ActiveMQQueue userQueue, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
@@ -42,10 +42,10 @@ public class PersonalMessageSender {
 	
 	public void send(UserOccupancyViolation userOccupancyViolation) {
 		User student = userOccupancyViolation.getStudent();
-		PersonalConnection personalConnection = personalConnectionManager.getPersonalConnection(student);
-		if(personalConnection == null) {
+		PersonalQueue personalQueue = personalQueueManager.getPersonalConnection(student);
+		if(personalQueue == null) {
 			// user is not logged in; so send message which the user can receive later
-			jmsTemplate.send(personalConnectionManager.createPersonalQueueName(student),
+			jmsTemplate.send(personalQueueManager.createPersonalQueueName(student),
 							 session -> {
 								 try {
 									 return session.createTextMessage(objectMapper.writeValueAsString(userOccupancyViolation));
@@ -54,10 +54,10 @@ public class PersonalMessageSender {
 								 }
 								 return session.createTextMessage("{\"violations\": \"true\"}");
 							 });
-			log.info("SEND TO OFFLINE USER::" + personalConnectionManager.createPersonalQueueName(student) + "::MSG=" + userOccupancyViolation);
+			log.info("SEND TO OFFLINE USER::" + personalQueueManager.createPersonalQueueName(student) + "::MSG=" + userOccupancyViolation);
 			return;
 		}
-		jmsTemplate.send(personalConnection.getPersonalQueue(),
+		jmsTemplate.send(personalQueue.getPersonalQueue(),
 						 session -> {
 							 try {
 								 return session.createTextMessage(objectMapper.writeValueAsString(userOccupancyViolation));
@@ -66,7 +66,7 @@ public class PersonalMessageSender {
 							 }
 							 return session.createTextMessage("{\"violations\": \"true\"}");
 						 });
-		log.info("SEND TO ONLINE USER::" + personalConnection.getPersonalQueue().getQualifiedName() + "::MSG=" + userOccupancyViolation);
+		log.info("SEND TO ONLINE USER::" + personalQueue.getPersonalQueue().getQualifiedName() + "::MSG=" + userOccupancyViolation);
 	}
 	
 }

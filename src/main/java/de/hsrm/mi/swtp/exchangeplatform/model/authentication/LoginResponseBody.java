@@ -1,6 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.authentication;
 
-import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalConnection;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
  * Contains necessary values such as the {@link JWTResponse} with a generated token (without which one cannot access
  * the api) and a personalized queue name. The latter is needed for the 1-1 connection between the server and a client.
  *
- * @see PersonalConnection
+ * @see PersonalQueue
  */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
