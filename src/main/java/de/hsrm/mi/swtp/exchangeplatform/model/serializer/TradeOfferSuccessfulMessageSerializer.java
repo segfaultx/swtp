@@ -22,7 +22,15 @@ public class TradeOfferSuccessfulMessageSerializer extends StdSerializer<TradeOf
 		gen.writeStartObject();
 		gen.writeStringField("type", value.getMessageType().name());
 		gen.writeStringField("message", value.getMessage());
-		gen.writeNumberField("value", value.getValue());
+		
+		gen.writeFieldName("value");
+		gen.writeStartObject();
+		gen.writeNumberField("new_timeslot_id", value.getNewTimteslot().getId());
+		gen.writeObjectField("new_timeslot", value.getNewTimteslot());
+		gen.writeNumberField("old_timeslot_id", value.getOldTimeslotId());
+		gen.writeStringField("topic_name", value.getTopic().toString());
+		gen.writeEndObject();
+		
 		gen.writeEndObject();
 	}
 	

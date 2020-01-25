@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
@@ -48,6 +49,7 @@ public class TradeOffersRestController {
 	TimeslotService timeslotService;
 	TradeOfferRepository tradeOfferRepository;
 	PersonalMessageSender personalMessageSender;
+	TimeslotTopicManager timeslotTopicManager;
 	
 	/**
 	 * DELETE request handler.
@@ -155,7 +157,11 @@ public class TradeOffersRestController {
 			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot);
 			
 			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
-									   TradeOfferSuccessfulMessage.builder().value(tradeRequest.getWantedTimeslotId()).build()
+									   TradeOfferSuccessfulMessage.builder()
+																  .newTimteslot(requestingTimeslot)
+																  .oldTimeslotId(offeringTimeslot.getId())
+																  .topic(timeslotTopicManager.getTopic(requestingTimeslot))
+																  .build()
 									  );
 			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + requestingUser.getAuthenticationInformation().getUsername());
 			
