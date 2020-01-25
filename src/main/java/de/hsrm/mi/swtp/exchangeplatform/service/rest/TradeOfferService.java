@@ -1,24 +1,19 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
-import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.AdminTradeService;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
-import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -31,32 +26,12 @@ import java.util.*;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class TradeOfferService implements RestService<TradeOffer, Long> {
 	
-	PersonalMessageSender personalMessageSender;
 	TradeOfferRepository tradeOfferRepository;
 	TimeslotRepository timeSlotRepository;
 	UserRepository userRepository;
-	//Tradeilter filterService; //TODO: wait for filter fix
 	AdminTradeService adminTradeService;
-	AdminSettingsService adminSettingsService;
 	TradeService tradeService;
-	ModuleRepository moduleRepository;
-	
-	/**
-	 * Method to get personalized {@link TradeOffer}s for a students timetable
-	 *
-	 * @param timeslots timetable of student
-	 *
-	 * @return map containing tradeoffers for each timeslot
-	 */
-	public Map<Timeslot, Map<String, List<TradeOffer>>> getTradeOffersForTimeSlots(List<Timeslot> timeslots) throws RuntimeException {
-		log.info("Creating unfiltered Map of tradeoffers");
-		Map<Timeslot, List<TradeOffer>> timeslotTradeOffers = new HashMap<>();
-		timeslots.forEach(timeslot -> timeslotTradeOffers.put(timeslot, tradeOfferRepository.findAllBySeek(timeslot)));
-		List<Filter> filters = new ArrayList<>();
-		filters.addAll(adminSettingsService.getAdminSettings().getCurrentActiveFilters());
-		return null;//filterService.applyFilter(timeslotTradeOffers, filters); //TODO: use fixed filter function
-	}
-	
+
 	/**
 	 * Method to provide admins a forced trade / assignment of timeslot to a given student
 	 *
@@ -274,37 +249,4 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		log.info(String.format("Successfully saved Tradeoffer with ID: %d", dbItem.getId()));
 	}
 	
-	/**
-	 * Method to deleta a {@link TradeOffer} by id
-	 *
-	 * @param aLong id of item to delete
-	 *
-	 * @throws IllegalArgumentException if item couldnt be found
-	 */
-	@Override
-	public void delete(Long aLong) throws IllegalArgumentException {
-		tradeOfferRepository.delete(tradeOfferRepository.findById(aLong).orElseThrow());
-	}
-	
-	/**
-	 * Method to update a given {@link TradeOffer}
-	 *
-	 * @param aLong  item to lookup (update)
-	 * @param update item with updated values
-	 *
-	 * @return true if successful
-	 *
-	 * @throws IllegalArgumentException if item couldnt be looked up
-	 */
-	@Override
-	public boolean update(Long aLong, TradeOffer update) throws IllegalArgumentException {
-		log.info(String.format("Updating TradeOffer: %d", aLong));
-		var dbItem = tradeOfferRepository.findById(aLong).orElseThrow(() -> {
-			log.info(String.format("ERROR Updating TradeOffer: %d", aLong));
-			throw new IllegalArgumentException();
-		});
-		BeanUtils.copyProperties(update, dbItem, "id");
-		log.info(String.format("Successfully updated Tradeoffer: %d", aLong));
-		return true;
-	}
 }

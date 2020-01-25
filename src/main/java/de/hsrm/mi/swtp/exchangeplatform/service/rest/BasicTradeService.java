@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+//TODO: javadoc
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -40,12 +41,6 @@ public class BasicTradeService implements TradeService{
 			log.info("Something went wrong"); // TODO: sinnvolle Fehlerbehandlung
 		}
 
-		
-		// send message to user's personal queue telling that the trade was successful
-		/*personalMessageSender.send(acceptedTrade.getOfferer(), TradeOfferSuccessfulMessage.builder()
-																					   .tradeOfferId(acceptedTrade.getId())
-																					   .build());
-		 */
 		return true;
 	}
 }

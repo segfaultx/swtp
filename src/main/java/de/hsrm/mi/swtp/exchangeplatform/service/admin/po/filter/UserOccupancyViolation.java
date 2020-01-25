@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.UserOccupancyViolationSerializer;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Model;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.RestrictionType;
 import lombok.*;
@@ -20,10 +19,11 @@ import java.util.Map;
 @Slf4j
 @Builder
 @JsonSerialize(using = UserOccupancyViolationSerializer.class)
-public class UserOccupancyViolation implements Model {
+public class UserOccupancyViolation {
 	@JsonProperty("student")
 	@JsonIgnore
 	User student;
+	
 	@JsonProperty("violations")
 	Map<RestrictionType, Object> violations;
 }

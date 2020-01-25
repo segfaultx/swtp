@@ -3,10 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
-import org.apache.tomcat.jni.Local;
 
-import java.time.Duration;
-import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 

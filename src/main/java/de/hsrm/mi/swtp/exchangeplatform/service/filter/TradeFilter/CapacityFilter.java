@@ -4,7 +4,6 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

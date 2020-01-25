@@ -37,6 +37,7 @@ public class SearchUserRestController {
 	 */
 	@GetMapping("")
 	@Operation(description="", operationId ="")
+	//TODO: fix annotations? add proper operation id, response codes etc.
 	public ResponseEntity<List<User>> getSearchResult(@RequestParam("name") Optional<String> name, @RequestParam("id") Optional<String> id) {
 		log.info(String.format("GET // " + BASEURL + "/%s", id, name));
 		List<List<User>> lists = new ArrayList<>();

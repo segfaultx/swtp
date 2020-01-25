@@ -2,7 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.TimeslotRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.TimeslotRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
@@ -21,8 +21,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 /**
  * A simple rest-controller which will handle any rest calls concerning {@link Timeslot Appointments}.
  * Its base url is {@code '/api/v1/timeslot'}.
@@ -39,18 +37,6 @@ public class TimeslotRestController {
 	String BASEURL = "/api/v1/timeslots";
 	TimeslotService timeslotService;
 	UserService userService;
-
-	/**
-	 * GET request handler.
-	 * Will handle any request GET request on {@code '/api/v1/timeslot'}.
-	 *
-	 * @return a JSON made up of a list containing all available {@link Timeslot Appointments}.
-	 * If there are none will return an empty list.
-	 */
-	@GetMapping("")
-	public ResponseEntity<List<Timeslot>> getAll() {
-		return new ResponseEntity<>(timeslotService.getAll(), HttpStatus.OK);
-	}
 
 	/**
 	 * GET request handler.

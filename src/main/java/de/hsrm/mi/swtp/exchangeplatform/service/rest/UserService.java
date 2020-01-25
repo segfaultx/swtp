@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
+//TODO: javadoc
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,10 +36,6 @@ public class UserService {
 	
 	public Optional<User> getById(Long userId) {
 		return repository.findById(userId);
-	}
-	
-	public User getByStudentNumber(Long studentNumber) {
-		return repository.findByStudentNumber(studentNumber);
 	}
 	
 	public Optional<User> getByUsername(String username) {
@@ -102,9 +100,5 @@ public class UserService {
 		final List<Module> modulesBySemester = moduleRepository.findModulesBySemesterIs(semester);
 		return completedModulesOfSemester.size() >= modulesBySemester.size();
 	}
-	
-	public User getOffererByTradeOffer(TradeOffer tradeOffer) {
-		// TODO: Not yet implemented
-		return new User();
-	}
+
 }

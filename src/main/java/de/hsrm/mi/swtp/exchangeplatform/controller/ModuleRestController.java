@@ -2,11 +2,10 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.ModuleRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.ModuleRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeTableService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,7 +21,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 /**
  * A simple rest-controller which will handle any rest calls concerning {@link Module Modules}.
@@ -40,12 +38,6 @@ public class ModuleRestController {
 	String BASEURL = "/api/v1/modules";
 	ModuleService moduleService;
 	UserService userService;
-	TimeTableService timeTableService;
-	
-	@GetMapping("")
-	public ResponseEntity<List<Module>> getAll() {
-		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
-	}
 	
 	@GetMapping("/{moduleId}")
 	@Operation(description = "get module by id", operationId= "getModuleById")

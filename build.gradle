@@ -24,55 +24,70 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    //SECURITY
+
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    compile 'org.springframework.security:spring-security-acl'
+    compile 'org.springframework.security:spring-security-config'
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+    // DB
+
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-data-rest'
+    implementation 'com.h2database:h2'
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+
+    // BASIC SPRING STUFF
+
+    compile 'org.springframework.boot:spring-boot-starter'
+    compile 'org.springframework:spring-context-support'
+
+    // SPRING WEB STUFF
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+
+    // MESSAGING
+
     implementation 'org.springframework.boot:spring-boot-starter-activemq'
     implementation 'org.apache.activemq:activemq-broker'
     implementation 'org.apache.activemq:activemq-kahadb-store'
-    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
-    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.0.pr3'
-    implementation 'org.postgresql:postgresql'
-    implementation 'com.h2database:h2'
     implementation 'io.hawt:hawtio-springboot:2.8.0'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+    compile 'org.springframework.boot:spring-boot-starter-activemq'
+    compile 'org.springframework:spring-jms'
+
+    // SERIALIZATION
+
+    implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.10.0.pr3'
+
+    // OPENAPI
 
     implementation 'org.springdoc:springdoc-openapi-core:1.1.49'
     implementation 'org.springdoc:springdoc-openapi-ui:1.1.44'
 
-	compileOnly 'org.projectlombok:lombok'
+    // LOMBOK
 
-    runtimeOnly 'com.h2database:h2'
+	compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // PYTHON (JYTHON)
+
+    compile group: 'org.python', name: 'jython-standalone', version: '2.7.0'
+
+    // DEVTOOLS
 
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-    annotationProcessor 'org.projectlombok:lombok'
+    // TESTING
 
     testImplementation('org.springframework.boot:spring-boot-starter-test') {
         exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
     }
-
     testCompile group: 'org.springframework.security', name: 'spring-security-test', version: '5.2.1.RELEASE'
-    compile group: 'org.python', name: 'jython-standalone', version: '2.7.0'
-
-    compile group: 'com.github.javafaker', name: 'javafaker', version: '1.0.1'
-    compile group: 'net.kaczmarzyk' , name: 'specification-arg-resolver', version: '2.1.1'
-    compile 'org.springframework.boot:spring-boot-starter-activemq'
-    compile 'org.springframework.boot:spring-boot-starter'
-    compile 'org.apache.activemq:activemq-broker'
-    compile 'org.springframework:spring-jms'
-    compile 'org.springframework.boot:spring-boot-devtools'
-    compile 'com.google.code.gson:gson:2.8.6'
-    compile 'org.openapitools:jackson-databind-nullable:0.1.0'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-
-    compile 'org.springframework.security:spring-security-acl'
-    compile 'org.springframework.security:spring-security-config'
-    compile 'org.springframework:spring-context-support'
-    compile 'net.sf.ehcache:ehcache-core:2.6.11'
     implementation 'junit:junit:4.12'
+    
 }
 
 test {

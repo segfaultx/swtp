@@ -132,6 +132,7 @@ public class JWTTokenUtils {
 		return token != null && token.startsWith(BEARER_TOKEN_PREFIX);
 	}
 	
+	//TODO: check if needed, not used
 	public ActiveTokens getActiveTokens() {
 		return activeTokens;
 	}
