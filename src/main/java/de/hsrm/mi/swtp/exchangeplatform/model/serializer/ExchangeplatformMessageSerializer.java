@@ -20,6 +20,7 @@ public class ExchangeplatformMessageSerializer extends StdSerializer<Exchangepla
 	@Override
 	public void serialize(ExchangeplatformStatusMessage value, JsonGenerator gen, SerializerProvider provider) throws IOException {
 		gen.writeStartObject();
+		gen.writeStringField("type", value.getMessageType().toString());
 		gen.writeStringField("message", value.getMessage());
 		gen.writeBooleanField("tradesActive", value.getIsActive());
 		gen.writeEndObject();
