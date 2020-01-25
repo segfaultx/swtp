@@ -28,10 +28,12 @@ public class PersonalMessageSender {
 	JmsTemplate jmsTemplate;
 	ObjectMapper objectMapper;
 	
+	//TODO: not used, check if needed
 	public void send(User user, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
 		this.send(personalQueueManager.getQueue(user), tradeOfferSuccessfulMessage);
 	}
 	
+	//TODO: not used, check if needed
 	public void send(Long userId, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
 		this.send(personalQueueManager.getQueue(userId), tradeOfferSuccessfulMessage);
 	}
@@ -40,6 +42,7 @@ public class PersonalMessageSender {
 		jmsTemplate.send(userQueue, session -> session.createTextMessage(tradeOfferSuccessfulMessage.toString()));
 	}
 	
+	//TODO: javadoc comments
 	public void send(UserOccupancyViolation userOccupancyViolation) {
 		User student = userOccupancyViolation.getStudent();
 		PersonalQueue personalQueue = personalQueueManager.getPersonalQueue(student);

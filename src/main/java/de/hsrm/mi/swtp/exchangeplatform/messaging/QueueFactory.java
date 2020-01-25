@@ -12,6 +12,7 @@ public class QueueFactory {
 	
 	ActiveMQConnectionFactory connectionFactory;
 	
+	//TODO: check if needed, not used
 	public Queue createQueue(final String queueName) throws JMSException {
 		QueueConnection connection = connectionFactory.createQueueConnection();
 		QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);

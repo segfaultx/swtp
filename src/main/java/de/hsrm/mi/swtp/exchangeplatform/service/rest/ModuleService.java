@@ -5,7 +5,6 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest.BatchModulesRequest;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+//TODO: javadoc
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -29,10 +29,6 @@ public class ModuleService {
 	
 	public List<Module> getAll() {
 		return repository.findAll();
-	}
-	
-	public List<Module> getAllById(BatchModulesRequest batchModulesRequest) {
-		return repository.findDistinctByIdIsIn(batchModulesRequest.getModulesIDs());
 	}
 	
 	public Optional<Module> getById(Long moduleId) {
@@ -68,10 +64,6 @@ public class ModuleService {
 	}
 	
 	public void save(Module module) {
-		/*if(this.repository.existsById(module.getId())) {
-			log.info(String.format("FAIL: Module %s not created", module));
-			throw new NotCreatedException(module);
-		} */
 		repository.save(module);
 		log.info(String.format("SUCCESS: Module %s created", module));
 	}
