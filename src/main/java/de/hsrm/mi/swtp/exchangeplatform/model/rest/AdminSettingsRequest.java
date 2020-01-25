@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -13,5 +14,7 @@ import java.util.List;
 public class AdminSettingsRequest {
 	boolean tradesActive;
 	List<String> activeFilters;
+	LocalDateTime dateStartTrades;
+	LocalDateTime dateEndTrades;
 	
 }

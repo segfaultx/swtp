@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -29,6 +30,10 @@ public class AdminSettings {
 	long id;
 	
 	boolean tradesActive = true;
+	
+	LocalDateTime dateStartTrades;
+	
+	LocalDateTime dateEndTrades;
 
 	
 	@Getter
@@ -75,12 +80,16 @@ public class AdminSettings {
 	 *
 	 * @throws NotFoundException if any of the given filters are unknown to the system
 	 */
-	public void updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
+	public void updateAdminSettings(boolean tradesActive, List<String> activeFilters, LocalDateTime dateStartTrades, LocalDateTime dateEndTrades) throws NotFoundException {
 		log.info(String.format("Updating admin settings (tradesActive old value: %s, new: %s)", this.tradesActive, tradesActive));
 		this.tradesActive = tradesActive;
 		log.info(String.format("Updating admin settings filters from: %s to: %s", this.activeFilters.toString(), activeFilters.toString()));
 		this.activeFilters.clear();
 		activeFilters.forEach(filterVal -> this.activeFilters.add(Filters.valueOf(filterVal)));
+		log.info(String.format("Updating Startdate of trades from: %s to %s", this.dateStartTrades, dateStartTrades));
+		this.dateStartTrades = dateStartTrades;
+		log.info(String.format("Updating Enddate of trades from: %s to %s", this.dateEndTrades, dateEndTrades));
+		this.dateEndTrades = dateEndTrades;
 	}
 
 	@JsonIgnore

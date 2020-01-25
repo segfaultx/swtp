@@ -17,6 +17,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener.TOPICNAME;
@@ -70,8 +71,10 @@ public class AdminSettingsService {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
-		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
+	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters,
+									   LocalDateTime dateStartTrades,
+									   LocalDateTime dateEndTrades) throws NotFoundException {
+		this.adminSettings.updateAdminSettings(tradesActive, activeFilters, dateStartTrades, dateEndTrades);
 
 		if(tradesActive) {
 			poRestrictionViolationProcessor.startProcessing();
