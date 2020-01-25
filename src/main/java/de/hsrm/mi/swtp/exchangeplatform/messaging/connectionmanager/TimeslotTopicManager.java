@@ -3,19 +3,18 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 import de.hsrm.mi.swtp.exchangeplatform.configuration.messaging.DynamicDestinationConfig;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import lombok.AccessLevel;
-import lombok.Builder;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.jms.*;
-import java.util.HashMap;
 
 /**
  * Can create a connection for each {@link Timeslot}.
  */
 @Slf4j
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Component
 public class TimeslotTopicManager extends AbstractDynamicTopicManager<Timeslot> {
@@ -24,32 +23,16 @@ public class TimeslotTopicManager extends AbstractDynamicTopicManager<Timeslot> 
 	 * @see DynamicDestinationConfig#timeslotConnection()
 	 */
 	TopicConnection timeslotConnection;
-	/**
-	 * A collection which saves all dynamically created Topics of {@link Timeslot Timeslots} and maps their
-	 * {@link Timeslot#getId()} to the corresponding{@link Topic}.
-	 * <p>
-	 * <Long, Topic> := Long -> Timeslot.id, Topic -> Topic of Timeslot
-	 */
-	HashMap<Long, TopicCreationDTO> timeslotTopicSessionMap;
-	
-	@Autowired
-	@Builder
-	public TimeslotTopicManager(final TopicConnection timeslotConnection) {
-		this.timeslotConnection = timeslotConnection;
-		this.timeslotTopicSessionMap = new HashMap<>();
-	}
 	
 	@Override
 	public Topic createTopic(Timeslot obj) {
 		Topic topic;
 		try {
-			TopicCreationDTO topicCreationDTO = createTopic(obj.getId(), timeslotConnection);
+			createTopic(obj.getId(), timeslotConnection);
 			
-			topic = topicCreationDTO.getTopic();
+			topic = this.getTopic(obj.getId());
 			final String topicName = topic.getTopicName();
-			final TopicSession topicSession = topicCreationDTO.getTopicSession();
-			
-			this.timeslotTopicSessionMap.put(obj.getId(), topicCreationDTO);
+			final TopicSession topicSession = this.getSession(obj.getId());
 			
 			topicSession.createSubscriber(topic).setMessageListener(message -> {
 				try {
@@ -69,26 +52,6 @@ public class TimeslotTopicManager extends AbstractDynamicTopicManager<Timeslot> 
 			return null;
 		}
 		return topic;
-	}
-	
-	@Override
-	public Topic getTopic(Long id) {
-		return this.timeslotTopicSessionMap.get(id).getTopic();
-	}
-	
-	@Override
-	public Topic getTopic(Timeslot obj) {
-		return this.getTopic(obj.getId());
-	}
-	
-	@Override
-	public TopicSession getSession(Long id) {
-		return this.timeslotTopicSessionMap.get(id).getTopicSession();
-	}
-	
-	@Override
-	public TopicSession getSession(Timeslot obj) {
-		return this.getSession(obj.getId());
 	}
 	
 }
