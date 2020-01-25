@@ -1,7 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hsrm.mi.swtp.exchangeplatform.model.TimeslotRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.TimeslotRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -5,8 +5,12 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.factory.TopicFactory;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Model;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.command.ActiveMQTopic;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.jms.*;
+import javax.jms.JMSException;
+import javax.jms.Topic;
+import javax.jms.TopicConnection;
+import javax.jms.TopicSession;
 import java.lang.reflect.Type;
 import java.util.HashMap;
 
@@ -25,6 +29,7 @@ public abstract class AbstractDynamicTopicManager<T extends Model> implements Dy
 	 * @see TopicCreationDTO
 	 */
 	HashMap<Long, TopicCreationDTO> topicSessionMap;
+	@Autowired
 	TopicFactory topicFactory;
 	
 	public AbstractDynamicTopicManager() {
