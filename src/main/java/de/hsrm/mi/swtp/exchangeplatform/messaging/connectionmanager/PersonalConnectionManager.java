@@ -49,27 +49,18 @@ public class PersonalConnectionManager {
 		final String username = user.getAuthenticationInformation().getPassword();
 		QueueConnection connection = connectionFactory.createQueueConnection(username, username);
 		final QueueSession session = connection.createQueueSession(false, Session.AUTO_ACKNOWLEDGE);
-		final Queue queue = session.createQueue(queueName);
+		final ActiveMQQueue queue = (ActiveMQQueue) session.createQueue(queueName);
+		
 		final QueueSender messageProducer = session.createSender(queue);
 		final PersonalConnection personalConnection = PersonalConnection.builder()
 																		.connection(connection)
 																		.session(session)
-																		.personalQueue((ActiveMQQueue) queue)
+																		.personalQueue(queue)
 																		.messageProducer(messageProducer)
 																		.user(user)
 																		.build();
 		connection.start();
 		userConnectionMap.put(queueName, personalConnection);
-		
-		QueueReceiver receiver = session.createReceiver(queue);
-//		receiver.setMessageListener(message -> {
-//			try {
-//				log.info("\n::" + username);
-//				log.info("\n::received" + ((TextMessage) message).getText());
-//			} catch(JMSException e) {
-//				e.printStackTrace();
-//			}
-//		});
 		
 		try {
 			messageProducer.send(session.createTextMessage(objectMapper.writeValueAsString(new LoginSuccessfulMessage())));
