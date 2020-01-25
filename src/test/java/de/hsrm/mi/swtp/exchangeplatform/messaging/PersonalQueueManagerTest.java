@@ -75,7 +75,7 @@ public class PersonalQueueManagerTest {
 	@Order(1)
 	public void testCreateNewConnection() {
 		Assertions.assertThatCode(() -> {
-			ActiveMQQueue personalQueue = personalQueueManager.createNewConnection(adminUser);
+			ActiveMQQueue personalQueue = personalQueueManager.createPersonalQueue(adminUser);
 			assertNotNull(personalQueue);
 			assertTrue(personalQueue.isQueue());
 		}).doesNotThrowAnyException();
@@ -85,7 +85,7 @@ public class PersonalQueueManagerTest {
 	@Order(2)
 	public void testCreateNewConnectionNullUser() {
 		Assertions.assertThatCode(() -> {
-			ActiveMQQueue personalQueue = personalQueueManager.createNewConnection(null);
+			ActiveMQQueue personalQueue = personalQueueManager.createPersonalQueue(null);
 			assertNull(personalQueue);
 		}).doesNotThrowAnyException();
 	}
@@ -95,7 +95,7 @@ public class PersonalQueueManagerTest {
 	public void testCreateNewConnectionNullUsername() {
 		Assertions.assertThatCode(() -> {
 			adminUser.getAuthenticationInformation().setUsername(null);
-			ActiveMQQueue personalQueue = personalQueueManager.createNewConnection(adminUser);
+			ActiveMQQueue personalQueue = personalQueueManager.createPersonalQueue(adminUser);
 			assertNull(personalQueue);
 		}).doesNotThrowAnyException();
 	}
@@ -105,7 +105,7 @@ public class PersonalQueueManagerTest {
 	public void testCreateNewConnectionNullAuthInformation() {
 		Assertions.assertThatCode(() -> {
 			adminUser.setAuthenticationInformation(null);
-			ActiveMQQueue personalQueue = personalQueueManager.createNewConnection(adminUser);
+			ActiveMQQueue personalQueue = personalQueueManager.createPersonalQueue(adminUser);
 			assertNull(personalQueue);
 		}).doesNotThrowAnyException();
 	}
@@ -113,7 +113,7 @@ public class PersonalQueueManagerTest {
 	@Test
 	@Order(5)
 	public void testGetConnection() throws JMSException {
-		personalQueueManager.createNewConnection(this.adminUser);
+		personalQueueManager.createPersonalQueue(this.adminUser);
 		ActiveMQQueue personalQueue = personalQueueManager.getQueue(this.adminUser);
 		assertNotNull(personalQueue);
 		assertTrue(personalQueue.isQueue());
@@ -147,7 +147,7 @@ public class PersonalQueueManagerTest {
 	@Test
 	@Order(10)
 	public void testCloseConnection() throws JMSException {
-		personalQueueManager.createNewConnection(this.adminUser);
+		personalQueueManager.createPersonalQueue(this.adminUser);
 		assertTrue(personalQueueManager.closeConnection(this.adminUser));
 	}
 	

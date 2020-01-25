@@ -1,12 +1,33 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 
 import com.google.common.reflect.TypeToken;
-import java.lang.reflect.Type;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Model;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.activemq.command.ActiveMQTopic;
 
-public abstract class AbstractDynamicTopicManager<T> implements DynamicTopicManager<T> {
+import javax.jms.*;
+import java.lang.reflect.Type;
+import java.util.HashMap;
+
+@Slf4j
+public abstract class AbstractDynamicTopicManager<T extends Model> implements DynamicTopicManager<T> {
 	
-	private final TypeToken<T> typeToken = new TypeToken<T>(getClass()) { };
+	private final TypeToken<T> typeToken = new TypeToken<T>(getClass()) {};
 	private final Type type = typeToken.getType();
+	
+	/**
+	 * A collection which saves all dynamically created Topics and their TopicSessions of {@link T} and maps their
+	 * {@link T#getId()} to the corresponding{@link Topic}.
+	 * <p>
+	 * <Long, TopicCreationDTO> := Long -> {@link T#getId()}, TopicCreationDTO -> contains the TopicSession and Topic
+	 *
+	 * @see TopicCreationDTO
+	 */
+	HashMap<Long, TopicCreationDTO> topicSessionMap;
+	
+	public AbstractDynamicTopicManager() {
+		this.topicSessionMap = new HashMap<>();
+	}
 	
 	/**
 	 * Creates a string which will be used as a Topic.name.
@@ -20,4 +41,46 @@ public abstract class AbstractDynamicTopicManager<T> implements DynamicTopicMana
 		if(id == null) return null;
 		return String.format(TOPIC_NAME_BASE, ((Class) type).getSimpleName(), id);
 	}
+	
+	/**
+	 * A simple helper method for creating a new TopicSession and a new (ActiveMQ-)Topic.
+	 *
+	 * @param id         {@link #createTopicName(Long)}
+	 * @param connection is the {@link TopicConnection} used to create new {@link TopicSession sessions} and {@link ActiveMQTopic topics} within.
+	 *
+	 * @return {@link TopicCreationDTO}
+	 */
+	TopicCreationDTO createTopic(final Long id, TopicConnection connection) throws JMSException {
+		final String topicName = this.createTopicName(id);
+		
+		final TopicSession topicSession = connection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
+		final Topic topic = topicSession.createTopic(topicName);
+		
+		log.info(String.format(" + created topic name: %s", topicName));
+		log.info(String.format(" + created topic: %s", topic.toString()));
+		
+		final TopicCreationDTO dto = TopicCreationDTO.builder().topic((ActiveMQTopic) topic).topicSession(topicSession).build();
+		return this.topicSessionMap.put(id, dto);
+	}
+	
+	@Override
+	public Topic getTopic(Long id) {
+		return this.topicSessionMap.get(id).getTopic();
+	}
+	
+	@Override
+	public Topic getTopic(T obj) {
+		return this.getTopic(obj.getId());
+	}
+	
+	@Override
+	public TopicSession getSession(Long id) {
+		return this.topicSessionMap.get(id).getTopicSession();
+	}
+	
+	@Override
+	public TopicSession getSession(T obj) {
+		return this.getSession(obj.getId());
+	}
+	
 }

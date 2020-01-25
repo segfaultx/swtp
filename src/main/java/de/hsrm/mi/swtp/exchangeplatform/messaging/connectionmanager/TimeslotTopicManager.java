@@ -30,29 +30,26 @@ public class TimeslotTopicManager extends AbstractDynamicTopicManager<Timeslot> 
 	 * <p>
 	 * <Long, Topic> := Long -> Timeslot.id, Topic -> Topic of Timeslot
 	 */
-	HashMap<Long, Topic> timeslotTopicHashMap;
-	HashMap<Long, TopicSession> timeslotSessionHashMap;
+	HashMap<Long, TopicCreationDTO> timeslotTopicSessionMap;
 	
 	@Autowired
 	@Builder
-	public TimeslotTopicManager(final TopicConnection timeslotConnection
-							   ) {
+	public TimeslotTopicManager(final TopicConnection timeslotConnection) {
 		this.timeslotConnection = timeslotConnection;
-		this.timeslotTopicHashMap = new HashMap<>();
-		this.timeslotSessionHashMap = new HashMap<>();
+		this.timeslotTopicSessionMap = new HashMap<>();
 	}
 	
 	@Override
 	public Topic createTopic(Timeslot obj) {
-		Topic topic = null;
+		Topic topic;
 		try {
-			final String topicName = createTopicName(obj.getId());
-			log.info(String.format(" + created topic name: %s", topicName));
-			TopicSession topicSession = timeslotConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
-			topic = topicSession.createTopic(topicName);
-			log.info(String.format(" + created topic: %s", topic.toString()));
-			this.timeslotTopicHashMap.put(obj.getId(), topic);
-			this.timeslotSessionHashMap.put(obj.getId(), topicSession);
+			TopicCreationDTO topicCreationDTO = createTopic(obj.getId(), timeslotConnection);
+			
+			topic = topicCreationDTO.getTopic();
+			final String topicName = topic.getTopicName();
+			final TopicSession topicSession = topicCreationDTO.getTopicSession();
+			
+			this.timeslotTopicSessionMap.put(obj.getId(), topicCreationDTO);
 			
 			topicSession.createSubscriber(topic).setMessageListener(message -> {
 				try {
@@ -76,7 +73,7 @@ public class TimeslotTopicManager extends AbstractDynamicTopicManager<Timeslot> 
 	
 	@Override
 	public Topic getTopic(Long id) {
-		return this.timeslotTopicHashMap.get(id);
+		return this.timeslotTopicSessionMap.get(id).getTopic();
 	}
 	
 	@Override
@@ -86,7 +83,7 @@ public class TimeslotTopicManager extends AbstractDynamicTopicManager<Timeslot> 
 	
 	@Override
 	public TopicSession getSession(Long id) {
-		return this.timeslotSessionHashMap.get(id);
+		return this.timeslotTopicSessionMap.get(id).getTopicSession();
 	}
 	
 	@Override

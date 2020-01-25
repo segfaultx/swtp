@@ -42,7 +42,7 @@ public class PersonalMessageSender {
 	
 	public void send(UserOccupancyViolation userOccupancyViolation) {
 		User student = userOccupancyViolation.getStudent();
-		PersonalQueue personalQueue = personalQueueManager.getPersonalConnection(student);
+		PersonalQueue personalQueue = personalQueueManager.getPersonalQueue(student);
 		if(personalQueue == null) {
 			// user is not logged in; so send message which the user can receive later
 			jmsTemplate.send(personalQueueManager.createPersonalQueueName(student),
