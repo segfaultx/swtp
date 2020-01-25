@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.model.settings;
+package de.hsrm.mi.swtp.exchangeplatform.model.admin.settings;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
