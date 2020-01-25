@@ -64,6 +64,7 @@ public class POUpdateService {
 				.equals(updatedRestrictions.getBySemester()) && originalRestrictions.getDualPO().equals(updatedRestrictions.getDualPO()));
 	}
 	
+	//TODO: javadoc
 	private List<RestrictionType> affectedRestrictions(final PO original, final PO update) {
 		final ArrayList<RestrictionType> affectedRestrictions = new ArrayList<>();
 		final PORestriction originalRestrictions = original.getRestriction();

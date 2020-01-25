@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
+//TODO: javadoc
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -30,17 +31,16 @@ public class BasicTradeService implements TradeService{
 			return false;
 		}
 		
-		timeslotService.addAttendeeToTimeslot(timeslot2.getId(), student1);
-		timeslotService.removeAttendeeFromTimeslot(timeslot1.getId(), student1);
-		
-		timeslotService.addAttendeeToTimeslot(timeslot1.getId(), student2);
-		timeslotService.removeAttendeeFromTimeslot(timeslot2.getId(), student2);
-		
-		// send message to user's personal queue telling that the trade was successful
-		/*personalMessageSender.send(acceptedTrade.getOfferer(), TradeOfferSuccessfulMessage.builder()
-																					   .tradeOfferId(acceptedTrade.getId())
-																					   .build());
-		 */
+		try {
+			timeslotService.addAttendeeToTimeslot(timeslot1, student1);
+			timeslotService.addAttendeeToTimeslot(timeslot2, student2);
+			
+			timeslotService.removeAttendeeFromTimeslot(timeslot2, student1);
+			timeslotService.removeAttendeeFromTimeslot(timeslot1, student2);
+		} catch(Exception e) {
+			log.info("Something went wrong"); // TODO: sinnvolle Fehlerbehandlung
+		}
+
 		return true;
 	}
 }

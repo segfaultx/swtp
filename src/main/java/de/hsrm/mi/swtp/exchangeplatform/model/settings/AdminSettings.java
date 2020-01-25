@@ -4,19 +4,19 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.*;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CollisionFilter;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CapacityFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.NoOfferFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.OfferFilter;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.annotation.Secured;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
+//TODO: javadoc
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter
@@ -29,41 +29,44 @@ public class AdminSettings {
 	long id;
 	
 	boolean tradesActive = true;
+
 	
 	@Getter
 	enum Filters {
-		COLLISION(new CollisionFilter(), "COLLISION"), CAPACITY(new CapacityFilter(), "CAPACITY"), OFFER(new OfferFilter(), "OFFER"), NOOFFER(
-				new NoOfferFilter(), "NOOFFER");
-		
+		COLLISION(new CollisionFilter(), "COLLISION"),
+		//CAPACITY(new CapacityFilter(), "CAPACITY"),
+		OFFER(new OfferFilter(), "OFFER"),
+		NOOFFER(new NoOfferFilter(), "NOOFFER");
+
 		Filters(Filter filter, String stringVal) {
 			this.filter = filter;
 			this.stringVal = stringVal;
 		}
-		
+
 		public Filters valueFromString(String value) throws NotFoundException {
 			for(Filters filter : Filters.values()) {
 				if(filter.stringVal.equals(value)) return filter;
 			}
 			throw new NotFoundException("Unknown Filter Type");
 		}
-		
+
 		private Filter filter;
 		private String stringVal;
-		
+
 		@Override
 		public String toString() {
 			return "Filters{" + "filter=" + filter + ", stringVal='" + stringVal + '\'' + '}';
 		}
-		
+
 		public Filter getFilter() {
 			return filter;
 		}
 	}
-	
+
 	@ElementCollection
 	@Enumerated(EnumType.STRING)
 	List<Filters> activeFilters = new ArrayList<>();
-	
+
 	/**
 	 * Method to update admin settings
 	 *
@@ -79,14 +82,14 @@ public class AdminSettings {
 		this.activeFilters.clear();
 		activeFilters.forEach(filterVal -> this.activeFilters.add(Filters.valueOf(filterVal)));
 	}
-	
+
 	@JsonIgnore
 	public List<Filter> getCurrentActiveFilters() {
 		List<Filter> out = new ArrayList<>();
 		activeFilters.forEach(item -> out.add(item.getFilter()));
 		return out;
 	}
-	
+
 	@Override
 	public boolean equals(Object other) {
 		if(!(other instanceof AdminSettings)) return false;

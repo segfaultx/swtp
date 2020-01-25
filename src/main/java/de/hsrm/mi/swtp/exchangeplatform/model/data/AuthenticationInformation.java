@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreType;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import javax.persistence.*;
 @Data
 @ToString(exclude = {"user"})
 @RequiredArgsConstructor
+@JsonIgnoreType
 public class AuthenticationInformation {
 	
 	@Id

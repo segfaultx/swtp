@@ -5,6 +5,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Model;
 
 import java.util.List;
 
+//TODO: javadoc
 public interface RestService<T extends Model, Id> {
 	
 	List<T> getAll();
@@ -12,9 +13,5 @@ public interface RestService<T extends Model, Id> {
 	T getById(Id id) throws NotFoundException;
 	
 	void save(T item) throws IllegalArgumentException;
-	
-	void delete(Id id) throws IllegalArgumentException;
-	
-	boolean update(Id id, T update) throws IllegalArgumentException;
 	
 }

@@ -7,7 +7,6 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatus
 import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionViolationProcessor;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.POService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,9 +38,6 @@ public class AdminSettingsService {
 	ObjectMapper objectMapper;
 	@Autowired
 	PORestrictionViolationProcessor poRestrictionViolationProcessor;
-//	PORestrictionViolationProcessorExecutor poRestrictionViolationProcessorExecutor;
-	@Autowired
-	POService poService;
 
 	/**
 	 *

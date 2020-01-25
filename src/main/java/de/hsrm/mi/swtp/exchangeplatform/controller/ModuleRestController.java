@@ -5,6 +5,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.ModuleRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.BatchModulesRequest;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +22,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 /**
  * A simple rest-controller which will handle any rest calls concerning {@link Module Modules}.
@@ -39,11 +39,6 @@ public class ModuleRestController {
 	String BASEURL = "/api/v1/modules";
 	ModuleService moduleService;
 	UserService userService;
-	
-	@GetMapping("")
-	public ResponseEntity<List<Module>> getAll() {
-		return new ResponseEntity<>(moduleService.getAll(), HttpStatus.OK);
-	}
 	
 	@GetMapping("/{moduleId}")
 	@Operation(description = "get module by id", operationId= "getModuleById")
@@ -115,7 +110,6 @@ public class ModuleRestController {
 							   .orElseThrow(NotFoundException::new);
 		
 		moduleService.removeStudentFromModule(moduleRequestBody.getModuleId(), user);
-		
 		Module module = moduleService.getById(moduleRequestBody.getModuleId())
 										   .orElseThrow(NotFoundException::new);
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);

@@ -1,19 +1,21 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
-import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
+import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -23,16 +25,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 
 import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/trades")
@@ -45,10 +43,8 @@ public class TradeOffersRestController {
 	TradeOfferService tradeOfferService;
 	UserService userService;
 	AdminSettingsService adminSettingsService;
-	JWTTokenUtils jwtTokenUtils;
-	PersonalConnectionManager personalConnectionManager;
-	PersonalMessageSender personalMessageSender;
 	TimeslotService timeslotService;
+	TradeOfferRepository tradeOfferRepository;
 	
 	/**
 	 * DELETE request handler.
@@ -71,7 +67,17 @@ public class TradeOffersRestController {
 										  ) throws Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("DELETE Request Student: %d TradeOffer: %d", studentId, seekId));
-			if(tradeOfferService.deleteTradeOffer(studentId, seekId)) {
+			
+			User offerer = userService.getById(studentId)
+					.orElseThrow(NotFoundException::new);
+			
+			Timeslot timeslot = timeslotService.getById(seekId)
+		    		.orElseThrow(NotFoundException::new);
+			
+			TradeOffer tradeOffer =
+					tradeOfferRepository.findByOffererAndSeek(offerer, timeslot);
+					
+			if(tradeOfferService.deleteTradeOffer(tradeOffer)) {
 				log.info(String.format("DELETE Request successful Student: %d TradeOffer: %d", studentId, seekId));
 				return new ResponseEntity<>(HttpStatus.OK);
 			}
@@ -140,13 +146,9 @@ public class TradeOffersRestController {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
 								  ));
-			String username = principal.getName();
 
-			User acceptingUser = userService.getByUsername(username)
+			User requestingUser = userService.getByUsername(principal.getName())
 					.orElseThrow(NotFoundException::new);
-			
-			User offeringUser = userService.getAllByStudentNumber(
-					String.valueOf(tradeRequest.getOfferedByStudentMatriculationNumber())).get(0);
 			
 			Timeslot offeringTimeslot = timeslotService.getById(tradeRequest.getOfferedTimeslotId())
 					.orElseThrow(NotFoundException::new);
@@ -154,18 +156,21 @@ public class TradeOffersRestController {
 			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId())
 					.orElseThrow(NotFoundException::new);
 			
-			var timeslot = tradeOfferService.tradeTimeslots(offeringUser, acceptingUser, offeringTimeslot, requestingTimeslot);
+			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot);
 			
-			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
-									   TradeOfferSuccessfulMessage.builder()
-																  .value(tradeRequest.getWantedTimeslotId())
-																  .build());
-			personalMessageSender.send(acceptingUser,
-									   TradeOfferSuccessfulMessage.builder()
-																  .value(tradeRequest.getOfferedTimeslotId())
-																  .build());
+			// TODO: check if messaging still works
 			
-			
+//			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
+//									   TradeOfferSuccessfulMessage.builder()
+//																  .value(tradeRequest.getWantedTimeslotId())
+//																  .build());
+//			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + offeringUser.getAuthenticationInformation().getUsername());
+//			personalMessageSender.send(acceptingUser,
+//									   TradeOfferSuccessfulMessage.builder()
+//																  .value(tradeRequest.getOfferedTimeslotId())
+//																  .build());
+//			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + acceptingUser.getAuthenticationInformation().getUsername());
+//
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
 			timetable.setDateEnd(LocalDate.now()); // DIRTY QUICK FIX
@@ -236,7 +241,7 @@ public class TradeOffersRestController {
 		return new ResponseEntity<>(tradeOfferService.getAll(), HttpStatus.OK);
 	}
 
-	@GetMapping("/mytradefffers")
+	@GetMapping("/mytradeoffers")
 	@Operation(description = "get TradeOffers for student", operationId = "getMyTradeOffers")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved tradeoffers"),
 							@ApiResponse(responseCode = "403", description = "unauthorized request"),
@@ -245,6 +250,6 @@ public class TradeOffersRestController {
 	public ResponseEntity<List<TradeOffer>> getMyTradeOffers(Principal principal) throws Exception {
 		log.info(String.format("GET REQUEST TRADEOFFERS FOR Student BY USER: %s", principal.getName()));
 		var out = tradeOfferService.getAllTradeoffersForStudent(userService.getByUsername(principal.getName()).orElseThrow());
-		return new ResponseEntity<List<TradeOffer>>(out, HttpStatus.OK);
+		return new ResponseEntity<>(out, HttpStatus.OK);
 	}
 }

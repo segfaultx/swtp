@@ -1,30 +1,24 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
-import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.AdminTradeService;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
-import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -32,32 +26,12 @@ import java.util.Map;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class TradeOfferService implements RestService<TradeOffer, Long> {
 	
-	PersonalMessageSender personalMessageSender;
 	TradeOfferRepository tradeOfferRepository;
 	TimeslotRepository timeSlotRepository;
 	UserRepository userRepository;
-	//Tradeilter filterService; //TODO: wait for filter fix
 	AdminTradeService adminTradeService;
-	AdminSettingsService adminSettingsService;
 	TradeService tradeService;
-	ModuleRepository moduleRepository;
-	
-	/**
-	 * Method to get personalized {@link TradeOffer}s for a students timetable
-	 *
-	 * @param timeslots timetable of student
-	 *
-	 * @return map containing tradeoffers for each timeslot
-	 */
-	public Map<Timeslot, Map<String, List<TradeOffer>>> getTradeOffersForTimeSlots(List<Timeslot> timeslots) throws RuntimeException {
-		log.info("Creating unfiltered Map of tradeoffers");
-		Map<Timeslot, List<TradeOffer>> timeslotTradeOffers = new HashMap<>();
-		timeslots.forEach(timeslot -> timeslotTradeOffers.put(timeslot, tradeOfferRepository.findAllBySeek(timeslot)));
-		List<Filter> filters = new ArrayList<>();
-		filters.addAll(adminSettingsService.getAdminSettings().getCurrentActiveFilters());
-		return null;//filterService.applyFilter(timeslotTradeOffers, filters); //TODO: use fixed filter function
-	}
-	
+
 	/**
 	 * Method to provide admins a forced trade / assignment of timeslot to a given student
 	 *
@@ -120,7 +94,6 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	/**
 	 * Method to process a requested trade transaction, transaction info is gathered from {@link TradeOffer}'s id
 	 *
-	 * @param offereringUser offering User
 	 * @param requestingUser requesting User
 	 * @param offeredTimeslot Timeslot that's been offered for trade
 	 * @param requestedTimeslot Timeslot that's been requested for trade
@@ -130,36 +103,76 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 * @throws RuntimeException if either requesterId or tradeId cant be found
 	 */
 	@Transactional
-	public Timeslot tradeTimeslots(User offereringUser, User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot) throws Exception {
+	public Timeslot tradeTimeslots(User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot) throws Exception {
+		
+		TradeOffer tradeOffer = findFinalTradeOffer(offeredTimeslot, requestedTimeslot);
+		
+		// TODO: handle null
+		if (tradeOffer == null) {
+			throw new Exception("No final TradeOffer found");
+		}
+		
+		User offereringUser = tradeOffer.getOfferer();
+		
 		log.info("Performing Trade: From {} to {} with Timeslots {} and {}",
-							   offereringUser, requestingUser, offeredTimeslot, requestedTimeslot);
+				 offereringUser, requestingUser, offeredTimeslot, requestedTimeslot);
 		
 		if(tradeService.doTrade(offereringUser, requestingUser, offeredTimeslot, requestedTimeslot)) {
+			deleteTradeOffer(tradeOffer);
 			return timeSlotRepository.findById(requestedTimeslot.getId()).orElseThrow();
 		}
 		throw new RuntimeException();
 	}
 	
 	/**
-	 * Method to delete a given {@link TradeOffer} by id of a student
+	 * Finds matching Tradeoffers for the offered and requested timeslots.
+	 * Filters those TradeOffers and returns a random one from the remaining.
+	 * @param offeredTimeslot {@link Timeslot} that's offered from active Tradeoffers
+	 * @param requestedTimeslot  {@link Timeslot} that's been requested by Principal
+	 * @return single TradeOffer that can be traded, or null if none are present or Filters killed all possible matching TradeOffers
+	 */
+	public TradeOffer findFinalTradeOffer(Timeslot offeredTimeslot, Timeslot requestedTimeslot) {
+		List<TradeOffer> tradeOffers;
+		Random random = new Random();
+		
+		// Fetch a  List of all tradeoffers
+		tradeOffers = tradeOfferRepository.findAll();
+		
+		// Remove all tradeOffers where requested is not offered and offered is not seek
+		tradeOffers.removeIf(tradeOffer ->
+									 !(tradeOffer.getOffer() == requestedTimeslot && tradeOffer.getSeek() == offeredTimeslot));
+		
+		// filter the list according to active filters
+		FilterUtils filterUtils = FilterUtils.getInstance();
+		try {
+			tradeOffers = filterUtils.getFilteredTradeOffers(tradeOffers);
+		} catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+		
+		// if no matching TradeOffer was found return null
+		if(tradeOffers.size() == 0) return null;
+		
+		// if more than one tradeoffer remains, then spit out a random one
+		if(tradeOffers.size() > 1) {
+			return tradeOffers.get(random.nextInt(tradeOffers.size() - 1));
+		} else {
+			return tradeOffers.get(0);
+		}
+	}
+	
+	/**
+	 * Method to delete a given {@link TradeOffer}
 	 *
-	 * @param studentId delete requester's id
-	 * @param seekId    seekId of item which is supposed to be deleted
+	 * @param tradeOffer delete given TradeOffer from Database
 	 *
 	 * @return true if successful
 	 *
-	 * @throws RuntimeException if tradeoffer cannot be looked up or requester isnt owner of the requested trade
 	 */
-	
-	public boolean deleteTradeOffer(long studentId, long seekId) throws Exception {
-		log.info(String.format("Looking up Tradeoffer with seekId: %d. Requester: %d", seekId, studentId));
-		
-		var found = tradeOfferRepository.findByOffererAndSeek(userRepository.findById(studentId).orElseThrow(),
-																		timeSlotRepository.findById(seekId).orElseThrow()
-																	   );
-		if(found == null) throw new NotFoundException();
-		log.info(String.format("Successfully deleted tradeoffer with seekId: %d of student: %d", seekId, studentId));
-		tradeOfferRepository.delete(found);
+	public boolean deleteTradeOffer(TradeOffer tradeOffer) {
+		if(tradeOffer == null) return false;
+		log.info("Successfully deleted tradeoffer with ID: {} of student: %d", tradeOffer.getId());
+		tradeOfferRepository.delete(tradeOffer);
 		return true;
 	}
 	
@@ -236,37 +249,4 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		log.info(String.format("Successfully saved Tradeoffer with ID: %d", dbItem.getId()));
 	}
 	
-	/**
-	 * Method to deleta a {@link TradeOffer} by id
-	 *
-	 * @param aLong id of item to delete
-	 *
-	 * @throws IllegalArgumentException if item couldnt be found
-	 */
-	@Override
-	public void delete(Long aLong) throws IllegalArgumentException {
-		tradeOfferRepository.delete(tradeOfferRepository.findById(aLong).orElseThrow());
-	}
-	
-	/**
-	 * Method to update a given {@link TradeOffer}
-	 *
-	 * @param aLong  item to lookup (update)
-	 * @param update item with updated values
-	 *
-	 * @return true if successful
-	 *
-	 * @throws IllegalArgumentException if item couldnt be looked up
-	 */
-	@Override
-	public boolean update(Long aLong, TradeOffer update) throws IllegalArgumentException {
-		log.info(String.format("Updating TradeOffer: %d", aLong));
-		var dbItem = tradeOfferRepository.findById(aLong).orElseThrow(() -> {
-			log.info(String.format("ERROR Updating TradeOffer: %d", aLong));
-			throw new IllegalArgumentException();
-		});
-		BeanUtils.copyProperties(update, dbItem, "id");
-		log.info(String.format("Successfully updated Tradeoffer: %d", aLong));
-		return true;
-	}
 }

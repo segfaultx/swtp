@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * ActiveToken class holds current logged in Users and non expired Tokens
+ */
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Component
@@ -58,6 +61,7 @@ public class ActiveTokens {
 	/**
 	 * Removes all expired Tokens in the current active Token list
 	 */
+	//TODO: check if needed, not used
 	private void removeAllExpiredTokens() {
 		this.activeTokens.removeIf(elem -> !tokenUtils.isTokenExpired(elem));
 	}

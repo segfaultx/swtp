@@ -42,18 +42,6 @@ public class TimeslotRestController {
 
 	/**
 	 * GET request handler.
-	 * Will handle any request GET request on {@code '/api/v1/timeslot'}.
-	 *
-	 * @return a JSON made up of a list containing all available {@link Timeslot Appointments}.
-	 * If there are none will return an empty list.
-	 */
-	@GetMapping("")
-	public ResponseEntity<List<Timeslot>> getAll() {
-		return new ResponseEntity<>(timeslotService.getAll(), HttpStatus.OK);
-	}
-
-	/**
-	 * GET request handler.
 	 * Will handle any request GET request to {@code '/api/v1/timeslot/<id>'}.
 	 *
 	 * @param id is the id of an {@link Timeslot}.
@@ -94,11 +82,12 @@ public class TimeslotRestController {
 		
 		User user = userService.getById(timeslotRequestBody.getStudentId())
 							   .orElseThrow(NotFoundException::new);
+		
+		Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
+				.orElseThrow(NotFoundException::new);
 
 		try {
-			timeslotService.addAttendeeToTimeslot(timeslotRequestBody.getTimeslotId(), user);
-			Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
-											   .orElseThrow(NotFoundException::new);
+			timeslot = timeslotService.addAttendeeToTimeslot(timeslot, user);
 			return ResponseEntity.ok(timeslot);
 		} catch(UserIsAlreadyAttendeeException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -127,10 +116,11 @@ public class TimeslotRestController {
 		User user = userService.getById(timeslotRequestBody.getStudentId())
 							   .orElseThrow(NotFoundException::new);
 		
-		timeslotService.removeAttendeeFromTimeslot(timeslotRequestBody.getTimeslotId(), user);
-		
 		Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
 				.orElseThrow(NotFoundException::new);
+		
+		timeslot = timeslotService.removeAttendeeFromTimeslot(timeslot, user);
+		
 		return ResponseEntity.ok(timeslot);
 	}
 	

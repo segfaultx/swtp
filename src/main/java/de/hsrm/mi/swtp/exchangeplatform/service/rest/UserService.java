@@ -2,10 +2,8 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.WhoAmI;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
@@ -20,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
+//TODO: javadoc
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -36,10 +36,6 @@ public class UserService {
 	
 	public Optional<User> getById(Long userId) {
 		return repository.findById(userId);
-	}
-	
-	public User getByStudentNumber(Long studentNumber) {
-		return repository.findByStudentNumber(studentNumber);
 	}
 	
 	public Optional<User> getByUsername(String username) {
@@ -104,4 +100,5 @@ public class UserService {
 		final List<Module> modulesBySemester = moduleRepository.findModulesBySemesterIs(semester);
 		return completedModulesOfSemester.size() >= modulesBySemester.size();
 	}
+
 }
