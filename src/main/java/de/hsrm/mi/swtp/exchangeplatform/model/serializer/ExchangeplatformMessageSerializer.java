@@ -9,6 +9,10 @@ import java.io.IOException;
 
 public class ExchangeplatformMessageSerializer extends StdSerializer<ExchangeplatformStatusMessage> {
 	
+	public ExchangeplatformMessageSerializer() {
+		this(null);
+	}
+	
 	public ExchangeplatformMessageSerializer(Class<ExchangeplatformStatusMessage> t) {
 		super(t);
 	}
