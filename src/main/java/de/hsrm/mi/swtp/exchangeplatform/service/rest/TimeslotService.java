@@ -29,7 +29,6 @@ import java.time.LocalTime;
 public class TimeslotService {
 
 	TimeslotRepository repository;
-	UserRepository userRepository;
 	
 	public List<Timeslot> getAll() {
 		return repository.findAll();
@@ -113,15 +112,16 @@ public class TimeslotService {
 		return timeslot.getAttendees().size() < timeslot.getCapacity();
 	}
 	
+	
 	/**
-	 *
-	 * @param timeslotID
-	 * @param username
-	 * @return
+	 * Searches for the first timeslot of the seeked module with no collisions
+	 * @param timeslotID The seeked module
+	 * @param user The requestor
+	 * @return List of suggested Timeslots
 	 */
-	public List<Timeslot> getSuggestedTimeslots(Long timeslotID, String username){
+	public List<Timeslot> getSuggestedTimeslots(Long timeslotID, User user){
 		List<Timeslot> suggestedTimeslots = new ArrayList<>();
-		var user = userRepository.findByUsername(username).orElseThrow();
+		//var user = userRepository.findById(studentID).orElseThrow();
 		var timeslot = repository.findById(timeslotID).orElseThrow();
 		var module = timeslot.getModule();
 		var potentialTimeslots = module.getTimeslots();
@@ -146,10 +146,10 @@ public class TimeslotService {
 	
 	
 	/**
-	 *
-	 * @param timeslot
-	 * @param timeTable
-	 * @return
+	 * Method to check if a given Timeslot and a Timetable has collisions
+	 * @param timeslot The potential Timeslot for User
+	 * @param timeTable List of Timeslots from User
+	 * @return true if successful
 	 */
 	public boolean hasCollisions(Timeslot timeslot, List<Timeslot> timeTable){
 		for(Timeslot ts : timeTable) {
@@ -161,10 +161,10 @@ public class TimeslotService {
 	}
 	/**
 	 * Method to check if startTime and endTime of 2 Timeslots are colliding
-	 * @param aTimeEnd
-	 * @param aTimeStart
-	 * @param bTimeEnd
-	 * @param bTimeStart
+	 * @param aTimeEnd EndTime of Timeslot A
+	 * @param aTimeStart StartTime of Timeslot A
+	 * @param bTimeEnd EndTime of Timeslot B
+	 * @param bTimeStart StartTime of Timeslot B
 	 * @return true if successful
 	 */
 	public boolean hoursAreColliding(LocalTime aTimeEnd, LocalTime aTimeStart, LocalTime bTimeEnd, LocalTime bTimeStart){

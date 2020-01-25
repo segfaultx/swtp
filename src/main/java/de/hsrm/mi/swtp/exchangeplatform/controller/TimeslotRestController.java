@@ -4,7 +4,9 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeExceptio
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TimeslotRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -40,6 +42,7 @@ public class TimeslotRestController {
 	String BASEURL = "/api/v1/timeslots";
 	TimeslotService timeslotService;
 	UserService userService;
+	UserRepository userRepository;
 
 	/**
 	 * GET request handler.
@@ -185,10 +188,17 @@ public class TimeslotRestController {
 										   .orElseThrow(NotFoundException::new);
 		return ResponseEntity.ok(timeslot);
 	}
-
 	
 	
-	@GetMapping("/suggestedTimeslots/{timeslotid}")
+	/**
+	 * GET request handler.
+	 * Will handle any request GET request to {@code '/api/v1/timeslot/suggestedTimeslots/<timeslotid>/<studentid>'}.
+	 * @param timeslotID the ID of an {@link Timeslot}.
+	 * @param studentID the ID of an {@link User}.
+	 * @return {@link HttpStatus#OK} and a requested List of suggested {@link Timeslot} instances, if student has no collisions with own {@link TimeTable} Otherwise will return {@link HttpStatus#BAD_REQUEST}
+	 * @throws NotFoundException if user doesn't exist in repository
+	 */
+	@GetMapping("/suggestedTimeslots/{timeslotid}/{studentid}")
 	@Operation(description = "get suggested timeslots per Module for student", operationId = "getSuggestedTimeslots")
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "successfully fetched suggested timeslots for student"),
@@ -197,9 +207,10 @@ public class TimeslotRestController {
 			@ApiResponse(responseCode = "400", description = "bad request")})
 	@PreAuthorize("hasRole('MEMBER')")
 	public ResponseEntity<List<Timeslot>> getSuggestedTimetableForStudent(@PathVariable("timeslotid") Long timeslotID,
-																	 Principal principal) throws NotFoundException {
-		log.info(String.format("GET REQUEST: getSuggestedTimeslotsForStudent, by user: %s, for timeslotid: %d", principal.getName(), timeslotID));
-		var potentialTimeTable = timeslotService.getSuggestedTimeslots(timeslotID, principal.getName());
+																	 @PathVariable("studentid") Long studentID) throws NotFoundException {
+		log.info(String.format("GET REQUEST: getSuggestedTimeslotsForStudent, by user: %s, for timeslotid: %d", studentID, timeslotID));
+		var user = userRepository.findById(studentID).orElseThrow(NotFoundException::new);
+		var potentialTimeTable = timeslotService.getSuggestedTimeslots(timeslotID, user);
 		return new ResponseEntity<>(potentialTimeTable, HttpStatus.OK);
 	}
 	
