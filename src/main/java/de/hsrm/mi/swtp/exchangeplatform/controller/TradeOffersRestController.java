@@ -1,8 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
@@ -47,7 +45,6 @@ public class TradeOffersRestController {
 	AdminSettingsService adminSettingsService;
 	TimeslotService timeslotService;
 	TradeOfferRepository tradeOfferRepository;
-	PersonalMessageSender personalMessageSender;
 	
 	/**
 	 * DELETE request handler.
@@ -153,11 +150,6 @@ public class TradeOffersRestController {
 			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId()).orElseThrow(NotFoundException::new);
 
 			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot);
-			
-			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
-									   TradeOfferSuccessfulMessage.builder().value(tradeRequest.getWantedTimeslotId()).build()
-									  );
-			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + requestingUser.getAuthenticationInformation().getUsername());
 			
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());

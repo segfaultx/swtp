@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter;
 
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.CPViolationMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ProgressiveRegulationViolationMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.ChangedRestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
@@ -80,7 +81,12 @@ public class PORestrictionViolationProcessor implements Runnable {
 			if(userCp >= maxCp) {
 				log.info(student.getAuthenticationInformation().getUsername() + " => VIOLATION DETECTED:filterByCP ======== ");
 				log.info(student.getAuthenticationInformation().getUsername() + " => // TOO MANY CP - more than " + maxCp);
-				poRestrictionViolationService.addViolation(student, RestrictionType.CREDIT_POINTS, userCp);
+				final CPViolationMessage message;
+				message = CPViolationMessage.builder()
+											.maxCPByPO(maxCp)
+											.userCP(userCp)
+											.build();
+				poRestrictionViolationService.addViolation(student, RestrictionType.CREDIT_POINTS, message);
 			} else log.info(" // CAN HAVE MORE - has " + userCp);
 		}
 	}
