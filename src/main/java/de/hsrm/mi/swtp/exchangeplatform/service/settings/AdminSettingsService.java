@@ -91,6 +91,6 @@ public class AdminSettingsService {
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<String> getAllFilters(){
-		return adminSettings.getAllFilters();
+		return filterUtils.getAllAvailableFilters();
 	}
 }
