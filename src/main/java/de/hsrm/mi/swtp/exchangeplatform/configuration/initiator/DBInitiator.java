@@ -459,6 +459,8 @@ public class DBInitiator implements ApplicationRunner {
 		adminSettings.setId(1);
 		adminSettings.setActiveFilters(filters);
 		adminSettings.setTradesActive(true);
+		adminSettings.setDateStartTrades(LocalDateTime.now());
+		adminSettings.setDateEndTrades(LocalDateTime.now().plusDays(15));
 		var persistedSettings = adminSettingsRepository.save(adminSettings);
 		adminSettingsService.setAdminSettings(persistedSettings);
 		
