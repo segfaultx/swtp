@@ -32,6 +32,7 @@ public class AdminSettingsService {
 	AdminSettingsRepository adminSettingsRepository;
 	@Setter
 	AdminSettings adminSettings;
+	@Autowired
 	FilterUtils filterUtils;
 	JmsTemplate jmsTopicTemplate;
 	@Autowired
