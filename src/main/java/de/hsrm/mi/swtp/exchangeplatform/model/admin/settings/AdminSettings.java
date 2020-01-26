@@ -14,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -31,16 +34,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class AdminSettings {
-	
-	@Transient
-	FilterUtils filterUtils = FilterUtils.getInstance();
-	
+
 	@Id
 	long id;
 	
 	boolean tradesActive = true;
 	
 	@ElementCollection
+	@LazyCollection(LazyCollectionOption.FALSE)
 	List<String> activeFilters;
 	
 	public void setActiveFilters(List<String> activeFilters) {

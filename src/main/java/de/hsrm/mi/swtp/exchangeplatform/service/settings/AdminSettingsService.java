@@ -7,7 +7,6 @@ import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionViolationProcessor;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.POService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,28 +27,31 @@ import static de.hsrm.mi.swtp.exchangeplatform.messaging.listener.Exchangeplatfo
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AdminSettingsService {
 	
-	private final Long adminSettingsId = 1L;
+	final Long adminSettingsId = 1L;
 	AdminSettingsRepository adminSettingsRepository;
 	AdminSettings adminSettings;
-	FilterUtils filterUtils = FilterUtils.getInstance();
-	
-	@Autowired
+	FilterUtils filterUtils;
 	JmsTemplate jmsTopicTemplate;
 	@Autowired
-	ObjectMapper objectMapper;
-	@Autowired
 	PORestrictionViolationProcessor poRestrictionViolationProcessor;
-
+	
+	
 	/**
 	 *
 	 * @param adminSettingsRepository
+	 * @param jmsTopicTemplate
+	 * @param filterUtils
 	 */
 	@Autowired
-	public AdminSettingsService(@NotNull AdminSettingsRepository adminSettingsRepository) {
+	public AdminSettingsService(@NotNull AdminSettingsRepository adminSettingsRepository,
+								@NotNull JmsTemplate jmsTopicTemplate,
+								@NotNull FilterUtils filterUtils) {
 		this.adminSettingsRepository = adminSettingsRepository;
-		var tmp = adminSettingsRepository.findById(adminSettingsId);
-		if(tmp.isPresent())
-			this.adminSettings = tmp.get(); // TODO: throw exception if settings not present at application startup, changed to this so DBInitiator can fill DB
+		this.jmsTopicTemplate = jmsTopicTemplate;
+		this.filterUtils = filterUtils;
+		var tmp = adminSettingsRepository.findAll();
+		if(tmp.size() > 0)
+			this.adminSettings = tmp.get(0); // TODO: throw exception if settings not present at application startup, changed to this so DBInitiator can fill DB
 		else log.info(String.format("Couldnt lookup admin settings with ID: %d", adminSettingsId));
 	}
 
@@ -82,6 +84,7 @@ public class AdminSettingsService {
 		}
 		
 		adminSettings.setActiveFilters(activeFilters);
+		filterUtils.setActiveFilters(activeFilters);
 
 		if(tradesActive) {
 			poRestrictionViolationProcessor.startProcessing();
@@ -91,7 +94,7 @@ public class AdminSettingsService {
 		jmsTopicTemplate.send(TOPICNAME, session -> {
 			try {
 				return session.createTextMessage(
-						objectMapper.writeValueAsString(new ExchangeplatformStatusMessage(tradesActive)));
+						new ObjectMapper().writeValueAsString(new ExchangeplatformStatusMessage(tradesActive)));
 			} catch(JsonProcessingException e) {
 				e.printStackTrace();
 			}
