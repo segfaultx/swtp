@@ -100,7 +100,7 @@ public class AdminRestController {
 	 * @return list of strings containing filter names
 	 */
 	@GetMapping("/settings/filters")
-	@Operation(description = "get all available filters", operationId = "getAllVailableFilters")
+	@Operation(description = "get all available filters", operationId = "getAllAvailableFilters")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully fetched all filters"),
 							@ApiResponse(responseCode = "403", description = "unauthorized request"),
 							@ApiResponse(responseCode = "400", description = "malformed request")
