@@ -7,6 +7,7 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatus
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionViolationProcessor;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -97,5 +98,9 @@ public class AdminSettingsService {
 	@PreAuthorize("hasRole('ADMIN')")
 	public List<String> getAllFilters(){
 		return filterUtils.getAllAvailableFilters();
+	}
+	
+	public CustomPythonFilter addCustomPythonFilter(String filterName, String code){
+		return filterUtils.addPythonFilter(filterName, code);
 	}
 }

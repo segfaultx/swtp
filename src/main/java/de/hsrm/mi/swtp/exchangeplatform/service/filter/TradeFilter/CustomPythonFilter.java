@@ -28,6 +28,11 @@ public class CustomPythonFilter implements Filter {
 	
 	String pythonCode;
 	
+	public CustomPythonFilter(String filterName, String code){
+		this.filterName = filterName;
+		this.pythonCode = code;
+	}
+	
 	
 	@Override
 	public List<TradeOffer> doFilter(List<TradeOffer> offers) {

@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.service.filter.utils;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.repository.CustomPythonFilterRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
@@ -151,5 +152,10 @@ public class FilterUtils {
 		// add all custom python filter names
 		out.addAll(customPythonFilterRepository.findAll().stream().map(Filter::getFilterName).collect(toList()));
 		return out;
+	}
+	
+	public CustomPythonFilter addPythonFilter(String filterName, String code){
+		CustomPythonFilter toAdd = new CustomPythonFilter(filterName, code);
+		return customPythonFilterRepository.save(toAdd);
 	}
 }
