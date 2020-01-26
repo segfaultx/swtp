@@ -155,6 +155,15 @@ public class PORestriction implements Model {
 		@JsonProperty(value = "free_dual_days", defaultValue = "[]")
 		List<DayOfWeek> freeDualDays;
 		
+		/**
+		 * A getter which will either return the default free day or a {@link DayOfWeek} by semester.
+		 */
+		public DayOfWeek getFreeDayBySemester(Long semester) {
+			if(this.freeDualDays == null || this.freeDualDays.size() <= semester) return this.freeDualDayDefault;
+			DayOfWeek freeDayOfSemester = this.freeDualDays.get(Math.toIntExact(semester - 1));
+			return freeDayOfSemester == null ? this.freeDualDayDefault : freeDayOfSemester;
+		}
+		
 		public void setFreeDualDayDefault(DayOfWeek freeDualDayDefault) {
 			this.freeDualDayDefault = freeDualDayDefault == null ? DayOfWeek.WEDNESDAY : freeDualDayDefault;
 		}

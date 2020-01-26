@@ -88,6 +88,9 @@ public class POUpdateService {
 		if(updatedRestrictions.getByProgressiveRegulation().getIsActive()) {
 			affectedRestrictions.add(RestrictionType.PROGRESSIVE_REGULATION);
 		}
+		if(updatedRestrictions.getDualPO().getIsActive() && !originalRestrictions.getDualPO().equals(updatedRestrictions.getDualPO())) {
+			affectedRestrictions.add(RestrictionType.DUAL);
+		}
 		
 		return affectedRestrictions;
 	}

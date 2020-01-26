@@ -13,7 +13,7 @@ import java.util.ArrayList;
 /**
  * A simple factory with three main creation methods:
  * • {@link #createUser(Roles, TypeOfUsers, String, String, Long)}: returns a new generic {@link User} which accepts any {@link TypeOfUsers},
- * • {@link #createStudent(String, String, Long)}: returns a new {@link User} of {@link TypeOfUsers#STUDENT type STUDENT},
+ * • {@link #createStudent(String, String, Long, Long)}: returns a new {@link User} of {@link TypeOfUsers#STUDENT type STUDENT},
  * • {@link #createLecturer(String, String, Long)}: returns a new {@link User} of {@link TypeOfUsers#LECTURER type LECTURER}
  * • {@link #createLecturerADMIN(String, String, Long)}: returns a new {@link User} of {@link TypeOfUsers#LECTURER type LECTURER}
  */
@@ -25,8 +25,8 @@ public class UserFactory {
 	private final static String EMAIL_BASE = "%s.%s@hs-rm.de";
 	
 	/** @see UserFactory */
-	public User createStudent(@NonNull final String fName, @NonNull final String lName, @NonNull final Long studentNumber) {
-		return createUser(Roles.MEMBER, TypeOfUsers.STUDENT, fName, lName, studentNumber);
+	public User createStudent(@NonNull final String fName, @NonNull final String lName, @NonNull final Long studentNumber, @NonNull final Long currentSemester) {
+		return createUser(Roles.MEMBER, TypeOfUsers.STUDENT, fName, lName, studentNumber, currentSemester);
 	}
 	
 	/** @see UserFactory */
@@ -42,6 +42,13 @@ public class UserFactory {
 	/** @see UserFactory */
 	public User createUser(@NonNull final Roles role, @NonNull final TypeOfUsers typeOfUser, @NonNull final String fName, @NonNull final String lName,
 								  @NonNull final Long id
+								 ) {
+		return createUser(role, typeOfUser, fName, lName, id, 0L);
+	}
+	
+	/** @see UserFactory */
+	public User createUser(@NonNull final Roles role, @NonNull final TypeOfUsers typeOfUser, @NonNull final String fName, @NonNull final String lName,
+								  @NonNull final Long id, @NonNull final Long currentSemester
 								 ) {
 		User user = new User();
 		AuthenticationInformation userAuthInformation = new AuthenticationInformation();
@@ -67,6 +74,7 @@ public class UserFactory {
 		user.setFairness(0);
 		user.setAuthenticationInformation(userAuthInformation);
 		user.setUserType(userType);
+		user.setCurrentSemester(typeOfUser.equals(TypeOfUsers.STUDENT) ? currentSemester : 0L);
 		
 		userType.setUser(user);
 		userAuthInformation.setUser(user);
