@@ -52,7 +52,10 @@ public class AdminRestController {
 	public ResponseEntity<AdminSettings> updateAdminSettings(@RequestBody AdminSettingsRequest adminSettingsRequest, BindingResult bindingResult) throws
 			NotFoundException, ClassNotFoundException {
 		if(bindingResult.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		if(adminSettingsService.updateAdminSettings(adminSettingsRequest.isTradesActive(), adminSettingsRequest.getActiveFilters()))
+		if(adminSettingsService.updateAdminSettings(adminSettingsRequest.isTradesActive(),
+													adminSettingsRequest.getActiveFilters(),
+													adminSettingsRequest.getDateStartTrades(),
+													adminSettingsRequest.getDateEndTrades()))
 			return new ResponseEntity<>(adminSettingsService.getAdminSettings(), HttpStatus.OK);
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}

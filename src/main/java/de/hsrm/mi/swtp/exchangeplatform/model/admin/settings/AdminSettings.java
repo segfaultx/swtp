@@ -1,27 +1,18 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.admin.settings;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.*;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CollisionFilter;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.NoOfferFilter;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.OfferFilter;
-import lombok.*;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.LazyCollection;
 import org.hibernate.annotations.LazyCollectionOption;
 
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -39,6 +30,11 @@ public class AdminSettings {
 	long id;
 	
 	boolean tradesActive = true;
+	
+	LocalDateTime dateStartTrades;
+	
+	LocalDateTime dateEndTrades;
+
 	
 	@ElementCollection
 	@LazyCollection(LazyCollectionOption.FALSE)

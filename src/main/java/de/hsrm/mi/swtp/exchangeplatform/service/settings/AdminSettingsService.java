@@ -18,6 +18,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener.TOPICNAME;
@@ -50,9 +51,13 @@ public class AdminSettingsService {
 	}
 
 	@PreAuthorize("hasRole('ADMIN')")
-	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
+	public boolean updateAdminSettings(boolean tradesActive,
+									   List<String> activeFilters,
+									   LocalDateTime startDateTrades,
+									   LocalDateTime endDateTrades) throws NotFoundException {
 		adminSettings.setTradesActive(tradesActive);
-		
+		adminSettings.setDateStartTrades(startDateTrades);
+		adminSettings.setDateEndTrades(endDateTrades);
 		for(String filter: activeFilters) {
 			if(!filterUtils.filterExists(filter)) {
 				throw new NotFoundException(String.format("Filter with name %s was not found", filter));

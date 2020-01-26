@@ -19,6 +19,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -458,6 +459,8 @@ public class DBInitiator implements ApplicationRunner {
 		adminSettings.setId(1);
 		adminSettings.setActiveFilters(filters);
 		adminSettings.setTradesActive(true);
+		adminSettings.setDateStartTrades(LocalDateTime.now());
+		adminSettings.setDateEndTrades(LocalDateTime.now().plusDays(15));
 		var persistedSettings = adminSettingsRepository.save(adminSettings);
 		adminSettingsService.setAdminSettings(persistedSettings);
 		
