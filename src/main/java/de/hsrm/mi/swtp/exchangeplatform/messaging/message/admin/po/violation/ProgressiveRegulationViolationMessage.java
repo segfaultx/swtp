@@ -1,6 +1,7 @@
-package de.hsrm.mi.swtp.exchangeplatform.messaging.message;
+package de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.MessageType;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
@@ -13,13 +14,13 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Builder
-public class SemesterViolationMessage {
+public class ProgressiveRegulationViolationMessage {
 	
 	@JsonProperty("type")
-	MessageType messageType = MessageType.PO_VIOLATION_SEMESTER;
+	MessageType messageType = MessageType.PO_VIOLATION_PROGRESSIVE_REGULATION;
 	
 	@JsonProperty("message")
-	String message = "Du versößt gegen die PO, mit deiner aktuellen Belegung.";
+	String message = "Du versößt gegen die Fortschrittsregelung, mit deiner aktuellen Belegung.";
 	
 	@JsonProperty("modules_not_allowed")
 	List<Long> modulesNotAllowed;

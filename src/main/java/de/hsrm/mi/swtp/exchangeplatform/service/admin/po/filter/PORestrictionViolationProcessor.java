@@ -1,8 +1,8 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter;
 
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.CPViolationMessage;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.POChangeMessage;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ProgressiveRegulationViolationMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation.CPViolationMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.POChangeMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation.ProgressiveRegulationViolationMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.POMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.ChangedRestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;

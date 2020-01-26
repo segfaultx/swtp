@@ -4,22 +4,22 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.NoTimeslotCapacityException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveTimeslotSuccessfulMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.time.LocalTime;
 
 /**
  * Timeslot service class for manipulationg timeslot data
@@ -31,6 +31,7 @@ import java.time.LocalTime;
 public class TimeslotService {
 
 	TimeslotRepository repository;
+	PersonalMessageSender personalMessageSender;
 	
 	public List<Timeslot> getAll() {
 		return repository.findAll();
@@ -91,6 +92,11 @@ public class TimeslotService {
 			timeslot.getWaitList().remove(nextStudent);
 			timeslot.getAttendees().add(nextStudent);
 		}
+		
+		personalMessageSender.send(student, LeaveTimeslotSuccessfulMessage.builder()
+																	   .timeslot(timeslot)
+																	   .time(LocalTime.now())
+																	   .build());
 		
 		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), timeslot.getId()));
 		return save(timeslot);
@@ -173,7 +179,6 @@ public class TimeslotService {
 	public boolean hoursAreColliding(LocalTime aTimeEnd, LocalTime aTimeStart, LocalTime bTimeEnd, LocalTime bTimeStart){
 		if(aTimeStart.equals(bTimeStart)  || aTimeEnd.equals(bTimeEnd)) return true;
 		if((aTimeStart.isBefore(bTimeEnd) && aTimeStart.isAfter(bTimeStart)) || (bTimeStart.isBefore(aTimeEnd) && bTimeStart.isAfter(aTimeStart))) return true;
-		if((aTimeStart.isBefore(bTimeStart) && aTimeEnd.isBefore(bTimeEnd)) || (bTimeStart.isBefore(aTimeStart) && bTimeEnd.isBefore(aTimeEnd))) return true;
-		return false;
+		return (aTimeStart.isBefore(bTimeStart) && aTimeEnd.isBefore(bTimeEnd)) || (bTimeStart.isBefore(aTimeStart) && bTimeEnd.isBefore(aTimeEnd));
 	}
 }

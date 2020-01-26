@@ -46,6 +46,12 @@ public class TimeslotSerializer extends StdSerializer<Timeslot> {
 		gen.writeStartArray();
 		for(User student: students) gen.writeNumber(student.getStudentNumber());
 		gen.writeEndArray();
+		
+		gen.writeObjectField("waitlist", value.getWaitList()
+											  .stream()
+											  .map(user -> user.getId())
+											  .collect(Collectors.toList()));
+		
 		gen.writeEndObject();
 		
 	}
