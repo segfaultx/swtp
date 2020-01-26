@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.factory;
 
+import com.github.javafaker.Bool;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
@@ -27,32 +28,53 @@ public class TimeslotFactory {
 	@Value("${exchangeplatform.default.timeslot.duration}")
 	Integer DEFAULT_DURATION;
 	
+	@Value("false")
+	Boolean DEFAULT_IS_TRADEABLE;
+	
+	@Value("${exchangeplatform.default.timeslot.group}")
+	String DEFAULT_GROUP_NAME;
+	
 	/** @see TimeslotFactory */
 	public Timeslot createTimeslotPraktikum(final DayOfWeek dayOfWeek,
 												   final Module module,
 												   final LocalTime timeStart,
 												   final Room room) {
-		return createTimeslotPraktikum(dayOfWeek, module, timeStart, timeStart.plusMinutes(DEFAULT_DURATION), room);
+		return createTimeslotPraktikum(dayOfWeek, DEFAULT_IS_TRADEABLE, DEFAULT_GROUP_NAME, module, timeStart, timeStart.plusMinutes(DEFAULT_DURATION), room);
+	}
+	
+	
+	/** @see TimeslotFactory */
+	public Timeslot createTimeslotPraktikum(final DayOfWeek dayOfWeek,
+											final Boolean isTradeable,
+											final String group,
+											final Module module,
+											final LocalTime timeStart,
+											final Room room) {
+		return createTimeslotPraktikum(dayOfWeek, isTradeable, group, module, timeStart, timeStart.plusMinutes(DEFAULT_DURATION), room);
 	}
 	
 	/** @see TimeslotFactory */
 	public Timeslot createTimeslotPraktikum(final DayOfWeek dayOfWeek,
+											       final Boolean isTradeable,
+											       final String group,
 												   final Module module,
 												   final LocalTime timeStart,
 												   final LocalTime timeEnd,
 												   final Room room) {
-		return createTimeslotPraktikum(dayOfWeek, DEFAULT_CAPACITY_PRAKTIKUM, null, module, timeStart, timeEnd, room);
+		return createTimeslotPraktikum(dayOfWeek, isTradeable, group, DEFAULT_CAPACITY_PRAKTIKUM, null, module, timeStart, timeEnd, room);
 	}
 	
 	/** @see TimeslotFactory */
 	public Timeslot createTimeslotPraktikum(final DayOfWeek dayOfWeek,
+											       final Boolean isTradeable,
+											       final String group,
 												   final Integer capacity,
 												   final User lecturer,
 												   final Module module,
 												   final LocalTime timeStart,
 												   final LocalTime timeEnd,
 												   final Room room) {
-		return createTimeslot(TypeOfTimeslots.PRAKTIKUM, dayOfWeek, capacity, lecturer, module, timeStart, timeEnd, room, null);
+		return createTimeslot(TypeOfTimeslots.PRAKTIKUM, isTradeable, group, dayOfWeek, capacity, lecturer, module, timeStart, timeEnd, room, null);
 	}
 	
 	/** @see TimeslotFactory */
@@ -60,27 +82,42 @@ public class TimeslotFactory {
 												   final Module module,
 												   final LocalTime timeStart,
 												   final Room room) {
-		return createTimeslotUebung(dayOfWeek, module, timeStart, timeStart.plusMinutes(DEFAULT_DURATION), room);
+		return createTimeslotUebung(dayOfWeek, DEFAULT_IS_TRADEABLE, DEFAULT_GROUP_NAME, module, timeStart, timeStart.plusMinutes(DEFAULT_DURATION), room);
+	}
+	
+	
+	/** @see TimeslotFactory */
+	public Timeslot createTimeslotUebung(final DayOfWeek dayOfWeek,
+										 			final Boolean isTradeable,
+										 			final String group,
+										 			final Module module,
+										 			final LocalTime timeStart,
+										 			final Room room) {
+		return createTimeslotUebung(dayOfWeek, isTradeable,group, module, timeStart, timeStart.plusMinutes(DEFAULT_DURATION), room);
 	}
 	
 	/** @see TimeslotFactory */
 	public Timeslot createTimeslotUebung(final DayOfWeek dayOfWeek,
+										           final Boolean isTradeable,
+										           final String group,
 												   final Module module,
 												   final LocalTime timeStart,
 												   final LocalTime timeEnd,
 												   final Room room) {
-		return createTimeslotUebung(dayOfWeek, DEFAULT_CAPACITY_UEBUNG, null, module, timeStart, timeEnd, room);
+		return createTimeslotUebung(dayOfWeek, isTradeable, group, DEFAULT_CAPACITY_UEBUNG, null, module, timeStart, timeEnd, room);
 	}
 	
 	/** @see TimeslotFactory */
 	public Timeslot createTimeslotUebung(final DayOfWeek dayOfWeek,
+												   final Boolean isTradeable,
+										           final String group,
 												   final Integer capacity,
 												   final User lecturer,
 												   final Module module,
 												   final LocalTime timeStart,
 												   final LocalTime timeEnd,
 												   final Room room) {
-		return createTimeslot(TypeOfTimeslots.UEBUNG, dayOfWeek, capacity, lecturer, module, timeStart, timeEnd, room, null);
+		return createTimeslot(TypeOfTimeslots.UEBUNG, isTradeable, group, dayOfWeek, capacity, lecturer, module, timeStart, timeEnd, room, null);
 	}
 	
 	/** @see TimeslotFactory */
@@ -108,12 +145,14 @@ public class TimeslotFactory {
 												   final LocalTime timeStart,
 												   final LocalTime timeEnd,
 												   final Room room) {
-		return createTimeslot(TypeOfTimeslots.VORLESUNG, dayOfWeek, capacity, lecturer, module, timeStart, timeEnd, room, null);
+		return createTimeslot(TypeOfTimeslots.VORLESUNG, DEFAULT_IS_TRADEABLE, DEFAULT_GROUP_NAME, dayOfWeek, capacity, lecturer, module, timeStart, timeEnd, room, null);
 	}
 	
 	/** @see TimeslotFactory */
 	public Timeslot createTimeslot(final TypeOfTimeslots type,
-										  final DayOfWeek dayOfWeek,
+										  final Boolean isTradeable,
+								          final String group,
+								          final DayOfWeek dayOfWeek,
 										  final Integer capacity,
 										  final User lecturer,
 										  final Module module,
@@ -122,6 +161,7 @@ public class TimeslotFactory {
 										  final Room room,
 										  final TimeTable timeTable) {
 		Timeslot timeslot = new Timeslot();
+		timeslot.setIsTradeable(isTradeable);
 		timeslot.setTimeSlotType(type);
 		timeslot.setDay(dayOfWeek);
 		timeslot.setCapacity(capacity);
@@ -131,6 +171,7 @@ public class TimeslotFactory {
 		timeslot.setTimeEnd(timeEnd);
 		timeslot.setRoom(room);
 		timeslot.setTimeTable(timeTable);
+		timeslot.setGroup(group);
 		
 		return timeslot;
 	}
