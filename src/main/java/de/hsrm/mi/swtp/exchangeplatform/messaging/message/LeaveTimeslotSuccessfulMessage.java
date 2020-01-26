@@ -3,7 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging.message;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
-import de.hsrm.mi.swtp.exchangeplatform.model.serializer.LeaveModuleSuccessfulMessageSerializer;
+import de.hsrm.mi.swtp.exchangeplatform.model.serializer.LeaveTimeslotSuccessfulMessageSerializer;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,13 +11,13 @@ import java.io.Serializable;
 import java.time.LocalTime;
 
 @Data
-@JsonSerialize(using = LeaveModuleSuccessfulMessageSerializer.class)
+@JsonSerialize(using = LeaveTimeslotSuccessfulMessageSerializer.class)
 public class LeaveTimeslotSuccessfulMessage implements Serializable {
 	
 	@JsonProperty("type")
 	MessageType messageType = MessageType.LEAVE_TIMESLOT_SUCCESS;
 	
-	@JsonProperty(value = "message", defaultValue = "")
+	@JsonProperty(value = "message", defaultValue = "Austritt aus Timeslot war erfolgreich.")
 	String message = "Austritt aus Timeslot %swar erfolgreich.";
 	
 	@JsonProperty(value = "timestamp", defaultValue = "{}")
