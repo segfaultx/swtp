@@ -62,10 +62,4 @@ public class AdminSettings {
 		return this.tradesActive == ((AdminSettings) other).tradesActive
 				&& Arrays.equals(this.activeFilters.toArray(), ((AdminSettings) other).activeFilters.toArray());
 	}
-	
-	public List<String> getAllFilters(){
-		List<String> out = new ArrayList<>();
-		for(Filters filter: Filters.values()) out.add(filter.getStringVal());
-		return out;
-	}
 }
