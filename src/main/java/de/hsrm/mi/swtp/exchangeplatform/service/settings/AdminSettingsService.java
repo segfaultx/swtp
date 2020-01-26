@@ -34,6 +34,7 @@ public class AdminSettingsService {
 	AdminSettings adminSettings;
 	@Autowired
 	FilterUtils filterUtils;
+	@Autowired
 	JmsTemplate jmsTopicTemplate;
 	@Autowired
 	PORestrictionViolationProcessor poRestrictionViolationProcessor;
