@@ -1,9 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveModuleSuccessfulMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
@@ -14,6 +14,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -31,6 +32,7 @@ public class ModuleService {
 	ModuleRepository repository;
 	ModuleLookupService moduleLookupService;
 	TimeslotService timeslotService;
+	PersonalMessageSender sender;
 	
 	public List<Module> getAll() {
 		return repository.findAll();
@@ -67,6 +69,11 @@ public class ModuleService {
 		
 		module.getAttendees().remove(student);
 		this.save(module);
+		
+		sender.send(student, LeaveModuleSuccessfulMessage.builder()
+														 .module(module)
+														 .time(LocalTime.now())
+														 .build());
 	}
 	
 	public void save(Module module) {
