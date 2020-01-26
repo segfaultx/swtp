@@ -24,7 +24,9 @@ public class UserOccupancyViolationSerializer extends StdSerializer<UserOccupanc
 		gen.writeStringField("message", value.getMessage());
 		gen.writeFieldName("value");
 		gen.writeStartObject();
-		gen.writeObjectField("violations", value.getViolations());
+		gen.writeArrayFieldStart("violations");
+		for(Object violation : value.getViolations().values()) gen.writeObject(violation);
+		gen.writeEndArray();
 		gen.writeStringField("student_id", value.getStudent().getAuthenticationInformation().getUsername());
 		gen.writeEndObject();
 		gen.writeEndObject();
