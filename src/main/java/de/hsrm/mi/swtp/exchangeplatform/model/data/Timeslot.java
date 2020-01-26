@@ -46,7 +46,7 @@ public class Timeslot implements Model {
 	
 	TypeOfTimeslots timeSlotType;
 	
-	String group;
+	String practicalGroup;
 	
 	Integer capacity;
 	
