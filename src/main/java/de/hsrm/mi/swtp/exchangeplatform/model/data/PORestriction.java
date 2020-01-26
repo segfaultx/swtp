@@ -2,6 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.model.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.enums.ProgressiveRegulationSpan;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -46,7 +47,7 @@ public class PORestriction implements Model {
 	@ToString(exclude = { "id" })
 	@RequiredArgsConstructor
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public static class PORestrictionByCP implements PORestrictionType {
+	public static class PORestrictionByCP implements isPORestriction, PORestrictionType {
 		@Id
 		@GeneratedValue
 		@Schema(hidden = true)
@@ -68,13 +69,19 @@ public class PORestriction implements Model {
 					   .map(Module::getCreditPoints)
 					   .reduce(0L, Long::sum)+module.getCreditPoints()) <= maxCP;
 		}
+		
+		@Override
+		public boolean isActive() {
+			return this.isActive && maxCP > 0;
+		}
 	}
 
 	@Entity
 	@Data
 	@ToString(exclude = { "id" })
 	@RequiredArgsConstructor
-	public static class PORestrictionBySemester implements PORestrictionType {
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	public static class PORestrictionBySemester implements isPORestriction, PORestrictionType {
 		@Id
 		@GeneratedValue
 		@Schema(hidden = true)
@@ -103,6 +110,11 @@ public class PORestriction implements Model {
 			}
 			return true;
 		}
+		
+		@Override
+		public boolean isActive() {
+			return this.isActive && minSemesters > 0;
+		}
 	}
 
 	@Entity
@@ -110,7 +122,7 @@ public class PORestriction implements Model {
 	@ToString(exclude = { "id" })
 	@RequiredArgsConstructor
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public static class PORestrictionByProgressiveRegulation implements PORestrictionType {
+	public static class PORestrictionByProgressiveRegulation implements isPORestriction, PORestrictionType {
 		@Id
 		@GeneratedValue
 		@Schema(hidden = true)
@@ -121,10 +133,19 @@ public class PORestriction implements Model {
 		@Column(name = "is_active", nullable = false, updatable = true)
 		Boolean isActive = false;
 		
+		@Schema(name = "span_between_semesters", nullable = true, defaultValue = "NONE")
+		@JsonProperty(value = "span_between_semesters", defaultValue = "NONE")
+		ProgressiveRegulationSpan semesterSpan;
+		
 		@Override
 		public boolean canAllocate(User user, Module module) {
 			//TODO: ask whats the difference to restriction by semester + implement method
 			return false;
+		}
+		
+		@Override
+		public boolean isActive() {
+			return this.isActive && !this.semesterSpan.equals(ProgressiveRegulationSpan.NONE);
 		}
 	}
 
@@ -133,7 +154,7 @@ public class PORestriction implements Model {
 	@ToString(exclude = { "id" })
 	@RequiredArgsConstructor
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public static class DualPO implements Comparable<DualPO>, PORestrictionType {
+	public static class DualPO implements Comparable<DualPO>, isPORestriction, PORestrictionType {
 		@Id
 		@GeneratedValue
 		@Schema(hidden = true)
@@ -179,6 +200,11 @@ public class PORestriction implements Model {
 		public boolean canAllocate(User user, Module module) {
 			//TODO: ask how to actually check dualPO restriction and implement method
 			return false;
+		}
+		
+		@Override
+		public boolean isActive() {
+			return this.isActive;
 		}
 	}
 	

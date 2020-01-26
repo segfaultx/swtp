@@ -79,18 +79,21 @@ public class POUpdateService {
 			return Arrays.asList(RestrictionType.values());
 		}
 		
-		if(updatedRestrictions.getByCP().getIsActive() && !originalRestrictions.getByCP().getMaxCP().equals(updatedRestrictions.getByCP())) {
+		if(updatedRestrictions.getByCP().isActive() && !originalRestrictions.getByCP().getMaxCP().equals(updatedRestrictions.getByCP())) {
 			affectedRestrictions.add(RestrictionType.CREDIT_POINTS);
 		}
-		if(updatedRestrictions.getBySemester().getIsActive() && !originalRestrictions.getBySemester().equals(updatedRestrictions.getBySemester())) {
+		if(updatedRestrictions.getBySemester().isActive() && !originalRestrictions.getBySemester().equals(updatedRestrictions.getBySemester())) {
 			affectedRestrictions.add(RestrictionType.MINIMUM_SEMESTER);
 		}
-		if(updatedRestrictions.getByProgressiveRegulation().getIsActive()) {
+		if(updatedRestrictions.getByProgressiveRegulation().isActive() && !originalRestrictions.getByProgressiveRegulation()
+																							  .equals(updatedRestrictions.getByProgressiveRegulation())) {
 			affectedRestrictions.add(RestrictionType.PROGRESSIVE_REGULATION);
 		}
-		if(updatedRestrictions.getDualPO().getIsActive() && !originalRestrictions.getDualPO().equals(updatedRestrictions.getDualPO())) {
+		if(updatedRestrictions.getDualPO().isActive() && !originalRestrictions.getDualPO().equals(updatedRestrictions.getDualPO())) {
 			affectedRestrictions.add(RestrictionType.DUAL);
 		}
+		
+		log.info("--------------------------- AFFECTED: " + affectedRestrictions);
 		
 		return affectedRestrictions;
 	}

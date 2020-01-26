@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.factory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.enums.ProgressiveRegulationSpan;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PORestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,6 +31,8 @@ public class PORestrictionFactory {
 	
 	@Value("${exchangeplatform.default.po.restriction.progressive-reg.active}")
 	Boolean DEFAULT_PROGRESSIVE_ACTIVE;
+	@Value("${exchangeplatform.default.po.restriction.progressive-reg.semester-span}")
+	ProgressiveRegulationSpan DEFAULT_PROGRESSIVE_SEMESTER_SPAN;
 	
 	@Value("${exchangeplatform.default.po.restriction.semester.active}")
 	Boolean DEFAULT_SEMESTER_ACTIVE;
@@ -44,7 +47,7 @@ public class PORestrictionFactory {
 		restriction.setDualPO(restrictionDual(DEFAULT_DUAL_ACTIVE, DayOfWeek.valueOf(DUAL_FREE_DAY)));
 		restriction.setByCP(restrictionCP(DEFAULT_CP_ACTIVE, DEFAULT_CP_MAX));
 		restriction.setBySemester(restrictionSemester(DEFAULT_SEMESTER_ACTIVE, DEFAULT_SEMESTER_MIN));
-		restriction.setByProgressiveRegulation(restrictionProgressiveRegulation(DEFAULT_PROGRESSIVE_ACTIVE));
+		restriction.setByProgressiveRegulation(restrictionProgressiveRegulation(DEFAULT_PROGRESSIVE_ACTIVE, DEFAULT_PROGRESSIVE_SEMESTER_SPAN));
 		return restriction;
 	}
 	
@@ -71,9 +74,10 @@ public class PORestrictionFactory {
 		return bySemester;
 	}
 	
-	private PORestriction.PORestrictionByProgressiveRegulation restrictionProgressiveRegulation(boolean isActive) {
+	private PORestriction.PORestrictionByProgressiveRegulation restrictionProgressiveRegulation(boolean isActive, ProgressiveRegulationSpan regulationSpan) {
 		PORestriction.PORestrictionByProgressiveRegulation byProgressiveRegulation = new PORestriction.PORestrictionByProgressiveRegulation();
 		byProgressiveRegulation.setIsActive(isActive);
+		byProgressiveRegulation.setSemesterSpan(regulationSpan);
 		return byProgressiveRegulation;
 	}
 	

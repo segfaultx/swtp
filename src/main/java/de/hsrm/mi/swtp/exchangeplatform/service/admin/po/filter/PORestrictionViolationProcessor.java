@@ -158,7 +158,7 @@ public class PORestrictionViolationProcessor implements Runnable {
 		if(!restriction.getIsActive()) return;
 		log.info("├┬─→ // RestrictionType.PROGRESSIVE_REGULATION");
 		final Long poSemesterCount = po.getSemesterCount();
-		final Long MIN_PROGRESSIVE_SEMESTER = poSemesterCount.intValue() >= 6 ? 4L : 2;
+		final Long MIN_PROGRESSIVE_SEMESTER = restriction.getSemesterSpan().getSemesterSpan();
 		
 		for(User student : students) {
 			log.info("│├┬→ FILTERING: " + student.getAuthenticationInformation().getUsername());
