@@ -48,6 +48,8 @@ public class Timeslot implements Model {
 	
 	Integer capacity;
 	
+	Boolean	isTradeable;
+	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "MODULE_ID")
 	@Schema(type = "object")

@@ -31,6 +31,8 @@ public class Module implements Model {
 	Long id;
 	
 	String name;
+	String contraction;
+	Long moduleNumber;
 	
 	@Schema(defaultValue = "5", name = "credit_points", nullable = false)
 	@JsonProperty(value = "credit_points", defaultValue = "5")
