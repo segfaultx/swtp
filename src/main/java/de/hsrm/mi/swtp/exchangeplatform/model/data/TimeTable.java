@@ -11,7 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//TODO: javadoc
+/**
+ * @author amatus, mona
+ */
 @Entity
 @Data
 @ToString(exclude = { "timeslots" })

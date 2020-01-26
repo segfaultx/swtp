@@ -46,7 +46,6 @@ public class ModuleLookupService {
 		allModules.forEach(mod -> {if (!allModulesOfStudent.contains(mod)
 				&& restriction.canAllocateModule(usr, mod))
 			potentialModules.add(mod);});
-		//TODO: add active flag to module?
 		var remainingModules = potentialModules
 				.stream()
 				.filter(module -> !module.getTimeslots().isEmpty())

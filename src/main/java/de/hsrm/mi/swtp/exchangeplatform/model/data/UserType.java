@@ -10,7 +10,9 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.*;
 
 
-//TODO: javadoc
+/**
+ * @author Dennis S.
+ */
 @Entity
 @Data
 @ToString(exclude = {"user"})

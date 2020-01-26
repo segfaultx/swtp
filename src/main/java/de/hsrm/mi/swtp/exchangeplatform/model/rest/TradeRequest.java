@@ -5,7 +5,9 @@ import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
 
-//TODO: javadoc
+/**
+ * @author amatus
+ */
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TradeRequest {

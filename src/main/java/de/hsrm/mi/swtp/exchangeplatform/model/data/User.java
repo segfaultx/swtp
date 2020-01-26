@@ -15,7 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-//TODO: javadoc
+/**
+ * @author Dennis S.
+ */
 @Entity
 @Data
 @ToString(exclude = {"authenticationInformation", "userType", "timeslots", "tradeoffers", "modules"})

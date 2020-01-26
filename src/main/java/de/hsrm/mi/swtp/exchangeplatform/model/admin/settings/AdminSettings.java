@@ -17,7 +17,9 @@ import java.util.Arrays;
 import java.util.List;
 
 
-//TODO: javadoc
+/**
+ * @author amatus
+ */
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter

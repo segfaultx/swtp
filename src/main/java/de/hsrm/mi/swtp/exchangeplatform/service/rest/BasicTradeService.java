@@ -12,7 +12,10 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 
-//TODO: javadoc
+/**
+ * Basic Tradeservice implementation
+ * @author amatus, Dennis S.
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor

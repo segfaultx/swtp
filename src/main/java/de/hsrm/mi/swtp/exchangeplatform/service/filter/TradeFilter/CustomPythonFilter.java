@@ -11,6 +11,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.List;
 
+/**
+ * Custom Python Filter entity class
+ * @author amatus
+ */
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
