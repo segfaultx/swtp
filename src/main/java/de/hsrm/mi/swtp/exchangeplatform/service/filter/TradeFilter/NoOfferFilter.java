@@ -17,7 +17,7 @@ public class NoOfferFilter implements Filter {
 	 * @return empty list
 	 */
 	@Override
-    public List<TradeOffer> filter(List<TradeOffer> offers){
+    public List<TradeOffer> doFilter(List<TradeOffer> offers){
         List<TradeOffer> noOfferList = new ArrayList<>();
         /// check if empty
         if(offers == null || offers.isEmpty()){

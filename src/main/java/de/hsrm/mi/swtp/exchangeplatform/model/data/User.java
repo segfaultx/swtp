@@ -14,6 +14,8 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+//TODO: javadoc
 @Entity
 @Data
 @ToString(exclude = {"authenticationInformation", "userType", "timeslots", "tradeoffers", "modules"})

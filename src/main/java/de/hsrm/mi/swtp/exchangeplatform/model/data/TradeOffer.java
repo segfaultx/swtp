@@ -10,6 +10,8 @@ import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 
+
+//TODO: javadoc
 @Entity
 @Data
 @ToString(exclude = { "offerer", "offer", "seek"})

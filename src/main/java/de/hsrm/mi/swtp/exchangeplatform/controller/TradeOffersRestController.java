@@ -1,7 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
@@ -9,7 +9,6 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
-import de.hsrm.mi.swtp.exchangeplatform.service.authentication.JWTTokenUtils;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
@@ -46,11 +45,9 @@ public class TradeOffersRestController {
 	TradeOfferService tradeOfferService;
 	UserService userService;
 	AdminSettingsService adminSettingsService;
-	JWTTokenUtils jwtTokenUtils;
-	PersonalConnectionManager personalConnectionManager;
-	PersonalMessageSender personalMessageSender;
 	TimeslotService timeslotService;
 	TradeOfferRepository tradeOfferRepository;
+	PersonalMessageSender personalMessageSender;
 	
 	/**
 	 * DELETE request handler.
@@ -74,15 +71,12 @@ public class TradeOffersRestController {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("DELETE Request Student: %d TradeOffer: %d", studentId, seekId));
 			
-			User offerer = userService.getById(studentId)
-					.orElseThrow(NotFoundException::new);
+			User offerer = userService.getById(studentId).orElseThrow(NotFoundException::new);
 			
-			Timeslot timeslot = timeslotService.getById(seekId)
-		    		.orElseThrow(NotFoundException::new);
+			Timeslot timeslot = timeslotService.getById(seekId).orElseThrow(NotFoundException::new);
 			
-			TradeOffer tradeOffer =
-					tradeOfferRepository.findByOffererAndSeek(offerer, timeslot);
-					
+			TradeOffer tradeOffer = tradeOfferRepository.findByOffererAndSeek(offerer, timeslot);
+			
 			if(tradeOfferService.deleteTradeOffer(tradeOffer)) {
 				log.info(String.format("DELETE Request successful Student: %d TradeOffer: %d", studentId, seekId));
 				return new ResponseEntity<>(HttpStatus.OK);
@@ -146,37 +140,25 @@ public class TradeOffersRestController {
 							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed trade request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<TimeTable> requestTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws
-			Exception {
+	public ResponseEntity<TimeTable> requestTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
 								  ));
+			
+			User requestingUser = userService.getByUsername(principal.getName()).orElseThrow(NotFoundException::new);
+			
+			Timeslot offeringTimeslot = timeslotService.getById(tradeRequest.getOfferedTimeslotId()).orElseThrow(NotFoundException::new);
+			
+			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId()).orElseThrow(NotFoundException::new);
 
-			User requestingUser = userService.getByUsername(principal.getName())
-					.orElseThrow(NotFoundException::new);
-			
-			Timeslot offeringTimeslot = timeslotService.getById(tradeRequest.getOfferedTimeslotId())
-					.orElseThrow(NotFoundException::new);
-			
-			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId())
-					.orElseThrow(NotFoundException::new);
-			
 			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot);
 			
-			// TODO: check if messaging still works
+			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
+									   TradeOfferSuccessfulMessage.builder().value(tradeRequest.getWantedTimeslotId()).build()
+									  );
+			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + requestingUser.getAuthenticationInformation().getUsername());
 			
-//			personalMessageSender.send(tradeRequest.getOfferedByStudentMatriculationNumber(),
-//									   TradeOfferSuccessfulMessage.builder()
-//																  .value(tradeRequest.getWantedTimeslotId())
-//																  .build());
-//			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + offeringUser.getAuthenticationInformation().getUsername());
-//			personalMessageSender.send(acceptingUser,
-//									   TradeOfferSuccessfulMessage.builder()
-//																  .value(tradeRequest.getOfferedTimeslotId())
-//																  .build());
-//			log.info("TradeOfferSuccessfulMessage: SEND TO USER " + acceptingUser.getAuthenticationInformation().getUsername());
-//
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
 			timetable.setDateEnd(LocalDate.now()); // DIRTY QUICK FIX
@@ -190,11 +172,14 @@ public class TradeOffersRestController {
 	
 	/**
 	 * POST Request handler
-	 *
+	 * <p>
 	 * provides an endpoint to {@link User} admins to force trades
+	 *
 	 * @param tradeRequest object containing transaction information
-	 * @param principal admin principal
+	 * @param principal    admin principal
+	 *
 	 * @return {@link HttpStatus#OK} if success
+	 *
 	 * @throws Exception if failure
 	 */
 	
@@ -204,14 +189,13 @@ public class TradeOffersRestController {
 							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed trade request") })
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity requestAdminTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws
-			Exception {
-		log.info(String.format("Traderequest of admin: %s for timeslot: %d, offer: %d", principal.getName(),
-							   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()));
-		tradeOfferService.adminTrade(tradeRequest.getOfferedByStudentMatriculationNumber(),
-									 tradeRequest.getOfferedTimeslotId(),
-									 tradeRequest.getWantedTimeslotId(),
-									 userService.getByUsername(principal.getName()).orElseThrow().getId());
+	public ResponseEntity requestAdminTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws Exception {
+		log.info(String.format("Traderequest of admin: %s for timeslot: %d, offer: %d", principal.getName(), tradeRequest.getOfferedTimeslotId(),
+							   tradeRequest.getWantedTimeslotId()
+							  ));
+		tradeOfferService.adminTrade(tradeRequest.getOfferedByStudentMatriculationNumber(), tradeRequest.getOfferedTimeslotId(),
+									 tradeRequest.getWantedTimeslotId(), userService.getByUsername(principal.getName()).orElseThrow().getId()
+									);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
@@ -246,7 +230,7 @@ public class TradeOffersRestController {
 	public ResponseEntity<List<TradeOffer>> getAllTradeoffersForTest() {
 		return new ResponseEntity<>(tradeOfferService.getAll(), HttpStatus.OK);
 	}
-
+	
 	@GetMapping("/mytradeoffers")
 	@Operation(description = "get TradeOffers for student", operationId = "getMyTradeOffers")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved tradeoffers"),
@@ -256,6 +240,6 @@ public class TradeOffersRestController {
 	public ResponseEntity<List<TradeOffer>> getMyTradeOffers(Principal principal) throws Exception {
 		log.info(String.format("GET REQUEST TRADEOFFERS FOR Student BY USER: %s", principal.getName()));
 		var out = tradeOfferService.getAllTradeoffersForStudent(userService.getByUsername(principal.getName()).orElseThrow());
-		return new ResponseEntity<List<TradeOffer>>(out, HttpStatus.OK);
+		return new ResponseEntity<>(out, HttpStatus.OK);
 	}
 }

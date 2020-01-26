@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+//TODO: javadoc
 public class TimeslotSerializer extends StdSerializer<Timeslot> {
 	
 	public TimeslotSerializer() {
@@ -31,7 +32,11 @@ public class TimeslotSerializer extends StdSerializer<Timeslot> {
 		gen.writeObjectField("time_start", value.getTimeStart());
 		gen.writeObjectField("time_end", value.getTimeEnd());
 		gen.writeStringField("timeslot_type", value.getTimeSlotType().name());
-		gen.writeNumberField("module", value.getModule().getId());
+		
+		final TimeslotModuleSerializer timeslotModuleSerializer = new TimeslotModuleSerializer();
+		gen.writeFieldName("module");
+		timeslotModuleSerializer.serialize(value.getModule(), gen, provider);
+		
 		gen.writeFieldName("attendees");
 		final List<User> students = value.getAttendees()
 								   .stream()

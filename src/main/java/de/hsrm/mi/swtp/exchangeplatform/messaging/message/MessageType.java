@@ -1,6 +1,8 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.message;
 
 public enum MessageType {
+	//TODO: check if messagetypes are needed, only one being used right now
+	EXCHANGEPLATFORM_STATUS,
 	LOGIN,
 	TRADE_OFFER_SUCCESS,
 	TRADE_OFFER_DENIED,

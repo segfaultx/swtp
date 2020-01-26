@@ -15,7 +15,7 @@ public class FirstComeFilter implements Filter {
 	 * @return unchanged list
 	 */
 	@Override
-	public List<TradeOffer> filter(List<TradeOffer> offers) {
+	public List<TradeOffer> doFilter(List<TradeOffer> offers) {
 		return offers;
 	}
 }

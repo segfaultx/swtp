@@ -6,6 +6,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
+
+//TODO: javadoc
 @Data
 @FieldDefaults(level =  AccessLevel.PRIVATE)
 public class AdminSettingsRequest {

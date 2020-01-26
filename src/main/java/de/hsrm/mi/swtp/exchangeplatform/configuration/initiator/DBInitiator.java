@@ -3,11 +3,8 @@ package de.hsrm.mi.swtp.exchangeplatform.configuration.initiator;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
-import de.hsrm.mi.swtp.exchangeplatform.model.factory.ModuleFactory;
-import de.hsrm.mi.swtp.exchangeplatform.model.factory.RoomFactory;
-import de.hsrm.mi.swtp.exchangeplatform.model.factory.TimeslotFactory;
-import de.hsrm.mi.swtp.exchangeplatform.model.factory.UserFactory;
-import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
+import de.hsrm.mi.swtp.exchangeplatform.model.factory.*;
+import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.RoomRepository;
@@ -26,6 +23,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -33,15 +32,17 @@ import java.util.Random;
 @Component
 public class DBInitiator implements ApplicationRunner {
 	
-	UserRepository userRepository;
-	RoomRepository roomRepository;
-	AdminSettingsService adminSettingsService;
-	AdminSettingsRepository adminSettingsRepository;
-	UserFactory userFactory;
 	ModuleFactory moduleFactory;
+	POFactory poFactory;
+	PORestrictionFactory poRestrictionFactory;
 	RoomFactory roomFactory;
 	TimeslotFactory timeslotFactory;
+	UserFactory userFactory;
+	AdminSettingsRepository adminSettingsRepository;
+	UserRepository userRepository;
+	RoomRepository roomRepository;
 	PORepository poRepository;
+	AdminSettingsService adminSettingsService;
 	
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
@@ -93,46 +94,42 @@ public class DBInitiator implements ApplicationRunner {
 		// END KRECHEL
 		
 		// START PO 2017
-		PORestriction restriction2017 = createRestriction(false);
-		restriction2017.getByCP().setIsActive(true);
-		restriction2017.getByCP().setMaxCP(40L);
-		restriction2017.getByProgressiveRegulation().setIsActive(false);
-		restriction2017.getDualPO().setIsActive(false);
+		PORestriction restriction2017 = poRestrictionFactory.createPO();
+		PO po2017 = poFactory.createPO(LocalDate.now().minusYears(3L), LocalDate.now().minusYears(3L), LocalDate.now().plusYears(3L));
 		
-		PO po2017 = new PO();
-		po2017.setTitle("Medieninformatik PO17");
-		po2017.setMajor("Medieninformatik");
-		po2017.setValidSince(LocalDate.now().minusYears(3L));
-		po2017.setDateEnd(LocalDate.now().plusYears(3L));
+		final List<DayOfWeek> freeDaysPerSemester = IntStream.iterate(0, i -> i < po2017.getSemesterCount(), i -> i + 1)
+													   .mapToObj(i -> DayOfWeek.TUESDAY)
+													   .collect(Collectors.toList());
+		restriction2017.getDualPO().setFreeDualDays(freeDaysPerSemester);
 		po2017.setRestriction(restriction2017);
 		// END PO 2017
 		
 		// START Modul AFS
-		Module afs = moduleFactory.createModule("Automaten und formale Sprachen", po2017, 3L);
+		Module afs = moduleFactory.createModule("Automaten und formale Sprachen", po2017, 3L, true);
 		// END Modul AFS
 		
 		// START Modul CG
-		Module cg = moduleFactory.createModule("Computergrafiken", po2017, 4L);
+		Module cg = moduleFactory.createModule("Computergrafiken", po2017, 4L, false);
 		// END Modul AFS
 		
 		// START Modul Programmieren 3
-		Module prog3 = moduleFactory.createModule("Programmieren 3", po2017, 3L);
+		Module prog3 = moduleFactory.createModule("Programmieren 3", po2017, 3L, true);
 		// END Modul Programmieren 3
 		
 		// START Modul Datenbanksysteme
-		Module dbs = moduleFactory.createModule("Datenbanksysteme", po2017, 3L);
+		Module dbs = moduleFactory.createModule("Datenbanksysteme", po2017, 3L, true);
 		// END Modul Datenbanksysteme
 		
 		// START Modul Algorithmen und Datenstrukturen
-		Module ads = moduleFactory.createModule("Algorithmen und Datenstrukturen", po2017, 3L);
+		Module ads = moduleFactory.createModule("Algorithmen und Datenstrukturen", po2017, 2L, false);
 		// END Modul Algorithmen und Datenstrukturen
 		
 		// START Einführung in die Medieninformatik
-		Module eim = moduleFactory.createModule("Einführung in die Medieninformatik", po2017);
+		Module eim = moduleFactory.createModule("Einführung in die Medieninformatik", po2017, 1L,  true);
 		// END Modul Einführung in die Medieninformatik
 		
 		// START Einführung in die Medieninformatik
-		Module swt = moduleFactory.createModule("Softwaretechnik", po2017, 4L);
+		Module swt = moduleFactory.createModule("Softwaretechnik", po2017, 4L, false);
 		// END Modul Einführung in die Medieninformatik
 		
 		// START ROOM D12
@@ -438,7 +435,6 @@ public class DBInitiator implements ApplicationRunner {
 		
 		List<Module> completedModulesDennis = new ArrayList<>();
 		completedModulesDennis.add(eim);
-		completedModulesDennis.add(prog3);
 		dennis.setCompletedModules(completedModulesDennis);
 		
 	/*	List<Module> completedModulesGandalf = new ArrayList<>();
@@ -466,11 +462,13 @@ public class DBInitiator implements ApplicationRunner {
 		ArrayList<User> students_repo = new ArrayList<>();
 		for(User student : usersToSave) {
 			User student_repo = userRepository.getOne(student.getId());
+			student.setPo(po2017);
 			students_repo.add(student_repo);
 		}
 		po2017_repo.setStudents(students_repo);
 		
 		poRepository.save(po2017_repo);
+		userRepository.saveAll(usersToSave);
 		
 		log.info("Done saving timeTable...");
 	}
@@ -487,7 +485,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		PORestriction.DualPO dualPO = new PORestriction.DualPO();
 		dualPO.setIsActive(isDual);
-		if(isDual) dualPO.setFreeDualDay(DayOfWeek.values()[new Random().nextInt(5)]);
+		if(isDual) dualPO.setFreeDualDayDefault(DayOfWeek.values()[new Random().nextInt(5)]);
 		poRestriction.setDualPO(dualPO);
 		
 		return poRestriction;

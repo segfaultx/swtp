@@ -3,7 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.service.settings;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
-import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
+import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionViolationProcessor;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
@@ -39,9 +39,6 @@ public class AdminSettingsService {
 	ObjectMapper objectMapper;
 	@Autowired
 	PORestrictionViolationProcessor poRestrictionViolationProcessor;
-//	PORestrictionViolationProcessorExecutor poRestrictionViolationProcessorExecutor;
-	@Autowired
-	POService poService;
 
 	/**
 	 *

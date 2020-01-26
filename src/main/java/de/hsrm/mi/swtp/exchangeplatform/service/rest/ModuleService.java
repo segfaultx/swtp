@@ -1,7 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
@@ -17,6 +19,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+/**
+ * A service class for manipulating module data
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,6 +29,7 @@ import java.util.stream.Collectors;
 public class ModuleService {
 	
 	ModuleRepository repository;
+	ModuleLookupService moduleLookupService;
 	TimeslotService timeslotService;
 	
 	public List<Module> getAll() {
@@ -35,27 +41,25 @@ public class ModuleService {
 	}
 	
 	public void addAttendeeToModule(Long moduleId, User student) throws NotFoundException {
-		Module module = this.getById(moduleId)
-				.orElseThrow(NotFoundException::new);
-		
-	
+		Module module = this.getById(moduleId).orElseThrow(NotFoundException::new);
+		// check if student is an attendee
 		if(module.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
 			throw new UserIsAlreadyAttendeeException(student);
 		}
-			
-			module.getAttendees().add(student);
-			this.save(module);
-			log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), moduleId));
+		
+		module.getAttendees().add(student);
+		this.save(module);
+		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), moduleId));
 	}
 	
 	public void removeStudentFromModule(Long moduleId, User student) throws NotFoundException {
-		Module module = this.getById(moduleId)
-							.orElseThrow(NotFoundException::new);
-		
+		Module module = this.getById(moduleId).orElseThrow(NotFoundException::new);
+		// check all timeslots of student and remove those which match with module
 		List<Timeslot> allTimeSlots = new ArrayList<>(module.getTimeslots());
-		for(Timeslot timeslot : allTimeSlots){
-			if(timeslot.getAttendees().contains(student)){
+		for(Timeslot timeslot : allTimeSlots) {
+			if(timeslot.getAttendees().contains(student)) {
+				// remove timeslot from user and vice versa
 				timeslotService.removeAttendeeFromTimeslot(timeslot, student);
 				student.getTimeslots().remove(timeslot);
 			}
@@ -66,10 +70,6 @@ public class ModuleService {
 	}
 	
 	public void save(Module module) {
-		/*if(this.repository.existsById(module.getId())) {
-			log.info(String.format("FAIL: Module %s not created", module));
-			throw new NotCreatedException(module);
-		} */
 		repository.save(module);
 		log.info(String.format("SUCCESS: Module %s created", module));
 	}
@@ -77,6 +77,18 @@ public class ModuleService {
 	public void delete(Module module) throws IllegalArgumentException {
 		repository.delete(module);
 		log.info(String.format("SUCCESS: Module %s deleted", module));
+	}
+	
+	/**
+	 * Method to lookup potential modules for {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} student
+	 * @param user username of student
+	 * @return list of timeslots of potential modules
+	 * @throws NotFoundException if username looup fails
+	 */
+	public List<Timeslot> lookUpAvailableModulesForStudent(User user) throws NotFoundException {
+		log.info(String.format("Looking up modules for Student: %s", user.getAuthenticationInformation().getUsername()));
+		
+		return moduleLookupService.lookUpTimeslotsForStudent(user);
 	}
 	
 	public List<Module> getAllModulesByStudent(final User student) {

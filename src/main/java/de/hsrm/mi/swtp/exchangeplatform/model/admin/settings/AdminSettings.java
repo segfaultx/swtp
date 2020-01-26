@@ -1,5 +1,12 @@
-package de.hsrm.mi.swtp.exchangeplatform.model.settings;
+package de.hsrm.mi.swtp.exchangeplatform.model.admin.settings;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.*;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CollisionFilter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.NoOfferFilter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.OfferFilter;
+import lombok.*;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,6 +22,8 @@ import javax.persistence.Transient;
 import java.util.Arrays;
 import java.util.List;
 
+
+//TODO: javadoc
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Getter
 @Setter

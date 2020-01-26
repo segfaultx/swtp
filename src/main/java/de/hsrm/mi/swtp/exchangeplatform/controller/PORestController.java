@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -62,7 +61,7 @@ public class PORestController {
 							@ApiResponse(responseCode = "403", description = "unauthorized update attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed update request"),
 							@ApiResponse(responseCode = "409", description = "the exchangeplatform is still active. it needs to be inactive before updating any po settings.") })
-	public ResponseEntity<PO> updatePOById(@RequestBody PO po, BindingResult bindingResult) throws NotFoundException, ExchangeplatformStillActiveException {
+	public ResponseEntity<PO> updatePOById(@RequestBody PO po) throws NotFoundException, ExchangeplatformStillActiveException {
 		// will only perform update if changes to restrictions are existent
 		poUpdateService.update(po);
 		return ResponseEntity.ok(poService.getById(po.getId()));

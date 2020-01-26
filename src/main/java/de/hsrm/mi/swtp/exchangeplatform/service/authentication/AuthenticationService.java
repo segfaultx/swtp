@@ -1,7 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.authentication;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Status;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import javax.jms.JMSException;
 import java.util.Optional;
 
+//TODO: javadoc
 @Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -27,7 +28,7 @@ import java.util.Optional;
 public class AuthenticationService implements UserDetailsService {
 	
 	UserService userService;
-	PersonalConnectionManager personalConnectionManager;
+	PersonalQueueManager personalQueueManager;
 	JWTTokenUtils jwtTokenUtil;
 	ActiveTokens activeTokens;
 	
@@ -45,7 +46,7 @@ public class AuthenticationService implements UserDetailsService {
 		
 		JWTResponse response = new JWTResponse(token);
 		
-		ActiveMQQueue personalQueue = personalConnectionManager.createNewConnection(user);
+		ActiveMQQueue personalQueue = personalQueueManager.createPersonalQueue(user);
 		log.info("USER LOGIN: " + authenticationRequest.getUsername());
 		return LoginResponseBody.builder()
 								.tokenResponse(response)
@@ -57,7 +58,7 @@ public class AuthenticationService implements UserDetailsService {
 
 		activeTokens.removeToken(token);
 		
-		boolean isLoggedOut = personalConnectionManager.closeConnection(user);
+		boolean isLoggedOut = personalQueueManager.closeConnection(user);
 		return LogoutResponseBody.builder()
 								 .message(String.format("Logout was %ssuccessful.", isLoggedOut ? "" : "un"))
 								 .status(isLoggedOut ? Status.SUCCESS : Status.FAIL)

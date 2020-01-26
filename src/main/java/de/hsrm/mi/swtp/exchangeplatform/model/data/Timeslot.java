@@ -68,11 +68,12 @@ public class Timeslot implements Model {
 	@JsonBackReference("student-waitlist")
 	List<User> waitList = new ArrayList<>();
 	
+	//TODO: javadoc
 	public void addAttendee(User user) {
 		attendees.add(user);
 		user.getTimeslots().add(this);
 	}
-	
+	//TODO: javadoc
 	public void removeAttendee(User user) {
 		attendees.remove(user);
 		user.getTimeslots().remove(this);
