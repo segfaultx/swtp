@@ -1,10 +1,8 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LoginSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import lombok.AccessLevel;
@@ -62,12 +60,6 @@ public class PersonalQueueManager {
 														 .build();
 		connection.start();
 		personalQueueMap.put(queueName, personalQueue);
-		
-		try {
-			messageProducer.send(session.createTextMessage(objectMapper.writeValueAsString(new LoginSuccessfulMessage())));
-		} catch(JsonProcessingException e) {
-			messageProducer.send(session.createTextMessage(new LoginSuccessfulMessage().getMessage()));
-		}
 		
 		return personalQueue.getPersonalQueue();
 	}
