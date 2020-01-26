@@ -30,15 +30,19 @@ import static java.util.stream.Collectors.toList;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FilterUtils {
 	
-	@NonFinal
 	Map<String, Filter> map;
 	
 	List<Filter> allSystemFilters;
 	
 	CustomPythonFilterRepository customPythonFilterRepository;
 	
+	/**
+	 * Constructor of FilterUtils
+	 * @param allSystemFilters list of system filters
+	 * @param customPythonFilterRepository repository for custom python filters
+	 */
 	@Autowired
-	public FilterUtils(@NotNull List<Filter> allSystemFilters, CustomPythonFilterRepository customPythonFilterRepository){
+	public FilterUtils(@NotNull List<Filter> allSystemFilters, @NotNull CustomPythonFilterRepository customPythonFilterRepository){
 		this.allSystemFilters = allSystemFilters;
 		this.customPythonFilterRepository = customPythonFilterRepository;
 		map = new HashMap<>();
@@ -112,7 +116,6 @@ public class FilterUtils {
 	 * Gets class of Filter by given Name
 	 * @param nameOfFilter name of the Filter class
 	 * @return Class of Filter or null if not present
-	 * @throws ClassNotFoundException if class can not be found in Classpath
 	 */
 	
 	public Filter getFilterByName(String nameOfFilter){
@@ -128,7 +131,7 @@ public class FilterUtils {
 	
 	/**
 	 * Method to update filters of filterUtils
-	 * @param activeFilters
+	 * @param activeFilters list containing the names of filters which should be active
 	 */
 	public void setActiveFilters(List<String> activeFilters){
 		map.clear();
@@ -138,6 +141,10 @@ public class FilterUtils {
 		});
 	}
 	
+	/**
+	 * Method to get all available filters of the system (standard + custom)
+	 * @return list containing the names of all available filters
+	 */
 	public List<String> getAllAvailableFilters(){
 		// add all system filter names
 		List<String> out = allSystemFilters.stream().map(Filter::getFilterName).collect(Collectors.toList());
