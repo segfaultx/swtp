@@ -11,9 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -136,4 +138,11 @@ public class FilterUtils {
 		});
 	}
 	
+	public List<String> getAllAvailableFilters(){
+		// add all system filter names
+		List<String> out = allSystemFilters.stream().map(Filter::getFilterName).collect(Collectors.toList());
+		// add all custom python filter names
+		out.addAll(customPythonFilterRepository.findAll().stream().map(Filter::getFilterName).collect(toList()));
+		return out;
+	}
 }
