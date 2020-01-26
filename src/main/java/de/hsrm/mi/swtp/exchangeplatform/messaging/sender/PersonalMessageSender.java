@@ -4,14 +4,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.UserOccupancyViolation;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
+
+import javax.jms.JMSException;
 
 /**
  * A simple class which will provide methods for sending messages to a specific personal queue of a {@link User}.
@@ -25,6 +30,30 @@ public class PersonalMessageSender {
 	PersonalQueueManager personalQueueManager;
 	JmsTemplate jmsTemplate;
 	ObjectMapper objectMapper;
+	UserService userService;
+	
+	public void send(Long userId, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
+		ActiveMQQueue queue = personalQueueManager.getQueue(userId);
+		if(queue == null){
+			try {
+				queue = personalQueueManager.createQueueForOfflineUser(userService.getById(userId).get());
+			} catch(JMSException e) {
+				return;
+			}
+		}
+		this.send(queue, tradeOfferSuccessfulMessage);
+	}
+	
+	public void send(ActiveMQQueue userQueue, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
+		jmsTemplate.send(userQueue, session -> {
+			try {
+				return session.createTextMessage(objectMapper.writeValueAsString(tradeOfferSuccessfulMessage));
+			} catch(JsonProcessingException e) {
+				e.printStackTrace();
+			}
+			return session.createTextMessage("{}");
+		});
+	}
 	
 	public void send(UserOccupancyViolation userOccupancyViolation) {
 		User student = userOccupancyViolation.getStudent();

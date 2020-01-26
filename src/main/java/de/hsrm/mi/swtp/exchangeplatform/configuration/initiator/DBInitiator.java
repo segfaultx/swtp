@@ -23,6 +23,8 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -94,6 +96,11 @@ public class DBInitiator implements ApplicationRunner {
 		// START PO 2017
 		PORestriction restriction2017 = poRestrictionFactory.createPO();
 		PO po2017 = poFactory.createPO(LocalDate.now().minusYears(3L), LocalDate.now().minusYears(3L), LocalDate.now().plusYears(3L));
+		
+		final List<DayOfWeek> freeDaysPerSemester = IntStream.iterate(0, i -> i < po2017.getSemesterCount(), i -> i + 1)
+													   .mapToObj(i -> DayOfWeek.TUESDAY)
+													   .collect(Collectors.toList());
+		restriction2017.getDualPO().setFreeDualDays(freeDaysPerSemester);
 		po2017.setRestriction(restriction2017);
 		// END PO 2017
 		
@@ -440,16 +447,17 @@ public class DBInitiator implements ApplicationRunner {
 		
 		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
-		AdminSettings adminSettings = new AdminSettings();
 		
 		poRepository.save(po2017);
-		
-		adminSettings.setId(1);
 		List<String> filters = new ArrayList<>();
-		filters.add("COLLISION");
-		//filters.add("CAPACITY");
-		adminSettings.updateAdminSettings(true, filters);
-		
+		filters.add("CollisionFilter");
+		filters.add("OfferFilter");
+		filters.add("NoOfferFilter");
+		filters.add("CapacityFilter");
+		AdminSettings adminSettings = new AdminSettings();
+		adminSettings.setId(1);
+		adminSettings.setActiveFilters(filters);
+		adminSettings.setTradesActive(true);
 		var persistedSettings = adminSettingsRepository.save(adminSettings);
 		adminSettingsService.setAdminSettings(persistedSettings);
 		
@@ -480,7 +488,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		PORestriction.DualPO dualPO = new PORestriction.DualPO();
 		dualPO.setIsActive(isDual);
-		if(isDual) dualPO.setFreeDualDay(DayOfWeek.values()[new Random().nextInt(5)]);
+		if(isDual) dualPO.setFreeDualDayDefault(DayOfWeek.values()[new Random().nextInt(5)]);
 		poRestriction.setDualPO(dualPO);
 		
 		return poRestriction;

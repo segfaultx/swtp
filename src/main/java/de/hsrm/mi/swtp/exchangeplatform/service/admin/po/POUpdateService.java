@@ -58,10 +58,12 @@ public class POUpdateService {
 			throw new OriginalRestrictionIsNullException();
 		}
 		
-		return !(originalRestrictions.getByCP().equals(updatedRestrictions.getByCP()) && originalRestrictions.getByProgressiveRegulation()
-																											 .equals(updatedRestrictions.getByProgressiveRegulation()) && originalRestrictions
-				.getBySemester()
-				.equals(updatedRestrictions.getBySemester()) && originalRestrictions.getDualPO().equals(updatedRestrictions.getDualPO()));
+		boolean cpDiffer = originalRestrictions.getByCP().equals(updatedRestrictions.getByCP());
+		boolean semesterDiffer = originalRestrictions.getBySemester().equals(updatedRestrictions.getBySemester());
+		boolean progressiveRegDiffer = originalRestrictions.getByProgressiveRegulation().equals(updatedRestrictions.getByProgressiveRegulation());
+		boolean dualDiffer = originalRestrictions.getDualPO().equals(updatedRestrictions.getDualPO());
+		
+		return !(cpDiffer || semesterDiffer || progressiveRegDiffer || dualDiffer);
 	}
 	
 	//TODO: javadoc
@@ -74,12 +76,10 @@ public class POUpdateService {
 			return Arrays.asList(RestrictionType.values());
 		}
 		
-		if(updatedRestrictions.getByCP().getIsActive()
-				&& !originalRestrictions.getByCP().getMaxCP().equals(updatedRestrictions.getByCP())) {
+		if(updatedRestrictions.getByCP().getIsActive() && !originalRestrictions.getByCP().getMaxCP().equals(updatedRestrictions.getByCP())) {
 			affectedRestrictions.add(RestrictionType.CREDIT_POINTS);
 		}
-		if(originalRestrictions.getBySemester().getIsActive()
-				&& originalRestrictions.getBySemester().equals(updatedRestrictions.getBySemester())) {
+		if(originalRestrictions.getBySemester().getIsActive() && !originalRestrictions.getBySemester().equals(updatedRestrictions.getBySemester())) {
 			affectedRestrictions.add(RestrictionType.MINIMUM_SEMESTER);
 		}
 		if(updatedRestrictions.getByProgressiveRegulation().getIsActive()) {

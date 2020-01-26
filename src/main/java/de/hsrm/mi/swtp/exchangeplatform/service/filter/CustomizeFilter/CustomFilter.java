@@ -19,7 +19,7 @@ public class CustomFilter {
 	TradeOffer applyFilter(List<Filter> filter, List<TradeOffer> offers){
 		///iterate over the given filters
 		for(Filter subFilter : filter){
-			offers = subFilter.filter(offers);
+			offers = subFilter.doFilter(offers);
 		}
 		/// the first entry of the sorted TradeOffer list
 		return offers.get(0);

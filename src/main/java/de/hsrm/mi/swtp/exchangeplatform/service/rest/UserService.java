@@ -19,7 +19,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 
-//TODO: javadoc
+/**
+ * User service class for manipulating user data
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

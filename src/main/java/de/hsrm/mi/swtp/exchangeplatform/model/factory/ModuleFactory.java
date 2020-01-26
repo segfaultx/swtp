@@ -23,6 +23,8 @@ public class ModuleFactory {
 	@Value("${exchangeplatform.default.module.credit-points}")
 	Long DEFAULT_CREDIT_POINTS;
 	
+	boolean DEFAULT_ACTIVE = false;
+	
 	/** @see ModuleFactory */
 	public Module createModule(final String name,
 									  final PO po) {
@@ -44,6 +46,24 @@ public class ModuleFactory {
 									  final Long creditPoints) {
 		return createModule(name, lecturer, po, semester, creditPoints, new ArrayList<>(), new ArrayList<>());
 	}
+	/** @see ModuleFactory */
+	public Module createModule(final String name,
+							   final User lecturer,
+							   final PO po,
+							   final Long semester,
+							   final Long creditPoints,
+							   @NonNull final List<User> attendees,
+							   @NonNull final List<Timeslot> timeslots) {
+
+		return createModule(name, lecturer, po, semester, creditPoints, attendees, timeslots, DEFAULT_ACTIVE);
+	}
+	public Module createModule(final String name,
+							   final PO po,
+							   final Long semester,
+							   final boolean isActive){
+		return createModule(name, null, po ,semester, DEFAULT_CREDIT_POINTS, new ArrayList<>(), new ArrayList<>(), isActive);
+	}
+	
 	
 	/** @see ModuleFactory */
 	public Module createModule(final String name,
@@ -52,7 +72,8 @@ public class ModuleFactory {
 									  final Long semester,
 									  final Long creditPoints,
 									  @NonNull final List<User> attendees,
-									  @NonNull final List<Timeslot> timeslots) {
+									  @NonNull final List<Timeslot> timeslots,
+							          final boolean isActive) {
 		Module module = new Module();
 		module.setName(name);
 		module.setLecturer(lecturer);
@@ -61,8 +82,11 @@ public class ModuleFactory {
 		module.setCreditPoints(creditPoints);
 		module.setAttendees(attendees);
 		module.setTimeslots(timeslots);
+		module.setIsActive(isActive);
 		
 		return module;
 	}
+
+	
 	
 }
