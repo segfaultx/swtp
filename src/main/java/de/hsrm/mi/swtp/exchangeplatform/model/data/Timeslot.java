@@ -50,7 +50,7 @@ public class Timeslot implements Model {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "MODULE_ID")
-	@Schema(type = "integer", format = "int64")
+	@Schema(type = "object")
 	@JsonBackReference("module-timeslots")
 	Module module;
 	
@@ -68,12 +68,19 @@ public class Timeslot implements Model {
 	@JsonBackReference("student-waitlist")
 	List<User> waitList = new ArrayList<>();
 	
-	//TODO: javadoc
+	/**
+	 * Method to add a user to this timeslot
+	 * @param user user to add
+	 */
 	public void addAttendee(User user) {
 		attendees.add(user);
 		user.getTimeslots().add(this);
 	}
-	//TODO: javadoc
+	
+	/**
+	 * Method to remove a user from this timeslot
+	 * @param user user to remove
+	 */
 	public void removeAttendee(User user) {
 		attendees.remove(user);
 		user.getTimeslots().remove(this);

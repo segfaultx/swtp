@@ -17,7 +17,7 @@ import java.util.List;
 
 @Entity
 @Data
-@ToString(exclude = { "modules", "students" })
+@ToString(exclude = { "modules", "students", "restriction" })
 @Table(name = "po")
 @Schema(name = "PO", description = "A PO is a PO is a PO is a PO.")
 @RequiredArgsConstructor

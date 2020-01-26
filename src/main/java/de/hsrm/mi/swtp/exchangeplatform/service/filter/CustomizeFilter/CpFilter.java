@@ -2,6 +2,8 @@ package de.hsrm.mi.swtp.exchangeplatform.service.filter.CustomizeFilter;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
 import java.util.Comparator;
 import java.util.List;
@@ -9,8 +11,10 @@ import java.util.List;
 /**
  * Implements a filter based on student cp
  */
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CpFilter implements Filter
 {
+	String filterName = "CpFilter";
 	/**
 	 * sorted Tradeoffer list based on the amount of cps the students have
 	 * @param offers List of tradeoffers which includes data on students cps
@@ -37,5 +41,10 @@ public class CpFilter implements Filter
 		});
 		
 		return offers;
+	}
+	
+	@Override
+	public String getFilterName() {
+		return filterName;
 	}
 }

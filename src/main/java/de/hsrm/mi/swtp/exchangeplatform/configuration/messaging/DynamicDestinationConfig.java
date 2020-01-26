@@ -77,4 +77,17 @@ public class DynamicDestinationConfig {
 		return tradeOfferConnection;
 	}
 	
+	@Bean(name = "poConnection")
+	public TopicConnection poConnection() throws JMSException {
+		log.info(connectionFactory.getBrokerURL());
+		TopicConnection poConnection =  connectionFactory.createTopicConnection();
+		connectionFactory.setExceptionListener(exception -> {
+			log.info(String.format("Exception in \"poConnection\": %s", exception.getErrorCode()));
+			exception.printStackTrace();
+		});
+		log.info("Created tradeOfferConnection: ", poConnection.toString());
+		poConnection.start();
+		return poConnection;
+	}
+	
 }

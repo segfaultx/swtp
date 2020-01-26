@@ -19,6 +19,7 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -447,22 +448,25 @@ public class DBInitiator implements ApplicationRunner {
 		
 		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
-		AdminSettings adminSettings = new AdminSettings();
 		
-		poRepository.save(po2017);
-		
-		adminSettings.setId(1);
+		PO po2017_repo = poRepository.save(po2017);
 		List<String> filters = new ArrayList<>();
-		filters.add("COLLISION");
-		//filters.add("CAPACITY");
-		adminSettings.updateAdminSettings(true, filters);
-		
+		filters.add("CollisionFilter");
+		filters.add("OfferFilter");
+		filters.add("NoOfferFilter");
+		filters.add("CapacityFilter");
+		AdminSettings adminSettings = new AdminSettings();
+		adminSettings.setId(1);
+		adminSettings.setActiveFilters(filters);
+		adminSettings.setTradesActive(true);
+		adminSettings.setDateStartTrades(LocalDateTime.now());
+		adminSettings.setDateEndTrades(LocalDateTime.now().plusDays(15));
 		var persistedSettings = adminSettingsRepository.save(adminSettings);
 		adminSettingsService.setAdminSettings(persistedSettings);
 		
 		log.info("--> users " + usersToSave);
 		
-		PO po2017_repo = poRepository.findByTitleIs(po2017.getTitle());
+//		poRepository.findByTitleIs(po2017.getTitle());
 		ArrayList<User> students_repo = new ArrayList<>();
 		for(User student : usersToSave) {
 			User student_repo = userRepository.getOne(student.getId());

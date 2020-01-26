@@ -1,6 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter;
 
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.CPViolationMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.POChangeMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ProgressiveRegulationViolationMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.POMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.ChangedRestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
@@ -35,12 +38,17 @@ public class PORestrictionViolationProcessor implements Runnable {
 	UserRepository userRepository;
 	ModuleRepository moduleRepository;
 	PORestrictionViolationService poRestrictionViolationService;
+	POMessageSender poMessageSender;
 	
 	public void startProcessing() {
 		List<ChangedRestriction> changedRestrictions = poUpdateService.getAllChangedPOs();
 		log.info("┌ STARTED PROCESSING VIOLATIONS OF CHANGED PO-RESTRICTIONS: " + changedRestrictions);
 		int filterActionsTakenTotal = 0;
 		for(ChangedRestriction changedRestriction : changedRestrictions) {
+			poMessageSender.send(changedRestriction.getUpdatedPO(), POChangeMessage.builder()
+													.po(changedRestriction.getUpdatedPO())
+													.build());
+			
 			int filterActionsTaken = 0;
 			log.info("├┬ STARTED PROCESSING OF VIOLATIONS");
 			final List<User> students = userService.getAllByPO(changedRestriction.getUpdatedPO());
@@ -80,7 +88,12 @@ public class PORestrictionViolationProcessor implements Runnable {
 			if(userCp >= maxCp) {
 				log.info(student.getAuthenticationInformation().getUsername() + " => VIOLATION DETECTED:filterByCP ======== ");
 				log.info(student.getAuthenticationInformation().getUsername() + " => // TOO MANY CP - more than " + maxCp);
-				poRestrictionViolationService.addViolation(student, RestrictionType.CREDIT_POINTS, userCp);
+				final CPViolationMessage message;
+				message = CPViolationMessage.builder()
+											.maxCPByPO(maxCp)
+											.userCP(userCp)
+											.build();
+				poRestrictionViolationService.addViolation(student, RestrictionType.CREDIT_POINTS, message);
 			} else log.info(" // CAN HAVE MORE - has " + userCp);
 		}
 	}

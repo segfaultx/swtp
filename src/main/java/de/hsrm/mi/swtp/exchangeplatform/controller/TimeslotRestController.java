@@ -5,7 +5,9 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TimeslotRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,6 +31,9 @@ import javax.jms.Message;
 import javax.jms.ObjectMessage;
 import javax.jms.Session;
 
+import java.security.Principal;
+import java.util.List;
+
 /**
  * A simple rest-controller which will handle any rest calls concerning {@link Timeslot Appointments}.
  * Its base url is {@code '/api/v1/timeslot'}.
@@ -47,6 +52,7 @@ public class TimeslotRestController {
 	UserService userService;
 	TimeslotTopicManager timeslotTopicManager;
 	JmsTemplate jmsTemplate;
+	UserRepository userRepository;
 
 	/**
 	 * GET request handler.
@@ -232,5 +238,30 @@ public class TimeslotRestController {
 		
 		return ResponseEntity.ok(timeslot);
 	}
-
+	
+	
+	/**
+	 * GET request handler.
+	 * Will handle any request GET request to {@code '/api/v1/timeslot/suggestedTimeslots/<timeslotid>/<studentid>'}.
+	 * @param timeslotID the ID of an {@link Timeslot}.
+	 * @param studentID the ID of an {@link User}.
+	 * @return {@link HttpStatus#OK} and a requested List of suggested {@link Timeslot} instances, if student has no collisions with own {@link TimeTable} Otherwise will return {@link HttpStatus#BAD_REQUEST}
+	 * @throws NotFoundException if user doesn't exist in repository
+	 */
+	@GetMapping("/suggestedTimeslots/{timeslotid}/{studentid}")
+	@Operation(description = "get suggested timeslots per Module for student", operationId = "getSuggestedTimeslots")
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "successfully fetched suggested timeslots for student"),
+			@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
+			@ApiResponse(responseCode = "404", description = "unkown timeslot id"),
+			@ApiResponse(responseCode = "400", description = "bad request")})
+	@PreAuthorize("hasRole('MEMBER')")
+	public ResponseEntity<List<Timeslot>> getSuggestedTimetableForStudent(@PathVariable("timeslotid") Long timeslotID,
+																	 @PathVariable("studentid") Long studentID) throws NotFoundException {
+		log.info(String.format("GET REQUEST: getSuggestedTimeslotsForStudent, by user: %s, for timeslotid: %d", studentID, timeslotID));
+		var user = userRepository.findById(studentID).orElseThrow(NotFoundException::new);
+		var potentialTimeTable = timeslotService.getSuggestedTimeslots(timeslotID, user);
+		return new ResponseEntity<>(potentialTimeTable, HttpStatus.OK);
+	}
+	
 }
