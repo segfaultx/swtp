@@ -16,13 +16,13 @@ public class FairnessFilter implements Filter {
 	 * @return sorted list of TradeOffers
 	 */
 	@Override
-	public List<TradeOffer> filter(List<TradeOffer> offers) {
+	public List<TradeOffer> doFilter(List<TradeOffer> offers) {
 		/// sort by comparing the offeres "fairness points"
 		offers.sort(new Comparator<TradeOffer>() {
 			@Override
 			public int compare(TradeOffer o1, TradeOffer o2) {
-				int offer_fp_1 = o1.getOfferer().getFairness();
-				int offer_fp_2 = o2.getOfferer().getFairness();
+				int offer_fp_1 = o1.getSeeker().getFairness();
+				int offer_fp_2 = o2.getSeeker().getFairness();
 				if (offer_fp_1 == offer_fp_2) {
 					return 0;
 				} else if (offer_fp_1 == 0) {

@@ -8,19 +8,23 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 
 import java.io.IOException;
 
-public class ModuleSerializer extends StdSerializer<Module> {
+/**
+ * A custom serializer for serialzing a {@link Module} within a {@link Timeslot}.
+ * This serializer differs from the {@link ModuleSerializer} in the sense that this serialzer represents a {@link Module modules} timeslots by their ids
+ * instead of using the full object - which is to prevent a loop via Timeslot -> Modules -> Timeslots -> Module ...
+ */
+public class TimeslotModuleSerializer extends StdSerializer<Module> {
 	
-	public ModuleSerializer() {
+	public TimeslotModuleSerializer() {
 		this(null);
 	}
 	
-	public ModuleSerializer(Class<Module> t) {
+	public TimeslotModuleSerializer(Class<Module> t) {
 		super(t);
 	}
 	
 	@Override
 	public void serialize(Module value, JsonGenerator gen, SerializerProvider provider) throws IOException {
-		
 		gen.writeStartObject();
 		gen.writeNumberField("id", value.getId());
 		gen.writeStringField("name", value.getName());
@@ -31,13 +35,7 @@ public class ModuleSerializer extends StdSerializer<Module> {
 		if(value.getTimeslots() != null){
 			gen.writeFieldName("timeslots");
 			gen.writeStartArray();
-			for(Timeslot t: value.getTimeslots()) {
-				Module m = t.getModule();
-				m.setTimeslots(null);
-				Timeslot t_m = t;
-				t_m.setModule(m);
-				gen.writeObject(t_m);
-			}
+			for(Timeslot t: value.getTimeslots()) gen.writeNumber(t.getId());
 			gen.writeEndArray();
 		}
 		

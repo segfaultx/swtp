@@ -105,31 +105,31 @@ public class DBInitiator implements ApplicationRunner {
 		// END PO 2017
 		
 		// START Modul AFS
-		Module afs = moduleFactory.createModule("Automaten und formale Sprachen", po2017, 3L);
+		Module afs = moduleFactory.createModule("Automaten und formale Sprachen", po2017, 3L, true);
 		// END Modul AFS
 		
 		// START Modul CG
-		Module cg = moduleFactory.createModule("Computergrafiken", po2017, 4L);
+		Module cg = moduleFactory.createModule("Computergrafiken", po2017, 4L, false);
 		// END Modul AFS
 		
 		// START Modul Programmieren 3
-		Module prog3 = moduleFactory.createModule("Programmieren 3", po2017, 3L);
+		Module prog3 = moduleFactory.createModule("Programmieren 3", po2017, 3L, true);
 		// END Modul Programmieren 3
 		
 		// START Modul Datenbanksysteme
-		Module dbs = moduleFactory.createModule("Datenbanksysteme", po2017, 3L);
+		Module dbs = moduleFactory.createModule("Datenbanksysteme", po2017, 3L, true);
 		// END Modul Datenbanksysteme
 		
 		// START Modul Algorithmen und Datenstrukturen
-		Module ads = moduleFactory.createModule("Algorithmen und Datenstrukturen", po2017, 3L);
+		Module ads = moduleFactory.createModule("Algorithmen und Datenstrukturen", po2017, 2L, false);
 		// END Modul Algorithmen und Datenstrukturen
 		
 		// START Einführung in die Medieninformatik
-		Module eim = moduleFactory.createModule("Einführung in die Medieninformatik", po2017);
+		Module eim = moduleFactory.createModule("Einführung in die Medieninformatik", po2017, 1L,  true);
 		// END Modul Einführung in die Medieninformatik
 		
 		// START Einführung in die Medieninformatik
-		Module swt = moduleFactory.createModule("Softwaretechnik", po2017, 4L);
+		Module swt = moduleFactory.createModule("Softwaretechnik", po2017, 4L, false);
 		// END Modul Einführung in die Medieninformatik
 		
 		// START ROOM D12
@@ -434,8 +434,7 @@ public class DBInitiator implements ApplicationRunner {
 		// END TRADEOFFER JOENDHARD
 		
 		List<Module> completedModulesDennis = new ArrayList<>();
-//		completedModulesDennis.add(eim);
-//		completedModulesDennis.add(prog3);
+		completedModulesDennis.add(eim);
 		dennis.setCompletedModules(completedModulesDennis);
 		
 	/*	List<Module> completedModulesGandalf = new ArrayList<>();
@@ -466,11 +465,13 @@ public class DBInitiator implements ApplicationRunner {
 		ArrayList<User> students_repo = new ArrayList<>();
 		for(User student : usersToSave) {
 			User student_repo = userRepository.getOne(student.getId());
+			student.setPo(po2017);
 			students_repo.add(student_repo);
 		}
 		po2017_repo.setStudents(students_repo);
 		
 		poRepository.save(po2017_repo);
+		userRepository.saveAll(usersToSave);
 		
 		log.info("Done saving timeTable...");
 	}

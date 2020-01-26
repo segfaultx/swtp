@@ -12,6 +12,8 @@ import lombok.ToString;
 import javax.persistence.*;
 import java.util.List;
 
+import static java.util.stream.Collectors.groupingBy;
+
 @Entity
 @Data
 @RequiredArgsConstructor
@@ -56,6 +58,14 @@ public class PORestriction implements Model {
 		@Schema(name = "max_credit_points", defaultValue = "0", nullable = true, description = "The maximum amount of CPs a student may cover.")
 		@JsonProperty(value = "max_credit_points", defaultValue = "0")
 		Long maxCP = 0L;
+		
+		@Override
+		public boolean canAllocate(User user, Module module) {
+			return (user.getCompletedModules()
+					   .stream()
+					   .map(Module::getCreditPoints)
+					   .reduce(0L, Long::sum)+module.getCreditPoints()) <= maxCP;
+		}
 	}
 
 	@Entity
@@ -77,6 +87,20 @@ public class PORestriction implements Model {
 		@Column(nullable = false, name = "min_semesters")
 		@JsonProperty(value = "min_semesters", defaultValue = "0")
 		Long minSemesters = 0L;
+		
+		@Override
+		public boolean canAllocate(User user, Module module) {
+			var po = user.getPo();
+			// get all modules of PO per semester
+			var modulesPerSemesterMap = po.getModules().stream().collect(groupingBy(Module::getSemester));
+			// get all completed modules of student per semester
+			var modsPerSemesterStudMap = user.getCompletedModules().stream().collect(groupingBy(Module::getSemester));
+			for(long i = 1L; i < minSemesters; i++) {
+				// if student didnt complete all modules up to given semester -> return false
+				if (!modulesPerSemesterMap.get(i).equals(modsPerSemesterStudMap.get(i))) return false;
+			}
+			return true;
+		}
 	}
 
 	@Entity
@@ -94,6 +118,12 @@ public class PORestriction implements Model {
 		@Schema(name = "is_active", defaultValue = "false", required = true, nullable = false)
 		@Column(name = "is_active", nullable = false, updatable = true)
 		Boolean isActive = false;
+		
+		@Override
+		public boolean canAllocate(User user, Module module) {
+			//TODO: ask whats the difference to restriction by semester + implement method
+			return false;
+		}
 	}
 
 	@Entity
@@ -101,7 +131,7 @@ public class PORestriction implements Model {
 	@ToString(exclude = { "id" })
 	@RequiredArgsConstructor
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	public static class DualPO implements Comparable<DualPO> {
+	public static class DualPO implements Comparable<DualPO>, PORestrictionType {
 		@Id
 		@GeneratedValue
 		@Schema(hidden = true)
@@ -136,6 +166,22 @@ public class PORestriction implements Model {
 			String str2 = String.format("%s-%s-%s", dualPO.getId(), dualPO.getIsActive(), dualPO.getFreeDualDayDefault());
 			return str1.compareToIgnoreCase(str2);
 		}
+		
+		@Override
+		public boolean canAllocate(User user, Module module) {
+			//TODO: ask how to actually check dualPO restriction and implement method
+			return false;
+		}
+	}
+	private PORestrictionType getActiveRestriction(){
+		if (this.byCP.isActive) return byCP;
+		if (this.byProgressiveRegulation.isActive) return byProgressiveRegulation;
+		if (this.bySemester.isActive) return bySemester;
+		if (this.dualPO.isActive) return dualPO;
+		throw new RuntimeException("No active PO - shouldn't be the case");
+	}
+	public boolean canAllocateModule(User user, Module module){
+		return getActiveRestriction().canAllocate(user, module);
 	}
 
 }
