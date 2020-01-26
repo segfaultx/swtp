@@ -1,8 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter;
 
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation.CPViolationMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.POChangeMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation.CPViolationMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation.ProgressiveRegulationViolationMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation.SemesterViolationMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.POMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.ChangedRestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
@@ -52,18 +53,18 @@ public class PORestrictionViolationProcessor implements Runnable {
 			int filterActionsTaken = 0;
 			log.info("├┬ STARTED PROCESSING OF VIOLATIONS");
 			final List<User> students = userService.getAllByPO(changedRestriction.getUpdatedPO());
-			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.CREDIT_POINTS)) {
-				filterByCP(changedRestriction.getUpdatedPO().getRestriction().getByCP(), students);
-				filterActionsTaken++;
-			}
-			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.MINIMUM_SEMESTER)) {
-				filterBySemester(changedRestriction.getUpdatedPO().getRestriction().getBySemester(), students);
-				filterActionsTaken++;
-			}
-			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.PROGRESSIVE_REGULATION)) {
-				filterByProgressiveRegulation(changedRestriction.getUpdatedPO(), students);
-				filterActionsTaken++;
-			}
+//			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.CREDIT_POINTS)) {
+//				filterByCP(changedRestriction.getUpdatedPO().getRestriction().getByCP(), students);
+//				filterActionsTaken++;
+//			}
+//			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.MINIMUM_SEMESTER)) {
+//				filterBySemester(changedRestriction.getUpdatedPO().getRestriction().getBySemester(), students);
+//				filterActionsTaken++;
+//			}
+//			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.PROGRESSIVE_REGULATION)) {
+//				filterByProgressiveRegulation(changedRestriction.getUpdatedPO(), students);
+//				filterActionsTaken++;
+//			}
 			if(changedRestriction.getChangedRestrictions().contains(RestrictionType.DUAL)) {
 				filterByDual(changedRestriction.getUpdatedPO().getRestriction().getDualPO(), students);
 				filterActionsTaken++;
@@ -109,6 +110,9 @@ public class PORestrictionViolationProcessor implements Runnable {
 			log.info(student.getAuthenticationInformation().getUsername() + " => // FILTERING: " + student.getAuthenticationInformation().getUsername());
 			
 			final List<Module> userModules = moduleService.getAllModulesByStudent(student);
+			final List<Long> userModulesIds = userModules.stream()
+														 .map(Module::getId)
+														 .collect(Collectors.toList());
 			final List<Module> modulesOccupiedAboveMinSemester = userModules.stream()
 																			.filter(module -> module.getSemester() > minSemester)
 																			.collect(Collectors.toList());
@@ -134,8 +138,22 @@ public class PORestrictionViolationProcessor implements Runnable {
 				}
 			}
 			log.info(student.getAuthenticationInformation().getUsername() + " => VIOLATION DETECTED:filterBySemester ======== ");
-			poRestrictionViolationService.addViolation(student, RestrictionType.MINIMUM_SEMESTER, minSemester);
 			
+			final SemesterViolationMessage message;
+			message = SemesterViolationMessage.builder()
+											  .poSemester(minSemester)
+											  .missingModules(exptctedModulesIds
+																	  .stream()
+																	  .filter(id -> !userModulesIds.contains(id))
+																	  .collect(Collectors.toList()))
+											  .modulesNotAllowed(modulesOccupiedAboveMinSemester.stream()
+																								.map(Module::getId)
+																								.collect(Collectors.toList()))
+											  .build();
+			log.info(student.getAuthenticationInformation().getUsername() + " => VIOLATION DETECTED:filterBySemester ======== ");
+			poRestrictionViolationService.addViolation(student,
+													   RestrictionType.MINIMUM_SEMESTER,
+													   message);
 		}
 	}
 	
@@ -195,17 +213,11 @@ public class PORestrictionViolationProcessor implements Runnable {
 	public void filterByDual(final PORestriction.DualPO restriction, final List<User> students) {
 		if(!restriction.getIsActive()) return;
 		log.info(" // RestrictionType.DUAL");
-//		final Long maxCp = restriction.getMaxCP();
+		
 		for(User student : students) {
 			log.info(" // FILTERING: " + student.getAuthenticationInformation().getUsername());
 			
 			
-			
-//			if(userCp >= maxCp) {
-//				log.info(student.getAuthenticationInformation().getUsername() + " => VIOLATION DETECTED:filterByCP ======== ");
-//				log.info(student.getAuthenticationInformation().getUsername() + " => // TOO MANY CP - more than " + maxCp);
-//				poRestrictionViolationService.addViolation(student, RestrictionType.CREDIT_POINTS, userCp);
-//			} else log.info(" // CAN HAVE MORE - has " + userCp);
 		}
 	}
 	
