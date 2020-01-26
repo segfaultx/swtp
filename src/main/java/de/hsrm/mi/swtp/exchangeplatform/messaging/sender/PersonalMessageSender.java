@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveModuleSuccessfulMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveTimeslotSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.UserOccupancyViolation;
@@ -23,7 +24,7 @@ import javax.jms.JMSException;
  * A simple class which will provide methods for sending messages to a specific personal queue of a {@link User}.
  */
 @Slf4j
-@Component
+@Component("personalMessageSender")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PersonalMessageSender {
@@ -86,8 +87,8 @@ public class PersonalMessageSender {
 	}
 	
 	public void send(User student, LeaveModuleSuccessfulMessage leaveModuleSuccessfulMessage) {
-		final PersonalQueue personalQueue = personalQueueManager.getPersonalQueue(student);
-		jmsTemplate.send(personalQueue.getPersonalQueue(),
+		final ActiveMQQueue queue = personalQueueManager.getPersonalQueue(student, true);
+		jmsTemplate.send(queue,
 						 session -> {
 							 try {
 								 return session.createTextMessage(objectMapper.writeValueAsString(leaveModuleSuccessfulMessage));
@@ -96,7 +97,21 @@ public class PersonalMessageSender {
 							 }
 							 return session.createTextMessage("{}");
 						 });
-		log.info("SEND TO ONLINE USER::" + personalQueue.getPersonalQueue().getQualifiedName() + "::MSG=" + leaveModuleSuccessfulMessage);
+		log.info("SEND TO ONLINE USER::" + queue.getQualifiedName() + "::MSG=" + leaveModuleSuccessfulMessage);
+	}
+	
+	public void send(User student, LeaveTimeslotSuccessfulMessage leaveTimeslotSuccessfulMessage) {
+		final ActiveMQQueue queue = personalQueueManager.getPersonalQueue(student, true);
+		jmsTemplate.send(queue,
+						 session -> {
+							 try {
+								 return session.createTextMessage(objectMapper.writeValueAsString(leaveTimeslotSuccessfulMessage));
+							 } catch(JsonProcessingException e) {
+								 e.printStackTrace();
+							 }
+							 return session.createTextMessage("{}");
+						 });
+		log.info("SEND TO ONLINE USER::" + queue.getQualifiedName() + "::MSG=" + leaveTimeslotSuccessfulMessage);
 	}
 	
 }

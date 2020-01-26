@@ -489,10 +489,11 @@ public class DBInitiator implements ApplicationRunner {
 		ArrayList<User> students_repo = new ArrayList<>();
 		for(User student : usersToSave) {
 			User student_repo = userRepository.getOne(student.getId());
+			student.setPo(po2017);
 			students_repo.add(student_repo);
 		}
 		po2017_repo.setStudents(students_repo);
-		
+		userRepository.saveAll(usersToSave);
 		poRepository.save(po2017_repo);
 		
 		log.info("Done saving timeTable...");

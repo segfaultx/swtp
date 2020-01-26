@@ -3,7 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging.sender;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.POTopicManager;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.POChangeMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.POChangeMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import lombok.AccessLevel;
