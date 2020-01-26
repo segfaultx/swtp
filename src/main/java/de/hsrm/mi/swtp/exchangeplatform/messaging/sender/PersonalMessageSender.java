@@ -87,8 +87,8 @@ public class PersonalMessageSender {
 	}
 	
 	public void send(User student, LeaveModuleSuccessfulMessage leaveModuleSuccessfulMessage) {
-		final PersonalQueue personalQueue = personalQueueManager.getPersonalQueue(student);
-		jmsTemplate.send(personalQueue.getPersonalQueue(),
+		final ActiveMQQueue queue = personalQueueManager.getPersonalQueue(student, true);
+		jmsTemplate.send(queue,
 						 session -> {
 							 try {
 								 return session.createTextMessage(objectMapper.writeValueAsString(leaveModuleSuccessfulMessage));
@@ -97,12 +97,12 @@ public class PersonalMessageSender {
 							 }
 							 return session.createTextMessage("{}");
 						 });
-		log.info("SEND TO ONLINE USER::" + personalQueue.getPersonalQueue().getQualifiedName() + "::MSG=" + leaveModuleSuccessfulMessage);
+		log.info("SEND TO ONLINE USER::" + queue.getQualifiedName() + "::MSG=" + leaveModuleSuccessfulMessage);
 	}
 	
 	public void send(User student, LeaveTimeslotSuccessfulMessage leaveTimeslotSuccessfulMessage) {
-		final PersonalQueue personalQueue = personalQueueManager.getPersonalQueue(student);
-		jmsTemplate.send(personalQueue.getPersonalQueue(),
+		final ActiveMQQueue queue = personalQueueManager.getPersonalQueue(student, true);
+		jmsTemplate.send(queue,
 						 session -> {
 							 try {
 								 return session.createTextMessage(objectMapper.writeValueAsString(leaveTimeslotSuccessfulMessage));
@@ -111,7 +111,7 @@ public class PersonalMessageSender {
 							 }
 							 return session.createTextMessage("{}");
 						 });
-		log.info("SEND TO ONLINE USER::" + personalQueue.getPersonalQueue().getQualifiedName() + "::MSG=" + leaveTimeslotSuccessfulMessage);
+		log.info("SEND TO ONLINE USER::" + queue.getQualifiedName() + "::MSG=" + leaveTimeslotSuccessfulMessage);
 	}
 	
 }

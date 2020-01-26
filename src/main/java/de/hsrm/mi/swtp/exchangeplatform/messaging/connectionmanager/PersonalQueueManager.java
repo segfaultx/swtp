@@ -111,6 +111,16 @@ public class PersonalQueueManager {
 		return this.personalQueueMap.get(queueName);
 	}
 	
+	public ActiveMQQueue getPersonalQueue(User user, Boolean ifOfflineCreateTemp) {
+		ActiveMQQueue queue = this.getQueue(user);
+		try {
+			if(ifOfflineCreateTemp && queue == null) return this.createQueueForOfflineUser(user);
+		} catch(JMSException e) {
+			return null;
+		}
+		return queue;
+	}
+	
 	public ActiveMQQueue getQueue(User user) {
 		final String queueName = createPersonalQueueName(user);
 		if(!this.personalQueueMap.containsKey(queueName)) return null;
