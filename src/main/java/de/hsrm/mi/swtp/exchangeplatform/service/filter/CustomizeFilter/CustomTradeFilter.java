@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter;
+package de.hsrm.mi.swtp.exchangeplatform.service.filter.CustomizeFilter;
 
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
@@ -17,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
+//@Service
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -45,7 +45,7 @@ public class CustomTradeFilter {
 		
 		tradeMap.forEach((timeslot, tradeoffers) -> {
 			for(Filter subFilter : filters) {
-				filteredMap.put(subFilter.getClass().getName(), subFilter.filter(tradeoffers));
+				filteredMap.put(subFilter.getClass().getName(), subFilter.doFilter(tradeoffers));
 			}
 			trades.put(timeslot, filteredMap);
 		});

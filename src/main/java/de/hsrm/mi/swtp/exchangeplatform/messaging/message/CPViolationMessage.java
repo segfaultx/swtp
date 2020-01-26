@@ -7,21 +7,22 @@ import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
-
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Builder
-public class ProgressiveRegulationViolationMessage {
+public class CPViolationMessage {
 	
 	@JsonProperty("type")
-	MessageType messageType = MessageType.PO_VIOLATION_PROGRESSIVE_REGULATION;
+	MessageType messageType = MessageType.PO_VIOLATION_CP;
 	
 	@JsonProperty("message")
-	String message = "Du versößt gegen die Fortschrittsregelung, mit deiner aktuellen Belegung.";
+	String message = "Du hast mit deiner aktuellen Belegung zu viele CP.";
 	
-	@JsonProperty("modules_not_allowed")
-	List<Long> modulesNotAllowed;
+	@JsonProperty("max_cp")
+	Long maxCPByPO;
+	
+	@JsonProperty("occupied_cp")
+	Long userCP;
 	
 }

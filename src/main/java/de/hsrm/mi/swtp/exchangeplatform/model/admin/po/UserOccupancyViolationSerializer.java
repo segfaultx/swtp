@@ -20,8 +20,15 @@ public class UserOccupancyViolationSerializer extends StdSerializer<UserOccupanc
 	@Override
 	public void serialize(UserOccupancyViolation value, JsonGenerator gen, SerializerProvider provider) throws IOException {
 		gen.writeStartObject();
+		gen.writeStringField("type", value.getMessageType().toString());
+		gen.writeStringField("message", value.getMessage());
+		gen.writeFieldName("value");
+		gen.writeStartObject();
+		gen.writeArrayFieldStart("violations");
+		for(Object violation : value.getViolations().values()) gen.writeObject(violation);
+		gen.writeEndArray();
 		gen.writeStringField("student_id", value.getStudent().getAuthenticationInformation().getUsername());
-		gen.writeObjectField("violations", value.getViolations());
+		gen.writeEndObject();
 		gen.writeEndObject();
 	}
 }
