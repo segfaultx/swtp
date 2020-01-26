@@ -2,10 +2,10 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest.TimeslotRequestBody;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.TimeslotRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
@@ -23,7 +23,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 /**
@@ -152,7 +151,7 @@ public class TimeslotRestController {
 		
 		try {
 			timeslotService.addAttendeeToWaitlist(timeslotRequestBody.getTimeslotId(), user);
-			Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getStudentId())
+			Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
 											   .orElseThrow(NotFoundException::new);
 			return ResponseEntity.ok(timeslot);
 		} catch(UserIsAlreadyAttendeeException e) {
