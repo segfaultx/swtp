@@ -23,7 +23,7 @@ public class ModuleFactory {
 	@Value("${exchangeplatform.default.module.credit-points}")
 	Long DEFAULT_CREDIT_POINTS;
 	
-	boolean DEFAULT_ACTIVE = false;
+	boolean DEFAULT_ACTIVE = true;
 	
 	/** @see ModuleFactory */
 	public Module createModule(final String name,
