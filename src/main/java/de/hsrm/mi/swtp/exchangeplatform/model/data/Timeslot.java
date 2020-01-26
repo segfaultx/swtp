@@ -50,7 +50,7 @@ public class Timeslot implements Model {
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "MODULE_ID")
-	@Schema(type = "integer", format = "int64")
+	@Schema(type = "object")
 	@JsonBackReference("module-timeslots")
 	Module module;
 	
