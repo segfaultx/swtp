@@ -3,6 +3,9 @@ package de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -11,7 +14,11 @@ import java.util.List;
 /**
  * checks a students timetable for collision with given offers
  */
+@Service
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CollisionFilter implements Filter {
+	
+	String filterName = "CollisionFilter";
 	
 	/**
 	 * checks if a students timetable collides with the given TradeOffers (prohibiting a future trade unless resolved)
@@ -31,6 +38,11 @@ public class CollisionFilter implements Filter {
         }
         return collisionList;
     }
+	
+	@Override
+	public String getFilterName() {
+		return filterName;
+	}
 	
 	/**
 	 * Check for collisions, timeslot durations might differ. Method has to check all possibilities
