@@ -7,6 +7,7 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatus
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionViolationProcessor;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -32,11 +33,10 @@ public class AdminSettingsService {
 	AdminSettingsRepository adminSettingsRepository;
 	@Setter
 	AdminSettings adminSettings;
-	
+	@Autowired
+	FilterUtils filterUtils;
 	@Autowired
 	JmsTemplate jmsTopicTemplate;
-	@Autowired
-	ObjectMapper objectMapper;
 	@Autowired
 	PORestrictionViolationProcessor poRestrictionViolationProcessor;
 
@@ -51,7 +51,16 @@ public class AdminSettingsService {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
-		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
+		adminSettings.setTradesActive(tradesActive);
+		
+		for(String filter: activeFilters) {
+			if(!filterUtils.filterExists(filter)) {
+				throw new NotFoundException(String.format("Filter with name %s was not found", filter));
+			}
+		}
+		
+		adminSettings.setActiveFilters(activeFilters);
+		filterUtils.setActiveFilters(activeFilters);
 
 		if(tradesActive) {
 			poRestrictionViolationProcessor.startProcessing();
@@ -61,7 +70,7 @@ public class AdminSettingsService {
 		jmsTopicTemplate.send(TOPICNAME, session -> {
 			try {
 				return session.createTextMessage(
-						objectMapper.writeValueAsString(new ExchangeplatformStatusMessage(tradesActive)));
+						new ObjectMapper().writeValueAsString(new ExchangeplatformStatusMessage(tradesActive)));
 			} catch(JsonProcessingException e) {
 				e.printStackTrace();
 			}
@@ -78,5 +87,10 @@ public class AdminSettingsService {
 	@PreAuthorize("hasRole('ADMIN')")
 	public AdminSettings getAdminSettings() {
 		return adminSettings;
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	public List<String> getAllFilters(){
+		return filterUtils.getAllAvailableFilters();
 	}
 }

@@ -18,6 +18,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * A rest controller which handles getting and updating {@link AdminSettings}
  */
@@ -48,13 +50,20 @@ public class AdminRestController {
 							@ApiResponse(responseCode = "400", description = "malformed admin settings request") })
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<AdminSettings> updateAdminSettings(@RequestBody AdminSettingsRequest adminSettingsRequest, BindingResult bindingResult) throws
-			NotFoundException {
+			NotFoundException, ClassNotFoundException {
 		if(bindingResult.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		if(adminSettingsService.updateAdminSettings(adminSettingsRequest.isTradesActive(), adminSettingsRequest.getActiveFilters()))
 			return new ResponseEntity<>(adminSettingsService.getAdminSettings(), HttpStatus.OK);
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 	
+	
+	/**
+	 * GET request handler
+	 *
+	 * provides an endpoint to {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} admins to get the current admin settings
+	 * @return admin settings containing trades active flag + current active filters
+	 */
 	@GetMapping("/settings")
 	@Operation(description = "get admin settings", operationId = "getAdminSettings")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully received adminsettings"),
@@ -64,6 +73,12 @@ public class AdminRestController {
 		return new ResponseEntity<>(adminSettingsService.getAdminSettings(), HttpStatus.OK);
 	}
 	
+	/**
+	 * GET request handler
+	 *
+	 * provides an endpoint to {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} admins to get the value of the trades active flag
+	 * @return bool value to indicate wether trades are active or not
+	 */
 	@GetMapping("/tradingActive")
 	@Operation(description = "get trading active", operationId = "getTradingActive")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully received adminsettings"),
@@ -72,4 +87,21 @@ public class AdminRestController {
 		return new ResponseEntity<>(adminSettingsService.isTradesActive(), HttpStatus.OK);
 	}
 	
+	
+	/**
+	 * GET request handler
+	 *
+	 * provided an endpoint to {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} admins to fetch all available filters
+	 * @return list of strings containing filter names
+	 */
+	@GetMapping("/settings/filters")
+	@Operation(description = "get all available filters", operationId = "getAdminSettings")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully fetched all filters"),
+							@ApiResponse(responseCode = "403", description = "unauthorized request"),
+							@ApiResponse(responseCode = "400", description = "malformed request")
+	})
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<List<String>> getAllAvailableFilters(){
+		return new ResponseEntity<>(adminSettingsService.getAllFilters(), HttpStatus.OK);
+	}
 }

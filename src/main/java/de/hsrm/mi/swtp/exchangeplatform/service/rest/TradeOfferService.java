@@ -37,6 +37,8 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	PersonalMessageSender personalMessageSender;
 	TimeslotTopicManager timeslotTopicManager;
 	
+	FilterUtils filterUtils;
+
 	/**
 	 * Method to provide admins a forced trade / assignment of timeslot to a given student
 	 *
@@ -174,12 +176,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 									 !(tradeOffer.getOffer() == requestedTimeslot && tradeOffer.getSeek() == offeredTimeslot));
 		
 		// filter the list according to active filters
-		FilterUtils filterUtils = FilterUtils.getInstance();
-		try {
 			tradeOffers = filterUtils.getFilteredTradeOffers(tradeOffers);
-		} catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
 		
 		// if no matching TradeOffer was found return null
 		if(tradeOffers.size() == 0) return null;

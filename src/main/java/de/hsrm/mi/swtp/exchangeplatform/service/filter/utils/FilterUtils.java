@@ -1,17 +1,23 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter.utils;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.repository.CustomPythonFilterRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CapacityFilter;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CollisionFilter;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.NoOfferFilter;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.OfferFilter;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Utils class for filtering TradeOffers
@@ -19,26 +25,24 @@ import java.util.Map;
  * @author Dennis Schad
  *
  */
+@Slf4j
+@Service
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class FilterUtils {
 	
-	private static Map<String, Class<? extends Filter>> map;
+	@NonFinal
+	Map<String, Filter> map;
 	
-	private static FilterUtils instance;
+	List<Filter> allSystemFilters;
 	
-	private FilterUtils() {
-		// by default all Filters are active
+	CustomPythonFilterRepository customPythonFilterRepository;
+	
+	@Autowired
+	public FilterUtils(@NotNull List<Filter> allSystemFilters, CustomPythonFilterRepository customPythonFilterRepository){
+		this.allSystemFilters = allSystemFilters;
+		this.customPythonFilterRepository = customPythonFilterRepository;
 		map = new HashMap<>();
-		map.put("CapacityFilter", CapacityFilter.class);
-		map.put("CollisionFilter", CollisionFilter.class);
-		map.put("NoOfferFilter", NoOfferFilter.class);
-		map.put("OfferFilter", OfferFilter.class);
-	}
-	
-	public static FilterUtils getInstance() {
-		if(FilterUtils.instance == null) {
-			FilterUtils.instance = new FilterUtils();
-		}
-		return FilterUtils.instance;
+		allSystemFilters.forEach(fltr -> map.put(fltr.getFilterName(), fltr));
 	}
 	
 	/**
@@ -46,10 +50,9 @@ public class FilterUtils {
 	 * @param tradeOffers list of TradeOffers that are to be filtered
 	 * @return list of filtered TradeOffers
 	 */
-	public List<TradeOffer> getFilteredTradeOffers(List<TradeOffer> tradeOffers) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
-		for(Map.Entry<String, Class<? extends Filter>> entry : map.entrySet()) {
-			Method method = map.get(entry.getKey()).getMethod("doFilter");
-			tradeOffers = (List<TradeOffer>) method.invoke(tradeOffers);
+	public List<TradeOffer> getFilteredTradeOffers(List<TradeOffer> tradeOffers) {
+		for(Filter entry : map.values()) {
+			tradeOffers = entry.doFilter(tradeOffers);
 		}
 		return tradeOffers;
 	}
@@ -58,8 +61,34 @@ public class FilterUtils {
 	 * Method for getting a map with all active filters
 	 * @return returns a map of all active filters
 	 */
-	public Map<String, Class<? extends Filter>> getMap() {
+	public Map<String,Filter> getMap() {
 		return map;
+	}
+	
+	/**
+	 * Fetches all Entries in activeFilters and returns them as List of Strings
+	 * @return List of Strings with names of active Filters
+	 */
+	public List<String> getActiveFilterList() {
+		return map.values()
+				  .stream()
+				  .map(Filter::getFilterName)
+				  .collect(toList());
+	}
+	
+	/**
+	 * Method to check if a given filter exists
+	 * @param nameOfFilter name of filter
+	 * @return true if exists
+	 */
+	public boolean filterExists (String nameOfFilter){
+		// check system filters for a match
+		var systemFilterMatch = allSystemFilters.stream().anyMatch(filter -> filter.getFilterName().equals(nameOfFilter));
+		// check python filters for a match
+		var pythonFilterMatch = customPythonFilterRepository.findAll()
+															.stream()
+															.anyMatch(filter -> filter.getFilterName().equals(nameOfFilter));
+		return systemFilterMatch || pythonFilterMatch;
 	}
 	
 	/**
@@ -67,7 +96,7 @@ public class FilterUtils {
 	 * @param key Name of the filter
 	 * @param filter class of filter, this class should implement the Filter interface
 	 */
-	public void addFilter(String key, Class<? extends Filter> filter) {
+	public void addFilter(String key, Filter filter) {
 		map.put(key, filter);
 	}
 	
@@ -79,4 +108,41 @@ public class FilterUtils {
 		map.remove(key);
 	}
 	
+	/**
+	 * Gets class of Filter by given Name
+	 * @param nameOfFilter name of the Filter class
+	 * @return Class of Filter or null if not present
+	 * @throws ClassNotFoundException if class can not be found in Classpath
+	 */
+	
+	public Filter getFilterByName(String nameOfFilter){
+		// First check system filters, if name isnt to be found check all customPython filters
+		return allSystemFilters.stream().filter(item -> item.getFilterName().equals(nameOfFilter))
+				.findAny().orElseGet(() -> {
+					var allCustomPythonFilters = customPythonFilterRepository.findAll();
+					return allCustomPythonFilters.stream()
+												 .filter(customFilter -> customFilter.getFilterName().equals(nameOfFilter))
+							.findAny().orElse(null);
+				});
+	}
+	
+	/**
+	 * Method to update filters of filterUtils
+	 * @param activeFilters
+	 */
+	public void setActiveFilters(List<String> activeFilters){
+		map.clear();
+		activeFilters.forEach(filtername -> {
+			var fltr = getFilterByName(filtername);
+			map.put(fltr.getFilterName(), fltr);
+		});
+	}
+	
+	public List<String> getAllAvailableFilters(){
+		// add all system filter names
+		List<String> out = allSystemFilters.stream().map(Filter::getFilterName).collect(Collectors.toList());
+		// add all custom python filter names
+		out.addAll(customPythonFilterRepository.findAll().stream().map(Filter::getFilterName).collect(toList()));
+		return out;
+	}
 }

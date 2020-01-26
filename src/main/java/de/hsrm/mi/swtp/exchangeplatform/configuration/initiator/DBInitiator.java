@@ -450,12 +450,14 @@ public class DBInitiator implements ApplicationRunner {
 		
 		poRepository.save(po2017);
 		List<String> filters = new ArrayList<>();
-		filters.add("COLLISION");
-		//filters.add("CAPACITY");
-		
+		filters.add("CollisionFilter");
+		filters.add("OfferFilter");
+		filters.add("NoOfferFilter");
+		filters.add("CapacityFilter");
 		AdminSettings adminSettings = new AdminSettings();
 		adminSettings.setId(1);
-		adminSettings.updateAdminSettings(true, filters);
+		adminSettings.setActiveFilters(filters);
+		adminSettings.setTradesActive(true);
 		var persistedSettings = adminSettingsRepository.save(adminSettings);
 		adminSettingsService.setAdminSettings(persistedSettings);
 		
