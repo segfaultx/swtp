@@ -151,19 +151,19 @@ public class DBInitiator implements ApplicationRunner {
 		// END AFS VL
 		
 		// START AFS UEBUNG 1
-		Timeslot afsUebung = timeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(10, 0), d12_out);
+		Timeslot afsUebung = timeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, true, "I", afs, LocalTime.of(10, 0), d12_out);
 		// END AFS UEBUNG 1
 		
 		// START AFS UEBUNG 2
-		Timeslot afsUebung2 = timeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(11, 45), d12_out);
+		Timeslot afsUebung2 = timeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, true, "II", afs, LocalTime.of(11, 45), d12_out);
 		// END AFS UEBUNG 2
 		
 		// START AFS UEBUNG 3
-		Timeslot afsUebung3 = timeslotFactory.createTimeslotUebung(DayOfWeek.MONDAY, afs, LocalTime.of(10, 0), d12_out);
+		Timeslot afsUebung3 = timeslotFactory.createTimeslotUebung(DayOfWeek.MONDAY, true, "III", afs, LocalTime.of(10, 0), d12_out);
 		// END AFS UEBUNG 3
 		
 		// START AFS UEBUNG 4
-		Timeslot afsUebung4 = timeslotFactory.createTimeslotUebung(DayOfWeek.FRIDAY, afs, LocalTime.of(11, 45), d12_out);
+		Timeslot afsUebung4 = timeslotFactory.createTimeslotUebung(DayOfWeek.FRIDAY, true, "IV", afs, LocalTime.of(11, 45), d12_out);
 		// END AFS UEBUNG 4
 		
 		// START SWT Timeslots
@@ -172,11 +172,11 @@ public class DBInitiator implements ApplicationRunner {
 		// END swt VL
 		
 		// START swt Prakt 1
-		Timeslot swtPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.TUESDAY, swt, LocalTime.of(10, 0), d12_out);
+		Timeslot swtPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.TUESDAY, true, "A", swt, LocalTime.of(10, 0), d12_out);
 		// END swt Prakt 1
 		
 		// START swt Prakt 2
-		Timeslot swtPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, swt, LocalTime.of(11, 45), d12_out);
+		Timeslot swtPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, true, "B", swt, LocalTime.of(11, 45), d12_out);
 		// END swt Prakt 2
 		
 		// START DBS Timeslots
@@ -185,11 +185,11 @@ public class DBInitiator implements ApplicationRunner {
 		// END DBS VL
 		
 		// START DBS Prakt 1
-		Timeslot dbsPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY, dbs, LocalTime.of(10, 0), d13_out);
+		Timeslot dbsPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY, true, "A", dbs, LocalTime.of(10, 0), d13_out);
 		// END DBS Prakt 1
 		
 		// START dbs Prakt 2
-		Timeslot dbsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY, dbs, LocalTime.of(11, 45), d13_out);
+		Timeslot dbsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY, true, "B", dbs, LocalTime.of(11, 45), d13_out);
 		// END dbs Prakt 2
 		
 		
@@ -199,19 +199,19 @@ public class DBInitiator implements ApplicationRunner {
 		// END PROG3 VL
 		
 		// START PROG3 Prakt 1
-		Timeslot prog3Praktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(10, 0), d12_out);
+		Timeslot prog3Praktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, true, "A", prog3, LocalTime.of(10, 0), d12_out);
 		// END PROG3 Prakt 1
 		
 		// START PROG3 Prakt 2
-		Timeslot prog3Praktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(11, 45), d13_out);
+		Timeslot prog3Praktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, true, "B", prog3, LocalTime.of(11, 45), d13_out);
 		// END PROG3 Prakt 2
 		
 		// START PROG3 Prakt 3
-		Timeslot prog3Praktikum3 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(10, 0), d13_out);
+		Timeslot prog3Praktikum3 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, true, "C", prog3, LocalTime.of(10, 0), d13_out);
 		// END PROG3 Prakt 3
 		
 		// START PROG3 Prakt 4
-		Timeslot prog3Praktikum4 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(11, 45), d12_out);
+		Timeslot prog3Praktikum4 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, true, "D", prog3, LocalTime.of(11, 45), d12_out);
 		// END PROG3 Prakt 4
 		
 		
@@ -221,12 +221,27 @@ public class DBInitiator implements ApplicationRunner {
 		// END ads VL
 		
 		// START ADS Prakt 1
-		Timeslot adsPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, ads, LocalTime.of(11, 30), d13_out);
+		Timeslot adsPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, true, "A", ads, LocalTime.of(11, 30), d13_out);
 		// END ads Prakt 1
 		
 		// START ads Prakt 2
-		Timeslot adsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, ads, LocalTime.of(14, 15), d13_out);
+		Timeslot adsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY,true, "B", ads, LocalTime.of(14, 15), d13_out);
 		// END ads Prakt 2
+		
+		//START MI Timeslots
+		//START MI VL
+		Timeslot miVorlesung = timeslotFactory.createTimeslotVorlesung(DayOfWeek.MONDAY, eim, LocalTime.of(11, 45), d11_out);
+		//END MI VL
+		
+		// START ADS Prakt 1
+		Timeslot emiPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, true, "A", eim, LocalTime.of(14, 15), d13_out);
+		// END ads Prakt 1
+		
+		// START ads Prakt 2
+		Timeslot emiPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY,true, "B", eim, LocalTime.of(10, 00), d13_out);
+		// END ads Prakt 2
+		
+		//END MI Timeslots
 		
 		
 		// SAVE Lecturers first so attendees can reference them
@@ -257,6 +272,10 @@ public class DBInitiator implements ApplicationRunner {
 		
 		prog3Praktikum3.setUser(fritz_out);
 		prog3Praktikum4.setUser(fritz_out);
+		
+		miVorlesung.setUser(fritz_out);
+		emiPraktikum.setUser(fritz_out);
+		emiPraktikum2.setUser(fritz_out);
 		
 		
 		//Schwanecke

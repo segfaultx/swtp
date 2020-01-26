@@ -46,6 +46,8 @@ public class Timeslot implements Model {
 	
 	TypeOfTimeslots timeSlotType;
 	
+	String group;
+	
 	Integer capacity;
 	
 	Boolean	isTradeable;
