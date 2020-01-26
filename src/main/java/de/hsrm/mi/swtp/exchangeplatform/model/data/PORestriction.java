@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.util.List;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -17,6 +18,7 @@ import static java.util.stream.Collectors.groupingBy;
 @Entity
 @Data
 @RequiredArgsConstructor
+@Transactional
 public class PORestriction implements Model {
 
 	@Id
@@ -36,7 +38,7 @@ public class PORestriction implements Model {
 	PORestrictionByProgressiveRegulation byProgressiveRegulation;
 
 	@JsonProperty("dual_po")
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
 	DualPO dualPO;
 
 	@Entity
@@ -142,17 +144,14 @@ public class PORestriction implements Model {
 		 */
 		@JsonProperty("is_active")
 		@Schema(name = "is_active", defaultValue = "false", required = true, nullable = false)
-		@Column(name = "is_active", nullable = false, updatable = true)
 		Boolean isActive = false;
 		
-		@Column(nullable = true, name = "free_dual_day")
 		@Schema(name = "free_dual_day_default", nullable = true, required = true, defaultValue = "TUESDAY")
 		@JsonProperty(value = "free_dual_day_default", defaultValue = "TUESDAY", required = true)
 		DayOfWeek freeDualDayDefault = DayOfWeek.TUESDAY;
 		
 		@ElementCollection(targetClass = DayOfWeek.class)
-		@Column(nullable = true, name = "free_dual_days")
-		@ArraySchema(schema = @Schema(name = "free_dual_days", nullable = true, required = false, defaultValue = "[]")) 
+		@ArraySchema(schema = @Schema(name = "free_dual_days", nullable = true, required = false, defaultValue = "[]"))
 		@JsonProperty(value = "free_dual_days", defaultValue = "[]")
 		List<DayOfWeek> freeDualDays;
 		
@@ -173,6 +172,7 @@ public class PORestriction implements Model {
 			return false;
 		}
 	}
+	
 	private PORestrictionType getActiveRestriction(){
 		if (this.byCP.isActive) return byCP;
 		if (this.byProgressiveRegulation.isActive) return byProgressiveRegulation;
@@ -180,6 +180,7 @@ public class PORestriction implements Model {
 		if (this.dualPO.isActive) return dualPO;
 		throw new RuntimeException("No active PO - shouldn't be the case");
 	}
+	
 	public boolean canAllocateModule(User user, Module module){
 		return getActiveRestriction().canAllocate(user, module);
 	}

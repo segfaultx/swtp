@@ -1,7 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter;
 
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.CPViolationMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.POChangeMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ProgressiveRegulationViolationMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.POMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.ChangedRestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
@@ -36,12 +38,17 @@ public class PORestrictionViolationProcessor implements Runnable {
 	UserRepository userRepository;
 	ModuleRepository moduleRepository;
 	PORestrictionViolationService poRestrictionViolationService;
+	POMessageSender poMessageSender;
 	
 	public void startProcessing() {
 		List<ChangedRestriction> changedRestrictions = poUpdateService.getAllChangedPOs();
 		log.info("┌ STARTED PROCESSING VIOLATIONS OF CHANGED PO-RESTRICTIONS: " + changedRestrictions);
 		int filterActionsTakenTotal = 0;
 		for(ChangedRestriction changedRestriction : changedRestrictions) {
+			poMessageSender.send(changedRestriction.getUpdatedPO(), POChangeMessage.builder()
+													.po(changedRestriction.getUpdatedPO())
+													.build());
+			
 			int filterActionsTaken = 0;
 			log.info("├┬ STARTED PROCESSING OF VIOLATIONS");
 			final List<User> students = userService.getAllByPO(changedRestriction.getUpdatedPO());

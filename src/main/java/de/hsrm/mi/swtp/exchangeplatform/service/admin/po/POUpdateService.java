@@ -120,7 +120,7 @@ public class POUpdateService {
 			log.info("PORestriction changes applied.");
 		}
 		
-		repository.save(updatedPO);
+		var newPO = repository.save(updatedPO);
 		log.info("PO changes applied.");
 		
 		return true;

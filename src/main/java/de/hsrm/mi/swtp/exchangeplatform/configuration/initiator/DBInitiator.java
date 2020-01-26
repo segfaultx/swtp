@@ -449,7 +449,7 @@ public class DBInitiator implements ApplicationRunner {
 		System.out.println(String.format("DENNIS WITH ID: %d", dennis.getId()));
 		userRepository.saveAll(usersToSave); // saving both at the same time to prevent detached entity exception
 		
-		poRepository.save(po2017);
+		PO po2017_repo = poRepository.save(po2017);
 		List<String> filters = new ArrayList<>();
 		filters.add("CollisionFilter");
 		filters.add("OfferFilter");
@@ -466,7 +466,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		log.info("--> users " + usersToSave);
 		
-		PO po2017_repo = poRepository.findByTitleIs(po2017.getTitle());
+//		poRepository.findByTitleIs(po2017.getTitle());
 		ArrayList<User> students_repo = new ArrayList<>();
 		for(User student : usersToSave) {
 			User student_repo = userRepository.getOne(student.getId());
