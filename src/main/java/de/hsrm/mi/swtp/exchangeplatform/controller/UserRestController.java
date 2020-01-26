@@ -61,7 +61,6 @@ public class UserRestController {
 		log.info(String.format("GET // " + BASEURL + "/%s", userId));
 		User user = userService.getById(userId)
 									.orElseThrow(NotFoundException::new);
-		personalQueueManager.send(user, "You got got.");
 		return ResponseEntity.ok(user);
 	}
 	

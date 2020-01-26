@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveModuleSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.UserOccupancyViolation;
@@ -82,6 +83,20 @@ public class PersonalMessageSender {
 							 return session.createTextMessage("{\"violations\": \"true\"}");
 						 });
 		log.info("SEND TO ONLINE USER::" + personalQueue.getPersonalQueue().getQualifiedName() + "::MSG=" + userOccupancyViolation);
+	}
+	
+	public void send(User student, LeaveModuleSuccessfulMessage leaveModuleSuccessfulMessage) {
+		final PersonalQueue personalQueue = personalQueueManager.getPersonalQueue(student);
+		jmsTemplate.send(personalQueue.getPersonalQueue(),
+						 session -> {
+							 try {
+								 return session.createTextMessage(objectMapper.writeValueAsString(leaveModuleSuccessfulMessage));
+							 } catch(JsonProcessingException e) {
+								 e.printStackTrace();
+							 }
+							 return session.createTextMessage("{}");
+						 });
+		log.info("SEND TO ONLINE USER::" + personalQueue.getPersonalQueue().getQualifiedName() + "::MSG=" + leaveModuleSuccessfulMessage);
 	}
 	
 }
