@@ -159,7 +159,7 @@ public class TradeOffersRestController {
 			
 			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId()).orElseThrow(NotFoundException::new);
 
-//			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot);
+			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot);
 			
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
@@ -168,13 +168,13 @@ public class TradeOffersRestController {
 			User user = userService.getById(tradeRequest.getOfferedByStudentMatriculationNumber()).orElseThrow(NotFoundException::new);
 			
 			Timeslot finalTimeslotR = requestingTimeslot;
-			Topic timeslotTopic_1 = timeslotTopicManager.getTopic(requestingTimeslot);
+			Topic timeslotTopic = timeslotTopicManager.getTopic(timeslot);
 			
-			timeslotTopicManager.getSession(requestingTimeslot)
-								.createSubscriber(timeslotTopic_1)
+			timeslotTopicManager.getSession(timeslot)
+								.createSubscriber(timeslotTopic)
 								.setMessageListener(message -> {
 				try {
-					log.info(String.format("┌ Topic %s received message on method call: requestTrade()", timeslotTopic_1.toString()));
+					log.info(String.format("┌ Topic %s received message on method call: requestTrade()", timeslotTopic.toString()));
 					log.info(String.format("└ Message sent to topic: %s", ((TextMessage) message).getText()));
 				} catch(JMSException e) {
 					log.info("└ ERROR: sent message had some kind of error.");
@@ -190,12 +190,12 @@ public class TradeOffersRestController {
 			});
 			
 			Timeslot finalTimeslotO = offeringTimeslot;
-			Topic timeslotTopic_2 = timeslotTopicManager.getTopic(finalTimeslotO);
-			timeslotTopicManager.getSession(requestingTimeslot)
-								.createSubscriber(timeslotTopic_2)
+			
+			timeslotTopicManager.getSession(timeslot)
+								.createSubscriber(timeslotTopic)
 								.setMessageListener(message -> {
 									try {
-										log.info(String.format("┌ Topic %s received message on method call: requestTrade()", timeslotTopic_2.toString()));
+										log.info(String.format("┌ Topic %s received message on method call: requestTrade()", timeslotTopic.toString()));
 										log.info(String.format("└ Message sent to topic: %s", ((TextMessage) message).getText()));
 									} catch(JMSException e) {
 										log.info("└ ERROR: sent message had some kind of error.");
