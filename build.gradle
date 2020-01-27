@@ -75,7 +75,7 @@ dependencies {
 
     // PYTHON (JYTHON)
 
-    compile group: 'org.python', name: 'jython-standalone', version: '2.7.0'
+    compile group: 'org.python', name: 'jython-standalone', version: '2.7.2b2'
 
     // DEVTOOLS
 
