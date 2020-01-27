@@ -24,7 +24,7 @@ public class NoOfferFilter implements Filter {
 	 * @return empty list
 	 */
 	@Override
-    public List<TradeOffer> doFilter(List<TradeOffer> offers){
+    public List<TradeOffer> doFilter(List<TradeOffer> offers) throws RuntimeException{
         List<TradeOffer> noOfferList = new ArrayList<>();
         /// check if empty
         if(offers == null || offers.isEmpty()){

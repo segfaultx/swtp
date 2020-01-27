@@ -29,7 +29,7 @@ public class CapacityFilter implements Filter {
 	 * @return all TradeOffers with attached timeslots that havent reached their max capacity
 	 */
 	@Override
-    public List<TradeOffer> doFilter(List<TradeOffer> offers){
+    public List<TradeOffer> doFilter(List<TradeOffer> offers) throws RuntimeException {
         List<TradeOffer> capacityList = new ArrayList<>();
         for(TradeOffer offer : offers){
         	// compare max capacity to number of already subscribed attendees

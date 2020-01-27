@@ -24,7 +24,7 @@ public class OfferFilter implements Filter {
 	 * @return all valid TradeOffers
 	 */
 	@Override
-    public List<TradeOffer> doFilter(List<TradeOffer> offers){
+    public List<TradeOffer> doFilter(List<TradeOffer> offers) throws RuntimeException{
         List<TradeOffer> offerList = new ArrayList<>();
         if(offers.size() > 0){
             return offers;
