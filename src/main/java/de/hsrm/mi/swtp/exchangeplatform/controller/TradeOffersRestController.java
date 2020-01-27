@@ -30,6 +30,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.jms.JMSException;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
@@ -156,7 +159,7 @@ public class TradeOffersRestController {
 			
 			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId()).orElseThrow(NotFoundException::new);
 
-			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot);
+//			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot);
 			
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
@@ -165,7 +168,19 @@ public class TradeOffersRestController {
 			User user = userService.getById(tradeRequest.getOfferedByStudentMatriculationNumber()).orElseThrow(NotFoundException::new);
 			
 			Timeslot finalTimeslotR = requestingTimeslot;
-			jmsTopicTemplate.send(timeslotTopicManager.getTopic(timeslot), session -> {
+			Topic timeslotTopic_1 = timeslotTopicManager.getTopic(requestingTimeslot);
+			
+			timeslotTopicManager.getSession(requestingTimeslot)
+								.createSubscriber(timeslotTopic_1)
+								.setMessageListener(message -> {
+				try {
+					log.info(String.format("┌ Topic %s received message on method call: requestTrade()", timeslotTopic_1.toString()));
+					log.info(String.format("└ Message sent to topic: %s", ((TextMessage) message).getText()));
+				} catch(JMSException e) {
+					log.info("└ ERROR: sent message had some kind of error.");
+				}
+			});
+			jmsTopicTemplate.send(timeslotTopicManager.getTopic(requestingTimeslot), session -> {
 				try {
 					return session.createTextMessage(objectMapper.writeValueAsString(finalTimeslotR));
 				} catch(JsonProcessingException e) {
@@ -175,7 +190,18 @@ public class TradeOffersRestController {
 			});
 			
 			Timeslot finalTimeslotO = offeringTimeslot;
-			jmsTopicTemplate.send(timeslotTopicManager.getTopic(timeslot), session -> {
+			Topic timeslotTopic_2 = timeslotTopicManager.getTopic(finalTimeslotO);
+			timeslotTopicManager.getSession(requestingTimeslot)
+								.createSubscriber(timeslotTopic_2)
+								.setMessageListener(message -> {
+									try {
+										log.info(String.format("┌ Topic %s received message on method call: requestTrade()", timeslotTopic_2.toString()));
+										log.info(String.format("└ Message sent to topic: %s", ((TextMessage) message).getText()));
+									} catch(JMSException e) {
+										log.info("└ ERROR: sent message had some kind of error.");
+									}
+								});
+			jmsTopicTemplate.send(timeslotTopicManager.getTopic(offeringTimeslot), session -> {
 				try {
 					return session.createTextMessage(objectMapper.writeValueAsString(finalTimeslotO));
 				} catch(JsonProcessingException e) {
