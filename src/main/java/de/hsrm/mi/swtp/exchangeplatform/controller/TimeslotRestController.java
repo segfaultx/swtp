@@ -1,8 +1,13 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsrm.mi.swtp.exchangeplatform.configuration.messaging.MessagingConfig;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TimeslotRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
@@ -19,6 +24,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.jms.core.JmsTemplate;
@@ -27,10 +34,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.ObjectMessage;
-import javax.jms.Session;
+import javax.jms.*;
+import static de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener.TOPICNAME;
 
 import java.security.Principal;
 import java.util.List;
@@ -52,8 +57,11 @@ public class TimeslotRestController {
 	TimeslotService timeslotService;
 	UserService userService;
 	TimeslotTopicManager timeslotTopicManager;
-	JmsTemplate jmsTemplate;
 	UserRepository userRepository;
+	ObjectMapper objectMapper;
+	
+	@Autowired
+	JmsTemplate jmsTopicTemplate;
 
 	/**
 	 * GET request handler.
@@ -103,15 +111,14 @@ public class TimeslotRestController {
 
 		try {
 			timeslot = timeslotService.addAttendeeToTimeslot(timeslot, user);
-			
 			Timeslot finalTimeslot = timeslot;
-			jmsTemplate.send(timeslotTopicManager.getTopic(timeslot), new MessageCreator() {
-				@Override
-				public Message createMessage(Session session) throws JMSException {
-					ObjectMessage objectMessage = session.createObjectMessage();
-					objectMessage.setObject(finalTimeslot);
-					return objectMessage;
+			jmsTopicTemplate.send(timeslotTopicManager.getTopic(timeslot), session -> {
+				try {
+					return session.createTextMessage(objectMapper.writeValueAsString(finalTimeslot));
+				} catch(JsonProcessingException e) {
+					e.printStackTrace();
 				}
+				return session.createTextMessage("{}");
 			});
 			
 			return ResponseEntity.ok(timeslot);
@@ -148,13 +155,13 @@ public class TimeslotRestController {
 		timeslot = timeslotService.removeAttendeeFromTimeslot(timeslot, user);
 		
 		Timeslot finalTimeslot = timeslot;
-		jmsTemplate.send(timeslotTopicManager.getTopic(timeslot), new MessageCreator() {
-			@Override
-			public Message createMessage(Session session) throws JMSException {
-				ObjectMessage objectMessage = session.createObjectMessage();
-				objectMessage.setObject(finalTimeslot);
-				return objectMessage;
+		jmsTopicTemplate.send(timeslotTopicManager.getTopic(timeslot), session -> {
+			try {
+				return session.createTextMessage(objectMapper.writeValueAsString(finalTimeslot));
+			} catch(JsonProcessingException e) {
+				e.printStackTrace();
 			}
+			return session.createTextMessage("{}");
 		});
 		return ResponseEntity.ok(timeslot);
 	}
@@ -187,13 +194,13 @@ public class TimeslotRestController {
 											   .orElseThrow(NotFoundException::new);
 			
 			Timeslot finalTimeslot = timeslot;
-			jmsTemplate.send(timeslotTopicManager.getTopic(timeslot), new MessageCreator() {
-				@Override
-				public Message createMessage(Session session) throws JMSException {
-					ObjectMessage objectMessage = session.createObjectMessage();
-					objectMessage.setObject(finalTimeslot);
-					return objectMessage;
+			jmsTopicTemplate.send(timeslotTopicManager.getTopic(timeslot), session -> {
+				try {
+					return session.createTextMessage(objectMapper.writeValueAsString(finalTimeslot));
+				} catch(JsonProcessingException e) {
+					e.printStackTrace();
 				}
+				return session.createTextMessage("{}");
 			});
 			return ResponseEntity.ok(timeslot);
 		} catch(UserIsAlreadyAttendeeException e) {
@@ -228,13 +235,13 @@ public class TimeslotRestController {
 		Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
 										   .orElseThrow(NotFoundException::new);
 		Timeslot finalTimeslot = timeslot;
-		jmsTemplate.send(timeslotTopicManager.getTopic(timeslot), new MessageCreator() {
-			@Override
-			public Message createMessage(Session session) throws JMSException {
-				ObjectMessage objectMessage = session.createObjectMessage();
-				objectMessage.setObject(finalTimeslot);
-				return objectMessage;
+		jmsTopicTemplate.send(timeslotTopicManager.getTopic(timeslot), session -> {
+			try {
+				return session.createTextMessage(objectMapper.writeValueAsString(finalTimeslot));
+			} catch(JsonProcessingException e) {
+				e.printStackTrace();
 			}
+			return session.createTextMessage("{}");
 		});
 		
 		return ResponseEntity.ok(timeslot);

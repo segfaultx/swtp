@@ -45,7 +45,6 @@ public class TradeOffersRestController {
 	AdminSettingsService adminSettingsService;
 	TimeslotService timeslotService;
 	TradeOfferRepository tradeOfferRepository;
-	
 	/**
 	 * DELETE request handler.
 	 * provides an endpoint to {@code '/api/v1/trades/<id>/<id>'} through which an {student} may delete his {@link TradeOffer}.
