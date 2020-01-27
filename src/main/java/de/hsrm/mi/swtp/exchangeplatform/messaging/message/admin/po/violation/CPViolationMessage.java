@@ -1,6 +1,7 @@
-package de.hsrm.mi.swtp.exchangeplatform.messaging.message;
+package de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.MessageType;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;

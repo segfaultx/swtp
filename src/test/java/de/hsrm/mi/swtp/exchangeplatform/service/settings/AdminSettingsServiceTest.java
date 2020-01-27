@@ -9,6 +9,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import static org.junit.Assert.*;
@@ -24,14 +25,14 @@ public class AdminSettingsServiceTest {
 	@Test
 	@WithMockUser(username = "wweit001", roles = {"ADMIN", "MEMBER"})
 	public void testUpdateAdminSettingsDeactivateTrades() throws NotFoundException {
-		settingsService.updateAdminSettings(false, new ArrayList<>());
+		settingsService.updateAdminSettings(false, new ArrayList<>(), LocalDateTime.now(), LocalDateTime.now());
 		assertFalse(settingsService.isTradesActive());
 	}
 	
 	@Test
 	@WithMockUser(username = "wweit001", roles = {"ADMIN", "MEMBER"})
 	public void testUpdateAdminSettingsActivateTrades() throws NotFoundException {
-		settingsService.updateAdminSettings(true, new ArrayList<>());
+		settingsService.updateAdminSettings(true, new ArrayList<>(), LocalDateTime.now(),LocalDateTime.now());
 		assertTrue(settingsService.isTradesActive());
 	}
 	

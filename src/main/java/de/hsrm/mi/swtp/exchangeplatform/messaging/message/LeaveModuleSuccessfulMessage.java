@@ -23,7 +23,7 @@ public class LeaveModuleSuccessfulMessage implements Serializable {
 	@JsonProperty(value = "timestamp", defaultValue = "{}")
 	LocalTime time;
 	
-	@JsonProperty(value = "modules", defaultValue = "{}")
+	@JsonProperty(value = "module", defaultValue = "{}")
 	Module module;
 	
 	@Builder
