@@ -34,7 +34,7 @@ public class TimeslotFactory {
 	@Value("${exchangeplatform.default.timeslot.tradeable.lecture}")
 	Boolean DEFAULT_TRADEABLE_LECTURE;
 	
-	String DEFAULT_GROUP_NAME = "gizulfg";
+	String DEFAULT_GROUP_NAME = "";
 	
 	/** @see TimeslotFactory */
 	public Timeslot createTimeslotPraktikum(final DayOfWeek dayOfWeek,
