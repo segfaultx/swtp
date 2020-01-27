@@ -42,7 +42,7 @@ public class PORestrictionFactory {
 	ObjectMapper objectMapper;
 	
 	/** @see PORestrictionFactory */
-	public PORestriction createPO() {
+	public PORestriction createRestriction() {
 		PORestriction restriction = new PORestriction();
 		restriction.setDualPO(restrictionDual(DEFAULT_DUAL_ACTIVE, DayOfWeek.valueOf(DUAL_FREE_DAY)));
 		restriction.setByCP(restrictionCP(DEFAULT_CP_ACTIVE, DEFAULT_CP_MAX));

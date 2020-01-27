@@ -86,7 +86,7 @@ public class POUpdateService {
 			affectedRestrictions.add(RestrictionType.MINIMUM_SEMESTER);
 		}
 		if(updatedRestrictions.getByProgressiveRegulation().isActive() && !originalRestrictions.getByProgressiveRegulation()
-																							  .equals(updatedRestrictions.getByProgressiveRegulation())) {
+																							   .equals(updatedRestrictions.getByProgressiveRegulation())) {
 			affectedRestrictions.add(RestrictionType.PROGRESSIVE_REGULATION);
 		}
 		if(updatedRestrictions.getDualPO().isActive() && !originalRestrictions.getDualPO().equals(updatedRestrictions.getDualPO())) {

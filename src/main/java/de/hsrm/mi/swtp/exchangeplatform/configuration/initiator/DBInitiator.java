@@ -95,7 +95,7 @@ public class DBInitiator implements ApplicationRunner {
 		// END KRECHEL
 		
 		// START PO 2017
-		PORestriction restriction2017 = poRestrictionFactory.createPO();
+		PORestriction restriction2017 = poRestrictionFactory.createRestriction();
 		PO po2017 = poFactory.createPO(LocalDate.now().minusYears(3L), LocalDate.now().minusYears(3L), LocalDate.now().plusYears(3L));
 		
 		final List<DayOfWeek> freeDaysPerSemester = IntStream.iterate(0, i -> i < po2017.getSemesterCount(), i -> i + 1)
