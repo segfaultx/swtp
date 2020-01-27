@@ -1,6 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
@@ -22,6 +25,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -45,6 +49,10 @@ public class TradeOffersRestController {
 	AdminSettingsService adminSettingsService;
 	TimeslotService timeslotService;
 	TradeOfferRepository tradeOfferRepository;
+	JmsTemplate jmsTopicTemplate;
+	TimeslotTopicManager timeslotTopicManager;
+	ObjectMapper objectMapper;
+	
 	/**
 	 * DELETE request handler.
 	 * provides an endpoint to {@code '/api/v1/trades/<id>/<id>'} through which an {student} may delete his {@link TradeOffer}.
@@ -155,6 +163,27 @@ public class TradeOffersRestController {
 			timetable.setDateEnd(LocalDate.now()); // DIRTY QUICK FIX
 			timetable.setDateStart(LocalDate.now());// DIRTY QUICK FIX
 			User user = userService.getById(tradeRequest.getOfferedByStudentMatriculationNumber()).orElseThrow(NotFoundException::new);
+			
+			Timeslot finalTimeslotR = requestingTimeslot;
+			jmsTopicTemplate.send(timeslotTopicManager.getTopic(timeslot), session -> {
+				try {
+					return session.createTextMessage(objectMapper.writeValueAsString(finalTimeslotR));
+				} catch(JsonProcessingException e) {
+					e.printStackTrace();
+				}
+				return session.createTextMessage("{}");
+			});
+			
+			Timeslot finalTimeslotO = offeringTimeslot;
+			jmsTopicTemplate.send(timeslotTopicManager.getTopic(timeslot), session -> {
+				try {
+					return session.createTextMessage(objectMapper.writeValueAsString(finalTimeslotO));
+				} catch(JsonProcessingException e) {
+					e.printStackTrace();
+				}
+				return session.createTextMessage("{}");
+			});
+			
 			
 			timetable.setTimeslots(user.getTimeslots());
 			return new ResponseEntity<>(timetable, HttpStatus.OK);
