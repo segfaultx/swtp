@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.configuration.messaging;
 
 import de.hsrm.mi.swtp.exchangeplatform.messaging.factory.TopicFactory;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.admin.ExchangeplatformAdminsMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +35,19 @@ public class MessagingDestinationConfig {
 						   .connectionFactory(connectionFactory)
 						   .build()
 						   .createTopic(ExchangeplatformMessageListener.TOPICNAME);
+	}
+	
+	/**
+	 * A {@link Topic} used for publishing messages to basically any active client.
+	 * @return
+	 * @throws JMSException
+	 */
+	@Bean(name = "adminNotificationsTopics")
+	public Topic adminNotificationsTopics() throws JMSException {
+		return TopicFactory.builder()
+						   .connectionFactory(connectionFactory)
+						   .build()
+						   .createTopic(ExchangeplatformAdminsMessageListener.TOPICNAME);
 	}
 	
 }
