@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Utils class for filtering TradeOffers
  *
- * @author Dennis Schad
+ * @author Dennis Schad, Amatus Muscheites
  *
  */
 @Slf4j
