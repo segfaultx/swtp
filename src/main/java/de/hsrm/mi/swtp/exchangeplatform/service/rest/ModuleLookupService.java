@@ -51,15 +51,16 @@ public class ModuleLookupService {
 				.filter(module -> !module.getTimeslots().isEmpty())
 				.collect(toList());
 		List<Timeslot> out = new ArrayList<>();
-		
+		List<Module> copyRemainingModules = new ArrayList<>(remainingModules);
 		for(Module module : remainingModules){
 			for(Timeslot ts : module.getTimeslots()){
 				if((ts.getTimeSlotType() != TypeOfTimeslots.VORLESUNG) && timeslotService.hasCollisions(ts, usr.getTimeslots())){
-					remainingModules.remove(module);
+					copyRemainingModules.remove(module);
 					break;
 				}
 			}
 		}
+		remainingModules = copyRemainingModules;
 		
 		// just get timeslots of type VORLESUNG
 		remainingModules.forEach(module -> out
