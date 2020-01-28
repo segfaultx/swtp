@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
@@ -21,6 +22,7 @@ import java.util.List;
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
+@Getter
 public class CustomPythonFilter implements Filter {
 	
 	@Id

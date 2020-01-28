@@ -50,6 +50,10 @@ public class TimeTableController {
 	}
 	
 	@GetMapping("/{id}")
+	@Operation(description = "get timetable by id", operationId = "getTimetableById")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully fetched timetable"),
+							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
+							@ApiResponse(responseCode = "500", description = "internal error while fetching timetable") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<TimeTable> getById(@PathVariable Long id) throws Exception {
 		
@@ -60,16 +64,13 @@ public class TimeTableController {
 	
 	@GetMapping("/modulesforstudent/{studentId}")
 	@Operation(description = "get potential modules for student", operationId = "getModulesForStudent")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "sucessfully fetched modules for student"),
-			@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
-			@ApiResponse(responseCode = "400", description = "malformed ID"),
-			@ApiResponse(responseCode = "404", description = "unknown student id")})
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "sucessfully fetched modules for student"),
+							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed ID"),
+							@ApiResponse(responseCode = "404", description = "unknown student id") })
 	@PreAuthorize("hasRole('MEMBER')")
-	public ResponseEntity<List<Timeslot>> getTimeslotsForStudent(@PathVariable("studentId") Long studentId,
-																 Principal principal) throws NotFoundException {
-		log.info(String.format("GET REQUEST: getModulesForStudent, by user: %s, for studentid %d",
-							   principal.getName(), studentId));
+	public ResponseEntity<List<Timeslot>> getTimeslotsForStudent(@PathVariable("studentId") Long studentId, Principal principal) throws NotFoundException {
+		log.info(String.format("GET REQUEST: getModulesForStudent, by user: %s, for studentid %d", principal.getName(), studentId));
 		var usr = userService.getByUsername(principal.getName()).orElseThrow(NotFoundException::new);
 		var potentialModules = moduleService.lookUpAvailableModulesForStudent(usr);
 		return new ResponseEntity<>(potentialModules, HttpStatus.OK);

@@ -3,7 +3,6 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.ModuleRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
@@ -133,8 +132,9 @@ public class ModuleRestController {
 							   principal.getName(), studentId));
 		log.info(String.format("LOOKING UP USER WITH USERNAME: %s", principal.getName()));
 		var usr = userService.getById(studentId).orElseThrow(NotFoundException::new);
-		if (!usr.getId().equals(studentId) && usr.getAuthenticationInformation().getRole() != Roles.ADMIN){
-			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+		var requestingUser = userService.getByUsername(principal.getName()).orElseThrow(NotFoundException::new);
+		if (!requestingUser.getId().equals(studentId) && requestingUser.getAuthenticationInformation().getRole() != Roles.ADMIN){
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		var potentialModules = moduleService.lookUpAvailableModulesForStudent(usr);
 		return new ResponseEntity<>(potentialModules, HttpStatus.OK);

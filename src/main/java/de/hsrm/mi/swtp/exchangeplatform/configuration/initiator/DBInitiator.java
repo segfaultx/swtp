@@ -51,6 +51,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		log.info("Filling Database with dark magic");
 		
+		//START STUDENTS
 		// START Dennis
 		User dennis = userFactory.createStudent("Dennis", "Schad", 1006351L);
 		// END Dennis
@@ -62,18 +63,6 @@ public class DBInitiator implements ApplicationRunner {
 		// START Jöndhard
 		User joendhard = userFactory.createStudent("Jöndhard", "Joendhardson", 1006333L);
 		// END Jöndhard
-		
-		// START Weitz
-		User weitz = userFactory.createLecturerADMIN("Wolfgang", "Weitz", 171717171717L, "WZ");
-		// END WEITZ
-		
-		// START FRITZ
-		User fritz = userFactory.createLecturer("Fritzchen", "Fritz", 16161616L, "FF");
-		// END fritz
-		
-		// START Schwanecke
-		User schwanecke = userFactory.createLecturerADMIN("Ulrich", "Schwanecke", 16161616L, "SW");
-		// END schwanecke
 		
 		// START CHANDLER
 		User chandler = userFactory.createStudent("Chandler", "Bing", 1005917L);
@@ -90,10 +79,54 @@ public class DBInitiator implements ApplicationRunner {
 		// START SAMWEIS
 		User samweis = userFactory.createStudent("Samweis", "Gamdschie", 1035233L);
 		// END SAMWEIS
+		//END STUDENTS
+		
+		
+		//START LECTURERS
+		// START FRITZ
+		User fritz = userFactory.createLecturer("Fritzchen", "Fritz", 16161616L, "FF");
+		// END fritz
+		
+		//START CALVUS
+		User calvus = userFactory.createLecturer("Daniela", "Calvus", 87654321L, "DC");
+		//END CALVUS
+		
+		//START CALVUS
+		User breckheimer = userFactory.createLecturer("Stephan", "Breckheimer", 100000L, "DC");
+		//END CALVUS
+		
+		//START CALVUS
+		User ederer = userFactory.createLecturer("Peter", "Ederer", 100000L, "PE");
+		//END CALVUS
+		//END LECTURERS
+		
+		
+		//START LECTURER + ADMINS
+		// START Weitz
+		User weitz = userFactory.createLecturerADMIN("Wolfgang", "Weitz", 171717171717L, "WZ");
+		// END WEITZ
+		
+		// START Schwanecke
+		User schwanecke = userFactory.createLecturerADMIN("Ulrich", "Schwanecke", 16161616L, "SW");
+		// END schwanecke
 		
 		// START KRECHEL
 		User krechel = userFactory.createLecturerADMIN("Dirk", "Krechel", 12345678L, "KC");
 		// END KRECHEL
+		
+		//START BERDUX
+		User berdux = userFactory.createLecturerADMIN("Joerg", "Berdux", 42424242L, "BX");
+		//END BERDUX
+		
+		//START SCHAIBLE
+		User schaible = userFactory.createLecturerADMIN("Philipp", "Schaible", 5984131L, "PS");
+		//END SCHAIBLE
+		
+		//START Pedersen
+		User pedersen = userFactory.createLecturerADMIN("Sebastian", "Pedersen", 1212122L, "PD");
+		//END Pedersen
+		//END LECTURER + ADMINS
+		
 		
 		// START PO 2017
 		PORestriction restriction2017 = poRestrictionFactory.createPO();
@@ -106,33 +139,102 @@ public class DBInitiator implements ApplicationRunner {
 		po2017.setRestriction(restriction2017);
 		// END PO 2017
 		
+		//START SEMESTER 1
+		// START Modul Einführung in die Medieninformatik
+		Module eim = moduleFactory.createModule("Einführung in die Medieninformatik", "MI", 1100L, po2017, 1L);
+		// END Modul Einführung in die Medieninformatik
+		
+		// START Modul Programmieren 1
+		Module prog1 = moduleFactory.createModule("Programmieren 1", "PROG 1", 1120L, po2017, 1L);
+		// END Modul Programmieren 1
+		
+		// START Modul Einfuerung in die Gestaltung
+		Module eges = moduleFactory.createModule("Einfuerung in die Gestaltung", "EGES", 1230L, po2017, 1L);
+		// END Modul Einfuerung in die Gestaltung
+		
+		// START Modul Analysis
+		Module ana = moduleFactory.createModule("Analysis", "ANA", 1340L, po2017, 1L);
+		// END Modul Analysis
+		
+		// START Modul Grundlagen der Betriebswirtschaftslehre
+		Module bwl = moduleFactory.createModule("Grundlagen der Betriebswirtschaftslehre", "BWL", 1450L, po2017, 1L);
+		// END Modul Grundlagen der Betriebswirtschaftslehre
+		//END SEMESTER 1
+		
+		
+		//START SEMESTER 2
+		// START Modul Algorithmen und Datenstrukturen
+		Module ads = moduleFactory.createModule("Algorithmen und Datenstrukturen", "ADS", 2110L, po2017, 2L);
+		// END Modul Algorithmen und Datenstrukturen
+		
+		// START Modul Auszeichnungssprachen
+		Module azs = moduleFactory.createModule("Auszeichnungssprachen", "AZS", 2120L, po2017, 2L);
+		// END Modul Auszeichnungssprachen
+		
+		// START Modul Programmieren 2
+		Module prog2 = moduleFactory.createModule("Programmieren 2", "PROG 2", 2130L, po2017, 2L);
+		// END Modul Programmieren 2
+		
+		// START Modul Gestaltung elektronischer Medien
+		Module gem = moduleFactory.createModule("Gestaltung elektronischer Medien", "GEM", 2240L, po2017, 2L);
+		// END Modul Gestaltung elektronischer Medien
+		
+		// START Lineare Algebra
+		Module la = moduleFactory.createModule("Lineare Algebra", "LA", 2350L, po2017, 2L);
+		// END Modul Lineare Algebra
+		
+		// START IT-Recht und Datenschutz
+		Module recht = moduleFactory.createModule("IT-Recht und Datenschutz", "RECHT", 2460L, po2017, 2L);
+		// END Modul IT-Recht und Datenschutz
+		//END SEMESTER 2
+		
+		
+		//START SEMESTER 3
 		// START Modul AFS
 		Module afs = moduleFactory.createModule("Automaten und formale Sprachen", "AFS", 3110L, po2017, 3L);
 		// END Modul AFS
-		
-		// START Modul CG
-		Module cg = moduleFactory.createModule("Computergrafiken", "CG", 4120L, po2017, 4L);
-		// END Modul AFS
-		
-		// START Modul Programmieren 3
-		Module prog3 = moduleFactory.createModule("Programmieren 3", "Prog 3", 3140L, po2017, 3L);
-		// END Modul Programmieren 3
 		
 		// START Modul Datenbanksysteme
 		Module dbs = moduleFactory.createModule("Datenbanksysteme", "DBS", 3120L, po2017, 3L);
 		// END Modul Datenbanksysteme
 		
-		// START Modul Algorithmen und Datenstrukturen
-		Module ads = moduleFactory.createModule("Algorithmen und Datenstrukturen", "ADS", 2110L, po2017, 3L);
-		// END Modul Algorithmen und Datenstrukturen
+		// START Modul Entwicklung interaktiver Benutzungsoberflaechen
+		Module eibo = moduleFactory.createModule("Entwicklung interaktiver Benutzungsoberflaechen", "EIBO", 3120L, po2017, 3L);
+		// END Modul Entwicklung interaktiver Benutzungsoberflaechen
 		
-		// START Einführung in die Medieninformatik
-		Module eim = moduleFactory.createModule("Einführung in die Medieninformatik", "MI", 1100L, po2017, 1L);
-		// END Modul Einführung in die Medieninformatik
+		// START Modul Programmieren 3
+		Module prog3 = moduleFactory.createModule("Programmieren 3", "Prog 3", 3140L, po2017, 3L);
+		// END Modul Programmieren 3
 		
-		// START Einführung in die Medieninformatik
+		// START Modul Angewandte Mathematik
+		Module am = moduleFactory.createModule("Angewandte Mathematik", "AM", 3360L, po2017, 3L);
+		// END Modul Angewandte Mathematik
+		//END SEMESTER 3
+		
+		
+		//START SEMESTER 4
+		// START Modul CG
+		Module cg = moduleFactory.createModule("Computergrafik", "CG", 4120L, po2017, 4L);
+		// END Modul CG
+		
+		// START Modul Rechnernetze und Betriebssysteme
+		Module rn = moduleFactory.createModule("Rechnernetze und Betriebssysteme", "RN", 4130L, po2017, 4L);
+		// END Modul Rechnernetze und Betriebssysteme
+		
+		// START Modul Softwaretechnik
 		Module swt = moduleFactory.createModule("Softwaretechnik", "SWT", 4140L, po2017, 4L);
-		// END Modul Einführung in die Medieninformatik
+		// END Modul Softwaretechnik
+		
+		// START Modul Webbasierte Anwendungen
+		Module web = moduleFactory.createModule("Webbasierte Anwendungen", "WEB", 4150L, po2017, 4L);
+		// END Modul Webbasierte Anwendungen
+		
+		// START Modul Animation
+		Module ani = moduleFactory.createModule("Animation", "ANI", 4250L, po2017, 4L);
+		// END Modul Animation
+		//END SEMESTER 4
+		
+		
 		
 		// START ROOM D12
 		Room d12 = roomFactory.createRoom("D12");
@@ -166,6 +268,8 @@ public class DBInitiator implements ApplicationRunner {
 		// START AFS UEBUNG 4
 		Timeslot afsUebung4 = timeslotFactory.createTimeslotUebung(DayOfWeek.FRIDAY, "IV", afs, LocalTime.of(11, 45), d12_out);
 		// END AFS UEBUNG 4
+		//END AFS Timeslots
+		
 		
 		// START SWT Timeslots
 		// START SWT VL
@@ -179,6 +283,8 @@ public class DBInitiator implements ApplicationRunner {
 		// START swt Prakt 2
 		Timeslot swtPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY,  "B", swt, LocalTime.of(11, 45), d12_out);
 		// END swt Prakt 2
+		//END SWT Timeslots
+		
 		
 		// START DBS Timeslots
 		// START DBS VL
@@ -192,6 +298,7 @@ public class DBInitiator implements ApplicationRunner {
 		// START dbs Prakt 2
 		Timeslot dbsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY,  "B", dbs, LocalTime.of(11, 45), d13_out);
 		// END dbs Prakt 2
+		//END DBS Timeslots
 		
 		
 		// START PROG3 Timeslots
@@ -214,6 +321,7 @@ public class DBInitiator implements ApplicationRunner {
 		// START PROG3 Prakt 4
 		Timeslot prog3Praktikum4 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY,  "D", prog3, LocalTime.of(11, 45), d12_out);
 		// END PROG3 Prakt 4
+		//END PROG3 Timeslots
 		
 		
 		// START ADS Timeslots
@@ -228,19 +336,20 @@ public class DBInitiator implements ApplicationRunner {
 		// START ads Prakt 2
 		Timeslot adsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY,"B", ads, LocalTime.of(14, 15), d13_out);
 		// END ads Prakt 2
+		//END ADS Timeslots
 		
 		//START MI Timeslots
 		//START MI VL
 		Timeslot miVorlesung = timeslotFactory.createTimeslotVorlesung(DayOfWeek.MONDAY, eim, LocalTime.of(11, 45), d11_out);
 		//END MI VL
 		
-		// START ADS Prakt 1
+		// START MI Prakt 1
 		Timeslot emiPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY,  "A", eim, LocalTime.of(14, 15), d13_out);
-		// END ads Prakt 1
+		// END MI Prakt 1
 		
-		// START ads Prakt 2
+		// START MI Prakt 2
 		Timeslot emiPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, "B", eim, LocalTime.of(10, 00), d13_out);
-		// END ads Prakt 2
+		// END MI Prakt 2
 		
 		//END MI Timeslots
 		
