@@ -18,11 +18,11 @@ public class AuthenticationRestControllerTest extends BaseRestTest {
 	
 	private String username = "wweit001";
 	private String pass = "wweit001";
-
+	
 	@Test
-	void testLogin() throws Exception{
+	void testLogin() throws Exception {
 		var response = getLoginToken(username, pass);
-		assertNotNull("JWT Null",response);
+		assertNotNull("JWT Null", response);
 	}
 	
 	@Test
@@ -30,39 +30,31 @@ public class AuthenticationRestControllerTest extends BaseRestTest {
 		LoginRequestBody falseJson = new LoginRequestBody();
 		falseJson.setPassword("wasd");
 		falseJson.setUsername("wasd");
-		mockMvc.perform(post("/api/v1/auth/login")
-									.contentType(MediaType.APPLICATION_JSON)
-									.content(new ObjectMapper().writeValueAsString(falseJson)))
-				.andExpect(status().isUnauthorized()).andReturn();
+		mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(falseJson)))
+			   .andExpect(status().isUnauthorized())
+			   .andReturn();
 	}
 	
 	@Test
 	void testLogout() throws Exception {
 		var token = getLoginToken(username, pass);
-		mockMvc.perform(post("/api/v1/auth/logout")
-					   .header("Authorization","Bearer "+ token))
-			   .andExpect(status().isOk());
+		mockMvc.perform(post("/api/v1/auth/logout").header("Authorization", "Bearer " + token)).andExpect(status().isOk());
 	}
 	
 	//TODO: wait for exception handling
 	void testFailedLogout() throws Exception {
 		var token = getLoginToken(username, pass);
 		var failToken = token.replace("a", "e");
-		mockMvc.perform(post("/ap1/v1/auth/logout")
-									.header("Authorization","Bearer " + failToken))
-				.andExpect(status().isBadRequest());
+		mockMvc.perform(post("/ap1/v1/auth/logout").header("Authorization", "Bearer " + failToken)).andExpect(status().isBadRequest());
 	}
 	
 	@Test
 	void testWhoAmI() throws Exception {
 		var token = getLoginToken(username, pass);
-		var response = mockMvc.perform(get("/api/v1/auth/whoami")
-											   .header("Authorization", "Bearer " + token))
-							  .andExpect(status().isOk())
-			   .andReturn();
+		var response = mockMvc.perform(get("/api/v1/auth/whoami").header("Authorization", "Bearer " + token)).andExpect(status().isOk()).andReturn();
 		WhoAmI out = new ObjectMapper().readValue(response.getResponse().getContentAsString(), WhoAmI.class);
 		assertEquals("WhoAmI equals USERNAME", out.getUsername(), "wweit001");
 		assertEquals("WhoAmI equals ROLE", out.getRole(), Roles.ADMIN);
 	}
-
+	
 }

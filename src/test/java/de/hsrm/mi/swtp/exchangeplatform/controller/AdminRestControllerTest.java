@@ -16,9 +16,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 
-
 import javax.transaction.Transactional;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,11 +24,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.springframework.test.util.AssertionErrors.*;
+import static org.springframework.test.util.AssertionErrors.assertEquals;
+import static org.springframework.test.util.AssertionErrors.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 public class AdminRestControllerTest extends BaseRestTest {
 	@Autowired
@@ -64,8 +63,7 @@ public class AdminRestControllerTest extends BaseRestTest {
 		request.setDateEndTrades(LocalDateTime.now());
 		request.setDateStartTrades(LocalDateTime.now());
 		request.setTradesActive(false);
-		var result = mockMvc.perform(
-				post("/api/v1/admin/settings").contentType(MediaType.APPLICATION_JSON).content(serializer.writeValueAsString(request)))
+		var result = mockMvc.perform(post("/api/v1/admin/settings").contentType(MediaType.APPLICATION_JSON).content(serializer.writeValueAsString(request)))
 							.andExpect(status().isOk())
 							.andReturn();
 		var changed_setting = adminSettingsRepository.findById(1L).orElseThrow();
@@ -77,21 +75,20 @@ public class AdminRestControllerTest extends BaseRestTest {
 	@WithMockUser(roles = "ADMIN")
 	@Transactional
 	void testFalseAdminsettingsPost() throws Exception {
-		mockMvc.perform(post("/api/v1/admin/settings")
-								.contentType(MediaType.APPLICATION_JSON).content("null"))
-			   .andExpect(status().isBadRequest());
+		mockMvc.perform(post("/api/v1/admin/settings").contentType(MediaType.APPLICATION_JSON).content("null")).andExpect(status().isBadRequest());
 	}
+	
 	@Test
 	@WithMockUser(roles = "USER")
 	void testUnauthorized() throws Exception {
 		mockMvc.perform(get("/api/v1/admin/settings")).andExpect(status().is4xxClientError());
 	}
+	
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	void testGetAllFilters() throws Exception {
-		var result = new ObjectMapper().readValue(mockMvc.perform(get("/api/v1/admin/settings/filters"))
-		.andExpect(status().isOk())
-		.andReturn().getResponse().getContentAsString(), List.class);
+		var result = new ObjectMapper().readValue(
+				mockMvc.perform(get("/api/v1/admin/settings/filters")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString(), List.class);
 		assertEquals("All Filters equals", filterUtils.getAllAvailableFilters(), result);
 	}
 	
@@ -101,16 +98,17 @@ public class AdminRestControllerTest extends BaseRestTest {
 		CustomPythonFilterRequest json = new CustomPythonFilterRequest();
 		json.setCode("print 'hello'");
 		json.setFilterName("testFilter");
-		var result = new ObjectMapper().readValue(mockMvc.perform(post("/api/v1/admin/customfilters").contentType(MediaType.APPLICATION_JSON)
-									.content(new ObjectMapper().writeValueAsString(json)))
-				.andExpect(status().isOk())
-				.andReturn()
-				.getResponse()
-				.getContentAsString(), CustomPythonFilter.class);
+		var result = new ObjectMapper().readValue(mockMvc.perform(
+				post("/api/v1/admin/customfilters").contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(json)))
+														 .andExpect(status().isOk())
+														 .andReturn()
+														 .getResponse()
+														 .getContentAsString(), CustomPythonFilter.class);
 		assertEquals("Custom python filter name equals", json.getFilterName(), result.getFilterName());
 		assertEquals("Custom python filter code equals", json.getCode(), result.getPythonCode());
 		assertTrue("Filter registered in system", filterUtils.filterExists("testFilter"));
 	}
+	
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	void testGetCustoMpythonFilterTemplate() throws Exception {
@@ -119,15 +117,14 @@ public class AdminRestControllerTest extends BaseRestTest {
 		InputStream inputStream = resource.getInputStream();
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 		String line = reader.readLine();
-		while(line != null){
+		while(line != null) {
 			builder.append(line);
 			builder.append('\n'); // preserve line breaks
 			line = reader.readLine();
 		}
-		mockMvc.perform(get("/api/v1/admin/filtertemplate"))
-			   .andExpect(status().isOk())
-			   .andExpect(content().string(builder.toString()));
+		mockMvc.perform(get("/api/v1/admin/filtertemplate")).andExpect(status().isOk()).andExpect(content().string(builder.toString()));
 	}
+	
 	@Test
 	@WithMockUser(roles = "ADMIN")
 	void testTradingActive() throws Exception {

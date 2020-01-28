@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.web.servlet.MockMvc;
 
-
 import static org.springframework.test.util.AssertionErrors.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -24,28 +23,28 @@ public class UserRestControllerTest extends BaseRestTest {
 	void testGetById() throws Exception {
 		var dennis = userRepository.findByUsername("dscha001").orElseThrow();
 		var token = getLoginToken("dscha001", "dscha001");
-		var result = mockMvc.perform(get("/api/v1/users/" + dennis.getId())
-									.header("Authorization", "Bearer " + token))
-				.andExpect(status().isOk())
-				.andReturn()
-				.getResponse().getContentAsString();
-		assertNotNull("GetById null",  result);
+		var result = mockMvc.perform(get("/api/v1/users/" + dennis.getId()).header("Authorization", "Bearer " + token))
+							.andExpect(status().isOk())
+							.andReturn()
+							.getResponse()
+							.getContentAsString();
+		assertNotNull("GetById null", result);
 	}
+	
 	@Test
 	void testGetByIdUnauthorized() throws Exception {
-		mockMvc.perform(get("/api/v1/users/8"))
-							.andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/api/v1/users/8")).andExpect(status().isUnauthorized());
 	}
 	
 	@Test
 	void testGetAll() throws Exception {
 		var token = getLoginToken("wweit001", "wweit001");
 		
-		var result = mockMvc.perform(get("/api/v1/users")
-									.header("Authorization", "Bearer " + token))
-				.andExpect(status().isOk())
-				.andReturn()
-				.getResponse().getContentAsString();
+		var result = mockMvc.perform(get("/api/v1/users").header("Authorization", "Bearer " + token))
+							.andExpect(status().isOk())
+							.andReturn()
+							.getResponse()
+							.getContentAsString();
 		assertNotNull("Get all null", result);
 	}
 	
@@ -53,21 +52,19 @@ public class UserRestControllerTest extends BaseRestTest {
 	void testGetAllUnauthorized() throws Exception {
 		var token = getLoginToken("dscha001", "dscha001");
 		
-		mockMvc.perform(get("/api/v1/users")
-					   .header("Authorization", "Bearer " + token))
-			   .andExpect(status().isForbidden());
+		mockMvc.perform(get("/api/v1/users").header("Authorization", "Bearer " + token)).andExpect(status().isForbidden());
 	}
 	
 	//TODO: fix im usercontroller hinzufügen -> user muss erst aus timeslots ausgetragen
 	// werden bevor er gelöscht werden kann, sonst fk constraint violation
 	//@Test
-	void testDeleteUser () throws Exception {
+	void testDeleteUser() throws Exception {
 		var token = getLoginToken("wweit001", "wweit001");
-		var result = mockMvc.perform(delete("/api/v1/users/admin/8")
-					   .header("Authorization", "Bearer " + token))
-			   .andExpect(status().isOk())
-			   .andReturn()
-			   .getResponse().getContentAsString();
+		var result = mockMvc.perform(delete("/api/v1/users/admin/8").header("Authorization", "Bearer " + token))
+							.andExpect(status().isOk())
+							.andReturn()
+							.getResponse()
+							.getContentAsString();
 		assertNotNull("Delete user null", result);
 	}
 	

@@ -28,9 +28,7 @@ public class BaseRestTest {
 		LoginRequestBody json = new LoginRequestBody();
 		json.setUsername(username);
 		json.setPassword(pass);
-		var result = mockMvc.perform(post("/api/v1/auth/login")
-											 .contentType(MediaType.APPLICATION_JSON)
-											 .content(new ObjectMapper().writeValueAsString(json)))
+		var result = mockMvc.perform(post("/api/v1/auth/login").contentType(MediaType.APPLICATION_JSON).content(new ObjectMapper().writeValueAsString(json)))
 							.andExpect(status().isOk())
 							.andReturn()
 							.getResponse()

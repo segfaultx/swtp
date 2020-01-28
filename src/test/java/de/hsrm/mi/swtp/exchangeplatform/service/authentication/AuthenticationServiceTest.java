@@ -3,7 +3,6 @@ package de.hsrm.mi.swtp.exchangeplatform.service.authentication;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LoginResponseBody;
-import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.LogoutResponseBody;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import org.junit.Rule;
@@ -28,30 +27,26 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
 public class AuthenticationServiceTest {
-
+	
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 	@Autowired
 	AuthenticationService authenticationService;
-	
 	@Autowired
 	UserService userService;
 	
-	@Rule
-	public ExpectedException thrown= ExpectedException.none();
-	
 	@Test
 	public void isLoginValidTestValidCredentials() {
-
+		
 		User.UserBuilder builder;
 		String password = "hallo";
-
-		builder = User.withUsername("test")
-					  .password(new BCryptPasswordEncoder().encode(password))
-					  .roles("ADMIN");
+		
+		builder = User.withUsername("test").password(new BCryptPasswordEncoder().encode(password)).roles("ADMIN");
 		
 		UserDetails userDetails = builder.build();
-
+		
 		boolean actual = authenticationService.isLoginValid(password, userDetails);
-
+		
 		assertTrue(actual);
 	}
 	
@@ -61,9 +56,7 @@ public class AuthenticationServiceTest {
 		User.UserBuilder builder;
 		String password = "hallo";
 		
-		builder = User.withUsername("test")
-					  .password(new BCryptPasswordEncoder().encode("password"))
-					  .roles("ADMIN");
+		builder = User.withUsername("test").password(new BCryptPasswordEncoder().encode("password")).roles("ADMIN");
 		
 		UserDetails userDetails = builder.build();
 		
@@ -114,7 +107,7 @@ public class AuthenticationServiceTest {
 			authenticationService.logoutUser(user, "");
 		});
 	}
-
+	
 	@Test
 	public void testLogoutUserWithValidCredentials() throws NotFoundException, JMSException {
 		
@@ -125,12 +118,11 @@ public class AuthenticationServiceTest {
 		LoginResponseBody responseBody = authenticationService.loginUser(requestBody);
 		String token = JWTTokenUtils.tokenWithoutPrefix(responseBody.getTokenResponse().getToken());
 		
-		de.hsrm.mi.swtp.exchangeplatform.model.data.User user = userService.getByUsername("dscha001")
-				.orElseThrow(NotFoundException::new);
+		de.hsrm.mi.swtp.exchangeplatform.model.data.User user = userService.getByUsername("dscha001").orElseThrow(NotFoundException::new);
 		
 		// Then Logout
 		LogoutResponseBody logoutResponseBody = authenticationService.logoutUser(user, token);
 		assertNotNull(logoutResponseBody);
 	}
-
+	
 }

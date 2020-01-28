@@ -12,7 +12,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class TimeSlotRestControllerTest extends BaseRestTest{
+public class TimeSlotRestControllerTest extends BaseRestTest {
 	
 	String username = "dscha001";
 	String pass = "dscha001";
@@ -24,10 +24,11 @@ public class TimeSlotRestControllerTest extends BaseRestTest{
 	void testGetById() throws Exception {
 		var ts = timeslotRepository.findAll().get(0);
 		var token = getLoginToken(username, pass);
-		var result = mockMvc.perform(get("/api/v1/timeslots/" + ts.getId())
-								.header("Authorization", "Bearer " + token))
-			   .andExpect(status().isOk())
-			   .andReturn().getResponse().getContentAsString();
+		var result = mockMvc.perform(get("/api/v1/timeslots/" + ts.getId()).header("Authorization", "Bearer " + token))
+							.andExpect(status().isOk())
+							.andReturn()
+							.getResponse()
+							.getContentAsString();
 		assertNotNull("GetById null", result);
 	}
 	
@@ -38,15 +39,16 @@ public class TimeSlotRestControllerTest extends BaseRestTest{
 		TimeslotRequestBody timeslotRequestBody = new TimeslotRequestBody();
 		timeslotRequestBody.setStudentId(8L);
 		timeslotRequestBody.setTimeslotId(24L);
-		var result = mockMvc.perform(post("/api/v1/timeslots/join")
-											 .header("Authorization", "Bearer " + token)
-									.contentType(MediaType.APPLICATION_JSON)
-									.content(new ObjectMapper().writeValueAsString(timeslotRequestBody)))
-				.andExpect(status().isOk()).andReturn()
-				.getResponse().getContentAsString();
+		var result = mockMvc.perform(post("/api/v1/timeslots/join").header("Authorization", "Bearer " + token)
+																   .contentType(MediaType.APPLICATION_JSON)
+																   .content(new ObjectMapper().writeValueAsString(timeslotRequestBody)))
+							.andExpect(status().isOk())
+							.andReturn()
+							.getResponse()
+							.getContentAsString();
 		assertNotNull("Join Appointment null", result);
 	}
 	
 	//TODO: wenn anderes todo geklärt: leaveappointment test nachziehen
-
+	
 }
