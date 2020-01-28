@@ -5,7 +5,6 @@ import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.python.util.PythonInterpreter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
