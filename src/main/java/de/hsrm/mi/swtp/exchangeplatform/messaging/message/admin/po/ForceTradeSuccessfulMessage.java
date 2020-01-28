@@ -24,7 +24,7 @@ public class ForceTradeSuccessfulMessage extends Message {
 	
 	@JsonProperty(value = "type", required = true)
 	@Schema(nullable = false, required = true, format = "string", type = "string")
-	private final MessageType messageType = MessageType.TRADE_OFFER_SUCCESS;
+	private final MessageType messageType = MessageType.FORCED_TRADE_OFFER;
 	
 	@JsonProperty(value = "message", defaultValue = "", required = true)
 	@Schema(nullable = false, required = true, format = "string", type = "string")
