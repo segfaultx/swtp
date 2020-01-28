@@ -20,7 +20,7 @@ import static org.springframework.test.util.AssertionErrors.assertNotNull;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class TradeOffersRestControllerTest extends BaseRestTest{
+public class TradeOffersRestControllerTest extends BaseRestTest {
 	@Autowired
 	TradeOfferRepository tradeOfferRepository;
 	
@@ -29,47 +29,38 @@ public class TradeOffersRestControllerTest extends BaseRestTest{
 	
 	@Autowired
 	TimeslotRepository timeslotRepository;
-	
-	private String username = "dscha001";
-	private String pass = "dscha001";
-	
 	@Autowired
 	UserRepository userRepository;
+	private String username = "dscha001";
+	private String pass = "dscha001";
 	
 	@Test
 	@Transactional
 	void testCreateTradeOffer() throws Exception {
 		var dennis = userRepository.findByUsername(username).orElseThrow();
-		var tsDennis = dennis.getTimeslots()
-					   .stream()
-					   .filter(timeslot ->  timeslot.getTimeSlotType() != TypeOfTimeslots.PRAKTIKUM)
-					   .findFirst()
-					   .orElseThrow();
+		var tsDennis = dennis.getTimeslots().stream().filter(timeslot -> timeslot.getTimeSlotType() != TypeOfTimeslots.PRAKTIKUM).findFirst().orElseThrow();
 		var tsDennisModule = tsDennis.getModule();
 		var tsOther = timeslotRepository.findAllByModule(tsDennisModule)
-				.stream()
-				.filter(ts -> !ts.getId().equals(tsDennis.getId())
-						&& (ts.getTimeSlotType() == TypeOfTimeslots.PRAKTIKUM || ts.getTimeSlotType() == TypeOfTimeslots.UEBUNG))
-				.findFirst()
-				.orElseThrow();
-		var token = getLoginToken(username,pass);
+										.stream()
+										.filter(ts -> !ts.getId()
+														 .equals(tsDennis.getId()) && (ts.getTimeSlotType() == TypeOfTimeslots.PRAKTIKUM || ts.getTimeSlotType() == TypeOfTimeslots.UEBUNG))
+										.findFirst()
+										.orElseThrow();
+		var token = getLoginToken(username, pass);
 		TradeRequest json = new TradeRequest();
 		json.setOfferedByStudentMatriculationNumber(dennis.getId());
 		json.setOfferedTimeslotId(tsDennis.getId());
 		json.setWantedTimeslotId(tsOther.getId());
-		var result = mockMvc.perform(post("/api/v1/trades/create")
-											 .contentType(MediaType.APPLICATION_JSON)
-											 .content(new ObjectMapper().writeValueAsString(json))
-											 .header("Authorization", "Bearer " + token))
-				.andExpect(status().isOk())
-				.andReturn();
+		var result = mockMvc.perform(post("/api/v1/trades/create").contentType(MediaType.APPLICATION_JSON)
+																  .content(new ObjectMapper().writeValueAsString(json))
+																  .header("Authorization", "Bearer " + token)).andExpect(status().isOk()).andReturn();
 		var jsonString = result.getResponse().getContentAsString();
 		var tradeofferId = JsonPath.read(jsonString, "$.id");
-		var persistedTradeoffer = tradeOfferRepository.findById(Integer.toUnsignedLong((Integer)tradeofferId)).orElseThrow();
+		var persistedTradeoffer = tradeOfferRepository.findById(Integer.toUnsignedLong((Integer) tradeofferId)).orElseThrow();
 		assertNotNull("Tradeoffer null", persistedTradeoffer);
-		assertEquals("Tradeoffer offered id",tsDennis.getId(), persistedTradeoffer.getOffer().getId());
-		assertEquals("Tradeoffer seek id",tsOther.getId(), persistedTradeoffer.getSeek().getId());
-		assertEquals("Offerer ID",dennis.getId(), persistedTradeoffer.getOfferer().getId());
+		assertEquals("Tradeoffer offered id", tsDennis.getId(), persistedTradeoffer.getOffer().getId());
+		assertEquals("Tradeoffer seek id", tsOther.getId(), persistedTradeoffer.getSeek().getId());
+		assertEquals("Offerer ID", dennis.getId(), persistedTradeoffer.getOfferer().getId());
 		tradeOfferRepository.delete(persistedTradeoffer);
 		tradeOfferRepository.flush();
 	}
@@ -77,25 +68,21 @@ public class TradeOffersRestControllerTest extends BaseRestTest{
 	@Test
 	@Transactional
 	void createAndDeleteTradeOffer() throws Exception {
-
+		
 		var token = getLoginToken(username, pass);
 		TradeRequest json = new TradeRequest();
 		var dennis = userRepository.findByUsername(username).orElseThrow();
 		tradeOfferRepository.deleteAll(tradeOfferRepository.findAllByOfferer(dennis));
 		
 		// lookup random timeslot of type praktikum to offer for trade
-		var tsDennis = dennis.getTimeslots()
-							 .stream()
-							 .filter(timeslot ->  timeslot.getTimeSlotType() != TypeOfTimeslots.PRAKTIKUM)
-							 .findFirst()
-							 .orElseThrow();
+		var tsDennis = dennis.getTimeslots().stream().filter(timeslot -> timeslot.getTimeSlotType() != TypeOfTimeslots.PRAKTIKUM).findFirst().orElseThrow();
 		
 		var tsDennisModule = tsDennis.getModule();
 		// lookup other random timeslot to request a trade for, timeslot must be different from owned one
 		var tsOther = timeslotRepository.findAllByModule(tsDennisModule)
 										.stream()
-										.filter(ts -> !ts.getId().equals(tsDennis.getId())
-												&& (ts.getTimeSlotType() == TypeOfTimeslots.PRAKTIKUM || ts.getTimeSlotType() == TypeOfTimeslots.UEBUNG))
+										.filter(ts -> !ts.getId()
+														 .equals(tsDennis.getId()) && (ts.getTimeSlotType() == TypeOfTimeslots.PRAKTIKUM || ts.getTimeSlotType() == TypeOfTimeslots.UEBUNG))
 										.findFirst()
 										.orElseThrow();
 		json.setOfferedByStudentMatriculationNumber(dennis.getId());
@@ -103,17 +90,13 @@ public class TradeOffersRestControllerTest extends BaseRestTest{
 		json.setWantedTimeslotId(tsOther.getId());
 		
 		// create tradeoffer
-		var result = mockMvc.perform(post("/api/v1/trades/create")
-											 .contentType(MediaType.APPLICATION_JSON)
-											 .content(new ObjectMapper().writeValueAsString(json))
-											 .header("Authorization", "Bearer " + token))
-							.andExpect(status().isOk())
-							.andReturn();
+		var result = mockMvc.perform(post("/api/v1/trades/create").contentType(MediaType.APPLICATION_JSON)
+																  .content(new ObjectMapper().writeValueAsString(json))
+																  .header("Authorization", "Bearer " + token)).andExpect(status().isOk()).andReturn();
 		var jsonString = result.getResponse().getContentAsString();
 		
 		// delete tradeoffer
-		mockMvc.perform(delete("/api/v1/trades/"+dennis.getId()+"/"+tsOther.getId())
-								.header("Authorization", "Bearer " + token))
+		mockMvc.perform(delete("/api/v1/trades/" + dennis.getId() + "/" + tsOther.getId()).header("Authorization", "Bearer " + token))
 			   .andExpect(status().isOk());
 	}
 	
@@ -122,16 +105,14 @@ public class TradeOffersRestControllerTest extends BaseRestTest{
 	void testGetTradeOffersForTimeslot() throws Exception {
 		var token = getLoginToken(username, pass);
 		var dennis = userRepository.findByUsername("dscha001").orElseThrow();
-		var tsDennis = dennis.getTimeslots()
-							 .stream()
-							 .filter(timeslot ->  timeslot.getTimeSlotType() != TypeOfTimeslots.PRAKTIKUM)
-							 .findFirst()
-							 .orElseThrow();
+		var tsDennis = dennis.getTimeslots().stream().filter(timeslot -> timeslot.getTimeSlotType() != TypeOfTimeslots.PRAKTIKUM).findFirst().orElseThrow();
 		
 		
-		var result = mockMvc.perform(get("/api/v1/trades/" + tsDennis.getId())
-									.header("Authorization", "Bearer " + token)).andExpect(status().isOk())
-				.andReturn().getResponse().getContentAsString();
+		var result = mockMvc.perform(get("/api/v1/trades/" + tsDennis.getId()).header("Authorization", "Bearer " + token))
+							.andExpect(status().isOk())
+							.andReturn()
+							.getResponse()
+							.getContentAsString();
 		var deserializedResult = new ObjectMapper().readValue(result, Map.class);
 		assertNotNull("Tradeoffers Map null", deserializedResult);
 		

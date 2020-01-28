@@ -23,21 +23,21 @@ public class UserServiceTest {
 
 	@Autowired
 	private UserService service;
-	
+
 	private List<User> users = new ArrayList<>();
-	
+
 	@BeforeEach
 	public void getAllUsers() {
 		users = service.getAll();
 	}
-	
+
 	@Test
 	public void testGetUsersByValidUsername() {
 		User expected = users.get(0);
 		Optional<User> actual = service.getByUsername(expected.getAuthenticationInformation().getUsername());
-		
+
 		if(actual.isEmpty()) fail("No Users in Database");
-		
+
 		assertEquals(expected, actual.get());
 	}
 

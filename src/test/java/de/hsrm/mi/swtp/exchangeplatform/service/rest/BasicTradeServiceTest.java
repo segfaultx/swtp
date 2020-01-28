@@ -11,13 +11,13 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
 public class BasicTradeServiceTest {
-	
+
 	@Autowired
 	private BasicTradeService service;
-	
+
 	@Autowired
 	private UserRepository repository;
-	
+
 	// TODO: Write tests
 //	@Test
 //	public void testDoTradeInvalidStudentIdThrowsNotFoundException() {
