@@ -1,24 +1,24 @@
-package de.hsrm.mi.swtp.exchangeplatform.model.serializer;
+package de.hsrm.mi.swtp.exchangeplatform.model.serializer.admin;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.std.StdSerializer;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.ForceTradeSuccessfulMessage;
 
 import java.io.IOException;
 
-public class TradeOfferSuccessfulMessageSerializer extends StdSerializer<TradeOfferSuccessfulMessage> {
+public class ForceTradeSuccessfulMessageSerializer extends StdSerializer<ForceTradeSuccessfulMessage> {
 	
-	public TradeOfferSuccessfulMessageSerializer() {
+	public ForceTradeSuccessfulMessageSerializer() {
 		this(null);
 	}
 	
-	public TradeOfferSuccessfulMessageSerializer(Class<TradeOfferSuccessfulMessage> t) {
+	public ForceTradeSuccessfulMessageSerializer(Class<ForceTradeSuccessfulMessage> t) {
 		super(t);
 	}
 	
 	@Override
-	public void serialize(TradeOfferSuccessfulMessage value, JsonGenerator gen, SerializerProvider provider) throws IOException {
+	public void serialize(ForceTradeSuccessfulMessage value, JsonGenerator gen, SerializerProvider provider) throws IOException {
 		gen.writeStartObject();
 		gen.writeStringField("type", value.getMessageType().name());
 		gen.writeStringField("message", value.getMessage());
