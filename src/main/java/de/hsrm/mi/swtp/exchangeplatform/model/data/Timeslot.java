@@ -52,6 +52,8 @@ public class Timeslot implements Model {
 	
 	Boolean	isTradeable;
 	
+	String userInitials;
+	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "MODULE_ID")
 	@Schema(type = "object")
