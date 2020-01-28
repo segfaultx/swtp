@@ -40,17 +40,16 @@ public class CustomPythonFilter implements Filter {
 	
 	@Override
 	public List<TradeOffer> doFilter(List<TradeOffer> offers) throws RuntimeException {
-		// TODO: execute jython code here
 		ScriptEngineManager manager = new ScriptEngineManager();
 		ScriptEngine py = manager.getEngineByName("python");
+		py.put("offers", offers);
 		try{
-			var returnVal = py.eval("5*3");
-			System.out.print(returnVal);
+			py.eval(pythonCode);
 		}catch(ScriptException ex){
 			ex.printStackTrace();
-			throw new RuntimeException("Error while Executing Script");
+			throw new RuntimeException("Error processing the python script");
 		}
-		return null;
+		return offers;
 	}
 	
 	@Override
