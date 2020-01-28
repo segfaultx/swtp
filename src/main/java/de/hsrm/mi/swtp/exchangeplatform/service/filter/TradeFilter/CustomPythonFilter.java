@@ -9,6 +9,9 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.util.List;
 
 /**
@@ -35,9 +38,17 @@ public class CustomPythonFilter implements Filter {
 	
 	
 	@Override
-	public List<TradeOffer> doFilter(List<TradeOffer> offers) {
-		// TODO: execute jython code here
-		return null;
+	public List<TradeOffer> doFilter(List<TradeOffer> offers) throws RuntimeException {
+		ScriptEngineManager manager = new ScriptEngineManager();
+		ScriptEngine py = manager.getEngineByName("python");
+		py.put("offers", offers);
+		try{
+			py.eval(pythonCode);
+		}catch(ScriptException ex){
+			ex.printStackTrace();
+			throw new RuntimeException("Error processing the python script");
+		}
+		return offers;
 	}
 	
 	@Override

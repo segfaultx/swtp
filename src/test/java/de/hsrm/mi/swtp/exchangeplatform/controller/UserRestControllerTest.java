@@ -70,17 +70,5 @@ public class UserRestControllerTest extends BaseRestTest {
 			   .getResponse().getContentAsString();
 		assertNotNull("Delete user null", result);
 	}
-	@Test
-	void testDeleteUserUnauthorized() throws Exception {
-		mockMvc.perform(delete("/api/v1/users/admin/8"))
-			   .andExpect(status().isUnauthorized());
-	}
-	@Test
-	void testDeleteuserForbidden() throws Exception {
-		var token = getLoginToken("dscha001", "dscha001");
-		mockMvc.perform(delete("/api/v1/users/admin/8")
-					   .header("Authorization", "Bearer " +token))
-			   .andExpect(status().isForbidden());
-	}
 	
 }

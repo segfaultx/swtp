@@ -9,6 +9,7 @@ import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.RoomRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -484,6 +485,10 @@ public class DBInitiator implements ApplicationRunner {
 		adminSettingsService.setAdminSettings(persistedSettings);
 		
 		log.info("--> users " + usersToSave);
+		
+		CustomPythonFilter testFilter = new CustomPythonFilter("testFilter", "print 'Hello World'");
+		testFilter.doFilter(null);
+		log.warn("Done using testfilter");
 		
 //		poRepository.findByTitleIs(po2017.getTitle());
 		ArrayList<User> students_repo = new ArrayList<>();

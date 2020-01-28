@@ -11,5 +11,5 @@ public interface Filter {
 	
     List<TradeOffer> doFilter(List<TradeOffer> offers);
     
-    String getFilterName();
+    String getFilterName() throws RuntimeException;
 }

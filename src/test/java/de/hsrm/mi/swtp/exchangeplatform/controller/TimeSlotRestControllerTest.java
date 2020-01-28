@@ -21,14 +21,6 @@ public class TimeSlotRestControllerTest extends BaseRestTest{
 	TimeslotRepository timeslotRepository;
 	
 	@Test
-	void testGetAll() throws Exception{
-		var token = getLoginToken(username, pass);
-		mockMvc.perform(get("/api/v1/timeslots")
-								.header("Authorization", "Bearer " + token))
-			   .andExpect(status().isOk());
-	}
-	
-	@Test
 	void testGetById() throws Exception {
 		var ts = timeslotRepository.findAll().get(0);
 		var token = getLoginToken(username, pass);

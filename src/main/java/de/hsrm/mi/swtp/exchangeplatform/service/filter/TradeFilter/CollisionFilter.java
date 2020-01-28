@@ -26,7 +26,7 @@ public class CollisionFilter implements Filter {
 	 * @return a list of all TradeOffers which collide
 	 */
 	@Override
-    public List<TradeOffer> doFilter(List<TradeOffer> offers){
+    public List<TradeOffer> doFilter(List<TradeOffer> offers) throws RuntimeException{
         List<TradeOffer> collisionList = new ArrayList<>();
         for(TradeOffer offer : offers) {
             for (Timeslot timeslot : offer.getSeeker().getTimeslots()) {
