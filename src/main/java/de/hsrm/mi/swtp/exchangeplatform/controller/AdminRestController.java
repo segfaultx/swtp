@@ -132,6 +132,13 @@ public class AdminRestController {
 									HttpStatus.OK);
 	}
 	
+	/**
+	 * GET request handler
+	 *
+	 * provides an endpoint to {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} admins to get the template script
+	 * for custom python scripts
+	 * @return custom python template string
+	 */
 	@GetMapping("/settings/filtertemplate")
 	@Operation(description = "get the custom filter template", operationId = "getCustomFilterTemplate")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved custom filter template"),
@@ -148,7 +155,7 @@ public class AdminRestController {
 			String line = reader.readLine();
 			while(line != null){
 				builder.append(line);
-				builder.append('\n');
+				builder.append('\n'); // preserve line breaks
 				line = reader.readLine();
 			};
 			return new ResponseEntity<>(builder.toString(), HttpStatus.OK);
