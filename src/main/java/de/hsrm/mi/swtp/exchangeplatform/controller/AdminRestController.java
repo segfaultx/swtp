@@ -157,7 +157,7 @@ public class AdminRestController {
 				builder.append(line);
 				builder.append('\n'); // preserve line breaks
 				line = reader.readLine();
-			};
+			}
 			return new ResponseEntity<>(builder.toString(), HttpStatus.OK);
 		}catch(IOException ex){
 			ex.printStackTrace();
