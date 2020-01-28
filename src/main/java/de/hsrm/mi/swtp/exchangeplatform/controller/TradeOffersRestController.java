@@ -80,7 +80,7 @@ public class TradeOffersRestController {
 			}
 			log.info(String.format("ERROR while DELETE Request Student: %d TradeOffer: %d - Student isn't owner of entity", studentId, seekId));
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);
+		} else return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
 		
 	}
 	
