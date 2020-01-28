@@ -64,15 +64,15 @@ public class DBInitiator implements ApplicationRunner {
 		// END Jöndhard
 		
 		// START Weitz
-		User weitz = userFactory.createLecturerADMIN("Wolfgang", "Weitz", 171717171717L);
+		User weitz = userFactory.createLecturerADMIN("Wolfgang", "Weitz", 171717171717L, "WZ");
 		// END WEITZ
 		
 		// START FRITZ
-		User fritz = userFactory.createLecturer("Fritzchen", "Fritz", 16161616L);
+		User fritz = userFactory.createLecturer("Fritzchen", "Fritz", 16161616L, "FF");
 		// END fritz
 		
 		// START Schwanecke
-		User schwanecke = userFactory.createLecturerADMIN("Ulrich", "Schwanecke", 16161616L);
+		User schwanecke = userFactory.createLecturerADMIN("Ulrich", "Schwanecke", 16161616L, "SW");
 		// END schwanecke
 		
 		// START CHANDLER
@@ -92,7 +92,7 @@ public class DBInitiator implements ApplicationRunner {
 		// END SAMWEIS
 		
 		// START KRECHEL
-		User krechel = userFactory.createLecturerADMIN("Dirk", "Krechel", 12345678L);
+		User krechel = userFactory.createLecturerADMIN("Dirk", "Krechel", 12345678L, "KC");
 		// END KRECHEL
 		
 		// START PO 2017
@@ -107,31 +107,31 @@ public class DBInitiator implements ApplicationRunner {
 		// END PO 2017
 		
 		// START Modul AFS
-		Module afs = moduleFactory.createModule("Automaten und formale Sprachen", po2017, 3L);
+		Module afs = moduleFactory.createModule("Automaten und formale Sprachen", "AFS", 3110L, po2017, 3L);
 		// END Modul AFS
 		
 		// START Modul CG
-		Module cg = moduleFactory.createModule("Computergrafiken", po2017, 4L);
+		Module cg = moduleFactory.createModule("Computergrafiken", "CG", 4120L, po2017, 4L);
 		// END Modul AFS
 		
 		// START Modul Programmieren 3
-		Module prog3 = moduleFactory.createModule("Programmieren 3", po2017, 3L);
+		Module prog3 = moduleFactory.createModule("Programmieren 3", "Prog 3", 3140L, po2017, 3L);
 		// END Modul Programmieren 3
 		
 		// START Modul Datenbanksysteme
-		Module dbs = moduleFactory.createModule("Datenbanksysteme", po2017, 3L);
+		Module dbs = moduleFactory.createModule("Datenbanksysteme", "DBS", 3120L, po2017, 3L);
 		// END Modul Datenbanksysteme
 		
 		// START Modul Algorithmen und Datenstrukturen
-		Module ads = moduleFactory.createModule("Algorithmen und Datenstrukturen", po2017, 3L);
+		Module ads = moduleFactory.createModule("Algorithmen und Datenstrukturen", "ADS", 2110L, po2017, 3L);
 		// END Modul Algorithmen und Datenstrukturen
 		
 		// START Einführung in die Medieninformatik
-		Module eim = moduleFactory.createModule("Einführung in die Medieninformatik", po2017);
+		Module eim = moduleFactory.createModule("Einführung in die Medieninformatik", "MI", 1100L, po2017, 1L);
 		// END Modul Einführung in die Medieninformatik
 		
 		// START Einführung in die Medieninformatik
-		Module swt = moduleFactory.createModule("Softwaretechnik", po2017, 4L);
+		Module swt = moduleFactory.createModule("Softwaretechnik", "SWT", 4140L, po2017, 4L);
 		// END Modul Einführung in die Medieninformatik
 		
 		// START ROOM D12
@@ -152,19 +152,19 @@ public class DBInitiator implements ApplicationRunner {
 		// END AFS VL
 		
 		// START AFS UEBUNG 1
-		Timeslot afsUebung = timeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(10, 0), d12_out);
+		Timeslot afsUebung = timeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, "I",  afs, LocalTime.of(10, 0), d12_out);
 		// END AFS UEBUNG 1
 		
 		// START AFS UEBUNG 2
-		Timeslot afsUebung2 = timeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, afs, LocalTime.of(11, 45), d12_out);
+		Timeslot afsUebung2 = timeslotFactory.createTimeslotUebung(DayOfWeek.WEDNESDAY, "II", afs, LocalTime.of(11, 45), d12_out);
 		// END AFS UEBUNG 2
 		
 		// START AFS UEBUNG 3
-		Timeslot afsUebung3 = timeslotFactory.createTimeslotUebung(DayOfWeek.MONDAY, afs, LocalTime.of(10, 0), d12_out);
+		Timeslot afsUebung3 = timeslotFactory.createTimeslotUebung(DayOfWeek.MONDAY,  "III", afs, LocalTime.of(10, 0), d12_out);
 		// END AFS UEBUNG 3
 		
 		// START AFS UEBUNG 4
-		Timeslot afsUebung4 = timeslotFactory.createTimeslotUebung(DayOfWeek.FRIDAY, afs, LocalTime.of(11, 45), d12_out);
+		Timeslot afsUebung4 = timeslotFactory.createTimeslotUebung(DayOfWeek.FRIDAY, "IV", afs, LocalTime.of(11, 45), d12_out);
 		// END AFS UEBUNG 4
 		
 		// START SWT Timeslots
@@ -173,11 +173,11 @@ public class DBInitiator implements ApplicationRunner {
 		// END swt VL
 		
 		// START swt Prakt 1
-		Timeslot swtPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.TUESDAY, swt, LocalTime.of(10, 0), d12_out);
+		Timeslot swtPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.TUESDAY,  "A", swt, LocalTime.of(10, 0), d12_out);
 		// END swt Prakt 1
 		
 		// START swt Prakt 2
-		Timeslot swtPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, swt, LocalTime.of(11, 45), d12_out);
+		Timeslot swtPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY,  "B", swt, LocalTime.of(11, 45), d12_out);
 		// END swt Prakt 2
 		
 		// START DBS Timeslots
@@ -186,11 +186,11 @@ public class DBInitiator implements ApplicationRunner {
 		// END DBS VL
 		
 		// START DBS Prakt 1
-		Timeslot dbsPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY, dbs, LocalTime.of(10, 0), d13_out);
+		Timeslot dbsPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY,  "A", dbs, LocalTime.of(10, 0), d13_out);
 		// END DBS Prakt 1
 		
 		// START dbs Prakt 2
-		Timeslot dbsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY, dbs, LocalTime.of(11, 45), d13_out);
+		Timeslot dbsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY,  "B", dbs, LocalTime.of(11, 45), d13_out);
 		// END dbs Prakt 2
 		
 		
@@ -200,19 +200,19 @@ public class DBInitiator implements ApplicationRunner {
 		// END PROG3 VL
 		
 		// START PROG3 Prakt 1
-		Timeslot prog3Praktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(10, 0), d12_out);
+		Timeslot prog3Praktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY,  "A", prog3, LocalTime.of(10, 0), d12_out);
 		// END PROG3 Prakt 1
 		
 		// START PROG3 Prakt 2
-		Timeslot prog3Praktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(11, 45), d13_out);
+		Timeslot prog3Praktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY,  "B", prog3, LocalTime.of(11, 45), d13_out);
 		// END PROG3 Prakt 2
 		
 		// START PROG3 Prakt 3
-		Timeslot prog3Praktikum3 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(10, 0), d13_out);
+		Timeslot prog3Praktikum3 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY,  "C", prog3, LocalTime.of(10, 0), d13_out);
 		// END PROG3 Prakt 3
 		
 		// START PROG3 Prakt 4
-		Timeslot prog3Praktikum4 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, prog3, LocalTime.of(11, 45), d12_out);
+		Timeslot prog3Praktikum4 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY,  "D", prog3, LocalTime.of(11, 45), d12_out);
 		// END PROG3 Prakt 4
 		
 		
@@ -222,12 +222,27 @@ public class DBInitiator implements ApplicationRunner {
 		// END ads VL
 		
 		// START ADS Prakt 1
-		Timeslot adsPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, ads, LocalTime.of(11, 30), d13_out);
+		Timeslot adsPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY,  "A", ads, LocalTime.of(11, 30), d13_out);
 		// END ads Prakt 1
 		
 		// START ads Prakt 2
-		Timeslot adsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, ads, LocalTime.of(14, 15), d13_out);
+		Timeslot adsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY,"B", ads, LocalTime.of(14, 15), d13_out);
 		// END ads Prakt 2
+		
+		//START MI Timeslots
+		//START MI VL
+		Timeslot miVorlesung = timeslotFactory.createTimeslotVorlesung(DayOfWeek.MONDAY, eim, LocalTime.of(11, 45), d11_out);
+		//END MI VL
+		
+		// START ADS Prakt 1
+		Timeslot emiPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY,  "A", eim, LocalTime.of(14, 15), d13_out);
+		// END ads Prakt 1
+		
+		// START ads Prakt 2
+		Timeslot emiPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, "B", eim, LocalTime.of(10, 00), d13_out);
+		// END ads Prakt 2
+		
+		//END MI Timeslots
 		
 		
 		// SAVE Lecturers first so attendees can reference them
@@ -258,6 +273,10 @@ public class DBInitiator implements ApplicationRunner {
 		
 		prog3Praktikum3.setUser(fritz_out);
 		prog3Praktikum4.setUser(fritz_out);
+		
+		miVorlesung.setUser(fritz_out);
+		emiPraktikum.setUser(fritz_out);
+		emiPraktikum2.setUser(fritz_out);
 		
 		
 		//Schwanecke

@@ -46,7 +46,11 @@ public class Timeslot implements Model {
 	
 	TypeOfTimeslots timeSlotType;
 	
+	String practicalGroup;
+	
 	Integer capacity;
+	
+	Boolean	isTradeable;
 	
 	@ManyToOne(cascade = CascadeType.ALL)
 	@JoinColumn(name = "MODULE_ID")
