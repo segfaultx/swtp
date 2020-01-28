@@ -25,7 +25,7 @@ public class ModuleFactory {
 	
 	@Value("0")
 	Long DEFAULT_MODULE_NUMBER;
-	boolean DEFAULT_ACTIVE = false;
+	boolean DEFAULT_ACTIVE = true;
 	
 	/** @see ModuleFactory */
 	public Module createModule(final String name,
