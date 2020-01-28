@@ -64,21 +64,4 @@ public class UserRestController {
 		return ResponseEntity.ok(user);
 	}
 	
-	public ResponseEntity<User> create(@RequestBody User user, BindingResult result) {
-		log.info(String.format("POST // " + BASEURL + "/%s", user.toString()));
-		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		
-		try {
-			userService.save(user);
-			log.info(String.format("SUCCESS: Created new user %s", user.getStudentNumber()));
-			return new ResponseEntity<>(user, HttpStatus.OK);
-		} catch(NotCreatedException e) {
-			log.info(String.format("FAIL: Student %s not created", user.getStudentNumber()));
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		} catch(IllegalArgumentException e) {
-			log.info(String.format("FAIL: Student %s not created due to some error", user.getStudentNumber()));
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-	}
-	
 }

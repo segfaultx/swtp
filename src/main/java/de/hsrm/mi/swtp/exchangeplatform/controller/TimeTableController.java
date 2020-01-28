@@ -49,15 +49,6 @@ public class TimeTableController {
 		return new ResponseEntity<>(timeTableService.getAll(), HttpStatus.OK);
 	}
 	
-	@GetMapping("/{id}")
-	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<TimeTable> getById(@PathVariable Long id) throws Exception {
-		
-		TimeTable timeTable = timeTableService.getById(id);
-		
-		return ResponseEntity.ok(timeTable);
-	}
-	
 	@GetMapping("/modulesforstudent/{studentId}")
 	@Operation(description = "get potential modules for student", operationId = "getModulesForStudent")
 	@ApiResponses(value = {
