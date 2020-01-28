@@ -13,6 +13,7 @@
 # Eine Moeglichkeit waere also die Tauschangebote nach den Raeumen der gesuchten Timeslots zu filtern
 
 # Beispiel
-for timeslot in offers:
-    if timeslot.room.roomNumber == "D12":
-        offers.remove(timeslot)
+for tradeoffer in offers:
+    timeslot_seek = tradeoffer.seek
+    if timeslot_seek.room.roomNumber == "D12":
+        offers.remove(tradeoffer)
