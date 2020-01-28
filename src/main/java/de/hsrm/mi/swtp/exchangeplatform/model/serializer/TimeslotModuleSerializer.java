@@ -27,7 +27,9 @@ public class TimeslotModuleSerializer extends StdSerializer<Module> {
 	public void serialize(Module value, JsonGenerator gen, SerializerProvider provider) throws IOException {
 		gen.writeStartObject();
 		gen.writeNumberField("id", value.getId());
+		gen.writeNumberField("module_number", value.getModuleNumber());
 		gen.writeStringField("name", value.getName());
+		gen.writeStringField("contraction", value.getContraction());
 		gen.writeNumberField("credit_points", value.getCreditPoints());
 		gen.writeNumberField("semester", value.getSemester());
 		gen.writeObjectField("lecturer", value.getLecturer());

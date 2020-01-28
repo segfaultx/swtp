@@ -23,31 +23,40 @@ public class ModuleFactory {
 	@Value("${exchangeplatform.default.module.credit-points}")
 	Long DEFAULT_CREDIT_POINTS;
 	
-	boolean DEFAULT_ACTIVE = true;
+	@Value("0")
+	Long DEFAULT_MODULE_NUMBER;
+	boolean DEFAULT_ACTIVE = false;
 	
 	/** @see ModuleFactory */
 	public Module createModule(final String name,
+									  final String contraction,
 									  final PO po) {
-		return createModule(name, null, po, DEFAULT_SEMESTER, DEFAULT_CREDIT_POINTS);
+		return createModule(name, contraction, DEFAULT_MODULE_NUMBER, null, po, DEFAULT_SEMESTER, DEFAULT_CREDIT_POINTS);
 	}
 	
 	/** @see ModuleFactory */
 	public Module createModule(final String name,
+									  final String contraction,
+									  final Long moduleNumber,
 									  final PO po,
 									  final Long semester) {
-		return createModule(name, null, po, semester, DEFAULT_CREDIT_POINTS);
+		return createModule(name, contraction, moduleNumber, null, po, semester, DEFAULT_CREDIT_POINTS);
 	}
 	
 	/** @see ModuleFactory */
 	public Module createModule(final String name,
+									  final String contraction,
+									  final Long moduleNumber,
 									  final User lecturer,
 									  final PO po,
 									  final Long semester,
 									  final Long creditPoints) {
-		return createModule(name, lecturer, po, semester, creditPoints, new ArrayList<>(), new ArrayList<>());
+		return createModule(name, contraction, moduleNumber, lecturer, po, semester, creditPoints, new ArrayList<>(), new ArrayList<>());
 	}
 	/** @see ModuleFactory */
 	public Module createModule(final String name,
+							   final String contraction,
+							   final Long moduleNumber,
 							   final User lecturer,
 							   final PO po,
 							   final Long semester,
@@ -55,18 +64,22 @@ public class ModuleFactory {
 							   @NonNull final List<User> attendees,
 							   @NonNull final List<Timeslot> timeslots) {
 
-		return createModule(name, lecturer, po, semester, creditPoints, attendees, timeslots, DEFAULT_ACTIVE);
+		return createModule(name, contraction, moduleNumber, lecturer, po, semester, creditPoints, attendees, timeslots, DEFAULT_ACTIVE);
 	}
 	public Module createModule(final String name,
+							   final String contraction,
+							   final Long moduleNumber,
 							   final PO po,
 							   final Long semester,
 							   final boolean isActive){
-		return createModule(name, null, po ,semester, DEFAULT_CREDIT_POINTS, new ArrayList<>(), new ArrayList<>(), isActive);
+		return createModule(name, contraction, moduleNumber, null, po ,semester, DEFAULT_CREDIT_POINTS, new ArrayList<>(), new ArrayList<>(), isActive);
 	}
 	
 	
 	/** @see ModuleFactory */
 	public Module createModule(final String name,
+									  final String contraction,
+									  final Long moduleNumber,
 									  final User lecturer,
 									  final PO po,
 									  final Long semester,
@@ -76,6 +89,8 @@ public class ModuleFactory {
 							          final boolean isActive) {
 		Module module = new Module();
 		module.setName(name);
+		module.setContraction(contraction);
+		module.setModuleNumber(moduleNumber);
 		module.setLecturer(lecturer);
 		module.setPo(po);
 		module.setSemester(semester);

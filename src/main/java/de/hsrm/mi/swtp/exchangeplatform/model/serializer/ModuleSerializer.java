@@ -23,7 +23,9 @@ public class ModuleSerializer extends StdSerializer<Module> {
 		
 		gen.writeStartObject();
 		gen.writeNumberField("id", value.getId());
+		gen.writeNumberField("module_number", value.getModuleNumber());
 		gen.writeStringField("name", value.getName());
+		gen.writeStringField("contraction", value.getName());
 		gen.writeNumberField("credit_points", value.getCreditPoints());
 		gen.writeNumberField("semester", value.getSemester());
 		gen.writeObjectField("lecturer", value.getLecturer());

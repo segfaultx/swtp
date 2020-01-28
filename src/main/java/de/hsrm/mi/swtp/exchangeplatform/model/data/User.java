@@ -29,6 +29,7 @@ public class User implements Model {
 	Long id;
 	
 	String email;
+	String initials;
 	
 	@JsonProperty("first_name")
 	String firstName;
