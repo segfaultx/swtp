@@ -9,8 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.support.destination.JndiDestinationResolver;
-import org.springframework.stereotype.Component;
 
 @Slf4j
 @EnableJms
@@ -25,6 +23,7 @@ public class MessageListenerConfig {
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory() {
 		DefaultJmsListenerContainerFactory factory = new DefaultJmsListenerContainerFactory();
 		factory.setConnectionFactory(connectionFactory);
+		factory.setPubSubDomain(true);
 		return factory;
 	}
 	

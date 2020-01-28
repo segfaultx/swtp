@@ -16,4 +16,8 @@ public abstract class Message implements Serializable {
 	@Schema(nullable = false, required = true, format = "string", type = "string")
 	String message = "Trade durch Administrator war erfolgreich.";
 	
+	@Override
+	public String toString() {
+		return "Message{" + "messageType=" + messageType + ", message='" + message + '\'' + '}';
+	}
 }

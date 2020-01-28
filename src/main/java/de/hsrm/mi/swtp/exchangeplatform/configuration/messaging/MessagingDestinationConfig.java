@@ -1,7 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.configuration.messaging;
 
 import de.hsrm.mi.swtp.exchangeplatform.messaging.factory.TopicFactory;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.admin.ExchangeplatformAdminsMessageListener;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.admin.AdminStudentStatusChangeMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +47,7 @@ public class MessagingDestinationConfig {
 		return TopicFactory.builder()
 						   .connectionFactory(connectionFactory)
 						   .build()
-						   .createTopic(ExchangeplatformAdminsMessageListener.TOPICNAME);
+						   .createTopic(AdminStudentStatusChangeMessageListener.TOPICNAME);
 	}
 	
 }

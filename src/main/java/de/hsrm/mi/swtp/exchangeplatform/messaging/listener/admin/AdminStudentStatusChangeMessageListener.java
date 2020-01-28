@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.messaging.listener;
+package de.hsrm.mi.swtp.exchangeplatform.messaging.listener.admin;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +18,9 @@ import javax.jms.TextMessage;
 @Component
 @EnableJms
 @RequiredArgsConstructor
-public class ExchangeplatformMessageListener implements MessageListener {
+public class AdminStudentStatusChangeMessageListener implements MessageListener {
 	
-	public final static String TOPICNAME = "ExchangeplatformTopic";
+	public final static String TOPICNAME = "ExchangeplatformAdminsTopic";
 	
 	@Override
 	@JmsListener(destination = TOPICNAME)
