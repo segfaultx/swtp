@@ -6,7 +6,6 @@ import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +23,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * Utils class for filtering TradeOffers
  *
- * @author Dennis Schad
+ * @author Dennis Schad, Amatus Muscheites
  *
  */
 @Slf4j

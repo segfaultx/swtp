@@ -21,25 +21,25 @@ public class AdminSettingsServiceTest {
 
 	@Autowired
 	private AdminSettingsService settingsService;
-	
+
 	@Test
-	@WithMockUser(username = "wweit001", roles = {"ADMIN", "MEMBER"})
+	@WithMockUser(username = "wweit001", roles = { "ADMIN", "MEMBER" })
 	public void testUpdateAdminSettingsDeactivateTrades() throws NotFoundException {
 		settingsService.updateAdminSettings(false, new ArrayList<>(), LocalDateTime.now(), LocalDateTime.now());
 		assertFalse(settingsService.isTradesActive());
 	}
-	
+
 	@Test
-	@WithMockUser(username = "wweit001", roles = {"ADMIN", "MEMBER"})
+	@WithMockUser(username = "wweit001", roles = { "ADMIN", "MEMBER" })
 	public void testUpdateAdminSettingsActivateTrades() throws NotFoundException {
-		settingsService.updateAdminSettings(true, new ArrayList<>(), LocalDateTime.now(),LocalDateTime.now());
+		settingsService.updateAdminSettings(true, new ArrayList<>(), LocalDateTime.now(), LocalDateTime.now());
 		assertTrue(settingsService.isTradesActive());
 	}
-	
+
 	@Test
-	@WithMockUser(username = "wweit001", roles = {"ADMIN", "MEMBER"})
+	@WithMockUser(username = "wweit001", roles = { "ADMIN", "MEMBER" })
 	public void testAdminSettingsNotNull() {
 		assertNotNull(settingsService.getAdminSettings());
 	}
-	
+
 }

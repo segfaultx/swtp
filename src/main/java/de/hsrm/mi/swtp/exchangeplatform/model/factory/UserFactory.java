@@ -26,22 +26,22 @@ public class UserFactory {
 	
 	/** @see UserFactory */
 	public User createStudent(@NonNull final String fName, @NonNull final String lName, @NonNull final Long studentNumber) {
-		return createUser(Roles.MEMBER, TypeOfUsers.STUDENT, fName, lName, studentNumber);
+		return createUser(Roles.MEMBER, TypeOfUsers.STUDENT, fName, lName, studentNumber, null);
 	}
 	
 	/** @see UserFactory */
-	public User createLecturer(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber) {
-		return createUser(Roles.MEMBER, TypeOfUsers.LECTURER, fName, lName, staffNumber);
+	public User createLecturer(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber, final String initials) {
+		return createUser(Roles.MEMBER, TypeOfUsers.LECTURER, fName, lName, staffNumber, initials);
 	}
 	
 	/** @see UserFactory */
-	public User createLecturerADMIN(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber) {
-		return createUser(Roles.ADMIN, TypeOfUsers.LECTURER, fName, lName, staffNumber);
+	public User createLecturerADMIN(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber, final String initials) {
+		return createUser(Roles.ADMIN, TypeOfUsers.LECTURER, fName, lName, staffNumber, initials);
 	}
 	
 	/** @see UserFactory */
 	public User createUser(@NonNull final Roles role, @NonNull final TypeOfUsers typeOfUser, @NonNull final String fName, @NonNull final String lName,
-								  @NonNull final Long id
+								  @NonNull final Long id, final String initials
 								 ) {
 		User user = new User();
 		AuthenticationInformation userAuthInformation = new AuthenticationInformation();
@@ -55,6 +55,7 @@ public class UserFactory {
 		
 		userType.setType(typeOfUser);
 		
+		user.setInitials(initials);
 		user.setTradeoffers(new ArrayList<>());
 		user.setTimeslots(new ArrayList<>());
 		user.setCompletedModules(new ArrayList<>());

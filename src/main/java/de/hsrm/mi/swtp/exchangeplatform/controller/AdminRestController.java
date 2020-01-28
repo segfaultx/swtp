@@ -1,10 +1,13 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.AdminSettingsRequest;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.CustomPythonFilterRequest;
+import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -14,12 +17,20 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,6 +45,7 @@ import java.util.List;
 public class AdminRestController {
 	
 	AdminSettingsService adminSettingsService;
+	TradeOfferService tradeOfferService;
 	
 	/**
 	 * POST request handler
@@ -116,7 +128,7 @@ public class AdminRestController {
 	 * provides an endpoint for {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} admins to create a custom filter
 	 * @return custom filter
 	 */
-	@PostMapping("/settings/customfilters")
+	@PostMapping("/customfilters")
 	@Operation(description = "create a custom python filter", operationId = "createCustomFilter")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully created custom filter"),
 							@ApiResponse(responseCode = "403", description = "unauthorized request"),
@@ -124,8 +136,56 @@ public class AdminRestController {
 	})
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<CustomPythonFilter> createCustomPythonFilter(@RequestBody CustomPythonFilterRequest customPythonFilterRequest){
+		ScriptEngineManager manager = new ScriptEngineManager();
+		ScriptEngine py = manager.getEngineByName("python");
+		var offers = new ArrayList<TradeOffer>();
+		var testOffer = tradeOfferService.getAll().stream().findFirst().orElseThrow();
+		offers.add(testOffer);
+		
+		// validate python filter can be run
+		// HUGE SECURITY RISK
+		try {
+			py.put("offers", offers);
+			py.eval(customPythonFilterRequest.getCode());
+		} catch(ScriptException ex){
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 		return new ResponseEntity<>(adminSettingsService.addCustomPythonFilter(customPythonFilterRequest.getFilterName(),
 																			   customPythonFilterRequest.getCode()),
 									HttpStatus.OK);
 	}
+	
+	/**
+	 * GET request handler
+	 *
+	 * provides an endpoint to {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} admins to get the template script
+	 * for custom python scripts
+	 * @return custom python template string
+	 */
+	@GetMapping("/filtertemplate")
+	@Operation(description = "get the custom filter template", operationId = "getCustomFilterTemplate")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved custom filter template"),
+							@ApiResponse(responseCode = "403", description = "unauthorized request"),
+							@ApiResponse(responseCode = "500", description = "error fetching the default script template")
+	})
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<String> getDefaultPythonString(){
+		try{
+			Resource resource = new ClassPathResource("Beispielskript.py");
+			StringBuilder builder = new StringBuilder();
+			InputStream inputStream = resource.getInputStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+			String line = reader.readLine();
+			while(line != null){
+				builder.append(line);
+				builder.append('\n'); // preserve line breaks
+				line = reader.readLine();
+			}
+			return new ResponseEntity<>(builder.toString(), HttpStatus.OK);
+		}catch(IOException ex){
+			ex.printStackTrace();
+			throw new RuntimeException("Error reading Beispielskript.py");
+		}
+	}
+
 }

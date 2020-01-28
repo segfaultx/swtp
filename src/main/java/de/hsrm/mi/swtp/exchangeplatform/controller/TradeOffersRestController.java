@@ -90,7 +90,7 @@ public class TradeOffersRestController {
 			}
 			log.info(String.format("ERROR while DELETE Request Student: %d TradeOffer: %d - Student isn't owner of entity", studentId, seekId));
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-		} else return new ResponseEntity(HttpStatus.SERVICE_UNAVAILABLE);
+		} else return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
 		
 	}
 	
@@ -235,7 +235,7 @@ public class TradeOffersRestController {
 							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed trade request") })
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity requestAdminTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws Exception {
+	public ResponseEntity<?> requestAdminTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws Exception {
 		log.info(String.format("Traderequest of admin: %s for timeslot: %d, offer: %d", principal.getName(), tradeRequest.getOfferedTimeslotId(),
 							   tradeRequest.getWantedTimeslotId()
 							  ));
