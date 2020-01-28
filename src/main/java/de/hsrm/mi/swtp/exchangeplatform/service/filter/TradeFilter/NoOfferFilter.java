@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ public class NoOfferFilter implements Filter {
 	 * @return empty list
 	 */
 	@Override
-    public List<TradeOffer> doFilter(List<TradeOffer> offers){
+    public List<TradeOffer> doFilter(List<TradeOffer> offers, Principal principal){
         List<TradeOffer> noOfferList = new ArrayList<>();
         /// check if empty
         if(offers == null || offers.isEmpty()){

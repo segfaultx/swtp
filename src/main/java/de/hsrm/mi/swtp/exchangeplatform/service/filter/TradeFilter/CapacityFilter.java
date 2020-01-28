@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +30,7 @@ public class CapacityFilter implements Filter {
 	 * @return all TradeOffers with attached timeslots that havent reached their max capacity
 	 */
 	@Override
-    public List<TradeOffer> doFilter(List<TradeOffer> offers){
+    public List<TradeOffer> doFilter(List<TradeOffer> offers, Principal principal){
         List<TradeOffer> capacityList = new ArrayList<>();
         for(TradeOffer offer : offers){
         	// compare max capacity to number of already subscribed attendees

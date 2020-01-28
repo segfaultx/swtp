@@ -6,10 +6,6 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
-import lombok.AccessLevel;
-import lombok.experimental.FieldDefaults;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.time.LocalTime;
@@ -17,39 +13,30 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * checks a students timetable for collision with given offers
- */
-@Service
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class CollisionFilter implements Filter {
-	
-	String filterName = "CollisionFilter";
-	
-	@Autowired
+public class LectureCollisionFilter implements Filter {
+	String filterName = "LectureCollisionFilter";
 	UserRepository userRepository;
 	
-	public CollisionFilter(UserRepository userRepository) {this.userRepository = userRepository;}
-	{}
+	
 	/**
 	 * checks if a students timetable collides with the given TradeOffers (prohibiting a future trade unless resolved)
 	 * @param offers list of TradeOffers
 	 * @return a list of all TradeOffers which collide
 	 */
 	@Override
-    public List<TradeOffer> doFilter(List<TradeOffer> offers, Principal principal){
-        List<TradeOffer> collisionList = new ArrayList<>();
-        Optional<User> seeker = userRepository.findByUsername(principal.getName());
-        for(TradeOffer offer : offers) {
-            for (Timeslot timeslot : seeker.get().getTimeslots()) {
-            	/// compare all filled timeslots of a student with all TradeOffers
-                if (checkCollision(offer.getSeek(),timeslot)) {
-                    collisionList.add(offer);
-                }
-            }
-        }
-        return collisionList;
-    }
+	public List<TradeOffer> doFilter(List<TradeOffer> offers, Principal principal){
+		List<TradeOffer> collisionList = new ArrayList<>();
+		Optional<User> seeker = userRepository.findByUsername(principal.getName());
+		for(TradeOffer offer : offers) {
+			for (Timeslot timeslot : offer.getSeeker().getTimeslots()) {
+				/// compare all filled timeslots of a student with all TradeOffers
+				if (checkCollision(offer.getSeek(),timeslot)) {
+					collisionList.add(offer);
+				}
+			}
+		}
+		return collisionList;
+	}
 	
 	@Override
 	public String getFilterName() {
@@ -68,7 +55,7 @@ public class CollisionFilter implements Filter {
 		LocalTime filledStart = filled.getTimeStart();
 		LocalTime filledEnd = filled.getTimeEnd();
 		
-		if((offer.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM) && filled.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM))){
+		if((offer.getTimeSlotType().equals(TypeOfTimeslots.VORLESUNG) && filled.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM)) ||(offer.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM) && filled.getTimeSlotType().equals(TypeOfTimeslots.VORLESUNG))) {
 			//check for same day, if yes, check all possible crossovers:
 			if(offer.getDay() != filled.getDay()) {
 				return false;
@@ -84,8 +71,7 @@ public class CollisionFilter implements Filter {
 			else if(offerStart.isAfter(filledStart) && offerStart.isBefore(filledEnd) && offerEnd.isAfter(filledEnd)) return true;
 			
 			else return false;
-	}
+		}
 		return false;
-}
-	
+	}
 }

@@ -2,6 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.service.filter;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
  */
 public interface Filter {
 	
-    List<TradeOffer> doFilter(List<TradeOffer> offers);
+    List<TradeOffer> doFilter(List<TradeOffer> offers, Principal principal);
     
     String getFilterName();
 }

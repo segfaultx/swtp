@@ -5,6 +5,7 @@ import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+import java.security.Principal;
 import java.util.Comparator;
 import java.util.List;
 
@@ -22,8 +23,8 @@ public class FairnessFilter implements Filter {
 	 * @return sorted list of TradeOffers
 	 */
 	@Override
-	public List<TradeOffer> doFilter(List<TradeOffer> offers) {
-		/// sort by comparing the offeres "fairness points"
+	public List<TradeOffer> doFilter(List<TradeOffer> offers, Principal principal) {
+		/// sort by comparing the offerers "fairness points"
 		offers.sort(new Comparator<TradeOffer>() {
 			@Override
 			public int compare(TradeOffer o1, TradeOffer o2) {

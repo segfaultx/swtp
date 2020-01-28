@@ -1,10 +1,12 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter.CustomizeFilter;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+import java.security.Principal;
 import java.util.Comparator;
 import java.util.List;
 
@@ -15,13 +17,17 @@ import java.util.List;
 public class CpFilter implements Filter
 {
 	String filterName = "CpFilter";
+	UserRepository userRepository;
+	
+	public CpFilter(UserRepository userRepository) {this.userRepository = userRepository;}
+	
 	/**
 	 * sorted Tradeoffer list based on the amount of cps the students have
 	 * @param offers List of tradeoffers which includes data on students cps
 	 * @return sorted list of tradeoffers
 	 */
 	@Override
-	public List<TradeOffer> doFilter(List<TradeOffer> offers) {
+	public List<TradeOffer> doFilter(List<TradeOffer> offers, Principal principal) {
 		/// sort by comparing the offerers cps
 		offers.sort(new Comparator<TradeOffer>() {
 			@Override

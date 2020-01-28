@@ -5,6 +5,7 @@ import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public class FirstComeFilter implements Filter {
 	 * @return unchanged list
 	 */
 	@Override
-	public List<TradeOffer> doFilter(List<TradeOffer> offers) {
+	public List<TradeOffer> doFilter(List<TradeOffer> offers, Principal principal) {
 		return offers;
 	}
 	

@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -55,9 +56,9 @@ public class FilterUtils {
 	 * @param tradeOffers list of TradeOffers that are to be filtered
 	 * @return list of filtered TradeOffers
 	 */
-	public List<TradeOffer> getFilteredTradeOffers(List<TradeOffer> tradeOffers) {
+	public List<TradeOffer> getFilteredTradeOffers(List<TradeOffer> tradeOffers, Principal principal) {
 		for(Filter entry : map.values()) {
-			tradeOffers = entry.doFilter(tradeOffers);
+			tradeOffers = entry.doFilter(tradeOffers, principal);
 		}
 		return tradeOffers;
 	}

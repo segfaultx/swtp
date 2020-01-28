@@ -9,6 +9,7 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -35,7 +36,7 @@ public class CustomPythonFilter implements Filter {
 	
 	
 	@Override
-	public List<TradeOffer> doFilter(List<TradeOffer> offers) {
+	public List<TradeOffer> doFilter(List<TradeOffer> offers, Principal principal) {
 		// TODO: execute jython code here
 		return null;
 	}
