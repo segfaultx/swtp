@@ -51,6 +51,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		log.info("Filling Database with dark magic");
 		
+		//START STUDENTS
 		// START Dennis
 		User dennis = userFactory.createStudent("Dennis", "Schad", 1006351L);
 		// END Dennis
@@ -62,18 +63,6 @@ public class DBInitiator implements ApplicationRunner {
 		// START Jöndhard
 		User joendhard = userFactory.createStudent("Jöndhard", "Joendhardson", 1006333L);
 		// END Jöndhard
-		
-		// START Weitz
-		User weitz = userFactory.createLecturerADMIN("Wolfgang", "Weitz", 171717171717L, "WZ");
-		// END WEITZ
-		
-		// START FRITZ
-		User fritz = userFactory.createLecturer("Fritzchen", "Fritz", 16161616L, "FF");
-		// END fritz
-		
-		// START Schwanecke
-		User schwanecke = userFactory.createLecturerADMIN("Ulrich", "Schwanecke", 16161616L, "SW");
-		// END schwanecke
 		
 		// START CHANDLER
 		User chandler = userFactory.createStudent("Chandler", "Bing", 1005917L);
@@ -90,10 +79,54 @@ public class DBInitiator implements ApplicationRunner {
 		// START SAMWEIS
 		User samweis = userFactory.createStudent("Samweis", "Gamdschie", 1035233L);
 		// END SAMWEIS
+		//END STUDENTS
+		
+		
+		//START LECTURERS
+		// START FRITZ
+		User fritz = userFactory.createLecturer("Fritzchen", "Fritz", 16161616L, "FF");
+		// END fritz
+		
+		//START CALVUS
+		User calvus = userFactory.createLecturer("Daniela", "Calvus", 87654321L, "DC");
+		//END CALVUS
+		
+		//START CALVUS
+		User breckheimer = userFactory.createLecturer("Stephan", "Breckheimer", 100000L, "DC");
+		//END CALVUS
+		
+		//START CALVUS
+		User ederer = userFactory.createLecturer("Peter", "Ederer", 100000L, "PE");
+		//END CALVUS
+		//END LECTURERS
+		
+		
+		//START LECTURER + ADMINS
+		// START Weitz
+		User weitz = userFactory.createLecturerADMIN("Wolfgang", "Weitz", 171717171717L, "WZ");
+		// END WEITZ
+		
+		// START Schwanecke
+		User schwanecke = userFactory.createLecturerADMIN("Ulrich", "Schwanecke", 16161616L, "SW");
+		// END schwanecke
 		
 		// START KRECHEL
 		User krechel = userFactory.createLecturerADMIN("Dirk", "Krechel", 12345678L, "KC");
 		// END KRECHEL
+		
+		//START BERDUX
+		User berdux = userFactory.createLecturerADMIN("Joerg", "Berdux", 42424242L, "BX");
+		//END BERDUX
+		
+		//START SCHAIBLE
+		User schaible = userFactory.createLecturerADMIN("Philipp", "Schaible", 5984131L, "PS");
+		//END SCHAIBLE
+		
+		//START Pedersen
+		User pedersen = userFactory.createLecturerADMIN("Sebastian", "Pedersen", 1212122L, "PD");
+		//END Pedersen
+		//END LECTURER + ADMINS
+		
 		
 		// START PO 2017
 		PORestriction restriction2017 = poRestrictionFactory.createPO();
@@ -235,6 +268,8 @@ public class DBInitiator implements ApplicationRunner {
 		// START AFS UEBUNG 4
 		Timeslot afsUebung4 = timeslotFactory.createTimeslotUebung(DayOfWeek.FRIDAY, "IV", afs, LocalTime.of(11, 45), d12_out);
 		// END AFS UEBUNG 4
+		//END AFS Timeslots
+		
 		
 		// START SWT Timeslots
 		// START SWT VL
@@ -248,6 +283,8 @@ public class DBInitiator implements ApplicationRunner {
 		// START swt Prakt 2
 		Timeslot swtPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY,  "B", swt, LocalTime.of(11, 45), d12_out);
 		// END swt Prakt 2
+		//END SWT Timeslots
+		
 		
 		// START DBS Timeslots
 		// START DBS VL
@@ -261,6 +298,7 @@ public class DBInitiator implements ApplicationRunner {
 		// START dbs Prakt 2
 		Timeslot dbsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.FRIDAY,  "B", dbs, LocalTime.of(11, 45), d13_out);
 		// END dbs Prakt 2
+		//END DBS Timeslots
 		
 		
 		// START PROG3 Timeslots
@@ -283,6 +321,7 @@ public class DBInitiator implements ApplicationRunner {
 		// START PROG3 Prakt 4
 		Timeslot prog3Praktikum4 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY,  "D", prog3, LocalTime.of(11, 45), d12_out);
 		// END PROG3 Prakt 4
+		//END PROG3 Timeslots
 		
 		
 		// START ADS Timeslots
@@ -297,19 +336,20 @@ public class DBInitiator implements ApplicationRunner {
 		// START ads Prakt 2
 		Timeslot adsPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY,"B", ads, LocalTime.of(14, 15), d13_out);
 		// END ads Prakt 2
+		//END ADS Timeslots
 		
 		//START MI Timeslots
 		//START MI VL
 		Timeslot miVorlesung = timeslotFactory.createTimeslotVorlesung(DayOfWeek.MONDAY, eim, LocalTime.of(11, 45), d11_out);
 		//END MI VL
 		
-		// START ADS Prakt 1
+		// START MI Prakt 1
 		Timeslot emiPraktikum = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY,  "A", eim, LocalTime.of(14, 15), d13_out);
-		// END ads Prakt 1
+		// END MI Prakt 1
 		
-		// START ads Prakt 2
+		// START MI Prakt 2
 		Timeslot emiPraktikum2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.WEDNESDAY, "B", eim, LocalTime.of(10, 00), d13_out);
-		// END ads Prakt 2
+		// END MI Prakt 2
 		
 		//END MI Timeslots
 		
