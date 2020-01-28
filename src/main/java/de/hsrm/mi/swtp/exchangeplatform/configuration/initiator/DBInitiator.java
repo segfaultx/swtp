@@ -106,33 +106,102 @@ public class DBInitiator implements ApplicationRunner {
 		po2017.setRestriction(restriction2017);
 		// END PO 2017
 		
+		//START SEMESTER 1
+		// START Modul Einführung in die Medieninformatik
+		Module eim = moduleFactory.createModule("Einführung in die Medieninformatik", "MI", 1100L, po2017, 1L);
+		// END Modul Einführung in die Medieninformatik
+		
+		// START Modul Programmieren 1
+		Module prog1 = moduleFactory.createModule("Programmieren 1", "PROG 1", 1120L, po2017, 1L);
+		// END Modul Programmieren 1
+		
+		// START Modul Einfuerung in die Gestaltung
+		Module eges = moduleFactory.createModule("Einfuerung in die Gestaltung", "EGES", 1230L, po2017, 1L);
+		// END Modul Einfuerung in die Gestaltung
+		
+		// START Modul Analysis
+		Module ana = moduleFactory.createModule("Analysis", "ANA", 1340L, po2017, 1L);
+		// END Modul Analysis
+		
+		// START Modul Grundlagen der Betriebswirtschaftslehre
+		Module bwl = moduleFactory.createModule("Grundlagen der Betriebswirtschaftslehre", "BWL", 1450L, po2017, 1L);
+		// END Modul Grundlagen der Betriebswirtschaftslehre
+		//END SEMESTER 1
+		
+		
+		//START SEMESTER 2
+		// START Modul Algorithmen und Datenstrukturen
+		Module ads = moduleFactory.createModule("Algorithmen und Datenstrukturen", "ADS", 2110L, po2017, 2L);
+		// END Modul Algorithmen und Datenstrukturen
+		
+		// START Modul Auszeichnungssprachen
+		Module azs = moduleFactory.createModule("Auszeichnungssprachen", "AZS", 2120L, po2017, 2L);
+		// END Modul Auszeichnungssprachen
+		
+		// START Modul Programmieren 2
+		Module prog2 = moduleFactory.createModule("Programmieren 2", "PROG 2", 2130L, po2017, 2L);
+		// END Modul Programmieren 2
+		
+		// START Modul Gestaltung elektronischer Medien
+		Module gem = moduleFactory.createModule("Gestaltung elektronischer Medien", "GEM", 2240L, po2017, 2L);
+		// END Modul Gestaltung elektronischer Medien
+		
+		// START Lineare Algebra
+		Module la = moduleFactory.createModule("Lineare Algebra", "LA", 2350L, po2017, 2L);
+		// END Modul Lineare Algebra
+		
+		// START IT-Recht und Datenschutz
+		Module recht = moduleFactory.createModule("IT-Recht und Datenschutz", "RECHT", 2460L, po2017, 2L);
+		// END Modul IT-Recht und Datenschutz
+		//END SEMESTER 2
+		
+		
+		//START SEMESTER 3
 		// START Modul AFS
 		Module afs = moduleFactory.createModule("Automaten und formale Sprachen", "AFS", 3110L, po2017, 3L);
 		// END Modul AFS
-		
-		// START Modul CG
-		Module cg = moduleFactory.createModule("Computergrafiken", "CG", 4120L, po2017, 4L);
-		// END Modul AFS
-		
-		// START Modul Programmieren 3
-		Module prog3 = moduleFactory.createModule("Programmieren 3", "Prog 3", 3140L, po2017, 3L);
-		// END Modul Programmieren 3
 		
 		// START Modul Datenbanksysteme
 		Module dbs = moduleFactory.createModule("Datenbanksysteme", "DBS", 3120L, po2017, 3L);
 		// END Modul Datenbanksysteme
 		
-		// START Modul Algorithmen und Datenstrukturen
-		Module ads = moduleFactory.createModule("Algorithmen und Datenstrukturen", "ADS", 2110L, po2017, 3L);
-		// END Modul Algorithmen und Datenstrukturen
+		// START Modul Entwicklung interaktiver Benutzungsoberflaechen
+		Module eibo = moduleFactory.createModule("Entwicklung interaktiver Benutzungsoberflaechen", "EIBO", 3120L, po2017, 3L);
+		// END Modul Entwicklung interaktiver Benutzungsoberflaechen
 		
-		// START Einführung in die Medieninformatik
-		Module eim = moduleFactory.createModule("Einführung in die Medieninformatik", "MI", 1100L, po2017, 1L);
-		// END Modul Einführung in die Medieninformatik
+		// START Modul Programmieren 3
+		Module prog3 = moduleFactory.createModule("Programmieren 3", "Prog 3", 3140L, po2017, 3L);
+		// END Modul Programmieren 3
 		
-		// START Einführung in die Medieninformatik
+		// START Modul Angewandte Mathematik
+		Module am = moduleFactory.createModule("Angewandte Mathematik", "AM", 3360L, po2017, 3L);
+		// END Modul Angewandte Mathematik
+		//END SEMESTER 3
+		
+		
+		//START SEMESTER 4
+		// START Modul CG
+		Module cg = moduleFactory.createModule("Computergrafik", "CG", 4120L, po2017, 4L);
+		// END Modul CG
+		
+		// START Modul Rechnernetze und Betriebssysteme
+		Module rn = moduleFactory.createModule("Rechnernetze und Betriebssysteme", "RN", 4130L, po2017, 4L);
+		// END Modul Rechnernetze und Betriebssysteme
+		
+		// START Modul Softwaretechnik
 		Module swt = moduleFactory.createModule("Softwaretechnik", "SWT", 4140L, po2017, 4L);
-		// END Modul Einführung in die Medieninformatik
+		// END Modul Softwaretechnik
+		
+		// START Modul Webbasierte Anwendungen
+		Module web = moduleFactory.createModule("Webbasierte Anwendungen", "WEB", 4150L, po2017, 4L);
+		// END Modul Webbasierte Anwendungen
+		
+		// START Modul Animation
+		Module ani = moduleFactory.createModule("Animation", "ANI", 4250L, po2017, 4L);
+		// END Modul Animation
+		//END SEMESTER 4
+		
+		
 		
 		// START ROOM D12
 		Room d12 = roomFactory.createRoom("D12");
