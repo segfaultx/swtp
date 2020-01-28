@@ -135,7 +135,7 @@ public class ModuleRestController {
 		var usr = userService.getById(studentId).orElseThrow(NotFoundException::new);
 		if (!usr.getId().equals(studentId) && usr.getAuthenticationInformation().getRole() != Roles.ADMIN){
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
-		};
+		}
 		var potentialModules = moduleService.lookUpAvailableModulesForStudent(usr);
 		return new ResponseEntity<>(potentialModules, HttpStatus.OK);
 	}
