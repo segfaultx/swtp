@@ -34,8 +34,13 @@ public class ModuleService {
 	TimeslotService timeslotService;
 	PersonalMessageSender sender;
 	
-	public List<Module> getAll() {
-		return repository.findAll();
+	/**
+	 * Returns a list with modules.
+	 * @param ids a list of Module.ids which are requested.
+	 * @return a list with modules by their ids from the given argument.
+	 */
+	public List<Module> getAllByIds(List<Long> ids) {
+		return repository.findByIds(ids);
 	}
 	
 	public Optional<Module> getById(Long moduleId) {

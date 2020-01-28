@@ -15,9 +15,7 @@ public interface ModuleRepository extends JpaRepository<Module, Long> {
 	List<Module> findModulesBySemesterIsLessThanEqual(final Long semester);
 	List<Module> findModulesBySemesterIs(final Long semester);
 	
-	List<Module> findDistinctByIdIsIn(final List<Long> semester);
-	
 	@Query( "select m from Module m where m.id in :ids" )
-	List<Module> findByInventoryIds(@Param("ids") List<Long> ids);
+	List<Module> findByIds(@Param("ids") List<Long> ids);
 	
 }
