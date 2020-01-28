@@ -133,7 +133,7 @@ public class ModuleRestController {
 							   principal.getName(), studentId));
 		log.info(String.format("LOOKING UP USER WITH USERNAME: %s", principal.getName()));
 		var usr = userService.getByUsername(principal.getName()).orElseThrow(NotFoundException::new);
-		if (usr.getId().equals(studentId) && usr.getAuthenticationInformation().getRole() != Roles.ADMIN){
+		if (!usr.getId().equals(studentId) && usr.getAuthenticationInformation().getRole() != Roles.ADMIN){
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		};
 		var potentialModules = moduleService.lookUpAvailableModulesForStudent(usr);
