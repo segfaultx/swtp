@@ -64,15 +64,15 @@ public class DBInitiator implements ApplicationRunner {
 		// END Jöndhard
 		
 		// START Weitz
-		User weitz = userFactory.createLecturerADMIN("Wolfgang", "Weitz", 171717171717L);
+		User weitz = userFactory.createLecturerADMIN("Wolfgang", "Weitz", 171717171717L, "WZ");
 		// END WEITZ
 		
 		// START FRITZ
-		User fritz = userFactory.createLecturer("Fritzchen", "Fritz", 16161616L);
+		User fritz = userFactory.createLecturer("Fritzchen", "Fritz", 16161616L, "FF");
 		// END fritz
 		
 		// START Schwanecke
-		User schwanecke = userFactory.createLecturerADMIN("Ulrich", "Schwanecke", 16161616L);
+		User schwanecke = userFactory.createLecturerADMIN("Ulrich", "Schwanecke", 16161616L, "SW");
 		// END schwanecke
 		
 		// START CHANDLER
@@ -92,7 +92,7 @@ public class DBInitiator implements ApplicationRunner {
 		// END SAMWEIS
 		
 		// START KRECHEL
-		User krechel = userFactory.createLecturerADMIN("Dirk", "Krechel", 12345678L);
+		User krechel = userFactory.createLecturerADMIN("Dirk", "Krechel", 12345678L, "KC");
 		// END KRECHEL
 		
 		// START PO 2017
