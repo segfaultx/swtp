@@ -181,7 +181,7 @@ public class TradeOffersRestController {
 							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed trade request") })
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity requestAdminTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws Exception {
+	public ResponseEntity<?> requestAdminTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws Exception {
 		log.info(String.format("Traderequest of admin: %s for timeslot: %d, offer: %d", principal.getName(), tradeRequest.getOfferedTimeslotId(),
 							   tradeRequest.getWantedTimeslotId()
 							  ));
