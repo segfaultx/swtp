@@ -119,7 +119,7 @@ public class AdminRestController {
 	 * provides an endpoint for {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} admins to create a custom filter
 	 * @return custom filter
 	 */
-	@PostMapping("/settings/customfilters")
+	@PostMapping("/customfilters")
 	@Operation(description = "create a custom python filter", operationId = "createCustomFilter")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully created custom filter"),
 							@ApiResponse(responseCode = "403", description = "unauthorized request"),
