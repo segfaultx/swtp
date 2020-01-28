@@ -1,10 +1,13 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.AdminSettingsRequest;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.CustomPythonFilterRequest;
+import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,8 +24,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -37,6 +45,7 @@ import java.util.List;
 public class AdminRestController {
 	
 	AdminSettingsService adminSettingsService;
+	TradeOfferService tradeOfferService;
 	
 	/**
 	 * POST request handler
@@ -127,6 +136,20 @@ public class AdminRestController {
 	})
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<CustomPythonFilter> createCustomPythonFilter(@RequestBody CustomPythonFilterRequest customPythonFilterRequest){
+		ScriptEngineManager manager = new ScriptEngineManager();
+		ScriptEngine py = manager.getEngineByName("python");
+		var offers = new ArrayList<TradeOffer>();
+		var testOffer = tradeOfferService.getAll().stream().findFirst().orElseThrow();
+		offers.add(testOffer);
+		
+		// validate python filter can be run
+		// HUGE SECURITY RISK
+		try {
+			py.put("offers", offers);
+			py.eval(customPythonFilterRequest.getCode());
+		} catch(ScriptException ex){
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
 		return new ResponseEntity<>(adminSettingsService.addCustomPythonFilter(customPythonFilterRequest.getFilterName(),
 																			   customPythonFilterRequest.getCode()),
 									HttpStatus.OK);
