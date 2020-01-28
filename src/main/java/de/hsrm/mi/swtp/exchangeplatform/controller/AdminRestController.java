@@ -139,7 +139,7 @@ public class AdminRestController {
 	 * for custom python scripts
 	 * @return custom python template string
 	 */
-	@GetMapping("/settings/filtertemplate")
+	@GetMapping("/filtertemplate")
 	@Operation(description = "get the custom filter template", operationId = "getCustomFilterTemplate")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved custom filter template"),
 							@ApiResponse(responseCode = "403", description = "unauthorized request"),
