@@ -14,12 +14,15 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.*;
 import java.util.List;
 
 /**
@@ -116,7 +119,7 @@ public class AdminRestController {
 	 * provides an endpoint for {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} admins to create a custom filter
 	 * @return custom filter
 	 */
-	@PostMapping("/settings/customfilters")
+	@PostMapping("/customfilters")
 	@Operation(description = "create a custom python filter", operationId = "createCustomFilter")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully created custom filter"),
 							@ApiResponse(responseCode = "403", description = "unauthorized request"),
@@ -128,4 +131,38 @@ public class AdminRestController {
 																			   customPythonFilterRequest.getCode()),
 									HttpStatus.OK);
 	}
+	
+	/**
+	 * GET request handler
+	 *
+	 * provides an endpoint to {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} admins to get the template script
+	 * for custom python scripts
+	 * @return custom python template string
+	 */
+	@GetMapping("/filtertemplate")
+	@Operation(description = "get the custom filter template", operationId = "getCustomFilterTemplate")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved custom filter template"),
+							@ApiResponse(responseCode = "403", description = "unauthorized request"),
+							@ApiResponse(responseCode = "500", description = "error fetching the default script template")
+	})
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<String> getDefaultPythonString(){
+		try{
+			Resource resource = new ClassPathResource("Beispielskript.py");
+			StringBuilder builder = new StringBuilder();
+			InputStream inputStream = resource.getInputStream();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+			String line = reader.readLine();
+			while(line != null){
+				builder.append(line);
+				builder.append('\n'); // preserve line breaks
+				line = reader.readLine();
+			};
+			return new ResponseEntity<>(builder.toString(), HttpStatus.OK);
+		}catch(IOException ex){
+			ex.printStackTrace();
+			throw new RuntimeException("Error reading Beispielskript.py");
+		}
+	}
+
 }
