@@ -2,11 +2,12 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
-import de.hsrm.mi.swtp.exchangeplatform.model.rest.ModuleRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Roles;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.BatchModulesRequest;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.ModuleRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,8 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.util.List;
@@ -43,8 +44,18 @@ public class ModuleRestController {
 	ModuleService moduleService;
 	UserService userService;
 	
+	@GetMapping
+	@Operation(description = "get a batch of modules by their ids", operationId = "getAllModulesByIds")
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved modules"),
+							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed ID") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
+	public ResponseEntity<List<Module>> getAllModulesByIds(@RequestBody BatchModulesRequest batchModulesRequest) {
+		return new ResponseEntity<>(moduleService.getAllByIds(batchModulesRequest.getModulesIDs()), HttpStatus.OK);
+	}
+	
 	@GetMapping("/{moduleId}")
-	@Operation(description = "get module by id", operationId= "getModuleById")
+	@Operation(description = "get module by id", operationId = "getModuleById")
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved module"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed ID") })
@@ -52,10 +63,9 @@ public class ModuleRestController {
 	public ResponseEntity<Module> getById(@PathVariable Long moduleId) throws NotFoundException {
 		log.info(String.format("GET // " + BASEURL + "/%s", moduleId));
 		
-		Module module = moduleService.getById(moduleId)
-				.orElseThrow(NotFoundException::new);
+		Module module = moduleService.getById(moduleId).orElseThrow(NotFoundException::new);
 		return new ResponseEntity<>(module, HttpStatus.OK);
-
+		
 	}
 	
 	/**
@@ -77,13 +87,11 @@ public class ModuleRestController {
 		log.info(moduleRequestBody.toString());
 		if(result.hasErrors()) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		
-		User user = userService.getById(moduleRequestBody.getStudentId())
-							   .orElseThrow(NotFoundException::new);
+		User user = userService.getById(moduleRequestBody.getStudentId()).orElseThrow(NotFoundException::new);
 		
 		try {
 			moduleService.addAttendeeToModule(moduleRequestBody.getModuleId(), user);
-			Module module = moduleService.getById(moduleRequestBody.getModuleId())
-											   .orElseThrow(NotFoundException::new);
+			Module module = moduleService.getById(moduleRequestBody.getModuleId()).orElseThrow(NotFoundException::new);
 			return ResponseEntity.ok(module);
 		} catch(UserIsAlreadyAttendeeException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -109,31 +117,26 @@ public class ModuleRestController {
 		log.info(moduleRequestBody.toString());
 		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		
-		User user = userService.getById(moduleRequestBody.getStudentId())
-							   .orElseThrow(NotFoundException::new);
+		User user = userService.getById(moduleRequestBody.getStudentId()).orElseThrow(NotFoundException::new);
 		
 		moduleService.removeStudentFromModule(moduleRequestBody.getModuleId(), user);
-		Module module = moduleService.getById(moduleRequestBody.getModuleId())
-										   .orElseThrow(NotFoundException::new);
+		Module module = moduleService.getById(moduleRequestBody.getModuleId()).orElseThrow(NotFoundException::new);
 		return new ResponseEntity<>(HttpStatus.ACCEPTED);
 	}
 	
 	@GetMapping("/modulesforstudent/{studentId}")
 	@Operation(description = "get potential modules for student", operationId = "getModulesForStudent")
-	@ApiResponses(value = {
-			@ApiResponse(responseCode = "200", description = "sucessfully fetched modules for student"),
-			@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
-			@ApiResponse(responseCode = "400", description = "malformed ID"),
-			@ApiResponse(responseCode = "404", description = "unknown student id")})
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "sucessfully fetched modules for student"),
+							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed ID"),
+							@ApiResponse(responseCode = "404", description = "unknown student id") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<List<Timeslot>> getTimeslotsForStudent(@PathVariable("studentId") Long studentId,
-																 Principal principal) throws NotFoundException {
-		log.info(String.format("GET REQUEST: getModulesForStudent, by user: %s, for studentid %d",
-							   principal.getName(), studentId));
+	public ResponseEntity<List<Timeslot>> getTimeslotsForStudent(@PathVariable("studentId") Long studentId, Principal principal) throws NotFoundException {
+		log.info(String.format("GET REQUEST: getModulesForStudent, by user: %s, for studentid %d", principal.getName(), studentId));
 		log.info(String.format("LOOKING UP USER WITH USERNAME: %s", principal.getName()));
 		var usr = userService.getById(studentId).orElseThrow(NotFoundException::new);
 		var requestingUser = userService.getByUsername(principal.getName()).orElseThrow(NotFoundException::new);
-		if (!requestingUser.getId().equals(studentId) && requestingUser.getAuthenticationInformation().getRole() != Roles.ADMIN){
+		if(!requestingUser.getId().equals(studentId) && requestingUser.getAuthenticationInformation().getRole() != Roles.ADMIN) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		var potentialModules = moduleService.lookUpAvailableModulesForStudent(usr);
