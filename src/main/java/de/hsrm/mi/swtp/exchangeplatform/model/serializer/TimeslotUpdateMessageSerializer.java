@@ -22,10 +22,7 @@ public class TimeslotUpdateMessageSerializer extends StdSerializer<TimeslotUpdat
 		gen.writeStartObject();
 		gen.writeStringField("type", value.getMessageType().toString());
 		gen.writeStringField("message", value.getMessage());
-		gen.writeFieldName("value");
-		gen.writeStartObject();
-		gen.writeObjectField("timeslot", value.getTimeslot());
-		gen.writeEndObject();
+		gen.writeObjectField("value", value.getTimeslot());
 		gen.writeEndObject();
 	}
 	
