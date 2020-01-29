@@ -38,5 +38,4 @@ public class TradeOffer implements Model {
 	
 	boolean instantTrade = false;
 	
-	boolean accepted = false;
 }
