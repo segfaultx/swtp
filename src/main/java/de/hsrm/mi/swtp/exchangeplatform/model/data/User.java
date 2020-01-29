@@ -93,11 +93,6 @@ public class User implements Model {
 	@OneToMany(cascade = CascadeType.ALL)
 	List<Module> completedModules = new ArrayList<>();
 	
-	@JsonIgnore
-	@OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
-	@JsonManagedReference("seeker-tradeoffers")
-	List<TradeOffer> tradeofferSeeks = new ArrayList<>();
-	
 	@Override
 	public boolean equals(Object o) {
 		if(this == o) return true;
