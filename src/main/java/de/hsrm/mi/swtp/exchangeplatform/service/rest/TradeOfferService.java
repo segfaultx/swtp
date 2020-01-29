@@ -111,9 +111,9 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 * @throws RuntimeException if either requesterId or tradeId cant be found
 	 */
 	@Transactional
-	public Timeslot tradeTimeslots(User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot, Principal principal) throws Exception {
+	public Timeslot tradeTimeslots(User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot, User seeker) throws Exception {
 		
-		TradeOffer tradeOffer = findFinalTradeOffer(offeredTimeslot, requestedTimeslot, principal);
+		TradeOffer tradeOffer = findFinalTradeOffer(offeredTimeslot, requestedTimeslot, seeker);
 		
 		// TODO: handle null
 		if (tradeOffer == null) {
@@ -165,7 +165,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 * @param requestedTimeslot  {@link Timeslot} that's been requested by Principal
 	 * @return single TradeOffer that can be traded, or null if none are present or Filters killed all possible matching TradeOffers
 	 */
-	public TradeOffer findFinalTradeOffer(Timeslot offeredTimeslot, Timeslot requestedTimeslot, Principal principal) {
+	public TradeOffer findFinalTradeOffer(Timeslot offeredTimeslot, Timeslot requestedTimeslot, User seeker) {
 		List<TradeOffer> tradeOffers;
 		Random random = new Random();
 		
@@ -177,7 +177,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 									 !(tradeOffer.getOffer() == requestedTimeslot && tradeOffer.getSeek() == offeredTimeslot));
 		
 		// filter the list according to active filters
-			tradeOffers = filterUtils.getFilteredTradeOffers(tradeOffers, principal);
+			tradeOffers = filterUtils.getFilteredTradeOffers(tradeOffers, seeker);
 		
 		// if no matching TradeOffer was found return null
 		if(tradeOffers.size() == 0) return null;

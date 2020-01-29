@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter.CustomizeFilter;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -23,13 +24,13 @@ public class FairnessFilter implements Filter {
 	 * @return sorted list of TradeOffers
 	 */
 	@Override
-	public List<TradeOffer> doFilter(List<TradeOffer> offers, Principal principal) {
+	public List<TradeOffer> doFilter(List<TradeOffer> offers, User seeker) {
 		/// sort by comparing the offerers "fairness points"
 		offers.sort(new Comparator<TradeOffer>() {
 			@Override
 			public int compare(TradeOffer o1, TradeOffer o2) {
-				int offer_fp_1 = o1.getSeeker().getFairness();
-				int offer_fp_2 = o2.getSeeker().getFairness();
+				int offer_fp_1 = o1.getOfferer().getFairness();
+				int offer_fp_2 = o2.getOfferer().getFairness();
 				if (offer_fp_1 == offer_fp_2) {
 					return 0;
 				} else if (offer_fp_1 == 0) {

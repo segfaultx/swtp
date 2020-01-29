@@ -24,11 +24,10 @@ public class LectureCollisionFilter implements Filter {
 	 * @return a list of all TradeOffers which collide
 	 */
 	@Override
-	public List<TradeOffer> doFilter(List<TradeOffer> offers, Principal principal){
+	public List<TradeOffer> doFilter(List<TradeOffer> offers, User seeker){
 		List<TradeOffer> collisionList = new ArrayList<>();
-		Optional<User> seeker = userRepository.findByUsername(principal.getName());
 		for(TradeOffer offer : offers) {
-			for (Timeslot timeslot : offer.getSeeker().getTimeslots()) {
+			for (Timeslot timeslot : seeker.getTimeslots()) {
 				/// compare all filled timeslots of a student with all TradeOffers
 				if (checkCollision(offer.getSeek(),timeslot)) {
 					collisionList.add(offer);

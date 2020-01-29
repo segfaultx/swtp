@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -114,6 +116,7 @@ public class FilterUtilsTest {
 	@Test
 	public void testSetActiveFiltersWithEmptyListByComparingUnfilteredTradeOffers() {
 		List<String> expected = new ArrayList<>();
+		User seeker = null;
 		
 		filterUtils.setActiveFilters(expected);
 		
@@ -123,8 +126,8 @@ public class FilterUtilsTest {
 		TradeOffer to2 = mock(TradeOffer.class);
 		TradeOffer to3 = mock(TradeOffer.class);
 		List<TradeOffer> tradeOffers = List.of(to1, to2, to3);
-		
-		assertEquals(tradeOffers, filterUtils.getFilteredTradeOffers(tradeOffers));
+		Principal principal = null;
+		assertEquals(tradeOffers, filterUtils.getFilteredTradeOffers(tradeOffers, seeker));
 		
 		//clean up
 		filterUtils.setActiveFilters(filterUtils.getAllAvailableFilters());

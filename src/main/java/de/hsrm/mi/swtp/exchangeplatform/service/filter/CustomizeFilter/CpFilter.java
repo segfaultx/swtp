@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter.CustomizeFilter;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import lombok.AccessLevel;
@@ -27,13 +28,13 @@ public class CpFilter implements Filter
 	 * @return sorted list of tradeoffers
 	 */
 	@Override
-	public List<TradeOffer> doFilter(List<TradeOffer> offers, Principal principal) {
+	public List<TradeOffer> doFilter(List<TradeOffer> offers, User seeker) {
 		/// sort by comparing the offerers cps
 		offers.sort(new Comparator<TradeOffer>() {
 			@Override
 			public int compare(TradeOffer o1, TradeOffer o2) {
-				int offer_cp_1 = o1.getSeeker().getCp();
-				int offer_cp_2 = o2.getSeeker().getCp();
+				int offer_cp_1 = o1.getOfferer().getCp();
+				int offer_cp_2 = o2.getOfferer().getCp();
 				if (offer_cp_1 == offer_cp_2) {
 					return 0;
 				} else if (offer_cp_1 == 0) {

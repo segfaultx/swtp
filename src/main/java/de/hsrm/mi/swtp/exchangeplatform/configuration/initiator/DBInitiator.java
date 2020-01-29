@@ -833,8 +833,6 @@ public class DBInitiator implements ApplicationRunner {
 		PO po2017_repo = poRepository.save(po2017);
 		List<String> filters = new ArrayList<>();
 		filters.add("CollisionFilter");
-		filters.add("OfferFilter");
-		filters.add("NoOfferFilter");
 		filters.add("CapacityFilter");
 		AdminSettings adminSettings = new AdminSettings();
 		adminSettings.setId(1);
@@ -848,7 +846,7 @@ public class DBInitiator implements ApplicationRunner {
 		log.info("--> users " + usersToSave);
 		
 		CustomPythonFilter testFilter = new CustomPythonFilter("testFilter", "print 'Hello World'");
-		testFilter.doFilter(null);
+		testFilter.doFilter(null,null);
 		log.warn("Done using testfilter");
 		
 //		poRepository.findByTitleIs(po2017.getTitle());

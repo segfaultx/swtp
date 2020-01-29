@@ -159,7 +159,7 @@ public class TradeOffersRestController {
 			
 			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId()).orElseThrow(NotFoundException::new);
 
-			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot, principal);
+			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot, requestingUser);
 			
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());

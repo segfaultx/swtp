@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter.utils;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.CustomPythonFilterRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
@@ -55,9 +56,9 @@ public class FilterUtils {
 	 * @param tradeOffers list of TradeOffers that are to be filtered
 	 * @return list of filtered TradeOffers
 	 */
-	public List<TradeOffer> getFilteredTradeOffers(List<TradeOffer> tradeOffers, Principal principal) {
+	public List<TradeOffer> getFilteredTradeOffers(List<TradeOffer> tradeOffers, User seeker) {
 		for(Filter entry : map.values()) {
-			tradeOffers = entry.doFilter(tradeOffers, principal);
+			tradeOffers = entry.doFilter(tradeOffers, seeker);
 		}
 		return tradeOffers;
 	}
