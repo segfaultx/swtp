@@ -7,14 +7,12 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.message.MessageType;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.admin.ForceTradeSuccessfulMessageSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.jms.Topic;
 
+@EqualsAndHashCode(callSuper = true)
 @Value
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @JsonSerialize(using = ForceTradeSuccessfulMessageSerializer.class)

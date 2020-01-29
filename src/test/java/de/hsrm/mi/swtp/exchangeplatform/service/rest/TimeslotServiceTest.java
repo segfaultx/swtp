@@ -4,6 +4,7 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.NoTimeslotCapacityException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.AdminTopicMessageSender;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.TimeslotTopicMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
@@ -30,7 +31,13 @@ import static org.mockito.Mockito.*;
 public class TimeslotServiceTest {
 	
 	@Mock
+	private TimeslotTopicMessageSender topicMessageSender;
+	
+	@Mock
 	private AdminTopicMessageSender adminTopicMessageSender;
+	
+	@Mock
+	private UserRepository userRepository;
 	
 	@Mock
 	private TimeslotRepository repository;
@@ -92,12 +99,14 @@ public class TimeslotServiceTest {
 		// User and Timeslot IDs are not relevant for this test
 		when(user.getStudentNumber()).thenReturn(1L);
 		when(timeslot.getId()).thenReturn(1L);
-		
 		when(timeslot.getCapacity()).thenReturn(3);
 		
 		when(timeslot.getAttendees()).thenReturn(userList);
 		when(repository.save(timeslot)).thenReturn(timeslot);
+		when(userRepository.findByStudentNumber(user.getStudentNumber())).thenReturn(mock(User.class));
 		doNothing().when(adminTopicMessageSender).send(any());
+		doNothing().when(topicMessageSender).notifyAll(any());
+		
 		Timeslot savedTimeslot = service.addAttendeeToTimeslot(timeslot, user);
 		assertNotNull(savedTimeslot);
 	}
