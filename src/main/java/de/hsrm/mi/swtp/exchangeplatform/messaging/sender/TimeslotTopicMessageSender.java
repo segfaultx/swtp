@@ -11,6 +11,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
 import javax.jms.JMSException;
@@ -28,6 +29,7 @@ public class TimeslotTopicMessageSender {
 	
 	TimeslotTopicManager timeslotTopicManager;
 	ObjectMapper objectMapper;
+	JmsTemplate jmsTopicTemplate;
 	
 	public void notifyAll(@NonNull final Timeslot timeslot) {
 		Topic topic = timeslotTopicManager.getTopic(timeslot);
@@ -35,10 +37,16 @@ public class TimeslotTopicMessageSender {
 		
 		try {
 			session.createSubscriber(topic).setMessageListener(message -> log.warn(String.format("--> outgoing to %s :: %s", topic.toString(), timeslot.toString())));
-			session.createPublisher(topic).send(session.createTextMessage(toString(TimeslotUpdateMessage.builder()
-																										.timeslot(timeslot)
-																										.build())));
-		} catch(JMSException | JsonProcessingException e) {
+			jmsTopicTemplate.send(topic, session1 -> {
+				try {
+					return session.createTextMessage(toString(TimeslotUpdateMessage.builder()
+																						   .timeslot(timeslot)
+																						   .build()));
+				} catch(JsonProcessingException e) {
+					return session.createTextMessage("{}");
+				}
+			});
+		} catch(JMSException e) {
 			log.warn(String.format("TIMESLOT UPDATE MESSAGE NOT SENT DUE TO %s.", e.getCause().getClass()));
 		}
 	}
