@@ -5,11 +5,16 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeExceptio
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveTimeslotSuccessfulMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.MessageType;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.AdminStudentStatusChangeMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.AdminTopicMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.TimeslotTopicMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,26 +34,28 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class TimeslotService {
-
+	
 	TimeslotRepository repository;
+	UserRepository userRepository;
 	PersonalMessageSender personalMessageSender;
+	AdminTopicMessageSender adminTopicMessageSender;
+	TimeslotTopicMessageSender timeslotTopicMessageSender;
 	
 	public List<Timeslot> getAll() {
 		return repository.findAll();
 	}
-
+	
 	public Optional<Timeslot> getById(Long timeslotId) {
 		return repository.findById(timeslotId);
 	}
-
+	
 	public Timeslot save(Timeslot timeslot) {
 		log.info(String.format("SUCCESS: Timeslot %s created", timeslot));
 		return repository.save(timeslot);
 	}
 	
 	public void addAttendeeToWaitlist(Long timeslotId, User student) throws NotFoundException {
-		Timeslot timeslot = getById(timeslotId)
-				.orElseThrow(NotFoundException::new);
+		Timeslot timeslot = getById(timeslotId).orElseThrow(NotFoundException::new);
 		// check if student is on waitlist or already an attendee
 		if(timeslot.getWaitList().contains(student) || timeslot.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s is already an attendee or on the waitlist", student.getStudentNumber()));
@@ -57,6 +64,12 @@ public class TimeslotService {
 		
 		timeslot.getWaitList().add(student);
 		this.save(timeslot);
+		
+		AdminStudentStatusChangeMessage adminMessage = AdminStudentStatusChangeMessage.builder()
+																					  .messageType(MessageType.ADD_TIMESLOT_WAITLIST_SUCCESS)
+																					  .student(userRepository.findByStudentNumber(student.getStudentNumber()))
+																					  .build();
+		adminTopicMessageSender.send(adminMessage);
 		log.info(String.format("SUCCESS: Student %s added to waitlist %s", student.getStudentNumber(), timeslotId));
 	}
 	
@@ -67,19 +80,28 @@ public class TimeslotService {
 			throw new UserIsAlreadyAttendeeException(student);
 		}
 		// check if capacity has been reached
-		if(!this.checkCapacity(timeslot)){
+		if(!this.checkCapacity(timeslot)) {
 			log.info(String.format("FAIL: Student %s not added to appointment %s", student.getStudentNumber(), timeslot.getId()));
 			throw new NoTimeslotCapacityException(timeslot);
 		}
-		
 		timeslot.addAttendee(student);
 		
-		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), timeslot.getId()));
-		return save(timeslot);
-	}
-
-	public Timeslot removeAttendeeFromTimeslot(Timeslot timeslot, User student) throws NotFoundException {
+		Timeslot savedTimeslot = save(timeslot);
 		
+		// The message sending part should be separated and triggered via Events
+		AdminStudentStatusChangeMessage adminMessage = AdminStudentStatusChangeMessage.builder()
+																					  .messageType(MessageType.JOIN_TIMESLOT_SUCCESS)
+																					  .student(userRepository.findByStudentNumber(student.getStudentNumber()))
+																					  .build();
+		adminTopicMessageSender.send(adminMessage);
+		timeslotTopicMessageSender.notifyAll(timeslot);
+		
+		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), timeslot.getId()));
+		
+		return savedTimeslot;
+	}
+	
+	public Timeslot removeAttendeeFromTimeslot(Timeslot timeslot, User student) throws NotFoundException {
 		if(!timeslot.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s not removed", student.getStudentNumber()));
 			throw new ModelNotFoundException(student);
@@ -87,24 +109,27 @@ public class TimeslotService {
 		
 		timeslot.removeAttendee(student);
 		// check waitlist and add first in line to timeslot
-		if(!timeslot.getWaitList().isEmpty()){
+		if(!timeslot.getWaitList().isEmpty()) {
 			User nextStudent = timeslot.getWaitList().get(0);
 			timeslot.getWaitList().remove(nextStudent);
 			timeslot.getAttendees().add(nextStudent);
 		}
 		
-		personalMessageSender.send(student, LeaveTimeslotSuccessfulMessage.builder()
-																	   .timeslot(timeslot)
-																	   .time(LocalTime.now())
-																	   .build());
+		personalMessageSender.send(student, LeaveTimeslotSuccessfulMessage.builder().timeslot(timeslot).time(LocalTime.now()).build());
+		
+		AdminStudentStatusChangeMessage adminMessage = AdminStudentStatusChangeMessage.builder()
+																					  .messageType(MessageType.LEAVE_TIMESLOT_SUCCESS)
+																					  .student(userRepository.findByStudentNumber(student.getStudentNumber()))
+																					  .build();
+		adminTopicMessageSender.send(adminMessage);
+		timeslotTopicMessageSender.notifyAll(timeslot);
 		
 		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), timeslot.getId()));
 		return save(timeslot);
 	}
 	
 	public void removeAttendeeFromWaitlist(Long timeslotId, User student) throws NotFoundException {
-		Timeslot timeslot = this.getById(timeslotId)
-								.orElseThrow(NotFoundException::new);
+		Timeslot timeslot = this.getById(timeslotId).orElseThrow(NotFoundException::new);
 		
 		if(!timeslot.getWaitList().contains(student)) {
 			log.info(String.format("FAIL: Student %s not removed", student.getStudentNumber()));
@@ -113,6 +138,12 @@ public class TimeslotService {
 		
 		timeslot.getWaitList().remove(student);
 		this.save(timeslot);
+		
+		AdminStudentStatusChangeMessage adminMessage = AdminStudentStatusChangeMessage.builder()
+																					  .messageType(MessageType.REMOVE_TIMESLOT_WAITLIST_SUCCESS)
+																					  .student(userRepository.findByStudentNumber(student.getStudentNumber()))
+																					  .build();
+		adminTopicMessageSender.send(adminMessage);
 		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), timeslotId));
 	}
 	
@@ -121,14 +152,15 @@ public class TimeslotService {
 		return timeslot.getAttendees().size() < timeslot.getCapacity();
 	}
 	
-	
 	/**
 	 * Searches for the first timeslot of the seeked module with no collisions
+	 *
 	 * @param timeslotID The seeked module
-	 * @param user The requestor
+	 * @param user       The requestor
+	 *
 	 * @return List of suggested Timeslots
 	 */
-	public List<Timeslot> getSuggestedTimeslots(Long timeslotID, User user){
+	public List<Timeslot> getSuggestedTimeslots(Long timeslotID, User user) {
 		List<Timeslot> suggestedTimeslots = new ArrayList<>();
 		//var user = userRepository.findById(studentID).orElseThrow();
 		var timeslot = repository.findById(timeslotID).orElseThrow();
@@ -136,16 +168,16 @@ public class TimeslotService {
 		var potentialTimeslots = module.getTimeslots();
 		
 		//Vorlesung der temporaeren Timetable hinzufuegen und aus den potentialtimeslots loeschen
-		for(Timeslot ts: potentialTimeslots) {
-			if(ts.getTimeSlotType() == TypeOfTimeslots.VORLESUNG){
+		for(Timeslot ts : potentialTimeslots) {
+			if(ts.getTimeSlotType() == TypeOfTimeslots.VORLESUNG) {
 				suggestedTimeslots.add(ts);
 				potentialTimeslots.remove(ts);
 				break;
 			}
 		}
 		//Ersten Timeslot der keine Kollision hat der suggestedTimeslots Liste hinzufuegen
-		for(Timeslot ts: potentialTimeslots) {
-			if(!hasCollisions(ts, user.getTimeslots())){
+		for(Timeslot ts : potentialTimeslots) {
+			if(!hasCollisions(ts, user.getTimeslots())) {
 				suggestedTimeslots.add(ts);
 				break;
 			}
@@ -153,31 +185,35 @@ public class TimeslotService {
 		return suggestedTimeslots;
 	}
 	
-	
 	/**
 	 * Method to check if a given Timeslot and a Timetable has collisions
-	 * @param timeslot The potential Timeslot for User
+	 *
+	 * @param timeslot  The potential Timeslot for User
 	 * @param timeTable List of Timeslots from User
+	 *
 	 * @return true if successful
 	 */
-	public boolean hasCollisions(Timeslot timeslot, List<Timeslot> timeTable){
+	public boolean hasCollisions(Timeslot timeslot, List<Timeslot> timeTable) {
 		for(Timeslot ts : timeTable) {
-			if (ts.getDay() == timeslot.getDay()){
+			if(ts.getDay() == timeslot.getDay()) {
 				if(hoursAreColliding(ts.getTimeEnd(), ts.getTimeStart(), timeslot.getTimeEnd(), timeslot.getTimeStart())) return true;
 			}
 		}
 		return false;
 	}
+	
 	/**
 	 * Method to check if startTime and endTime of 2 Timeslots are colliding
-	 * @param aTimeEnd EndTime of Timeslot A
+	 *
+	 * @param aTimeEnd   EndTime of Timeslot A
 	 * @param aTimeStart StartTime of Timeslot A
-	 * @param bTimeEnd EndTime of Timeslot B
+	 * @param bTimeEnd   EndTime of Timeslot B
 	 * @param bTimeStart StartTime of Timeslot B
+	 *
 	 * @return true if successful
 	 */
-	public boolean hoursAreColliding(LocalTime aTimeEnd, LocalTime aTimeStart, LocalTime bTimeEnd, LocalTime bTimeStart){
-		if(aTimeStart.equals(bTimeStart)  || aTimeEnd.equals(bTimeEnd)) return true;
+	public boolean hoursAreColliding(LocalTime aTimeEnd, LocalTime aTimeStart, LocalTime bTimeEnd, LocalTime bTimeStart) {
+		if(aTimeStart.equals(bTimeStart) || aTimeEnd.equals(bTimeEnd)) return true;
 		if((aTimeStart.isBefore(bTimeEnd) && aTimeStart.isAfter(bTimeStart)) || (bTimeStart.isBefore(aTimeEnd) && bTimeStart.isAfter(aTimeStart))) return true;
 		return (aTimeStart.isBefore(bTimeStart) && aTimeEnd.isBefore(bTimeEnd)) || (bTimeStart.isBefore(aTimeStart) && bTimeEnd.isBefore(aTimeEnd));
 	}

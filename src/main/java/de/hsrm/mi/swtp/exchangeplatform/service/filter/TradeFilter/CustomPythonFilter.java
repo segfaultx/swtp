@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -41,7 +42,7 @@ public class CustomPythonFilter implements Filter {
 	
 	
 	@Override
-	public List<TradeOffer> doFilter(List<TradeOffer> offers) throws RuntimeException {
+	public List<TradeOffer> doFilter(List<TradeOffer> offers, User seeker) throws RuntimeException {
 		ScriptEngineManager manager = new ScriptEngineManager();
 		ScriptEngine py = manager.getEngineByName("python");
 		py.put("offers", offers);

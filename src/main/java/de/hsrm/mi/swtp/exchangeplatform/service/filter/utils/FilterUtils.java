@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter.utils;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.CustomPythonFilterRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
@@ -11,6 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.constraints.NotNull;
+import java.security.Principal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,9 +56,9 @@ public class FilterUtils {
 	 * @param tradeOffers list of TradeOffers that are to be filtered
 	 * @return list of filtered TradeOffers
 	 */
-	public List<TradeOffer> getFilteredTradeOffers(List<TradeOffer> tradeOffers) {
+	public List<TradeOffer> getFilteredTradeOffers(List<TradeOffer> tradeOffers, User seeker) {
 		for(Filter entry : map.values()) {
-			tradeOffers = entry.doFilter(tradeOffers);
+			tradeOffers = entry.doFilter(tradeOffers, seeker);
 		}
 		return tradeOffers;
 	}

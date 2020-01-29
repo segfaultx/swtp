@@ -32,7 +32,6 @@ public class BasicTradeService implements TradeService {
 	 * @return true if trade was processed, false if not
 	 */
 	@Override
-	@Transactional
 	public boolean doTrade(User student1, User student2, Timeslot timeslot1, Timeslot timeslot2) {
 		
 		if(!student1.getUserType().getType().equals(TypeOfUsers.STUDENT) ||

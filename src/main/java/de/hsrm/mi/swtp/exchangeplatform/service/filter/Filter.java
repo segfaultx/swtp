@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  */
 public interface Filter {
 	
-    List<TradeOffer> doFilter(List<TradeOffer> offers);
+    List<TradeOffer> doFilter(List<TradeOffer> offers, User seeker);
     
     String getFilterName() throws RuntimeException;
 }

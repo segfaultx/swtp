@@ -51,6 +51,10 @@ public class User implements Model {
 	@JsonProperty("fairness")
 	int fairness;
 	
+	@JsonProperty(value = "current_semester", required = true)
+	@Schema(defaultValue = "0", required = true, nullable = false, type = "integer", format = "int64")
+	Long currentSemester = 0L;
+	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JsonIgnore
 	@JsonManagedReference("user-authinformation")
@@ -89,8 +93,13 @@ public class User implements Model {
 	@OneToMany(cascade = CascadeType.ALL)
 	List<Module> completedModules = new ArrayList<>();
 	
-	@JsonIgnore
-	@OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
-	@JsonManagedReference("seeker-tradeoffers")
-	List<TradeOffer> tradeofferSeeks = new ArrayList<>();
+	@Override
+	public boolean equals(Object o) {
+		if(this == o) return true;
+		if(!(o instanceof User)) return false;
+		
+		User user = (User) o;
+		
+		return id.equals(user.id);
+	}
 }
