@@ -25,8 +25,8 @@ public class UserFactory {
 	private final static String EMAIL_BASE = "%s.%s@hs-rm.de";
 	
 	/** @see UserFactory */
-	public User createStudent(@NonNull final String fName, @NonNull final String lName, @NonNull final Long studentNumber, @NonNull final String initials, @NonNull final Long currentSemester) {
-		return createUser(Roles.MEMBER, TypeOfUsers.STUDENT, fName, lName, studentNumber, currentSemester);
+	public User createStudent(@NonNull final String fName, @NonNull final String lName, @NonNull final Long studentNumber, @NonNull final Long currentSemester) {
+		return createUser(Roles.MEMBER, TypeOfUsers.STUDENT, fName, lName, studentNumber, null, currentSemester);
 	}
 	
 	/** @see UserFactory */
@@ -41,7 +41,7 @@ public class UserFactory {
 	
 	/** @see UserFactory */
 	public User createUser(@NonNull final Roles role, @NonNull final TypeOfUsers typeOfUser, @NonNull final String fName, @NonNull final String lName,
-						   @NonNull final Long id, , @NonNull final String initials
+						   @NonNull final Long id, final String initials
 						  ) {
 		return createUser(role, typeOfUser, fName, lName, id, initials, 0L);
 	}
