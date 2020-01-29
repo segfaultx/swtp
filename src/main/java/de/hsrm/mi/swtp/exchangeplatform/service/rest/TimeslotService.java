@@ -9,6 +9,7 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.message.MessageType;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.AdminStudentStatusChangeMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.AdminTopicMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.TimeslotTopicMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
@@ -38,6 +39,7 @@ public class TimeslotService {
 	UserRepository userRepository;
 	PersonalMessageSender personalMessageSender;
 	AdminTopicMessageSender adminTopicMessageSender;
+	TimeslotTopicMessageSender timeslotTopicMessageSender;
 	
 	public List<Timeslot> getAll() {
 		return repository.findAll();
@@ -90,6 +92,7 @@ public class TimeslotService {
 																					  .student(userRepository.findByStudentNumber(student.getStudentNumber()))
 																					  .build();
 		adminTopicMessageSender.send(adminMessage);
+		timeslotTopicMessageSender.notifyAll(timeslot);
 		
 		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), timeslot.getId()));
 		
