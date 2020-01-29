@@ -74,7 +74,7 @@ public class TimeslotService {
 	}
 	
 	public Timeslot addAttendeeToTimeslot(Timeslot timeslot, User student) throws UserIsAlreadyAttendeeException, NoTimeslotCapacityException {
-		// check if alreadx an attendee
+		// check if already an attendee
 		if(timeslot.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
 			throw new UserIsAlreadyAttendeeException(student);
