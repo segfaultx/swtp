@@ -79,12 +79,11 @@ public class SearchUserRestController {
 		if(id.get() != ""){
 			List<User> studNums = userService.getAllByStudentNumber(id.get());
 			if(!studNums.isEmpty()){lists.add(studNums);}
-			List<User> staffNums = userService.getAllByStaffNumber(id.get());
-			if(!staffNums.isEmpty()){lists.add(staffNums);}
+			
 		}
 		// get rid of duplicates
 		List<User> result = userService.unifyLists(lists);
 		// return result
-		return ResponseEntity.ok(result);
+		return ResponseEntity.ok(userService.filterStaff(result));
 	}
 }

@@ -4,6 +4,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedExceptio
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.WhoAmI;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
@@ -92,6 +93,15 @@ public class UserService {
 			if(!out.contains(user)) out.add(user);
 		}));
 		return out;
+	}
+	
+	public List<User> filterStaff(List<User> list) {
+		for(User user : list){
+			if(user.getUserType().getType() == TypeOfUsers.LECTURER){
+				list.remove(user);
+			}
+		}
+		return list;
 	}
 	
 	public Boolean userPassedSemester(final User student, final Long semester) {
