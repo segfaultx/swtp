@@ -81,7 +81,7 @@ public class AuthenticationServiceTest {
 		});
 	}
 	
-	//@Test
+	@Test
 	public void testLoginUserThrowNotFoundException() {
 		assertThrows(NotFoundException.class, () -> {
 			LoginRequestBody requestBody = new LoginRequestBody();
@@ -108,7 +108,7 @@ public class AuthenticationServiceTest {
 		});
 	}
 	
-	//@Test
+	@Test
 	public void testLogoutUserWithValidCredentials() throws NotFoundException, JMSException {
 		
 		// First Login
