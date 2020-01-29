@@ -120,6 +120,7 @@ public class TimeslotService {
 																					  .student(userRepository.findByStudentNumber(student.getStudentNumber()))
 																					  .build();
 		adminTopicMessageSender.send(adminMessage);
+		timeslotTopicMessageSender.notifyAll(timeslot);
 		
 		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), timeslot.getId()));
 		return save(timeslot);
