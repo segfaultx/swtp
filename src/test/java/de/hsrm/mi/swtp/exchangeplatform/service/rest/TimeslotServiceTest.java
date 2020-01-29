@@ -3,18 +3,24 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.NoTimeslotCapacityException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.AdminTopicMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
+import org.junit.Before;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
@@ -23,8 +29,19 @@ import static org.mockito.Mockito.*;
 @DirtiesContext
 public class TimeslotServiceTest {
 	
-	@Autowired
+	@Mock
+	private AdminTopicMessageSender adminTopicMessageSender;
+	
+	@Mock
+	private TimeslotRepository repository;
+	
+	@InjectMocks
 	private TimeslotService service;
+	
+	@Before
+	public void setup() {
+		MockitoAnnotations.initMocks(this);
+	}
 	
 	@Test
 	public void testAddAttendeeToTimeslotUserIsAlreadyAttendee() {
@@ -63,27 +80,26 @@ public class TimeslotServiceTest {
 	
 	@Test
 	public void testAddAttendeeToTimeslotAddingIsSuccessful() {
-	
-	
-	
-//		User user = mock(User.class);
-//
-//		Timeslot timeslot = mock(Timeslot.class);
-//
-//		TimeslotService service = mock(TimeslotService.class);
-//
-//		when(service.addAttendeeToTimeslot(timeslot, user)).thenCallRealMethod();
-//
-//		List<User> userList = doReturn(new ArrayList<>()).when(timeslot.getAttendees());
-//		when(userList.contains(user)).thenReturn(false);
-//
-//		// User and Timeslot IDs are not relevant for this test
-//		when(user.getStudentNumber()).thenReturn(1L);
-//		when(timeslot.getId()).thenReturn(1L);
-//
-//		when(service.checkCapacity(timeslot)).thenReturn(true);
-//
-//		assertEquals(service.addAttendeeToTimeslot(timeslot, user), timeslot);
+		
+		List<User> mockedList = mock(List.class);
+		List<User> userList = List.of(mock(User.class), mock(User.class));
+		User user = mock(User.class, RETURNS_DEEP_STUBS);
+		Timeslot timeslot = mock(Timeslot.class);
+		
+		when(timeslot.getAttendees()).thenReturn(mockedList);
+		when(mockedList.contains(user)).thenReturn(false);
+		
+		// User and Timeslot IDs are not relevant for this test
+		when(user.getStudentNumber()).thenReturn(1L);
+		when(timeslot.getId()).thenReturn(1L);
+		
+		when(timeslot.getCapacity()).thenReturn(3);
+		
+		when(timeslot.getAttendees()).thenReturn(userList);
+		when(repository.save(timeslot)).thenReturn(timeslot);
+		doNothing().when(adminTopicMessageSender).send(any());
+		Timeslot savedTimeslot = service.addAttendeeToTimeslot(timeslot, user);
+		assertNotNull(savedTimeslot);
 	}
 	
 }

@@ -85,6 +85,8 @@ public class TimeslotService {
 		timeslot.addAttendee(student);
 		
 		Timeslot savedTimeslot = save(timeslot);
+		
+		// The message sending part should be separated and triggered via Events
 		AdminStudentStatusChangeMessage adminMessage = AdminStudentStatusChangeMessage.builder()
 																					  .messageType(MessageType.JOIN_TIMESLOT_SUCCESS)
 																					  .student(userRepository.findByStudentNumber(student.getStudentNumber()))
