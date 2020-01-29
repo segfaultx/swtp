@@ -1,19 +1,19 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.MessageType;
+import de.hsrm.mi.swtp.exchangeplatform.model.serializer.admin.po.ProgressiveRegulationViolationMessageSerializer;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
-@Builder
+@JsonSerialize(using = ProgressiveRegulationViolationMessageSerializer.class)
 public class ProgressiveRegulationViolationMessage {
 	
 	@JsonProperty("type")
@@ -25,4 +25,8 @@ public class ProgressiveRegulationViolationMessage {
 	@JsonProperty("modules_not_allowed")
 	List<Long> modulesNotAllowed;
 	
+	@Builder
+	public ProgressiveRegulationViolationMessage(List<Long> modulesNotAllowed) {
+		this.modulesNotAllowed = modulesNotAllowed;
+	}
 }

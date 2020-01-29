@@ -53,31 +53,31 @@ public class DBInitiator implements ApplicationRunner {
 		
 		//START STUDENTS
 		// START Dennis
-		User dennis = userFactory.createStudent("Dennis", "Schad", 1006351L);
+		User dennis = userFactory.createStudent("Dennis", "Schad", 1006351L, 9L);
 		// END Dennis
 		
 		// START Willi
-		User willi = userFactory.createStudent("Willi", "Wusel", 1006555L);
+		User willi = userFactory.createStudent("Willi", "Wusel", 1006555L, 7L);
 		// END Willi
 		
 		// START Jöndhard
-		User joendhard = userFactory.createStudent("Jöndhard", "Joendhardson", 1006333L);
+		User joendhard = userFactory.createStudent("Jöndhard", "Joendhardson", 1006333L, 3L);
 		// END Jöndhard
 		
 		// START CHANDLER
-		User chandler = userFactory.createStudent("Chandler", "Bing", 1005917L);
+		User chandler = userFactory.createStudent("Chandler", "Bing", 1005917L, 5L);
 		// END CHANDLER
 		
 		// START FRODO
-		User frodo = userFactory.createStudent("Frodo", "Beutlin", 1035123L);
+		User frodo = userFactory.createStudent("Frodo", "Beutlin", 1035123L, 5L);
 		// END FRODO
 		
 		// START GANDALF
-		User gandalf = userFactory.createStudent("Gandalf", "Der_Graue", 1035146L);
+		User gandalf = userFactory.createStudent("Gandalf", "Der_Graue", 1035146L, 7L);
 		// END GANDALF
 		
 		// START SAMWEIS
-		User samweis = userFactory.createStudent("Samweis", "Gamdschie", 1035233L);
+		User samweis = userFactory.createStudent("Samweis", "Gamdschie", 1035233L, 7L);
 		// END SAMWEIS
 		//END STUDENTS
 		
@@ -137,7 +137,7 @@ public class DBInitiator implements ApplicationRunner {
 		
 		
 		// START PO 2017
-		PORestriction restriction2017 = poRestrictionFactory.createPO();
+		PORestriction restriction2017 = poRestrictionFactory.createRestriction();
 		PO po2017 = poFactory.createPO(LocalDate.now().minusYears(3L), LocalDate.now().minusYears(3L), LocalDate.now().plusYears(3L));
 		
 		final List<DayOfWeek> freeDaysPerSemester = IntStream.iterate(0, i -> i < po2017.getSemesterCount(), i -> i + 1)
@@ -816,8 +816,8 @@ public class DBInitiator implements ApplicationRunner {
 		// END TRADEOFFER JOENDHARD
 		
 		List<Module> completedModulesDennis = new ArrayList<>();
-		completedModulesDennis.add(eim);
-		completedModulesDennis.add(prog3);
+//		completedModulesDennis.add(eim);
+//		completedModulesDennis.add(prog3);
 		dennis.setCompletedModules(completedModulesDennis);
 		
 	/*	List<Module> completedModulesGandalf = new ArrayList<>();

@@ -1,17 +1,17 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.MessageType;
+import de.hsrm.mi.swtp.exchangeplatform.model.serializer.admin.po.CPViolationMessageSerializer;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequiredArgsConstructor
-@Builder
+@JsonSerialize(using = CPViolationMessageSerializer.class)
 public class CPViolationMessage {
 	
 	@JsonProperty("type")
@@ -26,4 +26,9 @@ public class CPViolationMessage {
 	@JsonProperty("occupied_cp")
 	Long userCP;
 	
+	@Builder
+	public CPViolationMessage(Long maxCPByPO, Long userCP) {
+		this.maxCPByPO = maxCPByPO;
+		this.userCP = userCP;
+	}
 }

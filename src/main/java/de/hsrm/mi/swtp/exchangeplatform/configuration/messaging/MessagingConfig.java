@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.annotation.EnableJms;
 import org.springframework.jms.core.JmsTemplate;
 
+import javax.jms.DeliveryMode;
 import javax.jms.Queue;
 import javax.jms.Topic;
 import java.net.URI;
@@ -74,6 +75,8 @@ public class MessagingConfig {
 	@Bean(name = "jmsTopicTemplate")
 	public JmsTemplate jmsTopicTemplate() {
 		JmsTemplate jmsTemplate = new JmsTemplate();
+		jmsTemplate.setDeliveryPersistent(true);
+		jmsTemplate.setDeliveryMode(DeliveryMode.PERSISTENT);
 		jmsTemplate.setPubSubDomain(true);
 		jmsTemplate.setMessageIdEnabled(true);
 		jmsTemplate.setMessageTimestampEnabled(true);

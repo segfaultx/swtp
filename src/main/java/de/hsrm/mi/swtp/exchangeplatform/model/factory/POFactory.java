@@ -89,4 +89,19 @@ public class POFactory {
 		return po;
 	}
 	
+	public PO clone(final PO po) {
+		final PO clone = createPO(
+				po.getTitle(),
+				po.getMajor(),
+				po.getSemesterCount(),
+				po.getValidSince(),
+				po.getDateStart(),
+				po.getDateEnd(),
+				po.getModules(),
+				po.getStudents(),
+				po.getRestriction());
+		
+		return clone;
+	}
+	
 }
