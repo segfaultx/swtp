@@ -130,8 +130,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			
 			// notify user who requests to trade with offerer
 			personalMessageSender.send(requestingUser.getId(),
-									   TradeOfferSuccessfulMessage.builder()
-																  .newTimteslot(requestedTimeslot)
+									   TradeOfferSuccessfulMessage.builder().newTimeslot(offeredTimeslot)
 																  .oldTimeslotId(offeredTimeslot.getId())
 																  .topic(timeslotTopicManager.getTopic(requestedTimeslot))
 																  .build()
@@ -140,7 +139,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			// notify offerer that his/her trade was resolved
 			personalMessageSender.send(offereringUser.getId(),
 									   TradeOfferSuccessfulMessage.builder()
-																  .newTimteslot(offeredTimeslot)
+									   							.newTimeslot(offeredTimeslot)
 																  .oldTimeslotId(requestedTimeslot.getId())
 																  .topic(timeslotTopicManager.getTopic(offeredTimeslot))
 																  .build()
