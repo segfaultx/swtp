@@ -83,16 +83,21 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		var trades = tradeOfferRepository.findAllBySeek(offeredTimeslot);
 		var ownOffers = tradeOfferRepository.findAllByOffererAndOffer(user, offeredTimeslot);
 		
+		// merge own offers + trades to check which timeslots are left (no tradeoffers)
 		List<TradeOffer> mergedOffers = new ArrayList<>();
 		mergedOffers.addAll(trades);
 		mergedOffers.addAll(ownOffers);
 		
+		// fetch all timeslots of module
 		var allTimeslots = timeSlotRepository.findAllByModule(offeredTimeslot.getModule());
 		
+		// lookup all added timeslots
 		var allAddedTimeslots = mergedOffers.stream()
 				.map(TradeOffer::getOffer)
 				.collect(toList());
 		
+		// reduce all timeslots to a list only containing timeslots not contained in allAddedTimeslots which are
+		// also not of type VORLESUNG, also remove the requested timeslot
 		var remainingTimeslots = allTimeslots
 				.stream()
 				.filter(item -> !allAddedTimeslots.contains(item) &&
@@ -100,6 +105,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 					   && !item.getId().equals(id))
 				.collect(toList());
 		
+		// create fake tradeoffers and add them to trades (to check wether they collide with the students timetable)
 		List<TradeOffer> fakeTradeOffers = new ArrayList<>();
 		remainingTimeslots.forEach(ts -> {
 			TradeOffer fake = new TradeOffer();
