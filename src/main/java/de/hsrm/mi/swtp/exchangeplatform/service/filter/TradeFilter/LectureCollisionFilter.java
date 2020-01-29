@@ -6,17 +6,18 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
+import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
+@Service
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class LectureCollisionFilter implements Filter {
 	String filterName = "LectureCollisionFilter";
-	UserRepository userRepository;
-	
 	
 	/**
 	 * checks if a students timetable collides with the given TradeOffers (prohibiting a future trade unless resolved)
