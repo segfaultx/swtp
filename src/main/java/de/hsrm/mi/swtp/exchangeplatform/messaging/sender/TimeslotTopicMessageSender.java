@@ -33,7 +33,6 @@ public class TimeslotTopicMessageSender {
 		Topic topic = timeslotTopicManager.getTopic(timeslot);
 		TopicSession session = timeslotTopicManager.getSession(timeslot);
 		
-		
 		try {
 			session.createSubscriber(topic).setMessageListener(message -> log.warn(String.format("--> outgoing to %s :: %s", topic.toString(), timeslot.toString())));
 			session.createPublisher(topic).send(session.createTextMessage(toString(TimeslotUpdateMessage.builder()
