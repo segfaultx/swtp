@@ -9,6 +9,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeRequest;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeWrapper;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
@@ -263,7 +264,7 @@ public class TradeOffersRestController {
 							@ApiResponse(responseCode = "403", description = "unauthorized tradeOffer request"),
 							@ApiResponse(responseCode = "400", description = "malformed tradeOffers request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<Map<String, List<Timeslot>>> getTradesForModule(@PathVariable("id") long id, Principal principal) throws Exception {
+	public ResponseEntity<List<TradeWrapper>> getTradesForModule(@PathVariable("id") long id, Principal principal) throws Exception {
 		log.info(String.format("GET REQUEST TRADEOFFERS FOR TIMESLOT WITH ID: %d BY USER: %s", id, principal.getName()));
 		var out = tradeOfferService.getTradeOffersForModule(id, userService.getByUsername(principal.getName()).orElseThrow());
 		return new ResponseEntity<>(out, HttpStatus.OK);

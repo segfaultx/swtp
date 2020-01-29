@@ -8,6 +8,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeWrapper;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
@@ -17,12 +18,16 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.security.Principal;
 import java.util.*;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -68,34 +73,101 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 *
 	 * @throws Exception if lookup fails
 	 */
-	public Map<String, List<Timeslot>> getTradeOffersForModule(long id, User user) throws Exception {
-		Map<String, List<Timeslot>> out = new HashMap<>();
-		List<Timeslot> instantTrades = new ArrayList<>();
-		List<Timeslot> regularTrades = new ArrayList<>();
-		List<Timeslot> remaining = new ArrayList<>();
-		List<Timeslot> ownOffers = new ArrayList<>();
+	@Transactional
+	public List<TradeWrapper> getTradeOffersForModule(long id, User user) throws Exception {
+		List<TradeWrapper> out = new ArrayList<>();
+		
 		var offeredTimeslot = timeSlotRepository.findById(id).orElseThrow();
+		
+		// Lookup all trades which want the offered timeslot
 		var trades = tradeOfferRepository.findAllBySeek(offeredTimeslot);
-		trades.forEach(trade -> {
-			if(trade.getId() != id) {
-				if(trade.isInstantTrade()) instantTrades.add(trade.getOffer());
-				else regularTrades.add(trade.getOffer());
-			}
-			
-		});
-		for(TradeOffer to : tradeOfferRepository.findAllByOffererAndOffer(user, offeredTimeslot)) {
-			if(!ownOffers.contains(to.getSeek())) ownOffers.add(to.getSeek());
-		}
+		var ownOffers = tradeOfferRepository.findAllByOffererAndOffer(user, offeredTimeslot);
+		
+		List<TradeOffer> mergedOffers = new ArrayList<>();
+		mergedOffers.addAll(trades);
+		mergedOffers.addAll(ownOffers);
+		
 		var allTimeslots = timeSlotRepository.findAllByModule(offeredTimeslot.getModule());
-		allTimeslots.forEach(timeslot -> {
-			if(timeslot.getId() != id && timeslot.getTimeSlotType() != TypeOfTimeslots.VORLESUNG && !ownOffers.contains(timeslot)) {
-				if(!instantTrades.contains(timeslot) && !regularTrades.contains(timeslot)) remaining.add(timeslot);
-			}
+		
+		var allAddedTimeslots = mergedOffers.stream()
+				.map(TradeOffer::getOffer)
+				.collect(toList());
+		
+		var remainingTimeslots = allTimeslots
+				.stream()
+				.filter(item -> !allAddedTimeslots.contains(item) &&
+						item.getTimeSlotType() != TypeOfTimeslots.VORLESUNG
+					   && !item.getId().equals(id))
+				.collect(toList());
+		
+		List<TradeOffer> fakeTradeOffers = new ArrayList<>();
+		remainingTimeslots.forEach(ts -> {
+			TradeOffer fake = new TradeOffer();
+			fake.setSeek(offeredTimeslot);
+			fake.setOffer(ts);
+			fakeTradeOffers.add(fake);
 		});
-		out.put("instant", instantTrades);
-		out.put("trades", regularTrades);
-		out.put("remaining", remaining);
-		out.put("ownOffers", ownOffers);
+		trades.addAll(fakeTradeOffers);
+		
+		// filter out all trades which collide with timetable or requester (PRACTICAL)
+		var nonCollidingTradesPractical = filterUtils
+				.getFilterByName("CollisionFilter")
+				.doFilter(trades, user);
+		
+		// add all practical colliding tradeoffers to tradewrapper list
+		
+		List.copyOf(trades)
+				.stream()
+				.filter(item -> !nonCollidingTradesPractical.contains(item))
+				.collect(toList())
+				.forEach(trade -> {
+					TradeWrapper toAdd = new TradeWrapper();
+					toAdd.setTimeslot(trade.getOffer());
+					toAdd.setCollision(true);
+					out.add(toAdd);
+					trades.remove(trade);
+				});
+		
+		// filter out all trades which collide with timetable or requester (LECTURE)
+		var nonCollidingTradesLecture  = filterUtils.getFilterByName("LectureCollisionFilter")
+				.doFilter(trades, user);
+		List.copyOf(trades)
+			.stream()
+			.filter(item -> !nonCollidingTradesLecture.contains(item))
+			.collect(Collectors.toList())
+			.forEach(trade -> {
+				TradeWrapper toAdd = new TradeWrapper();
+				toAdd.setTimeslot(trade.getOffer());
+				toAdd.setCollisionLecture(true);
+				out.add(toAdd);
+				trades.remove(trade);
+			});
+		
+		// lookup own tradeoffers -> add them with own flag set
+		
+		ownOffers.forEach(item -> {
+			TradeWrapper toAdd = new TradeWrapper();
+			toAdd.setTimeslot(item.getSeek());
+			toAdd.setOwnOffer(true);
+			out.add(toAdd);
+		});
+		
+		// all collisions have been removed, add them as either regular or instant trades to out
+		trades.forEach(item -> {
+			TradeWrapper toAdd = new TradeWrapper();
+			toAdd.setTimeslot(item.getOffer());
+			
+			if (item.getId() == null){
+				toAdd.setRemaining(true);
+			}
+			else {
+				toAdd.setInstantTrade(item.isInstantTrade());
+				toAdd.setTrade(!item.isInstantTrade());
+			}
+			out.add(toAdd);
+		});
+		
+		
 		return out;
 	}
 	
