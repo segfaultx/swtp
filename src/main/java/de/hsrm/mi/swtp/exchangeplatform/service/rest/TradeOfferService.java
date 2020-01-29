@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 @Service
@@ -130,7 +129,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			// notify user who requests to trade with offerer
 			personalMessageSender.send(requestingUser.getId(),
 									   TradeOfferSuccessfulMessage.builder()
-																  .newTimteslot(requestedTimeslot)
+																  .newTimeslot(requestedTimeslot)
 																  .oldTimeslotId(offeredTimeslot.getId())
 																  .topic(timeslotTopicManager.getTopic(requestedTimeslot))
 																  .build()
@@ -139,7 +138,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			// notify offerer that his/her trade was resolved
 			personalMessageSender.send(offereringUser.getId(),
 									   TradeOfferSuccessfulMessage.builder()
-																  .newTimteslot(offeredTimeslot)
+																  .newTimeslot(offeredTimeslot)
 																  .oldTimeslotId(requestedTimeslot.getId())
 																  .topic(timeslotTopicManager.getTopic(offeredTimeslot))
 																  .build()

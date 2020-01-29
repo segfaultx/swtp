@@ -51,6 +51,10 @@ public class User implements Model {
 	@JsonProperty("fairness")
 	int fairness;
 	
+	@JsonProperty(value = "current_semester", required = true)
+	@Schema(defaultValue = "0", required = true, nullable = false, type = "integer", format = "int64")
+	Long currentSemester = 0L;
+	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JsonIgnore
 	@JsonManagedReference("user-authinformation")

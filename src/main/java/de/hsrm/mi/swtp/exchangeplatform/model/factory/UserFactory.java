@@ -12,10 +12,10 @@ import java.util.ArrayList;
 
 /**
  * A simple factory with three main creation methods:
- * • {@link #createUser(Roles, TypeOfUsers, String, String, Long)}: returns a new generic {@link User} which accepts any {@link TypeOfUsers},
- * • {@link #createStudent(String, String, Long)}: returns a new {@link User} of {@link TypeOfUsers#STUDENT type STUDENT},
- * • {@link #createLecturer(String, String, Long)}: returns a new {@link User} of {@link TypeOfUsers#LECTURER type LECTURER}
- * • {@link #createLecturerADMIN(String, String, Long)}: returns a new {@link User} of {@link TypeOfUsers#LECTURER type LECTURER}
+ * • {@link #createUser(Roles, TypeOfUsers, String, String, Long, String)}: returns a new generic {@link User} which accepts any {@link TypeOfUsers},
+ * • {@link #createStudent(String, String, Long, String, Long)}: returns a new {@link User} of {@link TypeOfUsers#STUDENT type STUDENT},
+ * • {@link #createLecturer(String, String, Long, String)}: returns a new {@link User} of {@link TypeOfUsers#LECTURER type LECTURER}
+ * • {@link #createLecturerADMIN(String, String, Long, String)}: returns a new {@link User} of {@link TypeOfUsers#LECTURER type LECTURER}
  */
 @Component("userFactory")
 public class UserFactory {
@@ -25,23 +25,30 @@ public class UserFactory {
 	private final static String EMAIL_BASE = "%s.%s@hs-rm.de";
 	
 	/** @see UserFactory */
-	public User createStudent(@NonNull final String fName, @NonNull final String lName, @NonNull final Long studentNumber) {
-		return createUser(Roles.MEMBER, TypeOfUsers.STUDENT, fName, lName, studentNumber, null);
+	public User createStudent(@NonNull final String fName, @NonNull final String lName, @NonNull final Long studentNumber, @NonNull final String initials, @NonNull final Long currentSemester) {
+		return createUser(Roles.MEMBER, TypeOfUsers.STUDENT, fName, lName, studentNumber, currentSemester);
 	}
 	
 	/** @see UserFactory */
-	public User createLecturer(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber, final String initials) {
+	public User createLecturer(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber, @NonNull final String initials) {
 		return createUser(Roles.MEMBER, TypeOfUsers.LECTURER, fName, lName, staffNumber, initials);
 	}
 	
 	/** @see UserFactory */
-	public User createLecturerADMIN(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber, final String initials) {
+	public User createLecturerADMIN(@NonNull final String fName, @NonNull final String lName, @NonNull final Long staffNumber, @NonNull final String initials) {
 		return createUser(Roles.ADMIN, TypeOfUsers.LECTURER, fName, lName, staffNumber, initials);
 	}
 	
 	/** @see UserFactory */
 	public User createUser(@NonNull final Roles role, @NonNull final TypeOfUsers typeOfUser, @NonNull final String fName, @NonNull final String lName,
-								  @NonNull final Long id, final String initials
+						   @NonNull final Long id, , @NonNull final String initials
+						  ) {
+		return createUser(role, typeOfUser, fName, lName, id, initials, 0L);
+	}
+	
+	/** @see UserFactory */
+	public User createUser(@NonNull final Roles role, @NonNull final TypeOfUsers typeOfUser, @NonNull final String fName, @NonNull final String lName,
+								  @NonNull final Long id, final String initials, @NonNull final Long currentSemester
 								 ) {
 		User user = new User();
 		AuthenticationInformation userAuthInformation = new AuthenticationInformation();
@@ -68,6 +75,7 @@ public class UserFactory {
 		user.setFairness(0);
 		user.setAuthenticationInformation(userAuthInformation);
 		user.setUserType(userType);
+		user.setCurrentSemester(typeOfUser.equals(TypeOfUsers.STUDENT) ? currentSemester : 0L);
 		
 		userType.setUser(user);
 		userAuthInformation.setUser(user);

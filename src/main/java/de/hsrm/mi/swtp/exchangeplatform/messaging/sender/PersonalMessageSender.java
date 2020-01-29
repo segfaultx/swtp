@@ -6,6 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveModuleSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveTimeslotSuccessfulMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.Message;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.UserOccupancyViolation;
@@ -33,6 +34,20 @@ public class PersonalMessageSender {
 	JmsTemplate jmsTemplate;
 	ObjectMapper objectMapper;
 	UserService userService;
+	
+	public void send(User student, Message message) {
+		final ActiveMQQueue queue = personalQueueManager.getPersonalQueue(student, true);
+		jmsTemplate.send(queue,
+						 session -> {
+							 try {
+								 return session.createTextMessage(objectMapper.writeValueAsString(message));
+							 } catch(JsonProcessingException e) {
+								 e.printStackTrace();
+							 }
+							 return session.createTextMessage("{}");
+						 });
+		log.info("SEND TO ONLINE USER::" + queue.getQualifiedName() + "::MSG=" + message);
+	}
 	
 	public void send(Long userId, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
 		ActiveMQQueue queue = personalQueueManager.getQueue(userId);
