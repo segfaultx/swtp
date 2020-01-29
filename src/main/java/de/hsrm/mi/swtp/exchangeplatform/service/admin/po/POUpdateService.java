@@ -7,6 +7,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.ChangedRestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PORestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.RestrictionType;
+import de.hsrm.mi.swtp.exchangeplatform.model.factory.POFactory;
 import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.POService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
@@ -31,8 +32,10 @@ public class POUpdateService {
 	POService poService;
 	AdminSettingsService adminSettingsService;
 	Map<Long, ChangedRestriction> updatedRestrictions;
+	POFactory poFactory;
 	
-	private PO applyChanges(final PO original, final PO update) throws NotFoundException {
+	private PO applyChanges(final PO original, final PO update) {
+//		final PO updated = poFactory.clone(original);
 		original.setTitle(update.getTitle());
 		original.setDateStart(update.getDateStart());
 		original.setDateEnd(update.getDateEnd());
@@ -58,12 +61,12 @@ public class POUpdateService {
 			throw new OriginalRestrictionIsNullException();
 		}
 		
-		boolean cpDiffer = originalRestrictions.getByCP().equals(updatedRestrictions.getByCP());
-		boolean semesterDiffer = originalRestrictions.getBySemester().equals(updatedRestrictions.getBySemester());
-		boolean progressiveRegDiffer = originalRestrictions.getByProgressiveRegulation().equals(updatedRestrictions.getByProgressiveRegulation());
-		boolean dualDiffer = originalRestrictions.getDualPO().equals(updatedRestrictions.getDualPO());
+		boolean cpAreSame = originalRestrictions.getByCP().equals(updatedRestrictions.getByCP());
+		boolean semesterAreSame = originalRestrictions.getBySemester().equals(updatedRestrictions.getBySemester());
+		boolean progressiveRegAreSame = originalRestrictions.getByProgressiveRegulation().equals(updatedRestrictions.getByProgressiveRegulation());
+		boolean dualAreSame = originalRestrictions.getDualPO().equals(updatedRestrictions.getDualPO());
 		
-		return !(cpDiffer || semesterDiffer || progressiveRegDiffer || dualDiffer);
+		return !(cpAreSame && semesterAreSame && progressiveRegAreSame && dualAreSame);
 	}
 	
 	//TODO: javadoc
@@ -76,15 +79,21 @@ public class POUpdateService {
 			return Arrays.asList(RestrictionType.values());
 		}
 		
-		if(updatedRestrictions.getByCP().getIsActive() && !originalRestrictions.getByCP().getMaxCP().equals(updatedRestrictions.getByCP())) {
+		if(updatedRestrictions.getByCP().isActive() && !originalRestrictions.getByCP().getMaxCP().equals(updatedRestrictions.getByCP())) {
 			affectedRestrictions.add(RestrictionType.CREDIT_POINTS);
 		}
-		if(originalRestrictions.getBySemester().getIsActive() && !originalRestrictions.getBySemester().equals(updatedRestrictions.getBySemester())) {
+		if(updatedRestrictions.getBySemester().isActive() && !originalRestrictions.getBySemester().equals(updatedRestrictions.getBySemester())) {
 			affectedRestrictions.add(RestrictionType.MINIMUM_SEMESTER);
 		}
-		if(updatedRestrictions.getByProgressiveRegulation().getIsActive()) {
+		if(updatedRestrictions.getByProgressiveRegulation().isActive() && !originalRestrictions.getByProgressiveRegulation()
+																							   .equals(updatedRestrictions.getByProgressiveRegulation())) {
 			affectedRestrictions.add(RestrictionType.PROGRESSIVE_REGULATION);
 		}
+		if(updatedRestrictions.getDualPO().isActive() && !originalRestrictions.getDualPO().equals(updatedRestrictions.getDualPO())) {
+			affectedRestrictions.add(RestrictionType.DUAL);
+		}
+		
+		log.info("--------------------------- AFFECTED: " + affectedRestrictions);
 		
 		return affectedRestrictions;
 	}

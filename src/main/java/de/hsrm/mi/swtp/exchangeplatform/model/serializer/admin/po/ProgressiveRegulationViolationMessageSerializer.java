@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.model.serializer;
+package de.hsrm.mi.swtp.exchangeplatform.model.serializer.admin.po;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ser.std.StdSerializer;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation.ProgressiveRegulationViolationMessage;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class ProgressiveRegulationViolationMessageSerializer extends StdSerializer<ProgressiveRegulationViolationMessage> {
 	
@@ -24,12 +25,7 @@ public class ProgressiveRegulationViolationMessageSerializer extends StdSerializ
 		gen.writeStringField("message", value.getMessage());
 		gen.writeFieldName("value");
 		gen.writeStartObject();
-		gen.writeFieldName("not_allowed");
-		gen.writeStartArray();
-		for(Long id : value.getModulesNotAllowed()) {
-			gen.writeNumber(id);
-		}
-		gen.writeEndArray();
+		gen.writeObjectField("modules_not_allowed", value.getModulesNotAllowed());
 		gen.writeEndObject();
 		gen.writeEndObject();
 	}
