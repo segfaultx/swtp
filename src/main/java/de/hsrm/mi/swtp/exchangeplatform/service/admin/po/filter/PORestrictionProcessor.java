@@ -21,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,7 +31,8 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Slf4j
-public class PORestrictionViolationProcessor implements Runnable {
+@Transactional
+public class PORestrictionProcessor implements Runnable {
 	
 	UserService userService;
 	ModuleService moduleService;
@@ -247,8 +249,6 @@ public class PORestrictionViolationProcessor implements Runnable {
 	
 	@Override
 	public void run() {
-		log.info("\n>>>>>> STARTED EXTERNAL THREAD");
 		this.startProcessing();
-		log.info(">>>>>> ENDED EXTERNAL THREAD");
 	}
 }
