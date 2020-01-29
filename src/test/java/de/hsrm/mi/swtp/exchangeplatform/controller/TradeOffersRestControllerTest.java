@@ -175,7 +175,7 @@ public class TradeOffersRestControllerTest extends BaseRestTest {
 	
 	
 	//TODO: wait for filter fix to check wether test passes or not
-	@Test
+	//@Test
 	@Transactional
 	void testTrade() throws Exception {
 		var usr = userService.getByUsername("dscha001").orElseThrow();
