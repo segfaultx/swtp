@@ -1,10 +1,12 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter.CustomizeFilter;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 
+import java.security.Principal;
 import java.util.List;
 
 /**
@@ -20,7 +22,7 @@ public class FirstComeFilter implements Filter {
 	 * @return unchanged list
 	 */
 	@Override
-	public List<TradeOffer> doFilter(List<TradeOffer> offers) {
+	public List<TradeOffer> doFilter(List<TradeOffer> offers, User seeker) {
 		return offers;
 	}
 	

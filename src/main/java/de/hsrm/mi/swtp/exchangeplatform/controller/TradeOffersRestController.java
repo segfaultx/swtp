@@ -1,6 +1,9 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
@@ -22,10 +25,14 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.jms.JMSException;
+import javax.jms.TextMessage;
+import javax.jms.Topic;
 import javax.validation.Valid;
 import java.security.Principal;
 import java.time.LocalDate;
@@ -45,6 +52,9 @@ public class TradeOffersRestController {
 	AdminSettingsService adminSettingsService;
 	TimeslotService timeslotService;
 	TradeOfferRepository tradeOfferRepository;
+	JmsTemplate jmsTopicTemplate;
+	TimeslotTopicManager timeslotTopicManager;
+	ObjectMapper objectMapper;
 	
 	/**
 	 * DELETE request handler.
@@ -149,13 +159,57 @@ public class TradeOffersRestController {
 			
 			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId()).orElseThrow(NotFoundException::new);
 
-			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot);
+			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot, requestingUser);
 			
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
 			timetable.setDateEnd(LocalDate.now()); // DIRTY QUICK FIX
 			timetable.setDateStart(LocalDate.now());// DIRTY QUICK FIX
 			User user = userService.getById(tradeRequest.getOfferedByStudentMatriculationNumber()).orElseThrow(NotFoundException::new);
+			
+			Timeslot finalTimeslotR = requestingTimeslot;
+			Topic timeslotTopic = timeslotTopicManager.getTopic(timeslot);
+			
+			timeslotTopicManager.getSession(timeslot)
+								.createSubscriber(timeslotTopic)
+								.setMessageListener(message -> {
+				try {
+					log.info(String.format("┌ Topic %s received message on method call: requestTrade()", timeslotTopic.toString()));
+					log.info(String.format("└ Message sent to topic: %s", ((TextMessage) message).getText()));
+				} catch(JMSException e) {
+					log.info("└ ERROR: sent message had some kind of error.");
+				}
+			});
+			jmsTopicTemplate.send(timeslotTopicManager.getTopic(requestingTimeslot), session -> {
+				try {
+					return session.createTextMessage(objectMapper.writeValueAsString(finalTimeslotR));
+				} catch(JsonProcessingException e) {
+					e.printStackTrace();
+				}
+				return session.createTextMessage("{}");
+			});
+			
+			Timeslot finalTimeslotO = offeringTimeslot;
+			
+			timeslotTopicManager.getSession(timeslot)
+								.createSubscriber(timeslotTopic)
+								.setMessageListener(message -> {
+									try {
+										log.info(String.format("┌ Topic %s received message on method call: requestTrade()", timeslotTopic.toString()));
+										log.info(String.format("└ Message sent to topic: %s", ((TextMessage) message).getText()));
+									} catch(JMSException e) {
+										log.info("└ ERROR: sent message had some kind of error.");
+									}
+								});
+			jmsTopicTemplate.send(timeslotTopicManager.getTopic(offeringTimeslot), session -> {
+				try {
+					return session.createTextMessage(objectMapper.writeValueAsString(finalTimeslotO));
+				} catch(JsonProcessingException e) {
+					e.printStackTrace();
+				}
+				return session.createTextMessage("{}");
+			});
+			
 			
 			timetable.setTimeslots(user.getTimeslots());
 			return new ResponseEntity<>(timetable, HttpStatus.OK);
