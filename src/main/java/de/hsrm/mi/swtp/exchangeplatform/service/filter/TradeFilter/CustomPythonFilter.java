@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.security.Principal;
+import javax.persistence.Lob;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
@@ -32,7 +32,7 @@ public class CustomPythonFilter implements Filter {
 	Long id;
 	
 	String filterName;
-	
+	@Lob
 	String pythonCode;
 	
 	public CustomPythonFilter(String filterName, String code){
