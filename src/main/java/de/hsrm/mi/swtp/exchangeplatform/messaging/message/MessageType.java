@@ -4,6 +4,7 @@ public enum MessageType {
 	//TODO: check if messagetypes are needed, only one being used right now
 	EXCHANGEPLATFORM_STATUS,
 	LOGIN,
+	UPDATE_TIMESLOT,
 	LEAVE_MODULE_SUCCESS,
 	JOIN_TIMESLOT_SUCCESS,
 	ADD_TIMESLOT_WAITLIST_SUCCESS,
