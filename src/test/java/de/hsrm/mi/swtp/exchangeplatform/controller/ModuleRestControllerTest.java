@@ -3,6 +3,7 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.ModuleRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
@@ -14,10 +15,11 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import javax.transaction.Transactional;
+import java.util.LinkedHashMap;
 import java.util.List;
 
-import static org.springframework.test.util.AssertionErrors.assertEquals;
-import static org.springframework.test.util.AssertionErrors.assertNotNull;
+import static java.util.stream.Collectors.toList;
+import static org.springframework.test.util.AssertionErrors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -61,8 +63,17 @@ public class ModuleRestControllerTest extends BaseRestTest {
 											 .getResponse()
 											 .getContentAsString(),
 												 List.class);
-		assertEquals("Equals modules for student", moduleService.lookUpAvailableModulesForStudent(usr), result);
+		var ids =moduleService.lookUpAvailableModulesForStudent(usr)
+							   .stream()
+							   .map(Timeslot::getId)
+							   .collect(toList());
+		for (var item: result){
+			LinkedHashMap convertedItem = (LinkedHashMap) item;
+			long modId = Long.valueOf(convertedItem.get("id").toString());
+			assertTrue("Module contained in list", ids.contains(modId));
+		}
 	}
+	
 	@Test
 	void testUnauthorizedGetModulesForStudent() throws Exception {
 		var usr = userService.getByUsername("dscha001").orElseThrow();
