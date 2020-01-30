@@ -88,10 +88,11 @@ public class ModuleRestController {
 		if(result.hasErrors()) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
 		
 		User user = userService.getById(moduleRequestBody.getStudentId()).orElseThrow(NotFoundException::new);
+
+		Module module = moduleService.getById(moduleRequestBody.getModuleId()).orElseThrow(NotFoundException::new);
 		
 		try {
-			moduleService.addAttendeeToModule(moduleRequestBody.getModuleId(), user);
-			Module module = moduleService.getById(moduleRequestBody.getModuleId()).orElseThrow(NotFoundException::new);
+			moduleService.addAttendeeToModule(module, user);
 			return ResponseEntity.ok(module);
 		} catch(UserIsAlreadyAttendeeException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -112,16 +113,18 @@ public class ModuleRestController {
 							@ApiResponse(responseCode = "403", description = "unauthorized leave attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed leave request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<HttpStatus> leaveModule(@RequestBody ModuleRequestBody moduleRequestBody, BindingResult result) throws NotFoundException {
+	public ResponseEntity<Module> leaveModule(@RequestBody ModuleRequestBody moduleRequestBody, BindingResult result) throws NotFoundException {
 		log.info("POST // " + BASEURL + "/leave");
 		log.info(moduleRequestBody.toString());
 		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		
 		User user = userService.getById(moduleRequestBody.getStudentId()).orElseThrow(NotFoundException::new);
 		
-		moduleService.removeStudentFromModule(moduleRequestBody.getModuleId(), user);
-		Module module = moduleService.getById(moduleRequestBody.getModuleId()).orElseThrow(NotFoundException::new);
-		return new ResponseEntity<>(HttpStatus.ACCEPTED);
+		Module module = moduleService.getById(moduleRequestBody.getModuleId())
+				.orElseThrow(NotFoundException::new);
+		
+		moduleService.removeStudentFromModule(module, user);
+		return ResponseEntity.ok().body(module);
 	}
 	
 	@GetMapping("/modulesforstudent/{studentId}")

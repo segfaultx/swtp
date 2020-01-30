@@ -6,7 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
-import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionViolationProcessor;
+import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.event.PORestrictionProcessorEventPublisher;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import lombok.AccessLevel;
@@ -40,7 +40,7 @@ public class AdminSettingsService {
 	@Autowired
 	JmsTemplate jmsTopicTemplate;
 	@Autowired
-	PORestrictionViolationProcessor poRestrictionViolationProcessor;
+	PORestrictionProcessorEventPublisher poRestrictionProcessorEventPublisher;
 
 	/**
 	 * Method to provide trades restendpoint information if trades are active
@@ -69,8 +69,7 @@ public class AdminSettingsService {
 		filterUtils.setActiveFilters(activeFilters);
 
 		if(tradesActive) {
-			poRestrictionViolationProcessor.startProcessing();
-//			poRestrictionViolationProcessorExecutor.execute();
+			poRestrictionProcessorEventPublisher.execute();
 		}
 
 		jmsTopicTemplate.send(TOPICNAME, session -> {

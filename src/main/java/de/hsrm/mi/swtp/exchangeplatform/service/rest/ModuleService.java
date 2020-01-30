@@ -47,8 +47,7 @@ public class ModuleService {
 		return repository.findById(moduleId);
 	}
 	
-	public void addAttendeeToModule(Long moduleId, User student) throws NotFoundException {
-		Module module = this.getById(moduleId).orElseThrow(NotFoundException::new);
+	public void addAttendeeToModule(Module module, User student) throws NotFoundException {
 		// check if student is an attendee
 		if(module.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
@@ -56,12 +55,11 @@ public class ModuleService {
 		}
 		
 		module.getAttendees().add(student);
-		this.save(module);
-		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), moduleId));
+		save(module);
+		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), module.getId()));
 	}
 	
-	public void removeStudentFromModule(Long moduleId, User student) throws NotFoundException {
-		Module module = this.getById(moduleId).orElseThrow(NotFoundException::new);
+	public void removeStudentFromModule(Module module, User student) throws NotFoundException {
 		// check all timeslots of student and remove those which match with module
 		List<Timeslot> allTimeSlots = new ArrayList<>(module.getTimeslots());
 		for(Timeslot timeslot : allTimeSlots) {
