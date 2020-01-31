@@ -96,8 +96,8 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 				.map(TradeOffer::getOffer)
 				.collect(toList());
 		
-		var ownOfferedTimeslots = ownOffers
-									.stream().map(TradeOffer::getOffer).collect(toList())
+		var ownSeekTimeslots = ownOffers
+									.stream().map(TradeOffer::getSeek).collect(toList())
 									.stream().map(Timeslot::getId).collect(toList());
 		// reduce all timeslots to a list only containing timeslots not contained in allAddedTimeslots which are
 		// also not of type VORLESUNG, also remove the requested timeslot
@@ -106,7 +106,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 				.filter(item -> !allAddedTimeslots.contains(item) &&
 						item.getTimeSlotType() != TypeOfTimeslots.VORLESUNG
 					   && !item.getId().equals(id)
-					   && !ownOfferedTimeslots.contains(item.getId()))
+					   && !ownSeekTimeslots.contains(item.getId()))
 				.collect(toList());
 		
 		// create fake tradeoffers and add them to trades (to check wether they collide with the students timetable)
