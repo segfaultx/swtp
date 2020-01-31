@@ -209,7 +209,14 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 				 offereringUser, requestingUser, offeredTimeslot, requestedTimeslot);
 		
 		if(tradeService.doTrade(offereringUser, requestingUser, offeredTimeslot, requestedTimeslot)) {
-			deleteTradeOffer(tradeOffer);
+			// delete all tradeoffers of requesting user for given timeslot, since trade has been processed
+			for(TradeOffer to: tradeOfferRepository.findAllByOffererAndOffer(requestingUser, offeredTimeslot)){
+				deleteTradeOffer(to);
+			}
+			// delete all tradeoffers of accepting user for requested timeslot, since trade has been processed
+			for(TradeOffer to: tradeOfferRepository.findAllByOffererAndOffer(tradeOffer.getOfferer(), tradeOffer.getOffer())){
+				deleteTradeOffer(to);
+			}
 			
 			// notify user who requests to trade with offerer
 			personalMessageSender.send(requestingUser.getId(),
@@ -282,7 +289,10 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 */
 	public boolean deleteTradeOffer(TradeOffer tradeOffer) {
 		if(tradeOffer == null) return false;
-		log.info("Successfully deleted tradeoffer with ID: {} of student: %d", tradeOffer.getId());
+		log.info("Successfully deleted tradeoffer with ID: {} of student: {}", tradeOffer.getId(), tradeOffer
+				.getOfferer()
+				.getAuthenticationInformation()
+				.getUsername());
 		tradeOfferRepository.delete(tradeOffer);
 		return true;
 	}
