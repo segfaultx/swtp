@@ -96,6 +96,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 				.map(TradeOffer::getOffer)
 				.collect(toList());
 		
+		// lookup all own seek timeslots, so they wont show up as remaining when there are own tradeoffers up and running
 		var ownSeekTimeslots = ownOffers
 									.stream().map(TradeOffer::getSeek).collect(toList())
 									.stream().map(Timeslot::getId).collect(toList());
