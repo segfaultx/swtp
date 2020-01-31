@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.event;
+package de.hsrm.mi.swtp.exchangeplatform.event.admin.po;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;

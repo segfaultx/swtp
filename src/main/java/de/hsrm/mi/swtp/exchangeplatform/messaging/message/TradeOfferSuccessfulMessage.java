@@ -12,14 +12,13 @@ import lombok.Value;
 import lombok.experimental.FieldDefaults;
 
 import javax.jms.Topic;
-import java.io.Serializable;
 
 @Value
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @JsonSerialize(using = TradeOfferSuccessfulMessageSerializer.class)
 @RequiredArgsConstructor
 @Builder
-public class TradeOfferSuccessfulMessage implements Serializable {
+public class TradeOfferSuccessfulMessage extends Message {
 	
 	@JsonProperty(value = "type", required = true)
 	@Schema(nullable = false, required = true, format = "string", type = "string")

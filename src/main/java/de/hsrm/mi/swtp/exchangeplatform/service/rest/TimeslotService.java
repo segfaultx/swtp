@@ -8,8 +8,10 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveTimeslotSuccessfu
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.MessageType;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.AdminStudentStatusChangeMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.AdminTopicMessageSender;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.ModuleTopicMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.TimeslotTopicMessageSender;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
@@ -40,6 +42,7 @@ public class TimeslotService {
 	PersonalMessageSender personalMessageSender;
 	AdminTopicMessageSender adminTopicMessageSender;
 	TimeslotTopicMessageSender timeslotTopicMessageSender;
+	ModuleTopicMessageSender moduleTopicMessageSender;
 	
 	public List<Timeslot> getAll() {
 		return repository.findAll();
@@ -51,7 +54,9 @@ public class TimeslotService {
 	
 	public Timeslot save(Timeslot timeslot) {
 		log.info(String.format("SUCCESS: Timeslot %s created", timeslot));
-		return repository.save(timeslot);
+		Timeslot savedTimeslot = repository.save(timeslot);
+		checkLeftOverCapacity(savedTimeslot.getModule()); // publish event
+		return savedTimeslot;
 	}
 	
 	public void addAttendeeToWaitlist(Long timeslotId, User student) throws NotFoundException {
@@ -125,6 +130,7 @@ public class TimeslotService {
 		timeslotTopicMessageSender.notifyAll(timeslot);
 		
 		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), timeslot.getId()));
+		
 		return save(timeslot);
 	}
 	
@@ -217,4 +223,28 @@ public class TimeslotService {
 		if((aTimeStart.isBefore(bTimeEnd) && aTimeStart.isAfter(bTimeStart)) || (bTimeStart.isBefore(aTimeEnd) && bTimeStart.isAfter(aTimeStart))) return true;
 		return (aTimeStart.isBefore(bTimeStart) && aTimeEnd.isBefore(bTimeEnd)) || (bTimeStart.isBefore(aTimeStart) && bTimeEnd.isBefore(aTimeEnd));
 	}
+	
+	/**
+	 * Checks whether a given {@link Module} has still capacity left.
+	 * @param module the module of which which will be checked for any leftover capacity.
+	 * @return a boolean which indicates whether there is any capacity left over or whether every {@link Timeslot} is booked.
+	 */
+	public void checkLeftOverCapacity(final Module module) {
+		if(this.hasCapacityLeft(module)) {
+			moduleTopicMessageSender.notifyAllModuleFull(module);
+		}
+	}
+	
+	public boolean hasCapacityLeft(final Module module) {
+		Long leftCapacity = 0L;
+		
+		for(final Timeslot timeslot : module.getTimeslots()) {
+			Integer timeslotLeftCapacity = timeslot.getCapacity() - timeslot.getAttendees().size();
+			// if there are more attendees than there is capacity don't add the negative value of timeslotLeftCapacity
+			leftCapacity += timeslotLeftCapacity < 0 ? 0L : timeslotLeftCapacity;
+		}
+		
+		return leftCapacity > 0L;
+	}
+	
 }

@@ -7,11 +7,9 @@ import de.hsrm.mi.swtp.exchangeplatform.model.serializer.TimeslotUpdateMessageSe
 import lombok.Builder;
 import lombok.Data;
 
-import java.io.Serializable;
-
 @Data
 @JsonSerialize(using = TimeslotUpdateMessageSerializer.class)
-public class TimeslotUpdateMessage implements Serializable {
+public class TimeslotUpdateMessage extends Message {
 	
 	@JsonProperty("type")
 	MessageType messageType = MessageType.UPDATE_TIMESLOT;

@@ -1,6 +1,7 @@
-package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.event;
+package de.hsrm.mi.swtp.exchangeplatform.event.admin.po;
 
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionProcessorExecutor;
+import de.hsrm.mi.swtp.exchangeplatform.utils.LoggingFormat;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,9 +19,8 @@ public class PORestrictionProcessorEventListener implements ApplicationListener<
 	
 	@Override
 	public void onApplicationEvent(PORestrictionProcessorEvent event) {
-		final String str = "Executing PORestrictionProcessorExecutor...";
-		String vert = "─".repeat(str.length() + 4);
-		log.info(String.format("\n┌%s┐\n│  %s  │\n└%s┘\n", vert, str, vert));
+		LoggingFormat.infoBoxed("Executing PORestrictionProcessorExecutor...");
 		poRestrictionProcessorExecutor.execute();
+		LoggingFormat.infoBoxed("FINISHED PORestrictionProcessorExecutor...");
 	}
 }

@@ -12,7 +12,7 @@ import java.time.LocalTime;
 
 @Data
 @JsonSerialize(using = LeaveModuleSuccessfulMessageSerializer.class)
-public class LeaveModuleSuccessfulMessage implements Serializable {
+public class LeaveModuleSuccessfulMessage extends Message {
 	
 	@JsonProperty("type")
 	MessageType messageType = MessageType.LEAVE_MODULE_SUCCESS;

@@ -7,12 +7,10 @@ import lombok.AccessLevel;
 import lombok.Data;
 import lombok.experimental.FieldDefaults;
 
-import java.io.Serializable;
-
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonSerialize(using = ExchangeplatformMessageSerializer.class)
-public class ExchangeplatformStatusMessage implements Serializable {
+public class ExchangeplatformStatusMessage extends Message {
 	
 	@JsonProperty("type")
 	MessageType messageType = MessageType.EXCHANGEPLATFORM_STATUS;

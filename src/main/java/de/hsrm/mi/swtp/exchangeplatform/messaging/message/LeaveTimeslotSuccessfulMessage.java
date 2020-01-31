@@ -7,12 +7,11 @@ import de.hsrm.mi.swtp.exchangeplatform.model.serializer.LeaveTimeslotSuccessful
 import lombok.Builder;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.time.LocalTime;
 
 @Data
 @JsonSerialize(using = LeaveTimeslotSuccessfulMessageSerializer.class)
-public class LeaveTimeslotSuccessfulMessage implements Serializable {
+public class LeaveTimeslotSuccessfulMessage extends Message {
 	
 	@JsonProperty("type")
 	MessageType messageType = MessageType.LEAVE_TIMESLOT_SUCCESS;
