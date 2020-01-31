@@ -29,8 +29,8 @@ public class TimeslotSerializer extends StdSerializer<Timeslot> {
 		gen.writeObjectField("room", value.getRoom());
 		gen.writeObjectField("day", value.getDay());
 		gen.writeNumberField("capacity", value.getCapacity());
-		gen.writeObjectField("time_start", value.getTimeStart());
-		gen.writeObjectField("time_end", value.getTimeEnd());
+		gen.writeStringField("time_start", value.getTimeStart().toString());
+		gen.writeStringField("time_end", value.getTimeEnd().toString());
 		gen.writeStringField("timeslot_type", value.getTimeSlotType().name());
 		gen.writeBooleanField("is_tradeable", value.getIsTradeable());
 		gen.writeStringField("group", value.getPracticalGroup());
