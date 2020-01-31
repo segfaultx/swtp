@@ -156,6 +156,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			toAdd.setTimeslot(item.getSeek());
 			toAdd.setOwnOffer(true);
 			out.add(toAdd);
+			trades.remove(item);
 		});
 		
 		// all collisions have been removed, add them as either regular or instant trades to out
