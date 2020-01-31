@@ -96,13 +96,17 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 				.map(TradeOffer::getOffer)
 				.collect(toList());
 		
+		var ownOfferedTimeslots = ownOffers
+									.stream().map(TradeOffer::getOffer).collect(toList())
+									.stream().map(Timeslot::getId).collect(toList());
 		// reduce all timeslots to a list only containing timeslots not contained in allAddedTimeslots which are
 		// also not of type VORLESUNG, also remove the requested timeslot
 		var remainingTimeslots = allTimeslots
 				.stream()
 				.filter(item -> !allAddedTimeslots.contains(item) &&
 						item.getTimeSlotType() != TypeOfTimeslots.VORLESUNG
-					   && !item.getId().equals(id))
+					   && !item.getId().equals(id)
+					   && !ownOfferedTimeslots.contains(item.getId()))
 				.collect(toList());
 		
 		// create fake tradeoffers and add them to trades (to check wether they collide with the students timetable)
@@ -156,7 +160,6 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			toAdd.setTimeslot(item.getSeek());
 			toAdd.setOwnOffer(true);
 			out.add(toAdd);
-			trades.remove(item);
 		});
 		
 		// all collisions have been removed, add them as either regular or instant trades to out
