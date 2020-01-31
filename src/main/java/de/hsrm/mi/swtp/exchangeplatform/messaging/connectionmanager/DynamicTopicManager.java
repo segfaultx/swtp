@@ -14,7 +14,7 @@ public interface DynamicTopicManager<T> {
 	 * first %s: type of data which is transferred
 	 * second %s: id of instance
 	 */
-	String TOPIC_NAME_BASE = "exchangeplatform:%s-%s";
+	String TOPIC_NAME_BASE = "%s-%s";
 	
 	/**
 	 * Creates a simple {@link Topic} for a given object/{@link de.hsrm.mi.swtp.exchangeplatform.model.data.Model}.
