@@ -224,17 +224,17 @@ public class TimeslotService {
 		return (aTimeStart.isBefore(bTimeStart) && aTimeEnd.isBefore(bTimeEnd)) || (bTimeStart.isBefore(aTimeStart) && bTimeEnd.isBefore(aTimeEnd));
 	}
 	
+	public void checkLeftOverCapacity(final Module module) {
+		if(!this.hasCapacityLeft(module)) {
+			moduleTopicMessageSender.notifyAllModuleFull(module);
+		}
+	}
+	
 	/**
 	 * Checks whether a given {@link Module} has still capacity left.
 	 * @param module the module of which which will be checked for any leftover capacity.
 	 * @return a boolean which indicates whether there is any capacity left over or whether every {@link Timeslot} is booked.
 	 */
-	public void checkLeftOverCapacity(final Module module) {
-		if(this.hasCapacityLeft(module)) {
-			moduleTopicMessageSender.notifyAllModuleFull(module);
-		}
-	}
-	
 	public boolean hasCapacityLeft(final Module module) {
 		Long leftCapacity = 0L;
 		
