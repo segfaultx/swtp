@@ -120,18 +120,20 @@ public class TimeslotService {
 			timeslot.getAttendees().add(nextStudent);
 		}
 		
-		personalMessageSender.send(student, LeaveTimeslotSuccessfulMessage.builder().timeslot(timeslot).time(LocalTime.now()).build());
+		final Timeslot savedTimeslot = save(timeslot);
+		
+		personalMessageSender.send(student, LeaveTimeslotSuccessfulMessage.builder().timeslot(savedTimeslot).time(LocalTime.now()).build());
 		
 		AdminStudentStatusChangeMessage adminMessage = AdminStudentStatusChangeMessage.builder()
 																					  .messageType(MessageType.LEAVE_TIMESLOT_SUCCESS)
 																					  .student(userRepository.findByStudentNumber(student.getStudentNumber()))
 																					  .build();
 		adminTopicMessageSender.send(adminMessage);
-		timeslotTopicMessageSender.notifyAll(timeslot);
+		timeslotTopicMessageSender.notifyAll(savedTimeslot);
 		
-		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), timeslot.getId()));
+		log.info(String.format("SUCCESS: Student %s removed from appointment %s", student.getStudentNumber(), savedTimeslot.getId()));
 		
-		return save(timeslot);
+		return savedTimeslot;
 	}
 	
 	public void removeAttendeeFromWaitlist(Long timeslotId, User student) throws NotFoundException {

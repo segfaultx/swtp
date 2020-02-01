@@ -26,7 +26,7 @@ public class TradeOffer implements Model {
 	Long id;
 	
 	@JsonProperty("offerer")
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JsonBackReference("offerer-tradeoffers")
 	User offerer;
 	

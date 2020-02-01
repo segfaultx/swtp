@@ -18,13 +18,12 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.lang.reflect.InvocationTargetException;
-import java.security.Principal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
@@ -219,7 +218,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			}
 			
 			// notify user who requests to trade with offerer
-			personalMessageSender.send(requestingUser.getId(),
+			personalMessageSender.send(requestingUser,
 									   TradeOfferSuccessfulMessage.builder().newTimeslot(offeredTimeslot)
 																  .oldTimeslotId(offeredTimeslot.getId())
 																  .topic(timeslotTopicManager.getTopic(requestedTimeslot))
@@ -227,7 +226,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 									  );
 			
 			// notify offerer that his/her trade was resolved
-			personalMessageSender.send(offereringUser.getId(),
+			personalMessageSender.send(offereringUser,
 									   TradeOfferSuccessfulMessage.builder()
 									   							.newTimeslot(offeredTimeslot)
 																  .oldTimeslotId(requestedTimeslot.getId())

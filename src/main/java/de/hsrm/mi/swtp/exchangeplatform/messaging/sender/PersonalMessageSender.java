@@ -19,8 +19,6 @@ import org.apache.activemq.command.ActiveMQQueue;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
 
-import javax.jms.JMSException;
-
 /**
  * A simple class which will provide methods for sending messages to a specific personal queue of a {@link User}.
  */
@@ -49,15 +47,8 @@ public class PersonalMessageSender {
 		log.info("SEND TO ONLINE USER::" + queue.getQualifiedName() + "::MSG=" + message);
 	}
 	
-	public void send(Long userId, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
-		ActiveMQQueue queue = personalQueueManager.getQueue(userId);
-		if(queue == null){
-			try {
-				queue = personalQueueManager.createQueueForOfflineUser(userService.getById(userId).get());
-			} catch(JMSException e) {
-				return;
-			}
-		}
+	public void send(User student, TradeOfferSuccessfulMessage tradeOfferSuccessfulMessage) {
+		ActiveMQQueue queue = personalQueueManager.getPersonalQueue(student, true);
 		this.send(queue, tradeOfferSuccessfulMessage);
 	}
 	
