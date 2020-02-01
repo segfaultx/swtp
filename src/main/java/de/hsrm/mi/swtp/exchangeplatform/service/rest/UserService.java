@@ -2,8 +2,10 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.WhoAmI;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
