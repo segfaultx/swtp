@@ -33,7 +33,8 @@ public class AuthenticationService implements UserDetailsService {
 	ActiveTokens activeTokens;
 	
 	public boolean isLoginValid(String password, UserDetails userDetails) {
-		return new BCryptPasswordEncoder().matches(password, userDetails.getPassword());
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		return passwordEncoder.matches(password, userDetails.getPassword());
 	}
 	
 	public LoginResponseBody loginUser(final LoginRequestBody authenticationRequest) throws NotFoundException, JMSException {
@@ -73,7 +74,7 @@ public class AuthenticationService implements UserDetailsService {
 		if(user.isPresent()) {
 			de.hsrm.mi.swtp.exchangeplatform.model.data.User found = user.get();
 			builder = org.springframework.security.core.userdetails.User.withUsername(username);
-			builder.password(new BCryptPasswordEncoder().encode(found.getAuthenticationInformation().getPassword()));
+			builder.password(found.getAuthenticationInformation().getPassword());
 			builder.roles(found.getAuthenticationInformation().getRole().name());
 		} else {
 			throw new UsernameNotFoundException("User not found.");

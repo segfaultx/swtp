@@ -21,7 +21,7 @@ import java.util.List;
 @Data
 @ToString(exclude = { "po", "timeslots" })
 @RequiredArgsConstructor
-@Table(name = "my_module")
+@Table(name = "module")
 @JsonSerialize(using = ModuleSerializer.class)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Module implements Model {
