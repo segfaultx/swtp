@@ -292,6 +292,8 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 				.getOfferer()
 				.getAuthenticationInformation()
 				.getUsername());
+		
+		tradeOffer.getOfferer().removeTradeOffer(tradeOffer);
 		tradeOfferRepository.delete(tradeOffer);
 		return true;
 	}

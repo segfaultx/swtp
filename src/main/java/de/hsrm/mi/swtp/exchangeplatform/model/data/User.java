@@ -85,7 +85,7 @@ public class User implements Model {
 	List<Module> modules = new ArrayList<>();
 	
 	@JsonIgnore
-	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference("offerer-tradeoffers")
 	List<TradeOffer> tradeoffers = new ArrayList<>();
 	
@@ -101,6 +101,16 @@ public class User implements Model {
 		User user = (User) o;
 		
 		return id.equals(user.id);
+	}
+	
+	public void addTradeOffer(TradeOffer tradeOffer) {
+		tradeoffers.add(tradeOffer);
+		tradeOffer.setOfferer(this);
+	}
+	
+	public void removeTradeOffer(TradeOffer tradeOffer) {
+		tradeoffers.remove(tradeOffer);
+		tradeOffer.setOfferer(null);
 	}
 	
 	@Override

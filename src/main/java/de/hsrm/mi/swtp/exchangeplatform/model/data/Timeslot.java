@@ -91,6 +91,7 @@ public class Timeslot implements Model {
 		attendees.remove(user);
 		user.getTimeslots().remove(this);
 	}
+	
 	@Override
 	public boolean equals(Object other){
 		if (!(other instanceof Timeslot)) return false;

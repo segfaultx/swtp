@@ -6,6 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveModuleSuccessfulM
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import lombok.AccessLevel;
@@ -33,6 +34,7 @@ public class ModuleService {
 	ModuleLookupService moduleLookupService;
 	TimeslotService timeslotService;
 	PersonalMessageSender sender;
+	TradeOfferService tradeOfferService;
 	
 	/**
 	 * Returns a list with modules.
@@ -69,6 +71,15 @@ public class ModuleService {
 		}
 		
 		module.getAttendees().remove(student);
+		
+		// Delete all active TradeOffers for Module that User has left
+		List<TradeOffer> tradeOffersOfStudent = tradeOfferService.getAllTradeoffersForStudent(student);
+		for(TradeOffer tradeOffer: tradeOffersOfStudent) {
+			if(tradeOffer.getOffer().getModule().getId().equals(module.getId())) {
+				tradeOfferService.deleteTradeOffer(tradeOffer);
+			}
+		}
+		
 		this.save(module);
 		
 		sender.send(student, LeaveModuleSuccessfulMessage.builder()
