@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.enums.ProgressiveRegulationSpan;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -139,8 +140,20 @@ public class PORestriction implements Model {
 		
 		@Override
 		public boolean canAllocate(User user, Module module) {
-			//TODO: ask whats the difference to restriction by semester + implement method
-			return false;
+			var po = user.getPo();
+			// get all modules of PO per semester
+			var modulesPerSemesterMap = po.getModules().stream().collect(groupingBy(Module::getSemester));
+			// get all completed modules of student per semester
+			var modsPerSemesterStudMap = user.getCompletedModules().stream().collect(groupingBy(Module::getSemester));
+			long i = 0L;
+			for(i = 1L; i < modsPerSemesterStudMap.size(); i++) {
+				// if student didnt complete all modules up to given semester -> break, thats the current semester count
+				// the student is eligable to allocate semesters
+				if (!modulesPerSemesterMap.get(i).equals(modsPerSemesterStudMap.get(i))) break;
+			}
+			var diff = Math.abs(module.getSemester() - user.getCurrentSemester());
+			// if module is within semester span -> student can allocate, else not
+			return diff <= semesterSpan.getSemesterSpan();
 		}
 		
 		@Override
@@ -198,8 +211,15 @@ public class PORestriction implements Model {
 		
 		@Override
 		public boolean canAllocate(User user, Module module) {
-			//TODO: ask how to actually check dualPO restriction and implement method
-			return false;
+			// if students current semester is bigger than regular semestercount, everything goes.
+			if (user.getCurrentSemester() > user.getPo().getSemesterCount()) return true;
+			// check if VORLESUNG of module is at freeDay, if not user can allocate
+			return getFreeDayBySemester(user.getCurrentSemester()) != module.getTimeslots()
+						 .stream()
+						 .filter(item -> item.getTimeSlotType() == TypeOfTimeslots.VORLESUNG)
+					.findFirst()
+						 .orElseThrow()
+					.getDay();
 		}
 		
 		@Override
