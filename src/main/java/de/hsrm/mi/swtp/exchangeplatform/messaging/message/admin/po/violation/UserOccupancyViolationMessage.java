@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter;
+package de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -20,7 +20,7 @@ import java.util.Map;
 @Slf4j
 @Builder
 @JsonSerialize(using = UserOccupancyViolationSerializer.class)
-public class UserOccupancyViolation {
+public class UserOccupancyViolationMessage {
 	
 	@JsonProperty("type")
 	MessageType messageType = MessageType.PO_VIOLATION;

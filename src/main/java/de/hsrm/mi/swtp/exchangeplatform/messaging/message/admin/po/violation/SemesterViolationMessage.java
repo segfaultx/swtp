@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @JsonSerialize(using = SemesterViolationMessageSerializer.class)
-public class SemesterViolationMessage {
+public class SemesterViolationMessage extends POViolationMessage {
 	
 	@JsonProperty("type")
 	MessageType messageType = MessageType.PO_VIOLATION_SEMESTER;

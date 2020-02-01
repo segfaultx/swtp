@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @JsonSerialize(using = DualPOViolationMessageSerializer.class)
-public class DualPOViolationMessage {
+public class DualPOViolationMessage extends POViolationMessage {
 	
 	@JsonProperty("type")
 	MessageType messageType = MessageType.PO_VIOLATION_DUAL;
