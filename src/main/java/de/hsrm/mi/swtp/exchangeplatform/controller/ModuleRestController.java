@@ -24,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.security.Principal;
 import java.util.List;
 
@@ -113,12 +114,20 @@ public class ModuleRestController {
 							@ApiResponse(responseCode = "403", description = "unauthorized leave attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed leave request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<Module> leaveModule(@RequestBody ModuleRequestBody moduleRequestBody, BindingResult result) throws NotFoundException {
+	public ResponseEntity<?> leaveModule(@RequestBody ModuleRequestBody moduleRequestBody, BindingResult result, HttpServletRequest request) throws NotFoundException {
+		User user = userService.getById(moduleRequestBody.getStudentId()).orElseThrow(NotFoundException::new);
+		
+		if(!request.isUserInRole("ADMIN")) {
+			log.info(request.getUserPrincipal().getName());
+			if(!request.getUserPrincipal().getName().equals(user.getAuthenticationInformation().getUsername())) {
+				return new ResponseEntity<>("No permission to do that", HttpStatus.FORBIDDEN);
+			}
+		}
+		
 		log.info("POST // " + BASEURL + "/leave");
 		log.info(moduleRequestBody.toString());
 		if(result.hasErrors()) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		
-		User user = userService.getById(moduleRequestBody.getStudentId()).orElseThrow(NotFoundException::new);
 		
 		Module module = moduleService.getById(moduleRequestBody.getModuleId())
 				.orElseThrow(NotFoundException::new);

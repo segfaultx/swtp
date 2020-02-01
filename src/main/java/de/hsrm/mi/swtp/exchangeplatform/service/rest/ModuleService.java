@@ -64,9 +64,7 @@ public class ModuleService {
 		List<Timeslot> allTimeSlots = new ArrayList<>(module.getTimeslots());
 		for(Timeslot timeslot : allTimeSlots) {
 			if(timeslot.getAttendees().contains(student)) {
-				// remove timeslot from user and vice versa
 				timeslotService.removeAttendeeFromTimeslot(timeslot, student);
-				student.getTimeslots().remove(timeslot);
 			}
 		}
 		
