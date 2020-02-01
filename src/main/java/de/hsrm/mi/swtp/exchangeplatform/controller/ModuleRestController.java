@@ -118,7 +118,6 @@ public class ModuleRestController {
 		User user = userService.getById(moduleRequestBody.getStudentId()).orElseThrow(NotFoundException::new);
 		
 		if(!request.isUserInRole("ADMIN")) {
-			log.info(request.getUserPrincipal().getName());
 			if(!request.getUserPrincipal().getName().equals(user.getAuthenticationInformation().getUsername())) {
 				return new ResponseEntity<>("No permission to do that", HttpStatus.FORBIDDEN);
 			}
