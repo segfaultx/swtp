@@ -218,7 +218,7 @@ public class PORestriction implements Model {
 						 .stream()
 						 .filter(item -> item.getTimeSlotType() == TypeOfTimeslots.VORLESUNG)
 					.findFirst()
-						 .orElseThrow()
+						 .orElseThrow(RuntimeException::new) // there has to be a timeslot of type VORLESUNG, if not check DB
 					.getDay();
 		}
 		
