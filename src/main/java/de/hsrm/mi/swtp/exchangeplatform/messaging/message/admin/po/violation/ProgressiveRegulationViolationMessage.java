@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @JsonSerialize(using = ProgressiveRegulationViolationMessageSerializer.class)
-public class ProgressiveRegulationViolationMessage {
+public class ProgressiveRegulationViolationMessage extends POViolationMessage {
 	
 	@JsonProperty("type")
 	MessageType messageType = MessageType.PO_VIOLATION_PROGRESSIVE_REGULATION;

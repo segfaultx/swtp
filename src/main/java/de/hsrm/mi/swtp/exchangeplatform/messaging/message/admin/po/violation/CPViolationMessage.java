@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @JsonSerialize(using = CPViolationMessageSerializer.class)
-public class CPViolationMessage {
+public class CPViolationMessage extends POViolationMessage {
 	
 	@JsonProperty("type")
 	MessageType messageType = MessageType.PO_VIOLATION_CP;

@@ -9,7 +9,7 @@ import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveTimeslotSuccessfu
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.Message;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
-import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.UserOccupancyViolation;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation.UserOccupancyViolationMessage;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -63,33 +63,33 @@ public class PersonalMessageSender {
 		});
 	}
 	
-	public void send(UserOccupancyViolation userOccupancyViolation) {
-		User student = userOccupancyViolation.getStudent();
+	public void send(UserOccupancyViolationMessage userOccupancyViolationMessage) {
+		User student = userOccupancyViolationMessage.getStudent();
 		PersonalQueue personalQueue = personalQueueManager.getPersonalQueue(student);
 		if(personalQueue == null) {
 			// user is not logged in; so send message which the user can receive later
 			jmsTemplate.send(personalQueueManager.createPersonalQueueName(student),
 							 session -> {
 								 try {
-									 return session.createTextMessage(objectMapper.writeValueAsString(userOccupancyViolation));
+									 return session.createTextMessage(objectMapper.writeValueAsString(userOccupancyViolationMessage));
 								 } catch(JsonProcessingException e) {
 									 e.printStackTrace();
 								 }
 								 return session.createTextMessage("{\"violations\": \"true\"}");
 							 });
-			log.info("SEND TO OFFLINE USER::" + personalQueueManager.createPersonalQueueName(student) + "::MSG=" + userOccupancyViolation);
+			log.info("│ › SENT TO OFFLINE USER::" + personalQueueManager.createPersonalQueueName(student) + "::MSG=" + userOccupancyViolationMessage);
 			return;
 		}
 		jmsTemplate.send(personalQueue.getPersonalQueue(),
 						 session -> {
 							 try {
-								 return session.createTextMessage(objectMapper.writeValueAsString(userOccupancyViolation));
+								 return session.createTextMessage(objectMapper.writeValueAsString(userOccupancyViolationMessage));
 							 } catch(JsonProcessingException e) {
 								 e.printStackTrace();
 							 }
 							 return session.createTextMessage("{\"violations\": \"true\"}");
 						 });
-		log.info("SEND TO ONLINE USER::" + personalQueue.getPersonalQueue().getQualifiedName() + "::MSG=" + userOccupancyViolation);
+		log.info("SEND TO ONLINE USER::" + personalQueue.getPersonalQueue().getQualifiedName() + "::MSG=" + userOccupancyViolationMessage);
 	}
 	
 	public void send(User student, LeaveModuleSuccessfulMessage leaveModuleSuccessfulMessage) {
