@@ -51,7 +51,9 @@ public class AdminSettings {
 	}
 	
 	public boolean isTradesActive() {
-		return tradesActive;
+		return tradesActive &&
+				(LocalDateTime.now().isBefore(dateEndTrades) &&
+						LocalDateTime.now().isAfter(dateStartTrades));
 	}
 
 	@Override
