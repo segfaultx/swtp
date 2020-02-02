@@ -47,4 +47,12 @@ public class MessagingDestinationConfig {
 		return topicFactory.createTopic(AdminStudentStatusChangeMessageListener.TOPICNAME);
 	}
 	
+	/**
+	 * A {@link Topic} used for publishing messages to basically any active client.
+	 */
+	@Bean(name = "tradeOffersTopic")
+	public Topic tradeOffersTopic() throws JMSException {
+		return topicFactory.createTopic("TradeOffersTopic");
+	}
+	
 }

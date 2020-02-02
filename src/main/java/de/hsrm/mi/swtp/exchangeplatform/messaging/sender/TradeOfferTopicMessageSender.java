@@ -25,7 +25,7 @@ public class TradeOfferTopicMessageSender {
 	
 	TradeOfferTopicManager tradeOfferTopicManager;
 	JmsTemplate jmsTopicTemplate;
-	Topic exchangeplatformSettingsTopic;
+	Topic tradeOffersTopic;
 	
 	public void notifyAllNewTradeOffer(TradeOffer newTradeOffer) {
 		tradeOfferTopicManager.createTopic(newTradeOffer);
@@ -33,7 +33,7 @@ public class TradeOfferTopicMessageSender {
 																   .messageType(TradeOfferCRUDMessage.MessageType.TRADE_OFFER_CREATED)
 																   .tradeOffer(newTradeOffer)
 																   .build();
-		jmsTopicTemplate.send(exchangeplatformSettingsTopic,session -> {
+		jmsTopicTemplate.send(tradeOffersTopic,session -> {
 			try {
 				return session.createTextMessage(message.toJSON());
 			} catch(JsonProcessingException e) {
@@ -44,12 +44,12 @@ public class TradeOfferTopicMessageSender {
 	}
 	
 	public void notifyAllRemovedTradeOffer(TradeOffer tradeOffer) {
-		Topic topic = tradeOfferTopicManager.createTopic(tradeOffer);
+		tradeOfferTopicManager.getTopic(tradeOffer);
 		final TradeOfferCRUDMessage message = TradeOfferCRUDMessage.builder()
 																   .messageType(TradeOfferCRUDMessage.MessageType.TRADE_OFFER_REMOVED)
 																   .tradeOffer(tradeOffer)
 																   .build();
-		jmsTopicTemplate.send(exchangeplatformSettingsTopic,session -> {
+		jmsTopicTemplate.send(tradeOffersTopic,session -> {
 			try {
 				return session.createTextMessage(message.toJSON());
 			} catch(JsonProcessingException e) {
