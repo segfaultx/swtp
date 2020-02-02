@@ -148,7 +148,7 @@ public class TradeOffersRestController {
 							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed trade request") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
-	public ResponseEntity<TimeTable> requestTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws Exception {
+	public ResponseEntity<?> requestTrade(@Valid @RequestBody TradeRequest tradeRequest, Principal principal) throws Exception {
 		if(adminSettingsService.isTradesActive()) {
 			log.info(String.format("Traderequest of student: %d for timeslot: %d, offer: %d", tradeRequest.getOfferedByStudentMatriculationNumber(),
 								   tradeRequest.getOfferedTimeslotId(), tradeRequest.getWantedTimeslotId()
@@ -159,9 +159,13 @@ public class TradeOffersRestController {
 			Timeslot offeringTimeslot = timeslotService.getById(tradeRequest.getOfferedTimeslotId()).orElseThrow(NotFoundException::new);
 			
 			Timeslot requestingTimeslot = timeslotService.getById(tradeRequest.getWantedTimeslotId()).orElseThrow(NotFoundException::new);
-
-			var timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot, requestingUser);
-			
+			Timeslot timeslot;
+			if (tradeRequest.isInstantTrade()){
+				timeslotService.removeAttendeeFromTimeslot(offeringTimeslot, requestingUser);
+				timeslot = timeslotService.addAttendeeToTimeslot(requestingTimeslot, requestingUser);
+			}else{
+				timeslot = tradeOfferService.tradeTimeslots(requestingUser, offeringTimeslot, requestingTimeslot, requestingUser);
+			}
 			TimeTable timetable = new TimeTable();
 			timetable.setId(tradeRequest.getOfferedByStudentMatriculationNumber());
 			timetable.setDateEnd(LocalDate.now()); // DIRTY QUICK FIX
@@ -213,7 +217,7 @@ public class TradeOffersRestController {
 			
 			
 			timetable.setTimeslots(user.getTimeslots());
-			return new ResponseEntity<>(timetable, HttpStatus.OK);
+			return new ResponseEntity<>(HttpStatus.OK);
 		} else return new ResponseEntity<>(HttpStatus.SERVICE_UNAVAILABLE);
 	}
 	

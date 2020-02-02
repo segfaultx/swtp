@@ -4,6 +4,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
@@ -74,10 +75,12 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 */
 	@Transactional
 	public List<TradeWrapper> getTradeOffersForModule(long id, User user) throws Exception {
-		List<TradeWrapper> out = new ArrayList<>();
+		List<TradeWrapper> out = new ArrayList <>();
 		
 		var offeredTimeslot = timeSlotRepository.findById(id).orElseThrow();
-		
+		var instants = tradeOfferRepository.findAllByInstantTrade(true)
+				.stream().filter(to -> to.getOffer().getModule().getId().equals(offeredTimeslot.getModule().getId()))
+				.collect(toList());
 		// Lookup all trades which want the offered timeslot
 		var trades = tradeOfferRepository.findAllBySeek(offeredTimeslot);
 		var ownOffers = tradeOfferRepository.findAllByOffererAndOffer(user, offeredTimeslot);
@@ -99,6 +102,9 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		var ownSeekTimeslots = ownOffers
 									.stream().map(TradeOffer::getSeek).collect(toList())
 									.stream().map(Timeslot::getId).collect(toList());
+		var instantTimeslots = instants
+				.stream().map(TradeOffer::getOffer).collect(toList())
+				.stream().map(Timeslot::getId).collect(toList());
 		// reduce all timeslots to a list only containing timeslots not contained in allAddedTimeslots which are
 		// also not of type VORLESUNG, also remove the requested timeslot
 		var remainingTimeslots = allTimeslots
@@ -106,7 +112,8 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 				.filter(item -> !allAddedTimeslots.contains(item) &&
 						item.getTimeSlotType() != TypeOfTimeslots.VORLESUNG
 					   && !item.getId().equals(id)
-					   && !ownSeekTimeslots.contains(item.getId()))
+					   && !ownSeekTimeslots.contains(item.getId())
+					   && !instantTimeslots.contains(item.getId()))
 				.collect(toList());
 		
 		// create fake tradeoffers and add them to trades (to check wether they collide with the students timetable)
@@ -118,7 +125,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			fakeTradeOffers.add(fake);
 		});
 		trades.addAll(fakeTradeOffers);
-		
+		trades.addAll(instants);
 		// filter out all trades which collide with timetable or requester (PRACTICAL)
 		var nonCollidingTradesPractical = filterUtils
 				.getFilterByName("CollisionFilter")

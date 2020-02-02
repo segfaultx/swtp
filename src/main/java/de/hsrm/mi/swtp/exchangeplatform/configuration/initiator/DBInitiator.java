@@ -6,10 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
 import de.hsrm.mi.swtp.exchangeplatform.model.factory.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
-import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.RoomRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.*;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import lombok.AccessLevel;
@@ -46,6 +43,7 @@ public class DBInitiator implements ApplicationRunner {
 	RoomRepository roomRepository;
 	PORepository poRepository;
 	AdminSettingsService adminSettingsService;
+	TradeOfferRepository tradeOfferRepository;
 	
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
@@ -818,8 +816,13 @@ public class DBInitiator implements ApplicationRunner {
 		offer2.setOffer(afsUebung4);
 		offer2.setSeek(afsUebung3);
 		joendhard.getTradeoffers().add(offer2);
-		
 		// END TRADEOFFER JOENDHARD
+		
+		TradeOffer offer3 = new TradeOffer();
+		offer3.setInstantTrade(true);
+		offer3.setOffer(adsPraktikum);
+
+		
 		
 		List<Module> completedModulesDennis = new ArrayList<>();
 //		completedModulesDennis.add(eim);
@@ -867,7 +870,7 @@ public class DBInitiator implements ApplicationRunner {
 		po2017_repo.setStudents(students_repo);
 		userRepository.saveAll(usersToSave);
 		poRepository.save(po2017_repo);
-		
+		tradeOfferRepository.save(offer3);
 		log.info("Done saving timeTable...");
 	}
 	

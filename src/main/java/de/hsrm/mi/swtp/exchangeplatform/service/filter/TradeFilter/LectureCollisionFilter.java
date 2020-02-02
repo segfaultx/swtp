@@ -30,7 +30,7 @@ public class LectureCollisionFilter implements Filter {
 		for(TradeOffer offer : offers) {
 			for (Timeslot timeslot : seeker.getTimeslots()) {
 				/// compare all filled timeslots of a student with all TradeOffers
-				if (!checkCollision(offer.getSeek(),timeslot)) {
+				if (!checkCollision(offer.getOffer(),timeslot)) {
 					collisionList.add(offer);
 				}
 			}

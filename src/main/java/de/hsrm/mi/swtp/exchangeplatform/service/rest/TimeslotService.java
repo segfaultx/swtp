@@ -107,10 +107,10 @@ public class TimeslotService {
 	}
 	
 	public Timeslot removeAttendeeFromTimeslot(Timeslot timeslot, User student) throws NotFoundException {
-		if(!timeslot.getAttendees().contains(student)) {
+	/*	if(!timeslot.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s not removed", student.getStudentNumber()));
 			throw new ModelNotFoundException(student);
-		}
+		}*/
 		
 		timeslot.removeAttendee(student);
 		// check waitlist and add first in line to timeslot

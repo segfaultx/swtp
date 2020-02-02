@@ -14,4 +14,5 @@ public class TradeRequest {
 	long offeredByStudentMatriculationNumber;
 	long wantedTimeslotId;
 	long offeredTimeslotId;
+	boolean isInstantTrade;
 }
