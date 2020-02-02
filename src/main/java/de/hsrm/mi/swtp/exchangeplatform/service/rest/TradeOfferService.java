@@ -342,7 +342,8 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 */
 	@Override
 	public List<TradeOffer> getAll() {
-		return tradeOfferRepository.findAll();
+		
+		return tradeOfferRepository.findAllByInstantTrade(false);
 	}
 	
 	/**
