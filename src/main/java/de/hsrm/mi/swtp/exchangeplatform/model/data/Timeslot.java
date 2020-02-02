@@ -62,6 +62,7 @@ public class Timeslot implements Model {
 	
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	@JoinColumn(name = "TIMETABLE_ID")
+	@Schema(nullable = true)
 	@JsonBackReference("timetable-timeslots")
 	TimeTable timeTable;
 	

@@ -38,12 +38,14 @@ public class CollisionFilter implements Filter {
 	 */
 	@Override
     public List<TradeOffer> doFilter(List<TradeOffer> offers,User seeker){
-        List<TradeOffer> collisionList = new ArrayList<>();
+        List<TradeOffer> collisionList = new ArrayList<>(offers);
+        
         for(TradeOffer offer : offers) {
             for (Timeslot timeslot : seeker.getTimeslots()) {
             	/// compare all filled timeslots of a student with all TradeOffers
-                if (!checkCollision(offer.getOffer(),timeslot)) {
-                    collisionList.add(offer);
+                if ((offer.getOffer().getDay() == timeslot.getDay()) && (checkCollision(offer.getOffer(),timeslot))) {
+                    collisionList.remove(offer);
+                    break;
                 }
             }
         }
@@ -62,12 +64,18 @@ public class CollisionFilter implements Filter {
 	 * @return true for collision, else false
 	 */
 	public boolean checkCollision(Timeslot offer, Timeslot filled){
-		LocalTime offerStart = offer.getTimeStart();
-		LocalTime offerEnd = offer.getTimeEnd();
-		LocalTime filledStart = filled.getTimeStart();
-		LocalTime filledEnd = filled.getTimeEnd();
+		LocalTime aTimeStart = offer.getTimeStart();
+		LocalTime aTimeEnd = offer.getTimeEnd();
+		LocalTime bTimeStart = filled.getTimeStart();
+		LocalTime bTimeEnd = filled.getTimeEnd();
 		
-		if((offer.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM) && filled.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM))){
+		
+	if(aTimeStart.equals(bTimeStart) || aTimeEnd.equals(bTimeEnd)) return true;
+		if((aTimeStart.isBefore(bTimeEnd) && aTimeStart.isAfter(bTimeStart)) || (bTimeStart.isBefore(aTimeEnd) && bTimeStart.isAfter(aTimeStart))) return true;
+		return (aTimeStart.isBefore(bTimeStart) && aTimeEnd.isBefore(bTimeEnd) && bTimeStart.isBefore(aTimeEnd))|| (bTimeStart.isBefore(aTimeStart) && bTimeEnd.isBefore(aTimeEnd) && aTimeStart.isBefore(bTimeEnd));
+		
+		
+		/*if((offer.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM) && filled.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM))){
 			//check for same day, if yes, check all possible crossovers:
 			if(offer.getDay() != filled.getDay()) {
 				return false;
@@ -84,7 +92,7 @@ public class CollisionFilter implements Filter {
 			
 			else return false;
 	}
-		return false;
+		return false;*/
 }
 	
 }

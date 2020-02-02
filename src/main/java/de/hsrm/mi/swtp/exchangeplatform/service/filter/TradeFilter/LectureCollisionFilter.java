@@ -50,12 +50,17 @@ public class LectureCollisionFilter implements Filter {
 	 * @return true for collision, else false
 	 */
 	public boolean checkCollision(Timeslot offer, Timeslot filled){
-		LocalTime offerStart = offer.getTimeStart();
-		LocalTime offerEnd = offer.getTimeEnd();
-		LocalTime filledStart = filled.getTimeStart();
-		LocalTime filledEnd = filled.getTimeEnd();
+		LocalTime aTimeStart = offer.getTimeStart();
+		LocalTime aTimeEnd = offer.getTimeEnd();
+		LocalTime bTimeStart = filled.getTimeStart();
+		LocalTime bTimeEnd = filled.getTimeEnd();
 		
-		if((offer.getTimeSlotType().equals(TypeOfTimeslots.VORLESUNG) && filled.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM)) ||(offer.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM) && filled.getTimeSlotType().equals(TypeOfTimeslots.VORLESUNG))) {
+		if(offer.getTimeSlotType().equals(TypeOfTimeslots.VORLESUNG)) return false;
+		if(aTimeStart.equals(bTimeStart) || aTimeEnd.equals(bTimeEnd)) return true;
+		if((aTimeStart.isBefore(bTimeEnd) && aTimeStart.isAfter(bTimeStart)) || (bTimeStart.isBefore(aTimeEnd) && bTimeStart.isAfter(aTimeStart))) return true;
+		return (aTimeStart.isBefore(bTimeStart) && aTimeEnd.isBefore(bTimeEnd) && bTimeStart.isBefore(aTimeEnd))|| (bTimeStart.isBefore(aTimeStart) && bTimeEnd.isBefore(aTimeEnd) && aTimeStart.isBefore(bTimeEnd));
+		
+		/*if((offer.getTimeSlotType().equals(TypeOfTimeslots.VORLESUNG) && filled.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM)) ||(offer.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM) && filled.getTimeSlotType().equals(TypeOfTimeslots.VORLESUNG))) {
 			//check for same day, if yes, check all possible crossovers:
 			if(offer.getDay() != filled.getDay()) {
 				return false;
@@ -72,6 +77,6 @@ public class LectureCollisionFilter implements Filter {
 			
 			else return false;
 		}
-		return false;
+		return false;*/
 	}
 }
