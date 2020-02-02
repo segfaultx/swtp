@@ -7,11 +7,13 @@ import de.hsrm.mi.swtp.exchangeplatform.model.serializer.admin.po.ProgressiveReg
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @JsonSerialize(using = ProgressiveRegulationViolationMessageSerializer.class)
 public class ProgressiveRegulationViolationMessage extends POViolationMessage {

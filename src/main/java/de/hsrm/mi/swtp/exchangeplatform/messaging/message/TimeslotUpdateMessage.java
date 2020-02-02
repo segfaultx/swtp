@@ -6,8 +6,10 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.TimeslotUpdateMessageSerializer;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @JsonSerialize(using = TimeslotUpdateMessageSerializer.class)
 public class TimeslotUpdateMessage extends Message {
 	

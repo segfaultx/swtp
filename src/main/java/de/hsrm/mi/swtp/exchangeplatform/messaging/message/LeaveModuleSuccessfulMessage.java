@@ -6,11 +6,13 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.LeaveModuleSuccessfulMessageSerializer;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
 import java.time.LocalTime;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @JsonSerialize(using = LeaveModuleSuccessfulMessageSerializer.class)
 public class LeaveModuleSuccessfulMessage extends Message {
 	
