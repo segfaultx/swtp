@@ -175,11 +175,25 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 				});
 		
 		// lookup own tradeoffers -> add them with own flag set
-		
+		// also check if the wanted timeslots do collide with lectures
+		List<TradeOffer> hlpr = new ArrayList<>();
+		ownOffers.forEach(item -> {
+			TradeOffer hlprTo = new TradeOffer();
+			hlprTo.setOffer(item.getSeek());
+			hlprTo.setSeek(item.getOffer());
+			hlpr.add(hlprTo);
+		});
+		var filteredHlpr = filterUtils.getFilterByName("LectureCollisionFilter")
+						  .doFilter(hlpr, user)
+				.stream().map(TradeOffer::getOffer)
+				.collect(toList())
+				.stream().map(Timeslot::getId)
+				.collect(toList());
 		ownOffers.forEach(item -> {
 			TradeWrapper toAdd = new TradeWrapper();
 			toAdd.setTimeslot(item.getSeek());
 			toAdd.setOwnOffer(true);
+			toAdd.setCollisionLecture(!filteredHlpr.contains(item.getSeek().getId()));
 			out.add(toAdd);
 		});
 		
