@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.configuration.initiator;
 
+import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.enums.ProgressiveRegulationSpan;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.DayOfWeek;
@@ -137,14 +138,19 @@ public class DBInitiator implements ApplicationRunner {
 		
 		
 		// START PO 2017
-		PORestriction restriction2017 = poRestrictionFactory.createRestriction();
+		PORestriction restriction2017 = createRestriction(false);
 		PO po2017 = poFactory.createPO(LocalDate.now().minusYears(3L), LocalDate.now().minusYears(3L), LocalDate.now().plusYears(3L));
+		po2017.setRestriction(restriction2017);
+		
+		PORestriction restriction2017Dual = poRestrictionFactory.createRestriction();
+		PO po2017Dual = poFactory.createPO("PO 2017 Dual", "Medieninformatik", (long) 7, LocalDate.now().minusYears(3L), LocalDate.now().minusYears(3L), LocalDate.now().plusYears(3L));
 		
 		final List<DayOfWeek> freeDaysPerSemester = IntStream.iterate(0, i -> i < po2017.getSemesterCount(), i -> i + 1)
-													   .mapToObj(i -> DayOfWeek.TUESDAY)
-													   .collect(Collectors.toList());
-		restriction2017.getDualPO().setFreeDualDays(freeDaysPerSemester);
-		po2017.setRestriction(restriction2017);
+															 .mapToObj(i -> DayOfWeek.TUESDAY)
+															 .collect(Collectors.toList());
+		restriction2017Dual.getDualPO().setFreeDualDays(freeDaysPerSemester);
+		po2017Dual.setRestriction(restriction2017Dual);
+		
 		// END PO 2017
 		
 		//START SEMESTER 1
@@ -843,6 +849,8 @@ public class DBInitiator implements ApplicationRunner {
 		var persistedSettings = adminSettingsRepository.save(adminSettings);
 		adminSettingsService.setAdminSettings(persistedSettings);
 		
+		PO po2017Dual_repo = poRepository.save(po2017Dual);
+		
 		log.info("--> users " + usersToSave);
 		
 		CustomPythonFilter testFilter = new CustomPythonFilter("testFilter", "print 'Hello World'");
@@ -871,6 +879,7 @@ public class DBInitiator implements ApplicationRunner {
 		poRestriction.getByCP().setIsActive(true);
 		poRestriction.getByCP().setMaxCP(40L);
 		poRestriction.getByProgressiveRegulation().setIsActive(false);
+		poRestriction.getByProgressiveRegulation().setSemesterSpan(ProgressiveRegulationSpan.NONE);
 		poRestriction.getBySemester().setIsActive(false);
 		
 		PORestriction.DualPO dualPO = new PORestriction.DualPO();

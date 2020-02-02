@@ -160,6 +160,10 @@ public class PORestriction implements Model {
 		public boolean isActive() {
 			return this.isActive && !this.semesterSpan.equals(ProgressiveRegulationSpan.NONE);
 		}
+		
+		public void setSemesterSpan(ProgressiveRegulationSpan semesterSpan) {
+			this.semesterSpan = semesterSpan;
+		}
 	}
 
 	@Entity
