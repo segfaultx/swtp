@@ -223,7 +223,7 @@ public class TimeslotService {
 	public boolean hoursAreColliding(LocalTime aTimeEnd, LocalTime aTimeStart, LocalTime bTimeEnd, LocalTime bTimeStart) {
 		if(aTimeStart.equals(bTimeStart) || aTimeEnd.equals(bTimeEnd)) return true;
 		if((aTimeStart.isBefore(bTimeEnd) && aTimeStart.isAfter(bTimeStart)) || (bTimeStart.isBefore(aTimeEnd) && bTimeStart.isAfter(aTimeStart))) return true;
-		return (aTimeStart.isBefore(bTimeStart) && aTimeEnd.isBefore(bTimeEnd)) || (bTimeStart.isBefore(aTimeStart) && bTimeEnd.isBefore(aTimeEnd));
+		return (aTimeStart.isBefore(bTimeStart) && aTimeEnd.isBefore(bTimeEnd) && bTimeStart.isBefore(aTimeEnd))|| (bTimeStart.isBefore(aTimeStart) && bTimeEnd.isBefore(aTimeEnd) && aTimeStart.isBefore(bTimeEnd));
 	}
 	
 	public void checkLeftOverCapacity(final Module module) {
