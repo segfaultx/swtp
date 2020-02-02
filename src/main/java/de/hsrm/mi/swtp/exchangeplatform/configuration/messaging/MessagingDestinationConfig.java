@@ -2,6 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.configuration.messaging;
 
 import de.hsrm.mi.swtp.exchangeplatform.messaging.factory.TopicFactory;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.TradeOffersMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.admin.AdminStudentStatusChangeMessageListener;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -52,7 +53,7 @@ public class MessagingDestinationConfig {
 	 */
 	@Bean(name = "tradeOffersTopic")
 	public Topic tradeOffersTopic() throws JMSException {
-		return topicFactory.createTopic("TradeOffersTopic");
+		return topicFactory.createTopic(TradeOffersMessageListener.TOPICNAME);
 	}
 	
 }
