@@ -3,16 +3,16 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging.sender;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.POTopicManager;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.admin.AdminStudentStatusChangeMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.AdminStudentStatusChangeMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.activemq.command.ActiveMQTopic;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.stereotype.Component;
+
+import javax.jms.Topic;
 
 /**
  * A simple class which will provide methods for sending messages to a specific personal queue of a {@link User}.
@@ -26,9 +26,10 @@ public class AdminTopicMessageSender {
 	POTopicManager poTopicManager;
 	JmsTemplate jmsTopicTemplate;
 	ObjectMapper objectMapper;
+	Topic adminNotificationsTopics;
 	
 	public void send(AdminStudentStatusChangeMessage message) {
-		jmsTopicTemplate.send(new ActiveMQTopic(AdminStudentStatusChangeMessageListener.TOPICNAME), session -> {
+		jmsTopicTemplate.send(adminNotificationsTopics, session -> {
 			try {
 				return session.createTextMessage(objectMapper.writeValueAsString(message));
 			} catch(JsonProcessingException e) {

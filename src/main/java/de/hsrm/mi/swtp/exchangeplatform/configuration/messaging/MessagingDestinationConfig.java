@@ -1,15 +1,16 @@
 package de.hsrm.mi.swtp.exchangeplatform.configuration.messaging;
 
 import de.hsrm.mi.swtp.exchangeplatform.messaging.factory.TopicFactory;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.admin.AdminStudentStatusChangeMessageListener;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.admin.AdminStudentStatusChangeMessageListener;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.activemq.ActiveMQConnectionFactory;
+import org.apache.activemq.broker.BrokerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jms.annotation.EnableJms;
 
 import javax.jms.JMSException;
@@ -20,9 +21,11 @@ import javax.jms.Topic;
 @Configuration
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@Import({ MessagingConfig.class })
 public class MessagingDestinationConfig {
 	
-	ActiveMQConnectionFactory connectionFactory;
+	TopicFactory topicFactory;
+	BrokerService broker; // DO NOT REMOVE; NECESSARY!!
 	
 	/**
 	 * A {@link Topic} used for publishing messages to basically any active client.
@@ -31,10 +34,7 @@ public class MessagingDestinationConfig {
 	 */
 	@Bean(name = "exchangeplatformSettingsTopic")
 	public Topic exchangeplatformSettingsTopic() throws JMSException {
-		return TopicFactory.builder()
-						   .connectionFactory(connectionFactory)
-						   .build()
-						   .createTopic(ExchangeplatformMessageListener.TOPICNAME);
+		return topicFactory.createTopic(ExchangeplatformMessageListener.TOPICNAME);
 	}
 	
 	/**
@@ -44,10 +44,7 @@ public class MessagingDestinationConfig {
 	 */
 	@Bean(name = "adminNotificationsTopics")
 	public Topic adminNotificationsTopics() throws JMSException {
-		return TopicFactory.builder()
-						   .connectionFactory(connectionFactory)
-						   .build()
-						   .createTopic(AdminStudentStatusChangeMessageListener.TOPICNAME);
+		return topicFactory.createTopic(AdminStudentStatusChangeMessageListener.TOPICNAME);
 	}
 	
 }

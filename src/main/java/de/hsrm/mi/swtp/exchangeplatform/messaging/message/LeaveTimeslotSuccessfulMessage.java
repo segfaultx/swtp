@@ -6,10 +6,12 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.LeaveTimeslotSuccessfulMessageSerializer;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalTime;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @JsonSerialize(using = LeaveTimeslotSuccessfulMessageSerializer.class)
 public class LeaveTimeslotSuccessfulMessage extends Message {
 	

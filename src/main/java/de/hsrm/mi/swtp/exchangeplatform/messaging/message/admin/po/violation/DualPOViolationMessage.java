@@ -8,11 +8,13 @@ import de.hsrm.mi.swtp.exchangeplatform.model.serializer.admin.po.DualPOViolatio
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 import java.util.List;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @JsonSerialize(using = DualPOViolationMessageSerializer.class)
 public class DualPOViolationMessage extends POViolationMessage {

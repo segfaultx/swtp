@@ -6,7 +6,9 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.ModuleFullMessageSerializer;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
 @JsonSerialize(using = ModuleFullMessageSerializer.class)
 public class ModuleFullMessage extends Message {

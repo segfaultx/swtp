@@ -2,9 +2,10 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TradeOfferTopicManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.TradeOfferTopicMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
@@ -42,6 +43,8 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	TradeService tradeService;
 	PersonalMessageSender personalMessageSender;
 	TimeslotTopicManager timeslotTopicManager;
+	TradeOfferTopicManager tradeOfferTopicManager;
+	TradeOfferTopicMessageSender tradeOfferTopicMessageSender;
 	
 	FilterUtils filterUtils;
 
@@ -316,6 +319,9 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		
 		tradeOffer.getOfferer().removeTradeOffer(tradeOffer);
 		tradeOfferRepository.delete(tradeOffer);
+		
+		tradeOfferTopicMessageSender.notifyAllRemovedTradeOffer(tradeOffer);
+		
 		return true;
 	}
 	
@@ -346,7 +352,12 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			return new NotFoundException(seekId);
 		}));
 		log.info(String.format("Successfully created new Tradeoffer for Student: %d with offer/seek: %d/%d", studentId, offerId, seekId));
-		return tradeOfferRepository.save(tradeoffer);
+		
+		TradeOffer newTradeOffer = tradeOfferRepository.save(tradeoffer);
+		
+		tradeOfferTopicMessageSender.notifyAllNewTradeOffer(newTradeOffer);
+		
+		return newTradeOffer;
 	}
 	
 	/**

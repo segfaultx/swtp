@@ -7,9 +7,11 @@ import de.hsrm.mi.swtp.exchangeplatform.model.serializer.admin.po.CPViolationMes
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.experimental.FieldDefaults;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @JsonSerialize(using = CPViolationMessageSerializer.class)
 public class CPViolationMessage extends POViolationMessage {

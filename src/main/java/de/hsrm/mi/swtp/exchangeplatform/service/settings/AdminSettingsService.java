@@ -1,12 +1,11 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.settings;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsrm.mi.swtp.exchangeplatform.event.admin.po.PORestrictionProcessorEventPublisher;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
-import de.hsrm.mi.swtp.exchangeplatform.event.admin.po.PORestrictionProcessorEventPublisher;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import lombok.AccessLevel;
@@ -19,10 +18,9 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import javax.jms.Topic;
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener.TOPICNAME;
 
 @Service
 @Slf4j
@@ -41,6 +39,8 @@ public class AdminSettingsService {
 	JmsTemplate jmsTopicTemplate;
 	@Autowired
 	PORestrictionProcessorEventPublisher poRestrictionProcessorEventPublisher;
+	@Autowired
+	Topic exchangeplatformSettingsTopic;
 
 	/**
 	 * Method to provide trades restendpoint information if trades are active
@@ -72,10 +72,12 @@ public class AdminSettingsService {
 			poRestrictionProcessorEventPublisher.execute();
 		}
 
-		jmsTopicTemplate.send(TOPICNAME, session -> {
+		jmsTopicTemplate.send(exchangeplatformSettingsTopic, session -> {
 			try {
-				return session.createTextMessage(
-						new ObjectMapper().writeValueAsString(new ExchangeplatformStatusMessage(tradesActive)));
+				return session.createTextMessage(ExchangeplatformStatusMessage.builder()
+																			  .isActive(tradesActive)
+																			  .build()
+																			  .toJSON());
 			} catch(JsonProcessingException e) {
 				e.printStackTrace();
 			}
@@ -86,7 +88,6 @@ public class AdminSettingsService {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
