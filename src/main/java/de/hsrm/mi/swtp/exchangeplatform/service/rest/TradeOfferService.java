@@ -150,7 +150,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 				toAdd.setOwnOffer(own != null);
 				toAdd.setTrade(tradesCollision.size() > 0);
 				toAdd.setInstantTrade(tradeInstant.size() > 0);
-				toAdd.setRemaining(toAdd.isOwnOffer() && toAdd.isTrade() && toAdd.isInstantTrade());
+				toAdd.setRemaining(!toAdd.isOwnOffer() && !toAdd.isTrade() && !toAdd.isInstantTrade());
 				out.add(toAdd);
 				trades.remove(trade);
 			});
