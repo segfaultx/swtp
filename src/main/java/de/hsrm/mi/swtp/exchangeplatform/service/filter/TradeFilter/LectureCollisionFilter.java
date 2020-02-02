@@ -4,7 +4,6 @@ import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
-import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
@@ -26,12 +25,13 @@ public class LectureCollisionFilter implements Filter {
 	 */
 	@Override
 	public List<TradeOffer> doFilter(List<TradeOffer> offers, User seeker){
-		List<TradeOffer> collisionList = new ArrayList<>();
+		List<TradeOffer> collisionList = new ArrayList<>(offers);
 		for(TradeOffer offer : offers) {
 			for (Timeslot timeslot : seeker.getTimeslots()) {
 				/// compare all filled timeslots of a student with all TradeOffers
-				if (!checkCollision(offer.getOffer(),timeslot)) {
-					collisionList.add(offer);
+				if ((offer.getOffer().getDay() == timeslot.getDay()) && (checkCollision(offer.getOffer(),timeslot))) {
+					collisionList.remove(offer);
+					break;
 				}
 			}
 		}
@@ -55,28 +55,17 @@ public class LectureCollisionFilter implements Filter {
 		LocalTime bTimeStart = filled.getTimeStart();
 		LocalTime bTimeEnd = filled.getTimeEnd();
 		
-		if(offer.getTimeSlotType().equals(TypeOfTimeslots.VORLESUNG)) return false;
+		if(filled.getTimeSlotType() != TypeOfTimeslots.VORLESUNG ) return false;
 		if(aTimeStart.equals(bTimeStart) || aTimeEnd.equals(bTimeEnd)) return true;
-		if((aTimeStart.isBefore(bTimeEnd) && aTimeStart.isAfter(bTimeStart)) || (bTimeStart.isBefore(aTimeEnd) && bTimeStart.isAfter(aTimeStart))) return true;
-		return (aTimeStart.isBefore(bTimeStart) && aTimeEnd.isBefore(bTimeEnd) && bTimeStart.isBefore(aTimeEnd))|| (bTimeStart.isBefore(aTimeStart) && bTimeEnd.isBefore(aTimeEnd) && aTimeStart.isBefore(bTimeEnd));
-		
-		/*if((offer.getTimeSlotType().equals(TypeOfTimeslots.VORLESUNG) && filled.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM)) ||(offer.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM) && filled.getTimeSlotType().equals(TypeOfTimeslots.VORLESUNG))) {
-			//check for same day, if yes, check all possible crossovers:
-			if(offer.getDay() != filled.getDay()) {
-				return false;
-				// starts at the same time
-			}else if(offerStart == filledStart || offerEnd == filledEnd) return true;
-				// starts before filled but ends before filled is over
-			else if(filledStart.isAfter(offerStart) && filledEnd.isAfter(offerEnd)) return true;
-				// starts before filled and ends after
-			else if(offerStart.isBefore(filledStart) && offerEnd.isAfter(filledEnd)) return true;
-				// starts after filled but ends before filled is over
-			else if(offerStart.isAfter(filledStart) && offerEnd.isBefore(filledEnd)) return true;
-				// starts after filled begins and ends after filled is over
-			else if(offerStart.isAfter(filledStart) && offerStart.isBefore(filledEnd) && offerEnd.isAfter(filledEnd)) return true;
-			
-			else return false;
-		}
-		return false;*/
+		if((aTimeStart.isBefore(bTimeEnd) && aTimeStart.isAfter(bTimeStart)) ||
+				(bTimeStart.isBefore(aTimeEnd) && bTimeStart.isAfter(aTimeStart))) return true;
+		return (aTimeStart.isBefore(bTimeStart)
+				&& aTimeEnd.isBefore(bTimeEnd)
+				&& bTimeStart.isBefore(aTimeEnd))
+				||
+				(bTimeStart.isBefore(aTimeStart)
+						&& bTimeEnd.isBefore(aTimeEnd)
+						&& aTimeStart.isBefore(bTimeEnd));
+
 	}
 }

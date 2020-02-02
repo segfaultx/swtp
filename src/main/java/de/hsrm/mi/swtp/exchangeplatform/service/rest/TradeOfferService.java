@@ -126,6 +126,22 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		});
 		trades.addAll(fakeTradeOffers);
 		trades.addAll(instants);
+		
+		// filter out all trades which collide with timetable or requester (LECTURE)
+		var nonCollidingTradesLecture  = filterUtils.getFilterByName("LectureCollisionFilter")
+													.doFilter(trades, user);
+		List.copyOf(trades)
+			.stream()
+			.filter(item -> !nonCollidingTradesLecture.contains(item))
+			.collect(Collectors.toList())
+			.forEach(trade -> {
+				TradeWrapper toAdd = new TradeWrapper();
+				toAdd.setTimeslot(trade.getOffer());
+				toAdd.setCollisionLecture(true);
+				out.add(toAdd);
+				trades.remove(trade);
+			});
+		
 		// filter out all trades which collide with timetable or requester (PRACTICAL)
 		var nonCollidingTradesPractical = filterUtils
 				.getFilterByName("CollisionFilter")
@@ -144,21 +160,6 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 					out.add(toAdd);
 					trades.remove(trade);
 				});
-		
-		// filter out all trades which collide with timetable or requester (LECTURE)
-		var nonCollidingTradesLecture  = filterUtils.getFilterByName("LectureCollisionFilter")
-				.doFilter(trades, user);
-		List.copyOf(trades)
-			.stream()
-			.filter(item -> !nonCollidingTradesLecture.contains(item))
-			.collect(Collectors.toList())
-			.forEach(trade -> {
-				TradeWrapper toAdd = new TradeWrapper();
-				toAdd.setTimeslot(trade.getOffer());
-				toAdd.setCollisionLecture(true);
-				out.add(toAdd);
-				trades.remove(trade);
-			});
 		
 		// lookup own tradeoffers -> add them with own flag set
 		

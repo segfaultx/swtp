@@ -3,7 +3,6 @@ package de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import lombok.AccessLevel;
@@ -11,11 +10,9 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * checks a students timetable for collision with given offers
@@ -71,28 +68,15 @@ public class CollisionFilter implements Filter {
 		
 		
 	if(aTimeStart.equals(bTimeStart) || aTimeEnd.equals(bTimeEnd)) return true;
-		if((aTimeStart.isBefore(bTimeEnd) && aTimeStart.isAfter(bTimeStart)) || (bTimeStart.isBefore(aTimeEnd) && bTimeStart.isAfter(aTimeStart))) return true;
-		return (aTimeStart.isBefore(bTimeStart) && aTimeEnd.isBefore(bTimeEnd) && bTimeStart.isBefore(aTimeEnd))|| (bTimeStart.isBefore(aTimeStart) && bTimeEnd.isBefore(aTimeEnd) && aTimeStart.isBefore(bTimeEnd));
-		
-		
-		/*if((offer.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM) && filled.getTimeSlotType().equals(TypeOfTimeslots.PRAKTIKUM))){
-			//check for same day, if yes, check all possible crossovers:
-			if(offer.getDay() != filled.getDay()) {
-				return false;
-				// starts at the same time
-			}else if(offerStart == filledStart || offerEnd == filledEnd) return true;
-				// starts before filled but ends before filled is over
-			else if(filledStart.isAfter(offerStart) && filledEnd.isAfter(offerEnd)) return true;
-				// starts before filled and ends after
-			else if(offerStart.isBefore(filledStart) && offerEnd.isAfter(filledEnd)) return true;
-				// starts after filled but ends before filled is over
-			else if(offerStart.isAfter(filledStart) && offerEnd.isBefore(filledEnd)) return true;
-				// starts after filled begins and ends after filled is over
-			else if(offerStart.isAfter(filledStart) && offerStart.isBefore(filledEnd) && offerEnd.isAfter(filledEnd)) return true;
-			
-			else return false;
-	}
-		return false;*/
+		if((aTimeStart.isBefore(bTimeEnd) && aTimeStart.isAfter(bTimeStart)) ||
+				(bTimeStart.isBefore(aTimeEnd) && bTimeStart.isAfter(aTimeStart))) return true;
+		return (aTimeStart.isBefore(bTimeStart)
+				&& aTimeEnd.isBefore(bTimeEnd)
+				&& bTimeStart.isBefore(aTimeEnd))
+				||
+				(bTimeStart.isBefore(aTimeStart)
+						&& bTimeEnd.isBefore(aTimeEnd)
+						&& aTimeStart.isBefore(bTimeEnd));
 }
 	
 }
