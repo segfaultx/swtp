@@ -138,6 +138,19 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 				TradeWrapper toAdd = new TradeWrapper();
 				toAdd.setTimeslot(trade.getOffer());
 				toAdd.setCollisionLecture(true);
+				// check if the lecture colliding trade is wether a own offer, a trade or instant trade
+				// do so by running the repositories queries and checking result sizes / return values
+				var own = tradeOfferRepository.findByOffererAndSeek(user, trade.getSeek());
+				var tradesCollision = tradeOfferRepository.findAllByOfferAndSeek(trade.getOffer(), trade.getSeek());
+				var tradeInstant = tradeOfferRepository.findAllByInstantTrade(true)
+													   .stream().filter(to -> to.getOffer().getModule().getId().equals(offeredTimeslot.getModule().getId()))
+													   .collect(toList())
+						.stream().filter(to -> to.getOffer().equals(trade.getOffer()))
+						.collect(toList());
+				toAdd.setOwnOffer(own != null);
+				toAdd.setTrade(tradesCollision.size() > 0);
+				toAdd.setInstantTrade(tradeInstant.size() > 0);
+				toAdd.setRemaining(toAdd.isOwnOffer() && toAdd.isTrade() && toAdd.isInstantTrade());
 				out.add(toAdd);
 				trades.remove(trade);
 			});
