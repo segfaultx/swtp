@@ -86,11 +86,11 @@ public class ModuleRestControllerTest extends BaseRestTest {
 	@Transactional
 	void testJoinAppointment() throws Exception {
 		var usr = userService.getByUsername("wwuse001").orElseThrow();
-		var modId = usr.getTimeslots().get(0).getModule().getId();
-		moduleService.removeStudentFromModule(modId, usr);
+		var mod = usr.getTimeslots().get(0).getModule();
+		moduleService.removeStudentFromModule(mod, usr);
 		ModuleRequestBody moduleRequestBody = new ModuleRequestBody();
 		moduleRequestBody.setStudentId(usr.getId());
-		moduleRequestBody.setModuleId(modId);
+		moduleRequestBody.setModuleId(mod.getId());
 		var joinedmod = mockMvc.perform(post("/api/v1/modules/join")
 					   .contentType(MediaType.APPLICATION_JSON)
 					   .content(new ObjectMapper().writeValueAsString(moduleRequestBody)))
@@ -99,7 +99,7 @@ public class ModuleRestControllerTest extends BaseRestTest {
 			   .getResponse()
 			   .getContentAsString();
 		var result = Long.valueOf(JsonPath.read(joinedmod, "$.id").toString());
-		assertEquals("Module joined equals", result ,modId);
+		assertEquals("Module joined equals", result ,mod.getId());
 	}
 	@Test
 	@WithMockUser(roles = "MEMBER")
@@ -133,11 +133,11 @@ public class ModuleRestControllerTest extends BaseRestTest {
 	@Transactional
 	void testLeaveAppointment() throws Exception {
 		var usr = userService.getByUsername("dscha001").orElseThrow();
-		var modId = usr.getTimeslots().get(0).getModule().getId();
-		moduleService.addAttendeeToModule(modId, usr);
+		var mod = usr.getTimeslots().get(0).getModule();
+		moduleService.addAttendeeToModule(mod, usr);
 		ModuleRequestBody moduleRequestBody = new ModuleRequestBody();
 		moduleRequestBody.setStudentId(usr.getId());
-		moduleRequestBody.setModuleId(modId);
+		moduleRequestBody.setModuleId(mod.getId());
 		mockMvc.perform(post("/api/v1/modules/leave")
 					   .contentType(MediaType.APPLICATION_JSON)
 					   .content(new ObjectMapper().writeValueAsString(moduleRequestBody)))

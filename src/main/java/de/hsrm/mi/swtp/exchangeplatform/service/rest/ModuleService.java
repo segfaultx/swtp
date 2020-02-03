@@ -49,7 +49,7 @@ public class ModuleService {
 		return repository.findById(moduleId);
 	}
 	
-	public void addAttendeeToModule(Module module, User student) throws NotFoundException {
+	public void addAttendeeToModule(Module module, User student) {
 		// check if student is an attendee
 		if(module.getAttendees().contains(student)) {
 			log.info(String.format("FAIL: Student %s is already an attendee", student.getStudentNumber()));
@@ -88,9 +88,9 @@ public class ModuleService {
 														 .build());
 	}
 	
-	public void save(Module module) {
-		repository.save(module);
+	public Module save(Module module) {
 		log.info(String.format("SUCCESS: Module %s created", module));
+		return repository.save(module);
 	}
 	
 	public void delete(Module module) throws IllegalArgumentException {
@@ -102,9 +102,8 @@ public class ModuleService {
 	 * Method to lookup potential modules for {@link de.hsrm.mi.swtp.exchangeplatform.model.data.User} student
 	 * @param user username of student
 	 * @return list of timeslots of potential modules
-	 * @throws NotFoundException if username looup fails
 	 */
-	public List<Timeslot> lookUpAvailableModulesForStudent(User user) throws NotFoundException {
+	public List<Timeslot> lookUpAvailableModulesForStudent(User user) {
 		log.info(String.format("Looking up modules for Student: %s", user.getAuthenticationInformation().getUsername()));
 		
 		return moduleLookupService.lookUpTimeslotsForStudent(user);
