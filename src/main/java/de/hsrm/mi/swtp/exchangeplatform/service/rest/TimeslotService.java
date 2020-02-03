@@ -4,6 +4,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.NoTimeslotCapacityException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.JoinTimeslotSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveTimeslotSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.MessageType;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.AdminStudentStatusChangeMessage;
@@ -100,6 +101,10 @@ public class TimeslotService {
 																					  .build();
 		adminTopicMessageSender.send(adminMessage);
 		timeslotTopicMessageSender.notifyAll(timeslot);
+		personalMessageSender.send(student, JoinTimeslotSuccessfulMessage.builder()
+																		 .timeslot(timeslot)
+																		 .time(LocalTime.now())
+																		 .build());
 		
 		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), timeslot.getId()));
 		
