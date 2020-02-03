@@ -1,11 +1,10 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.AdminSettingsRequest;
-import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.model.rest.CustomPythonFilterRequest;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TradeOfferService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
@@ -24,12 +23,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpClientErrorException;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class AdminRestController {
 	 * @return new admin settings if successful
 	 */
 	@PostMapping("/settings")
-	@Operation(description = "update admin settings", operationId = "updateAdminSettings")
+	@Operation(description = "update admin settings", operationId = "updateAdminSettings", tags = {"admin"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully updated settings"),
 							@ApiResponse(responseCode = "403", description = "unauthorized update settings attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed admin settings request") })
@@ -82,7 +83,7 @@ public class AdminRestController {
 	 * @return admin settings containing trades active flag + current active filters
 	 */
 	@GetMapping("/settings")
-	@Operation(description = "get admin settings", operationId = "getAdminSettings")
+	@Operation(description = "get admin settings", operationId = "getAdminSettings", tags = {"admin"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully received adminsettings"),
 							@ApiResponse(responseCode = "403", description = "unauthorized get settings attempt") })
 	@PreAuthorize("hasRole('ADMIN')")
@@ -97,7 +98,7 @@ public class AdminRestController {
 	 * @return bool value to indicate wether trades are active or not
 	 */
 	@GetMapping("/tradingActive")
-	@Operation(description = "get trading active", operationId = "getTradingActive")
+	@Operation(description = "get trading active", operationId = "getTradingActive", tags = {"admin"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully received adminsettings"),
 							@ApiResponse(responseCode = "403", description = "unauthorized get settings attempt") })
 	public ResponseEntity<Boolean> getTradingActive() {
@@ -112,7 +113,7 @@ public class AdminRestController {
 	 * @return list of strings containing filter names
 	 */
 	@GetMapping("/settings/filters")
-	@Operation(description = "get all available filters", operationId = "getAllAvailableFilters")
+	@Operation(description = "get all available filters", operationId = "getAllAvailableFilters", tags = {"admin"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully fetched all filters"),
 							@ApiResponse(responseCode = "403", description = "unauthorized request"),
 							@ApiResponse(responseCode = "400", description = "malformed request")
@@ -129,7 +130,7 @@ public class AdminRestController {
 	 * @return custom filter
 	 */
 	@PostMapping("/customfilters")
-	@Operation(description = "create a custom python filter", operationId = "createCustomFilter")
+	@Operation(description = "create a custom python filter", operationId = "createCustomFilter", tags = {"admin"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully created custom filter"),
 							@ApiResponse(responseCode = "403", description = "unauthorized request"),
 							@ApiResponse(responseCode = "400", description = "malformed request")
@@ -163,7 +164,7 @@ public class AdminRestController {
 	 * @return custom python template string
 	 */
 	@GetMapping("/filtertemplate")
-	@Operation(description = "get the custom filter template", operationId = "getCustomFilterTemplate")
+	@Operation(description = "get the custom filter template", operationId = "getCustomFilterTemplate", tags = {"admin"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved custom filter template"),
 							@ApiResponse(responseCode = "403", description = "unauthorized request"),
 							@ApiResponse(responseCode = "500", description = "error fetching the default script template")

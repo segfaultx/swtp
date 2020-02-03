@@ -47,7 +47,7 @@ public class AuthenticationController {
 	JWTTokenUtils jwtTokenUtil;
 	
 	@PostMapping("/login")
-	@Operation(description = "login to application", operationId = "login")
+	@Operation(description = "login to application", operationId = "login", tags = {"authentication"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully logged in"),
 							@ApiResponse(responseCode = "400", description = "malformed login request") })
 	public ResponseEntity<LoginResponseBody> login(@RequestBody LoginRequestBody authenticationRequest) throws Exception {
@@ -67,6 +67,10 @@ public class AuthenticationController {
 	}
 	
 	@PostMapping("/logout")
+	@Operation(description = "logout of application", operationId = "logout", tags = {"authentication"})
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully logged out"),
+							@ApiResponse(responseCode = "401", description = "unauthorized logout"),
+							@ApiResponse(responseCode = "404", description = "user not found")})
 	public ResponseEntity<?> logout(@RequestHeader("Authorization") String token) throws Exception {
 		if(!JWTTokenUtils.isValidToken(token)) return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null); //TODO: handle exception if jwt token is malformed
 		
@@ -83,7 +87,7 @@ public class AuthenticationController {
 	}
 	
 	@GetMapping("/whoami")
-	@Operation(description = "whoami", operationId = "whoami")
+	@Operation(description = "whoami", operationId = "whoami", tags = {"authentication"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully fetched authentitacion info"),
 							@ApiResponse(responseCode = "400", description = "malformed authinfo fetch request") })
 	public ResponseEntity<WhoAmI> getUser(@RequestHeader("Authorization") String token) throws Exception {

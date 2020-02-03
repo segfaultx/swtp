@@ -52,7 +52,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the requested {@link Timeslot} instance if it is found. Otherwise will return {@link HttpStatus#BAD_REQUEST}
 	 */
 	@GetMapping("/{id}")
-	@Operation(description = "get user by id", operationId = "getTimeslotById")
+	@Operation(description = "get user by id", operationId = "getTimeslotById", tags = {"timeslot"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved user"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed userID") })
@@ -73,7 +73,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user joined successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/join")
-	@Operation(description = "join timeslot", operationId = "joinAppointment")
+	@Operation(description = "join timeslot", operationId = "joinAppointment", tags = {"timeslot"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully joined appointment"),
 							@ApiResponse(responseCode = "403", description = "unauthorized join attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed request") })
@@ -106,7 +106,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user left successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/leave")
-	@Operation(description = "leave timeslot", operationId = "leaveTimeslot")
+	@Operation(description = "leave timeslot", operationId = "leaveTimeslot", tags = {"timeslot"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully left timeslot"),
 							@ApiResponse(responseCode = "403", description = "unauthorized leave attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed leave request") })
@@ -137,7 +137,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user joined successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/addToWaitlist")
-	@Operation(description = "add to waitlist", operationId = "addWaitlist")
+	@Operation(description = "add to waitlist", operationId = "addWaitlist", tags = {"timeslot"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully added to waitlist"),
 							@ApiResponse(responseCode = "403", description = "unauthorized add attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed request") })
@@ -170,7 +170,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user left successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/removeFromWaitlist")
-	@Operation(description = "remove from waitlist", operationId = "removeWaitlist")
+	@Operation(description = "remove from waitlist", operationId = "removeWaitlist", tags = {"timeslot"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully left timeslot"),
 							@ApiResponse(responseCode = "403", description = "unauthorized leave attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed leave request") })
@@ -201,7 +201,7 @@ public class TimeslotRestController {
 	 * @throws NotFoundException if user doesn't exist in repository
 	 */
 	@GetMapping("/suggestedTimeslots/{timeslotid}/{studentid}")
-	@Operation(description = "get suggested timeslots per Module for student", operationId = "getSuggestedTimeslots")
+	@Operation(description = "get suggested timeslots per Module for student", operationId = "getSuggestedTimeslots", tags = {"timeslot"})
 	@ApiResponses(value = {
 			@ApiResponse(responseCode = "200", description = "successfully fetched suggested timeslots for student"),
 			@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),

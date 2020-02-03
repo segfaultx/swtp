@@ -39,7 +39,7 @@ public class TimeTableController {
 	ModuleService moduleService;
 	
 	@GetMapping
-	@Operation(description = "get all timetables", operationId = "getAllTimetables")
+	@Operation(description = "get all timetables", operationId = "getAllTimetables", tags = {"timetable"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved timetables"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed request") })
@@ -49,7 +49,7 @@ public class TimeTableController {
 	}
 	
 	@GetMapping("/{id}")
-	@Operation(description = "get timetable by id", operationId = "getTimetableById")
+	@Operation(description = "get timetable by id", operationId = "getTimetableById", tags = {"timetable"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully fetched timetable"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "500", description = "internal error while fetching timetable") })
@@ -62,7 +62,7 @@ public class TimeTableController {
 	}
 	
 	@GetMapping("/modulesforstudent/{studentId}")
-	@Operation(description = "get potential modules for student", operationId = "getModulesForStudent")
+	@Operation(description = "get potential modules for student", operationId = "getModulesForStudent", tags = {"timetable"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "sucessfully fetched modules for student"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed ID"),

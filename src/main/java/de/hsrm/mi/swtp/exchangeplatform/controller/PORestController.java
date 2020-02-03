@@ -34,7 +34,7 @@ public class PORestController {
 
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN')")
-	@Operation(description = "get all POs", operationId = "getAllPOs")
+	@Operation(description = "get all POs", operationId = "getAllPOs", tags = {"pruefungsordnung"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved POs"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed fetch request") })
@@ -45,7 +45,7 @@ public class PORestController {
 
 	@GetMapping("/{poId}")
 	@PreAuthorize("hasRole('ADMIN')")
-	@Operation(description = "get po by id", operationId = "getPOById")
+	@Operation(description = "get po by id", operationId = "getPOById", tags = {"pruefungsordnung"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved POs"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed fetch request") })
@@ -56,7 +56,7 @@ public class PORestController {
 
 	@PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE })
 	@PreAuthorize("hasRole('ADMIN')")
-	@Operation(description = "update a po", operationId = "updatePO")
+	@Operation(description = "update a po", operationId = "updatePO", tags = {"pruefungsordnung"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully updated PO"),
 							@ApiResponse(responseCode = "403", description = "unauthorized update attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed update request"),

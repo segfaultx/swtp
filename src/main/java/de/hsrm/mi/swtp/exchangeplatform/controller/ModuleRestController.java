@@ -46,7 +46,7 @@ public class ModuleRestController {
 	UserService userService;
 	
 	@GetMapping
-	@Operation(description = "get a batch of modules by their ids", operationId = "getAllModulesByIds")
+	@Operation(description = "get a batch of modules by their ids", operationId = "getAllModulesByIds", tags = {"modules"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved modules"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed ID") })
@@ -56,7 +56,7 @@ public class ModuleRestController {
 	}
 	
 	@GetMapping("/{moduleId}")
-	@Operation(description = "get module by id", operationId = "getModuleById")
+	@Operation(description = "get module by id", operationId = "getModuleById", tags = {"modules"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved module"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed ID") })
@@ -78,7 +78,7 @@ public class ModuleRestController {
 	 * @return {@link HttpStatus#OK} and the updated module if the user joined successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/join")
-	@Operation(description = "join module", operationId = "joinModule")
+	@Operation(description = "join module", operationId = "joinModule", tags = {"modules"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully joined appointment"),
 							@ApiResponse(responseCode = "403", description = "unauthorized join attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed request") })
@@ -109,7 +109,7 @@ public class ModuleRestController {
 	 * @return {@link HttpStatus#OK} and the updated Module if the user left successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/leave")
-	@Operation(description = "leave module", operationId = "leaveModule")
+	@Operation(description = "leave module", operationId = "leaveModule", tags = {"modules"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully left module"),
 							@ApiResponse(responseCode = "403", description = "unauthorized leave attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed leave request") })
@@ -136,7 +136,7 @@ public class ModuleRestController {
 	}
 	
 	@GetMapping("/modulesforstudent/{studentId}")
-	@Operation(description = "get potential modules for student", operationId = "getModulesForStudent")
+	@Operation(description = "get potential modules for student", operationId = "getModulesForStudent", tags = {"modules"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "sucessfully fetched modules for student"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed ID"),

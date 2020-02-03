@@ -1,6 +1,5 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
-import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
@@ -9,16 +8,14 @@ import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import javax.jms.JMSException;
 
@@ -36,7 +33,7 @@ public class UserRestController {
 	PersonalQueueManager personalQueueManager;
 	
 	@GetMapping("")
-	@Operation(description = "get all users", operationId = "getAllUsers")
+	@Operation(description = "get all users", operationId = "getAllUsers", tags = {"users"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved users"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed fetch request") })
@@ -52,7 +49,7 @@ public class UserRestController {
 	}
 	
 	@GetMapping("/{userId}")
-	@Operation(description = "get user by id", operationId = "getUserById")
+	@Operation(description = "get user by id", operationId = "getUserById", tags = {"users"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved user"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed fetch request") })

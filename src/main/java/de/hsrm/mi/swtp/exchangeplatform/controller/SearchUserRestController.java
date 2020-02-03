@@ -39,7 +39,7 @@ public class SearchUserRestController {
 	 * @return {@link HttpStatus#OK} and the requested list of users. If none are found, return empty list
 	 */
 	@GetMapping("")
-	@Operation(description = "search for User", operationId = "searchResult")
+	@Operation(description = "search for User", operationId = "searchResult", tags = {"search"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully joined appointment"),
 							@ApiResponse(responseCode = "403", description = "unauthorized join attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed request") })
