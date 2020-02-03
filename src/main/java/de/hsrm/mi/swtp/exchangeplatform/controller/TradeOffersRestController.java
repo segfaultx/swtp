@@ -63,7 +63,7 @@ public class TradeOffersRestController {
 	 * {@link HttpStatus#FORBIDDEN} if requester isnt owner of the tradeoffer.
 	 */
 	@DeleteMapping("/{studentId}/{seekId}")
-	@Operation(description = "Delete tradeoffer with seekId of student", operationId = "deleteTradeOfferOfStudent", tags = {"tradeoffers"})
+	@Operation(description = "Delete tradeoffer with seekId of student", operationId = "deleteTradeOfferOfStudent", tags = {"trades"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully deleted tradeoffer"),
 							@ApiResponse(responseCode = "403", description = "unauthorized delete attempt"),
 							@ApiResponse(responseCode = "404", description = "tradeoffer not found") })
@@ -100,7 +100,7 @@ public class TradeOffersRestController {
 	 */
 	
 	@PostMapping("/create")
-	@Operation(description = "create tradeoffer for student", operationId = "createTradeOfferForStudent", tags = {"timetable"})
+	@Operation(description = "create tradeoffer for student", operationId = "createTradeOfferForStudent", tags = {"trades"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully created tradeoffer"),
 							@ApiResponse(responseCode = "403", description = "unauthorized create attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed trade request") })
@@ -138,7 +138,7 @@ public class TradeOffersRestController {
 	 * @return new timetable if trade was successful
 	 */
 	@PostMapping
-	@Operation(description = "request trade", operationId = "requestTrade", tags = {"timetable"})
+	@Operation(description = "request trade", operationId = "requestTrade", tags = {"trades"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully processed traderequest"),
 							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed trade request") })
@@ -186,7 +186,7 @@ public class TradeOffersRestController {
 	 */
 	
 	@PostMapping("/admin")
-	@Operation(description = "force admin trade", operationId = "adminForceTrade", tags = {"timetable"})
+	@Operation(description = "force admin trade", operationId = "adminForceTrade", tags = {"trades"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully processed traderequest"),
 							@ApiResponse(responseCode = "403", description = "unauthorized trade attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed trade request") })
@@ -214,7 +214,7 @@ public class TradeOffersRestController {
 	 * @throws Exception if lookups fail
 	 */
 	@GetMapping("/{id}")
-	@Operation(description = "request tradeOffers", operationId = "getTradesForTimeslot", tags = {"timetable"})
+	@Operation(description = "request tradeOffers", operationId = "getTradesForTimeslot", tags = {"trades"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved tradeoffers"),
 							@ApiResponse(responseCode = "403", description = "unauthorized tradeOffer request"),
 							@ApiResponse(responseCode = "400", description = "malformed tradeOffers request") })
@@ -226,7 +226,7 @@ public class TradeOffersRestController {
 	}
 	
 	@GetMapping("/all")
-	@Operation(description = "request all tradeOffers", operationId = "getAllTradeOffers", tags = {"timetable"})
+	@Operation(description = "request all tradeOffers", operationId = "getAllTradeOffers", tags = {"trades"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved tradeoffers") })
 	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<List<TradeOffer>> getAllTradeoffersForTest() {
@@ -234,7 +234,7 @@ public class TradeOffersRestController {
 	}
 	
 	@GetMapping("/mytradeoffers")
-	@Operation(description = "get TradeOffers for student", operationId = "getMyTradeOffers", tags = {"timetable"})
+	@Operation(description = "get TradeOffers for student", operationId = "getMyTradeOffers", tags = {"trades"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved tradeoffers"),
 							@ApiResponse(responseCode = "403", description = "unauthorized request"),
 							@ApiResponse(responseCode = "400", description = "malformed request") })
