@@ -7,7 +7,6 @@ import de.hsrm.mi.swtp.exchangeplatform.model.admin.po.ChangedRestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PORestriction;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.RestrictionType;
-import de.hsrm.mi.swtp.exchangeplatform.model.factory.POFactory;
 import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.POService;
 import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
@@ -22,6 +21,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A service which is used for applying and updating an original PO with updated values and restrictions.
+ */
 @Service
 @Slf4j
 @RequiredArgsConstructor
@@ -32,10 +34,16 @@ public class POUpdateService {
 	POService poService;
 	AdminSettingsService adminSettingsService;
 	Map<Long, ChangedRestriction> updatedRestrictions;
-	POFactory poFactory;
 	
+	/**
+	 * Applies all changes/properties from the updated PO to the original - this does NOT include the {@link PO#restriction}!
+	 *
+	 * @param original is the original PO which will be updated.
+	 * @param update   is the new PO with the updated values
+	 *
+	 * @return a PO with updated values - but it keeps the original restrictions.
+	 */
 	private PO applyChanges(final PO original, final PO update) {
-//		final PO updated = poFactory.clone(original);
 		original.setTitle(update.getTitle());
 		original.setDateStart(update.getDateStart());
 		original.setDateEnd(update.getDateEnd());
@@ -49,7 +57,7 @@ public class POUpdateService {
 	 * Compares restrictions and tells whether they are the same
 	 *
 	 * @param original the {@link PO} instance which is used as a reference.
-	 * @param update   the {@link PORestriction} which has to be applied to the original restrictions if they differ.
+	 * @param update   the {@link PORestriction} which has to be applied to the original restrictions if those differ.
 	 *
 	 * @return a boolean which tells whether the restrictions of the given {@link PO POs} are identical or not.
 	 */
@@ -69,7 +77,14 @@ public class POUpdateService {
 		return !(cpAreSame && semesterAreSame && progressiveRegAreSame && dualAreSame);
 	}
 	
-	//TODO: javadoc
+	/**
+	 * Finds differences in {@link PO#restriction} between the original and updated POs and if there is a difference the updated value will be applied to the original restriction. But this will only happen if the updated restriction is active. Otherwise it will be skipped.
+	 *
+	 * @param original the {@link PO} instance which is used as a reference.
+	 * @param update   the {@link PORestriction} which will be applied to the original restrictions if those differ.
+	 *
+	 * @return a PO with updated PO restrictions if there are any differences.
+	 */
 	private List<RestrictionType> affectedRestrictions(final PO original, final PO update) {
 		final ArrayList<RestrictionType> affectedRestrictions = new ArrayList<>();
 		final PORestriction originalRestrictions = original.getRestriction();
@@ -139,6 +154,7 @@ public class POUpdateService {
 		return new ArrayList<>(this.updatedRestrictions.values());
 	}
 	
+	/** Clears the {@link #updatedRestrictions}. */
 	public void flush() {
 		this.updatedRestrictions.clear();
 	}

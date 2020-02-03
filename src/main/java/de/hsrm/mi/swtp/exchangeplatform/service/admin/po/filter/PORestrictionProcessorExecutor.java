@@ -1,5 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter;
 
+import de.hsrm.mi.swtp.exchangeplatform.event.admin.po.PORestrictionProcessorEvent;
+import de.hsrm.mi.swtp.exchangeplatform.event.admin.po.PORestrictionProcessorEventListener;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -8,8 +10,12 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 
 /**
- * A wrapper which contains an instance of {@link PORestrictionProcessor} and a {@link TaskExecutor}.
- * This executor is used to run a the {@link PORestrictionProcessor#startProcessing()} method.
+ * A wrapper which contains an instance of {@link PORestrictionProcessor} and a {@link TaskExecutor}}.
+ * This executor is used to run the {@link PORestrictionProcessor#startProcessing()} method in a seperate {@link Thread}.
+ * <p>
+ * This executor will be started via {@link de.hsrm.mi.swtp.exchangeplatform.event.admin.po.PORestrictionProcessorEventListener#onApplicationEvent(PORestrictionProcessorEvent)}.
+ *
+ * @see PORestrictionProcessorEventListener
  */
 @Slf4j
 @Service

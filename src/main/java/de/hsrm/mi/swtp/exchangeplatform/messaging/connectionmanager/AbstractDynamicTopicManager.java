@@ -1,6 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 
 import com.google.common.reflect.TypeToken;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.dynamicdestination.DynamicTopic;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.factory.TopicFactory;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Model;
 import lombok.extern.slf4j.Slf4j;
@@ -26,9 +27,9 @@ public abstract class AbstractDynamicTopicManager<T extends Model> implements Dy
 	 * <p>
 	 * <Long, TopicCreationDTO> := Long -> {@link T#getId()}, TopicCreationDTO -> contains the TopicSession and Topic
 	 *
-	 * @see TopicCreationDTO
+	 * @see DynamicTopic
 	 */
-	HashMap<Long, TopicCreationDTO> topicSessionMap;
+	HashMap<Long, DynamicTopic> topicSessionMap;
 	@Autowired
 	TopicFactory topicFactory;
 	
@@ -55,11 +56,11 @@ public abstract class AbstractDynamicTopicManager<T extends Model> implements Dy
 	 * @param id         {@link #createTopicName(Long)}
 	 * @param connection is the {@link TopicConnection} used to create new {@link TopicSession sessions} and {@link ActiveMQTopic topics} within.
 	 *
-	 * @return {@link TopicCreationDTO}
+	 * @return {@link DynamicTopic}
 	 */
-	TopicCreationDTO createTopic(final Long id, TopicConnection connection) throws JMSException {
+	DynamicTopic createTopic(final Long id, TopicConnection connection) throws JMSException {
 		final String topicName = this.createTopicName(id);
-		final TopicCreationDTO dto = topicFactory.createTopic(connection, topicName);
+		final DynamicTopic dto = topicFactory.createTopic(connection, topicName);
 		
 		log.info(String.format(" + created topic name: %s", topicName));
 		log.info(String.format(" + created topic: %s", dto.getTopic().toString()));

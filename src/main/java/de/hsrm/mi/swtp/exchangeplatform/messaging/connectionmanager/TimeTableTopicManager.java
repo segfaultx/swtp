@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 import javax.jms.*;
 
 /**
- * Can create a connection for each {@link TimeTable}.
+ * Can create a connection for each {@link TimeTable} and manage it.
+ *
+ * @see AbstractDynamicTopicManager
  */
 @Slf4j
 @RequiredArgsConstructor

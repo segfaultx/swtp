@@ -1,10 +1,11 @@
-package de.hsrm.mi.swtp.exchangeplatform.messaging.message;
+package de.hsrm.mi.swtp.exchangeplatform.messaging.message.enums;
 
 public enum MessageType {
 	ADD_TIMESLOT_WAITLIST_SUCCESS,
 	ALL_MODULE_TIMESLOTS_FULL,
 	EXCHANGEPLATFORM_STATUS,
 	FORCED_TRADE_OFFER,
+	JOIN_MODULE_SUCCESS,
 	JOIN_TIMESLOT_SUCCESS,
 	LEAVE_MODULE_SUCCESS,
 	LEAVE_TIMESLOT_SUCCESS,

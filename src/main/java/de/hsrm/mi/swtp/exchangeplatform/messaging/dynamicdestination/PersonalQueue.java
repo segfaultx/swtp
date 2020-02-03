@@ -1,4 +1,4 @@
-package de.hsrm.mi.swtp.exchangeplatform.messaging;
+package de.hsrm.mi.swtp.exchangeplatform.messaging.dynamicdestination;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import lombok.AccessLevel;
@@ -21,7 +21,6 @@ import javax.jms.QueueSession;
 @Value
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PersonalQueue {
-	
 	User user;
 	ActiveMQQueue personalQueue;
 	MessageProducer messageProducer;

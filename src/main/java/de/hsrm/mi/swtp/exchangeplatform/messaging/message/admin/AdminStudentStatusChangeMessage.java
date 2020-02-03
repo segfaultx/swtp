@@ -2,7 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.MessageType;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.enums.MessageType;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.admin.AdminStudentStatusChangeMessageSerializer;
 import lombok.AccessLevel;

@@ -2,7 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging.sender;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.dynamicdestination.PersonalQueue;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.*;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation.UserOccupancyViolationMessage;
@@ -18,12 +18,15 @@ import org.springframework.stereotype.Component;
 
 /**
  * A simple class which will provide methods for sending messages to a specific personal queue of a {@link User}.
+ *
+ * @see PersonalQueueManager#createPersonalQueue(User)
+ * @see PersonalMessageSender#send(User, Message)
  */
 @Slf4j
 @Component("personalMessageSender")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PersonalMessageSender {
+public class PersonalMessageSender implements MessageSender {
 	
 	PersonalQueueManager personalQueueManager;
 	JmsTemplate jmsTemplate;

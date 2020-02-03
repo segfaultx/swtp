@@ -6,7 +6,7 @@ import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.ModelNotFoundExcepti
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.JoinTimeslotSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveTimeslotSuccessfulMessage;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.MessageType;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.enums.MessageType;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.AdminStudentStatusChangeMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.AdminTopicMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.ModuleTopicMessageSender;

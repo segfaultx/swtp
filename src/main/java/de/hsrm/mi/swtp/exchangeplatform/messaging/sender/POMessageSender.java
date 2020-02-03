@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.POTopicManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.POChangeMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
@@ -16,13 +15,13 @@ import org.springframework.stereotype.Component;
 import javax.jms.Topic;
 
 /**
- * A simple class which will provide methods for sending messages to a specific personal queue of a {@link User}.
+ * A simple class which will provide methods for sending messages to a {@link POTopicManager#getTopic(Long)}.
  */
 @Slf4j
 @Component
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class POMessageSender {
+public class POMessageSender implements MessageSender {
 	
 	POTopicManager poTopicManager;
 	JmsTemplate jmsTopicTemplate;

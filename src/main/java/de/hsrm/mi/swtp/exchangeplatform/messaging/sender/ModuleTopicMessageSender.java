@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.ModuleTopicManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ModuleFullMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NonNull;
@@ -19,13 +18,13 @@ import javax.jms.Topic;
 import javax.jms.TopicSession;
 
 /**
- * A simple class which will provide methods for sending messages to a specific personal queue of a {@link User}.
+ * A simple class which will provide methods for sending messages to a {@link ModuleTopicManager#getTopic(Long)}.
  */
 @Slf4j
 @Component("moduleTopicMessageSender")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ModuleTopicMessageSender {
+public class ModuleTopicMessageSender implements MessageSender {
 	
 	ModuleTopicManager moduleTopicManager;
 	ObjectMapper objectMapper;

@@ -11,7 +11,9 @@ import org.springframework.stereotype.Component;
 import javax.jms.*;
 
 /**
- * Can create a connection for each {@link Module}.
+ * Can create a connection for each {@link Module} and manage it.
+ *
+ * @see AbstractDynamicTopicManager
  */
 @Slf4j
 @RequiredArgsConstructor

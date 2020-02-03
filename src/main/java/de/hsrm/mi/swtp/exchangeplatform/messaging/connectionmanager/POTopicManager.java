@@ -2,7 +2,6 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 
 import de.hsrm.mi.swtp.exchangeplatform.configuration.messaging.DynamicDestinationConfig;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -12,7 +11,9 @@ import org.springframework.stereotype.Component;
 import javax.jms.*;
 
 /**
- * Can create a connection for each {@link TradeOffer}.
+ * Can create a connection for a {@link PO} and manage it.
+ *
+ * @see AbstractDynamicTopicManager
  */
 @Slf4j
 @RequiredArgsConstructor
