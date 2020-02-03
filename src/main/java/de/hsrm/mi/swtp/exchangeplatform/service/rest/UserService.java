@@ -2,8 +2,11 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notcreated.NotCreatedException;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.WhoAmI;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.PORepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
@@ -18,6 +21,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
+/**
+ * User service class for manipulating user data
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -34,10 +41,6 @@ public class UserService {
 	
 	public Optional<User> getById(Long userId) {
 		return repository.findById(userId);
-	}
-	
-	public User getByStudentNumber(Long studentNumber) {
-		return repository.findByStudentNumber(studentNumber);
 	}
 	
 	public Optional<User> getByUsername(String username) {
@@ -94,6 +97,15 @@ public class UserService {
 		return out;
 	}
 	
+	public List<User> filterStaff(List<User> list) {
+		for(User user : list){
+			if(user.getUserType().getType() == TypeOfUsers.LECTURER){
+				list.remove(user);
+			}
+		}
+		return list;
+	}
+	
 	public Boolean userPassedSemester(final User student, final Long semester) {
 		final List<Module> completedModulesOfSemester = student.getCompletedModules()
 															   .stream()
@@ -102,9 +114,5 @@ public class UserService {
 		final List<Module> modulesBySemester = moduleRepository.findModulesBySemesterIs(semester);
 		return completedModulesOfSemester.size() >= modulesBySemester.size();
 	}
-	
-	public User getOffererByTradeOffer(TradeOffer tradeOffer) {
-		// TODO: Not yet implemented
-		return new User();
-	}
+
 }

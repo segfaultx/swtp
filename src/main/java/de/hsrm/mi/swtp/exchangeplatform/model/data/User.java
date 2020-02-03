@@ -14,6 +14,10 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
+
+/**
+ * @author Dennis S.
+ */
 @Entity
 @Data
 @ToString(exclude = {"authenticationInformation", "userType", "timeslots", "tradeoffers", "modules"})
@@ -25,6 +29,7 @@ public class User implements Model {
 	Long id;
 	
 	String email;
+	String initials;
 	
 	@JsonProperty("first_name")
 	String firstName;
@@ -45,6 +50,10 @@ public class User implements Model {
 	
 	@JsonProperty("fairness")
 	int fairness;
+	
+	@JsonProperty(value = "current_semester", required = true)
+	@Schema(defaultValue = "0", required = true, nullable = false, type = "integer", format = "int64")
+	Long currentSemester = 0L;
 	
 	@OneToOne(cascade = CascadeType.ALL)
 	@JsonIgnore
@@ -76,7 +85,7 @@ public class User implements Model {
 	List<Module> modules = new ArrayList<>();
 	
 	@JsonIgnore
-	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "offerer", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference("offerer-tradeoffers")
 	List<TradeOffer> tradeoffers = new ArrayList<>();
 	
@@ -84,8 +93,31 @@ public class User implements Model {
 	@OneToMany(cascade = CascadeType.ALL)
 	List<Module> completedModules = new ArrayList<>();
 	
-	@JsonIgnore
-	@OneToMany(mappedBy = "seeker", cascade = CascadeType.ALL)
-	@JsonManagedReference("seeker-tradeoffers")
-	List<TradeOffer> tradeofferSeeks = new ArrayList<>();
+	@Override
+	public boolean equals(Object o) {
+		if(this == o) return true;
+		if(!(o instanceof User)) return false;
+		
+		User user = (User) o;
+		
+		return id.equals(user.id);
+	}
+	
+	public void addTradeOffer(TradeOffer tradeOffer) {
+		tradeoffers.add(tradeOffer);
+		tradeOffer.setOfferer(this);
+	}
+	
+	public void removeTradeOffer(TradeOffer tradeOffer) {
+		tradeoffers.remove(tradeOffer);
+		tradeOffer.setOfferer(null);
+	}
+	
+	@Override
+	public int hashCode() {
+		int result = id != null ? id.hashCode() : 0;
+		result = 31 * result + (firstName != null ? firstName.hashCode() : 0);
+		result = 31 * result + (lastName != null ? lastName.hashCode() : 0);
+		return result;
+	}
 }

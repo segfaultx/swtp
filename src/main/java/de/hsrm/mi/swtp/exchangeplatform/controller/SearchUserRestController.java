@@ -3,6 +3,8 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +12,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -36,7 +39,11 @@ public class SearchUserRestController {
 	 * @return {@link HttpStatus#OK} and the requested list of users. If none are found, return empty list
 	 */
 	@GetMapping("")
-	@Operation(description="", operationId ="")
+	@Operation(description = "search for User", operationId = "searchResult", tags = {"search"})
+	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully joined appointment"),
+							@ApiResponse(responseCode = "403", description = "unauthorized join attempt"),
+							@ApiResponse(responseCode = "400", description = "malformed request") })
+	@PreAuthorize("hasRole('MEMBER') or hasRole('ADMIN')")
 	public ResponseEntity<List<User>> getSearchResult(@RequestParam("name") Optional<String> name, @RequestParam("id") Optional<String> id) {
 		log.info(String.format("GET // " + BASEURL + "/%s", id, name));
 		List<List<User>> lists = new ArrayList<>();
@@ -72,12 +79,11 @@ public class SearchUserRestController {
 		if(id.get() != ""){
 			List<User> studNums = userService.getAllByStudentNumber(id.get());
 			if(!studNums.isEmpty()){lists.add(studNums);}
-			List<User> staffNums = userService.getAllByStaffNumber(id.get());
-			if(!staffNums.isEmpty()){lists.add(staffNums);}
+			
 		}
 		// get rid of duplicates
 		List<User> result = userService.unifyLists(lists);
 		// return result
-		return ResponseEntity.ok(result);
+		return ResponseEntity.ok(userService.filterStaff(result));
 	}
 }

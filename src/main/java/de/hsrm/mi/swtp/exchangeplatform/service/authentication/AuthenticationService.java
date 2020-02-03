@@ -1,8 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.authentication;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LoginSuccessfulMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
 import de.hsrm.mi.swtp.exchangeplatform.model.authentication.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.Status;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
@@ -11,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.activemq.command.ActiveMQQueue;
-import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -20,9 +18,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.jms.JMSException;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
+//TODO: javadoc
 @Slf4j
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -30,12 +28,13 @@ import java.util.Optional;
 public class AuthenticationService implements UserDetailsService {
 	
 	UserService userService;
-	PersonalConnectionManager personalConnectionManager;
+	PersonalQueueManager personalQueueManager;
 	JWTTokenUtils jwtTokenUtil;
 	ActiveTokens activeTokens;
 	
 	public boolean isLoginValid(String password, UserDetails userDetails) {
-		return new BCryptPasswordEncoder().matches(password, userDetails.getPassword());
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		return passwordEncoder.matches(password, userDetails.getPassword());
 	}
 	
 	public LoginResponseBody loginUser(final LoginRequestBody authenticationRequest) throws NotFoundException, JMSException {
@@ -48,7 +47,7 @@ public class AuthenticationService implements UserDetailsService {
 		
 		JWTResponse response = new JWTResponse(token);
 		
-		ActiveMQQueue personalQueue = personalConnectionManager.createNewConnection(user);
+		ActiveMQQueue personalQueue = personalQueueManager.createPersonalQueue(user);
 		log.info("USER LOGIN: " + authenticationRequest.getUsername());
 		return LoginResponseBody.builder()
 								.tokenResponse(response)
@@ -60,7 +59,7 @@ public class AuthenticationService implements UserDetailsService {
 
 		activeTokens.removeToken(token);
 		
-		boolean isLoggedOut = personalConnectionManager.closeConnection(user);
+		boolean isLoggedOut = personalQueueManager.closeConnection(user);
 		return LogoutResponseBody.builder()
 								 .message(String.format("Logout was %ssuccessful.", isLoggedOut ? "" : "un"))
 								 .status(isLoggedOut ? Status.SUCCESS : Status.FAIL)
@@ -75,7 +74,7 @@ public class AuthenticationService implements UserDetailsService {
 		if(user.isPresent()) {
 			de.hsrm.mi.swtp.exchangeplatform.model.data.User found = user.get();
 			builder = org.springframework.security.core.userdetails.User.withUsername(username);
-			builder.password(new BCryptPasswordEncoder().encode(found.getAuthenticationInformation().getPassword()));
+			builder.password(found.getAuthenticationInformation().getPassword());
 			builder.roles(found.getAuthenticationInformation().getRole().name());
 		} else {
 			throw new UsernameNotFoundException("User not found.");

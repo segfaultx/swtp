@@ -11,8 +11,10 @@ import java.util.List;
 @Repository
 public interface TradeOfferRepository extends JpaRepository<TradeOffer, Long> {
 	List<TradeOffer> findAllBySeek(Timeslot seek);
-	List<TradeOffer> findAllBySeekAndInstantTrade(Timeslot seek, boolean instantTrade);
 	List<TradeOffer> findAllByOffererAndOffer(User user, Timeslot offer);
 	List<TradeOffer> findAllByOfferer(User user);
 	TradeOffer findByOffererAndSeek(User user, Timeslot seek);
+	List<TradeOffer> findAllByOfferAndSeek(Timeslot offer, Timeslot seek);
+	
+	List<TradeOffer> findAllByInstantTrade(boolean instantTrade);
 }

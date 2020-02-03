@@ -1,35 +1,32 @@
 package de.hsrm.mi.swtp.exchangeplatform.configuration.messaging;
 
-import de.hsrm.mi.swtp.exchangeplatform.messaging.TopicFactory;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.factory.TopicFactory;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.TradeOffersMessageListener;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.listener.admin.AdminStudentStatusChangeMessageListener;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.broker.BrokerService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.jms.annotation.EnableJms;
 
 import javax.jms.JMSException;
 import javax.jms.Topic;
-import javax.jms.TopicConnection;
 
 @Slf4j
 @EnableJms
 @Configuration
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
+@Import({ MessagingConfig.class })
 public class MessagingDestinationConfig {
 	
-	BrokerService broker; // DO NOT REMOVE; NECESSARY
-	ActiveMQConnectionFactory connectionFactory;
-	TimeslotRepository timeslotRepository;
-	TimeslotService timeslotService;
-	TopicConnection timeslotConnection;
+	TopicFactory topicFactory;
+	BrokerService broker; // DO NOT REMOVE; NECESSARY!!
 	
 	/**
 	 * A {@link Topic} used for publishing messages to basically any active client.
@@ -38,10 +35,25 @@ public class MessagingDestinationConfig {
 	 */
 	@Bean(name = "exchangeplatformSettingsTopic")
 	public Topic exchangeplatformSettingsTopic() throws JMSException {
-		return TopicFactory.builder()
-						   .connectionFactory(connectionFactory)
-						   .build()
-						   .createTopic(ExchangeplatformMessageListener.TOPICNAME);
+		return topicFactory.createTopic(ExchangeplatformMessageListener.TOPICNAME);
+	}
+	
+	/**
+	 * A {@link Topic} used for publishing messages to basically any active client.
+	 * @return
+	 * @throws JMSException
+	 */
+	@Bean(name = "adminNotificationsTopics")
+	public Topic adminNotificationsTopics() throws JMSException {
+		return topicFactory.createTopic(AdminStudentStatusChangeMessageListener.TOPICNAME);
+	}
+	
+	/**
+	 * A {@link Topic} used for publishing messages to basically any active client.
+	 */
+	@Bean(name = "tradeOffersTopic")
+	public Topic tradeOffersTopic() throws JMSException {
+		return topicFactory.createTopic(TradeOffersMessageListener.TOPICNAME);
 	}
 	
 }

@@ -23,13 +23,26 @@ public class ModuleSerializer extends StdSerializer<Module> {
 		
 		gen.writeStartObject();
 		gen.writeNumberField("id", value.getId());
+		gen.writeNumberField("module_number", value.getModuleNumber());
 		gen.writeStringField("name", value.getName());
-		gen.writeFieldName("timeslots");
-		gen.writeStartArray();
-		for(Timeslot timeslot : value.getTimeslots()) {
-			gen.writeNumber(timeslot.getId());
+		gen.writeStringField("contraction", value.getName());
+		gen.writeNumberField("credit_points", value.getCreditPoints());
+		gen.writeNumberField("semester", value.getSemester());
+		gen.writeObjectField("lecturer", value.getLecturer());
+		
+		if(value.getTimeslots() != null){
+			gen.writeFieldName("timeslots");
+			gen.writeStartArray();
+			for(Timeslot t: value.getTimeslots()) {
+				Module m = t.getModule();
+				m.setTimeslots(null);
+				Timeslot t_m = t;
+				t_m.setModule(m);
+				gen.writeObject(t_m);
+			}
+			gen.writeEndArray();
 		}
-		gen.writeEndArray();
+		
 		gen.writeObjectField("po", value.getPo());
 		gen.writeEndObject();
 	}

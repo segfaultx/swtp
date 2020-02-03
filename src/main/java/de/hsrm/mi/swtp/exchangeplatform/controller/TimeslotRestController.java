@@ -2,9 +2,11 @@ package de.hsrm.mi.swtp.exchangeplatform.controller;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.model.TimeslotRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.TimeslotRequestBody;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.TimeslotService;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -39,18 +41,7 @@ public class TimeslotRestController {
 	String BASEURL = "/api/v1/timeslots";
 	TimeslotService timeslotService;
 	UserService userService;
-
-	/**
-	 * GET request handler.
-	 * Will handle any request GET request on {@code '/api/v1/timeslot'}.
-	 *
-	 * @return a JSON made up of a list containing all available {@link Timeslot Appointments}.
-	 * If there are none will return an empty list.
-	 */
-	@GetMapping("")
-	public ResponseEntity<List<Timeslot>> getAll() {
-		return new ResponseEntity<>(timeslotService.getAll(), HttpStatus.OK);
-	}
+	UserRepository userRepository;
 
 	/**
 	 * GET request handler.
@@ -61,7 +52,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the requested {@link Timeslot} instance if it is found. Otherwise will return {@link HttpStatus#BAD_REQUEST}
 	 */
 	@GetMapping("/{id}")
-	@Operation(description = "get user by id", operationId = "getTimeslotById")
+	@Operation(description = "get user by id", operationId = "getTimeslotById", tags = {"timeslot"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved user"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed userID") })
@@ -82,7 +73,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user joined successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/join")
-	@Operation(description = "join timeslot", operationId = "joinAppointment")
+	@Operation(description = "join timeslot", operationId = "joinAppointment", tags = {"timeslot"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully joined appointment"),
 							@ApiResponse(responseCode = "403", description = "unauthorized join attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed request") })
@@ -115,7 +106,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user left successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/leave")
-	@Operation(description = "leave timeslot", operationId = "leaveTimeslot")
+	@Operation(description = "leave timeslot", operationId = "leaveTimeslot", tags = {"timeslot"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully left timeslot"),
 							@ApiResponse(responseCode = "403", description = "unauthorized leave attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed leave request") })
@@ -133,6 +124,7 @@ public class TimeslotRestController {
 		
 		timeslot = timeslotService.removeAttendeeFromTimeslot(timeslot, user);
 		
+		Timeslot finalTimeslot = timeslot;
 		return ResponseEntity.ok(timeslot);
 	}
 	
@@ -145,7 +137,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user joined successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/addToWaitlist")
-	@Operation(description = "add to waitlist", operationId = "addWaitlist")
+	@Operation(description = "add to waitlist", operationId = "addWaitlist", tags = {"timeslot"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully added to waitlist"),
 							@ApiResponse(responseCode = "403", description = "unauthorized add attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed request") })
@@ -160,8 +152,9 @@ public class TimeslotRestController {
 		
 		try {
 			timeslotService.addAttendeeToWaitlist(timeslotRequestBody.getTimeslotId(), user);
-			Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getStudentId())
+			Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
 											   .orElseThrow(NotFoundException::new);
+			
 			return ResponseEntity.ok(timeslot);
 		} catch(UserIsAlreadyAttendeeException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -177,7 +170,7 @@ public class TimeslotRestController {
 	 * @return {@link HttpStatus#OK} and the updated timeslot if the user left successfully. Otherwise will return {@link HttpStatus#BAD_REQUEST}.
 	 */
 	@PostMapping("/removeFromWaitlist")
-	@Operation(description = "remove from waitlist", operationId = "removeWaitlist")
+	@Operation(description = "remove from waitlist", operationId = "removeWaitlist", tags = {"timeslot"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully left timeslot"),
 							@ApiResponse(responseCode = "403", description = "unauthorized leave attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed leave request") })
@@ -194,7 +187,33 @@ public class TimeslotRestController {
 		
 		Timeslot timeslot = timeslotService.getById(timeslotRequestBody.getTimeslotId())
 										   .orElseThrow(NotFoundException::new);
+		
 		return ResponseEntity.ok(timeslot);
 	}
-
+	
+	
+	/**
+	 * GET request handler.
+	 * Will handle any request GET request to {@code '/api/v1/timeslot/suggestedTimeslots/<timeslotid>/<studentid>'}.
+	 * @param timeslotID the ID of an {@link Timeslot}.
+	 * @param studentID the ID of an {@link User}.
+	 * @return {@link HttpStatus#OK} and a requested List of suggested {@link Timeslot} instances, if student has no collisions with own {@link TimeTable} Otherwise will return {@link HttpStatus#BAD_REQUEST}
+	 * @throws NotFoundException if user doesn't exist in repository
+	 */
+	@GetMapping("/suggestedTimeslots/{timeslotid}/{studentid}")
+	@Operation(description = "get suggested timeslots per Module for student", operationId = "getSuggestedTimeslots", tags = {"timeslot"})
+	@ApiResponses(value = {
+			@ApiResponse(responseCode = "200", description = "successfully fetched suggested timeslots for student"),
+			@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
+			@ApiResponse(responseCode = "404", description = "unkown timeslot id"),
+			@ApiResponse(responseCode = "400", description = "bad request")})
+	@PreAuthorize("hasRole('MEMBER')")
+	public ResponseEntity<List<Timeslot>> getSuggestedTimetableForStudent(@PathVariable("timeslotid") Long timeslotID,
+																	 @PathVariable("studentid") Long studentID) throws NotFoundException {
+		log.info(String.format("GET REQUEST: getSuggestedTimeslotsForStudent, by user: %s, for timeslotid: %d", studentID, timeslotID));
+		var user = userRepository.findById(studentID).orElseThrow(NotFoundException::new);
+		var potentialTimeTable = timeslotService.getSuggestedTimeslots(timeslotID, user);
+		return new ResponseEntity<>(potentialTimeTable, HttpStatus.OK);
+	}
+	
 }

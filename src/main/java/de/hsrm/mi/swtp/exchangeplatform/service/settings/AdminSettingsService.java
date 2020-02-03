@@ -1,15 +1,16 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.settings;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsrm.mi.swtp.exchangeplatform.event.admin.po.PORestrictionProcessorEventPublisher;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.ExchangeplatformStatusMessage;
-import de.hsrm.mi.swtp.exchangeplatform.model.settings.AdminSettings;
+import de.hsrm.mi.swtp.exchangeplatform.model.admin.settings.AdminSettings;
 import de.hsrm.mi.swtp.exchangeplatform.repository.AdminSettingsRepository;
-import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionViolationProcessor;
-import de.hsrm.mi.swtp.exchangeplatform.service.rest.POService;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.TradeFilter.CustomPythonFilter;
+import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,10 +18,9 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import javax.validation.constraints.NotNull;
+import javax.jms.Topic;
+import java.time.LocalDateTime;
 import java.util.List;
-
-import static de.hsrm.mi.swtp.exchangeplatform.messaging.listener.ExchangeplatformMessageListener.TOPICNAME;
 
 @Service
 @Slf4j
@@ -29,31 +29,18 @@ import static de.hsrm.mi.swtp.exchangeplatform.messaging.listener.Exchangeplatfo
 public class AdminSettingsService {
 	
 	private final Long adminSettingsId = 1L;
+	@Autowired
 	AdminSettingsRepository adminSettingsRepository;
+	@Setter
 	AdminSettings adminSettings;
-	
+	@Autowired
+	FilterUtils filterUtils;
 	@Autowired
 	JmsTemplate jmsTopicTemplate;
 	@Autowired
-	ObjectMapper objectMapper;
+	PORestrictionProcessorEventPublisher poRestrictionProcessorEventPublisher;
 	@Autowired
-	PORestrictionViolationProcessor poRestrictionViolationProcessor;
-//	PORestrictionViolationProcessorExecutor poRestrictionViolationProcessorExecutor;
-	@Autowired
-	POService poService;
-
-	/**
-	 *
-	 * @param adminSettingsRepository
-	 */
-	@Autowired
-	public AdminSettingsService(@NotNull AdminSettingsRepository adminSettingsRepository) {
-		this.adminSettingsRepository = adminSettingsRepository;
-		var tmp = adminSettingsRepository.findById(adminSettingsId);
-		if(tmp.isPresent())
-			this.adminSettings = tmp.get(); // TODO: throw exception if settings not present at application startup, changed to this so DBInitiator can fill DB
-		else log.info(String.format("Couldnt lookup admin settings with ID: %d", adminSettingsId));
-	}
+	Topic exchangeplatformSettingsTopic;
 
 	/**
 	 * Method to provide trades restendpoint information if trades are active
@@ -64,28 +51,33 @@ public class AdminSettingsService {
 		return adminSettings.isTradesActive();
 	}
 
-
-	/**
-	 * Method to set the admin settings on startup, used for dev purposes
-	 * @param adminSettings adminsettings from db
-	 */
-	public void setAdminSettings(AdminSettings adminSettings) {
-		this.adminSettings = adminSettings;
-	}
-
 	@PreAuthorize("hasRole('ADMIN')")
-	public boolean updateAdminSettings(boolean tradesActive, List<String> activeFilters) throws NotFoundException {
-		this.adminSettings.updateAdminSettings(tradesActive, activeFilters);
+	public boolean updateAdminSettings(boolean tradesActive,
+									   List<String> activeFilters,
+									   LocalDateTime startDateTrades,
+									   LocalDateTime endDateTrades) throws NotFoundException {
+		adminSettings.setTradesActive(tradesActive);
+		adminSettings.setDateStartTrades(startDateTrades);
+		adminSettings.setDateEndTrades(endDateTrades);
+		for(String filter: activeFilters) {
+			if(!filterUtils.filterExists(filter)) {
+				throw new NotFoundException(String.format("Filter with name %s was not found", filter));
+			}
+		}
+		
+		adminSettings.setActiveFilters(activeFilters);
+		filterUtils.setActiveFilters(activeFilters);
 
 		if(tradesActive) {
-			poRestrictionViolationProcessor.startProcessing();
-//			poRestrictionViolationProcessorExecutor.execute();
+			poRestrictionProcessorEventPublisher.execute();
 		}
 
-		jmsTopicTemplate.send(TOPICNAME, session -> {
+		jmsTopicTemplate.send(exchangeplatformSettingsTopic, session -> {
 			try {
-				return session.createTextMessage(
-						objectMapper.writeValueAsString(new ExchangeplatformStatusMessage(tradesActive)));
+				return session.createTextMessage(ExchangeplatformStatusMessage.builder()
+																			  .isActive(tradesActive)
+																			  .build()
+																			  .toJSON());
 			} catch(JsonProcessingException e) {
 				e.printStackTrace();
 			}
@@ -96,11 +88,19 @@ public class AdminSettingsService {
 	}
 
 	/**
-	 *
 	 * @return
 	 */
 	@PreAuthorize("hasRole('ADMIN')")
 	public AdminSettings getAdminSettings() {
 		return adminSettings;
+	}
+	
+	@PreAuthorize("hasRole('ADMIN')")
+	public List<String> getAllFilters(){
+		return filterUtils.getAllAvailableFilters();
+	}
+	
+	public CustomPythonFilter addCustomPythonFilter(String filterName, String code){
+		return filterUtils.addPythonFilter(filterName, code);
 	}
 }

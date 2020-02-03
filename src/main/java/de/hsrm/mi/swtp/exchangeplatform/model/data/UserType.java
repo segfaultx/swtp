@@ -9,6 +9,10 @@ import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 
+
+/**
+ * @author Dennis S.
+ */
 @Entity
 @Data
 @ToString(exclude = {"user"})

@@ -10,6 +10,10 @@ import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 
+
+/**
+ * @author amatus
+ */
 @Entity
 @Data
 @ToString(exclude = { "offerer", "offer", "seek"})
@@ -21,13 +25,8 @@ public class TradeOffer implements Model {
 	@GeneratedValue
 	Long id;
 	
-	@JsonProperty("seeker")
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JsonBackReference("seeker-tradeoffers")
-	User seeker;
-	
 	@JsonProperty("offerer")
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne
 	@JsonBackReference("offerer-tradeoffers")
 	User offerer;
 	
@@ -39,5 +38,4 @@ public class TradeOffer implements Model {
 	
 	boolean instantTrade = false;
 	
-	boolean accepted = false;
 }

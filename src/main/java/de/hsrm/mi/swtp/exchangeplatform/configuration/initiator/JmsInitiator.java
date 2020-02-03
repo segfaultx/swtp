@@ -1,22 +1,16 @@
 package de.hsrm.mi.swtp.exchangeplatform.configuration.initiator;
 
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.ModuleTopicManager;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeTableTopicManager;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TradeOfferTopicManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.*;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.TimeTable;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
-import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TimeTableRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.*;
+import de.hsrm.mi.swtp.exchangeplatform.repository.*;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Scope;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +27,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Component
+@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class JmsInitiator {
 	
 	TimeslotRepository timeslotRepository;
@@ -47,6 +42,8 @@ public class JmsInitiator {
 	TradeOfferRepository tradeOfferRepository;
 	TradeOfferTopicManager tradeOfferTopicManager;
 	
+	PORepository poRepository;
+	POTopicManager poTopicManager;
 	
 	@EventListener(ApplicationReadyEvent.class)
 	public void init() {
@@ -59,6 +56,8 @@ public class JmsInitiator {
 		this.initTimeTableTopics();
 		log.info("");
 		this.initTradeOfferTopics();
+		log.info("");
+		this.initPOTopics();
 		log.info("//// END JmsInitiator\n");
 	}
 	
@@ -104,6 +103,17 @@ public class JmsInitiator {
 			tradeOfferTopicManager.createTopic(tradeOffer);
 		}
 		log.info("// END: Creating necessary Jms-Topics for TradeOffers:");
+	}
+	
+	private void initPOTopics() {
+		List<PO> pos = poRepository.findAll();
+		log.info("// START: Creating necessary Jms-Topics for POs:");
+		int number = 1;
+		for(final PO po : pos) {
+			log.info(String.format("%d) %s", number++, po.toString()));
+			poTopicManager.createTopic(po);
+		}
+		log.info("// END: Creating necessary Jms-Topics for POs:");
 	}
 	
 }

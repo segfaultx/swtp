@@ -1,29 +1,34 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TradeOfferTopicManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.TradeOfferTopicMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfTimeslots;
-import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.TradeWrapper;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TradeOfferRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.AdminTradeService;
-import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.utils.FilterUtils;
-import de.hsrm.mi.swtp.exchangeplatform.service.settings.AdminSettingsService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
@@ -31,32 +36,18 @@ import java.util.*;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class TradeOfferService implements RestService<TradeOffer, Long> {
 	
-	PersonalMessageSender personalMessageSender;
 	TradeOfferRepository tradeOfferRepository;
 	TimeslotRepository timeSlotRepository;
 	UserRepository userRepository;
-	//Tradeilter filterService; //TODO: wait for filter fix
 	AdminTradeService adminTradeService;
-	AdminSettingsService adminSettingsService;
 	TradeService tradeService;
-	ModuleRepository moduleRepository;
+	PersonalMessageSender personalMessageSender;
+	TimeslotTopicManager timeslotTopicManager;
+	TradeOfferTopicManager tradeOfferTopicManager;
+	TradeOfferTopicMessageSender tradeOfferTopicMessageSender;
 	
-	/**
-	 * Method to get personalized {@link TradeOffer}s for a students timetable
-	 *
-	 * @param timeslots timetable of student
-	 *
-	 * @return map containing tradeoffers for each timeslot
-	 */
-	public Map<Timeslot, Map<String, List<TradeOffer>>> getTradeOffersForTimeSlots(List<Timeslot> timeslots) throws RuntimeException {
-		log.info("Creating unfiltered Map of tradeoffers");
-		Map<Timeslot, List<TradeOffer>> timeslotTradeOffers = new HashMap<>();
-		timeslots.forEach(timeslot -> timeslotTradeOffers.put(timeslot, tradeOfferRepository.findAllBySeek(timeslot)));
-		List<Filter> filters = new ArrayList<>();
-		filters.addAll(adminSettingsService.getAdminSettings().getCurrentActiveFilters());
-		return null;//filterService.applyFilter(timeslotTradeOffers, filters); //TODO: use fixed filter function
-	}
-	
+	FilterUtils filterUtils;
+
 	/**
 	 * Method to provide admins a forced trade / assignment of timeslot to a given student
 	 *
@@ -85,34 +76,146 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 *
 	 * @throws Exception if lookup fails
 	 */
-	public Map<String, List<Timeslot>> getTradeOffersForModule(long id, User user) throws Exception {
-		Map<String, List<Timeslot>> out = new HashMap<>();
-		List<Timeslot> instantTrades = new ArrayList<>();
-		List<Timeslot> regularTrades = new ArrayList<>();
-		List<Timeslot> remaining = new ArrayList<>();
-		List<Timeslot> ownOffers = new ArrayList<>();
+	@Transactional
+	public List<TradeWrapper> getTradeOffersForModule(long id, User user) throws Exception {
+		List<TradeWrapper> out = new ArrayList <>();
+		
 		var offeredTimeslot = timeSlotRepository.findById(id).orElseThrow();
+		var instants = tradeOfferRepository.findAllByInstantTrade(true)
+				.stream().filter(to -> to.getOffer().getModule().getId().equals(offeredTimeslot.getModule().getId()))
+				.collect(toList());
+		// Lookup all trades which want the offered timeslot
 		var trades = tradeOfferRepository.findAllBySeek(offeredTimeslot);
-		trades.forEach(trade -> {
-			if(trade.getId() != id) {
-				if(trade.isInstantTrade()) instantTrades.add(trade.getOffer());
-				else regularTrades.add(trade.getOffer());
-			}
-			
-		});
-		for(TradeOffer to : tradeOfferRepository.findAllByOffererAndOffer(user, offeredTimeslot)) {
-			if(!ownOffers.contains(to.getSeek())) ownOffers.add(to.getSeek());
-		}
+		var ownOffers = tradeOfferRepository.findAllByOffererAndOffer(user, offeredTimeslot);
+		
+		// merge own offers + trades to check which timeslots are left (no tradeoffers)
+		List<TradeOffer> mergedOffers = new ArrayList<>();
+		mergedOffers.addAll(trades);
+		mergedOffers.addAll(ownOffers);
+		
+		// fetch all timeslots of module
 		var allTimeslots = timeSlotRepository.findAllByModule(offeredTimeslot.getModule());
-		allTimeslots.forEach(timeslot -> {
-			if(timeslot.getId() != id && timeslot.getTimeSlotType() != TypeOfTimeslots.VORLESUNG && !ownOffers.contains(timeslot)) {
-				if(!instantTrades.contains(timeslot) && !regularTrades.contains(timeslot)) remaining.add(timeslot);
-			}
+		
+		// lookup all added timeslots
+		var allAddedTimeslots = mergedOffers.stream()
+				.map(TradeOffer::getOffer)
+				.collect(toList());
+		
+		// lookup all own seek timeslots, so they wont show up as remaining when there are own tradeoffers up and running
+		var ownSeekTimeslots = ownOffers
+									.stream().map(TradeOffer::getSeek).collect(toList())
+									.stream().map(Timeslot::getId).collect(toList());
+		var instantTimeslots = instants
+				.stream().map(TradeOffer::getOffer).collect(toList())
+				.stream().map(Timeslot::getId).collect(toList());
+		// reduce all timeslots to a list only containing timeslots not contained in allAddedTimeslots which are
+		// also not of type VORLESUNG, also remove the requested timeslot
+		var remainingTimeslots = allTimeslots
+				.stream()
+				.filter(item -> !allAddedTimeslots.contains(item) &&
+						item.getTimeSlotType() != TypeOfTimeslots.VORLESUNG
+					   && !item.getId().equals(id)
+					   && !ownSeekTimeslots.contains(item.getId())
+					   && !instantTimeslots.contains(item.getId()))
+				.collect(toList());
+		
+		// create fake tradeoffers and add them to trades (to check wether they collide with the students timetable)
+		List<TradeOffer> fakeTradeOffers = new ArrayList<>();
+		remainingTimeslots.forEach(ts -> {
+			TradeOffer fake = new TradeOffer();
+			fake.setSeek(offeredTimeslot);
+			fake.setOffer(ts);
+			fakeTradeOffers.add(fake);
 		});
-		out.put("instant", instantTrades);
-		out.put("trades", regularTrades);
-		out.put("remaining", remaining);
-		out.put("ownOffers", ownOffers);
+		trades.addAll(fakeTradeOffers);
+		trades.addAll(instants);
+		
+		// filter out all trades which collide with timetable or requester (LECTURE)
+		var nonCollidingTradesLecture  = filterUtils.getFilterByName("LectureCollisionFilter")
+													.doFilter(trades, user);
+		List.copyOf(trades)
+			.stream()
+			.filter(item -> !nonCollidingTradesLecture.contains(item))
+			.collect(Collectors.toList())
+			.forEach(trade -> {
+				TradeWrapper toAdd = new TradeWrapper();
+				toAdd.setTimeslot(trade.getOffer());
+				toAdd.setCollisionLecture(true);
+				// check if the lecture colliding trade is wether a own offer, a trade or instant trade
+				// do so by running the repositories queries and checking result sizes / return values
+				var own = tradeOfferRepository.findByOffererAndSeek(user, trade.getSeek());
+				var tradesCollision = tradeOfferRepository.findAllByOfferAndSeek(trade.getOffer(), trade.getSeek());
+				var tradeInstant = tradeOfferRepository.findAllByInstantTrade(true)
+													   .stream().filter(to -> to.getOffer().getModule().getId().equals(offeredTimeslot.getModule().getId()))
+													   .collect(toList())
+						.stream().filter(to -> to.getOffer().equals(trade.getOffer()))
+						.collect(toList());
+				toAdd.setOwnOffer(own != null);
+				toAdd.setTrade(tradesCollision.size() > 0);
+				toAdd.setInstantTrade(tradeInstant.size() > 0);
+				toAdd.setRemaining(!toAdd.isOwnOffer() && !toAdd.isTrade() && !toAdd.isInstantTrade());
+				out.add(toAdd);
+				trades.remove(trade);
+			});
+		
+		// filter out all trades which collide with timetable or requester (PRACTICAL)
+		var nonCollidingTradesPractical = filterUtils
+				.getFilterByName("CollisionFilter")
+				.doFilter(trades, user);
+		
+		// add all practical colliding tradeoffers to tradewrapper list
+		
+		List.copyOf(trades)
+				.stream()
+				.filter(item -> !nonCollidingTradesPractical.contains(item))
+				.collect(toList())
+				.forEach(trade -> {
+					TradeWrapper toAdd = new TradeWrapper();
+					toAdd.setTimeslot(trade.getOffer());
+					toAdd.setCollision(true);
+					out.add(toAdd);
+					trades.remove(trade);
+				});
+		
+		// lookup own tradeoffers -> add them with own flag set
+		// also check if the wanted timeslots do collide with lectures
+		List<TradeOffer> hlpr = new ArrayList<>();
+		ownOffers.forEach(item -> {
+			TradeOffer hlprTo = new TradeOffer();
+			hlprTo.setOffer(item.getSeek());
+			hlprTo.setSeek(item.getOffer());
+			hlpr.add(hlprTo);
+		});
+		var filteredHlpr = filterUtils.getFilterByName("LectureCollisionFilter")
+						  .doFilter(hlpr, user)
+				.stream().map(TradeOffer::getOffer)
+				.collect(toList())
+				.stream().map(Timeslot::getId)
+				.collect(toList());
+		ownOffers.forEach(item -> {
+			TradeWrapper toAdd = new TradeWrapper();
+			toAdd.setTimeslot(item.getSeek());
+			toAdd.setOwnOffer(true);
+			toAdd.setCollisionLecture(!filteredHlpr.contains(item.getSeek().getId()));
+			out.add(toAdd);
+		});
+		
+		// all collisions have been removed, add them as either regular or instant trades to out
+		trades.forEach(item -> {
+			TradeWrapper toAdd = new TradeWrapper();
+			toAdd.setTimeslot(item.getOffer());
+			
+			if (item.getId() == null){
+				toAdd.setRemaining(true);
+			}
+			else {
+				toAdd.setInstantTrade(item.isInstantTrade());
+				toAdd.setTrade(!item.isInstantTrade());
+			}
+			out.add(toAdd);
+		});
+		
+		
 		return out;
 	}
 	
@@ -128,28 +231,67 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 * @throws RuntimeException if either requesterId or tradeId cant be found
 	 */
 	@Transactional
-	public Timeslot tradeTimeslots(User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot) throws Exception {
+	public Timeslot tradeTimeslots(User requestingUser, Timeslot offeredTimeslot, Timeslot requestedTimeslot, User seeker) throws Exception {
 		
-		TradeOffer tradeOffer = findFinalTradeOffer(offeredTimeslot, requestedTimeslot);
+		TradeOffer tradeOffer = findFinalTradeOffer(offeredTimeslot, requestedTimeslot, seeker);
 		
 		// TODO: handle null
 		if (tradeOffer == null) {
 			throw new Exception("No final TradeOffer found");
 		}
 		
-		User offereringUser = tradeOffer.getOfferer();
+		final User offereringUser = tradeOffer.getOfferer();
 		
 		log.info("Performing Trade: From {} to {} with Timeslots {} and {}",
 				 offereringUser, requestingUser, offeredTimeslot, requestedTimeslot);
 		
 		if(tradeService.doTrade(offereringUser, requestingUser, offeredTimeslot, requestedTimeslot)) {
-			deleteTradeOffer(tradeOffer);
+			// delete all tradeoffers of requesting user for given timeslot, since trade has been processed
+			for(TradeOffer to: tradeOfferRepository.findAllByOffererAndOffer(requestingUser, offeredTimeslot)){
+				deleteTradeOffer(to);
+			}
+			// delete all tradeoffers of accepting user for requested timeslot, since trade has been processed
+			for(TradeOffer to: tradeOfferRepository.findAllByOffererAndOffer(tradeOffer.getOfferer(), tradeOffer.getOffer())){
+				deleteTradeOffer(to);
+			}
+			
+			// notify user who requests to trade with offerer
+			personalMessageSender.send(requestingUser,
+									   TradeOfferSuccessfulMessage.builder().newTimeslot(offeredTimeslot)
+																  .oldTimeslotId(offeredTimeslot.getId())
+																  .topic(timeslotTopicManager.getTopic(requestedTimeslot))
+																  .build()
+									  );
+			
+			// notify offerer that his/her trade was resolved
+			personalMessageSender.send(offereringUser,
+									   TradeOfferSuccessfulMessage.builder()
+									   							.newTimeslot(offeredTimeslot)
+																  .oldTimeslotId(requestedTimeslot.getId())
+																  .topic(timeslotTopicManager.getTopic(offeredTimeslot))
+																  .build()
+									  );
+			
+			
+			log.info("TRADING...");
+			log.info("┌─ TradeOfferSuccessfulMessage: SEND TO REQUESTING USER " + requestingUser.getAuthenticationInformation().getUsername());
+			log.info(String.format("├─→ Timeslot %s ↔ Timeslot %s", requestedTimeslot.getId(), offeredTimeslot.getId()));
+			log.info("└─ TradeOfferSuccessfulMessage: SEND TO OFFERING USER " + offereringUser.getAuthenticationInformation().getUsername());
+			
+			
 			return timeSlotRepository.findById(requestedTimeslot.getId()).orElseThrow();
 		}
 		throw new RuntimeException();
 	}
 	
-	public TradeOffer findFinalTradeOffer(Timeslot offeredTimeslot, Timeslot requestedTimeslot) {
+	/**
+	 * Finds matching Tradeoffers for the offered and requested timeslots.
+	 * Filters those TradeOffers and returns a random one from the remaining.
+	 * @param offeredTimeslot {@link Timeslot} that's offered from active Tradeoffers
+	 * @param requestedTimeslot  {@link Timeslot} that's been requested by Principal
+	 * @return single TradeOffer that can be traded, or null if none are present or Filters killed all possible matching TradeOffers
+	 */
+	public TradeOffer findFinalTradeOffer(Timeslot offeredTimeslot, Timeslot requestedTimeslot, User seeker) {
 		List<TradeOffer> tradeOffers;
 		Random random = new Random();
 		
@@ -161,12 +303,7 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 									 !(tradeOffer.getOffer() == requestedTimeslot && tradeOffer.getSeek() == offeredTimeslot));
 		
 		// filter the list according to active filters
-		FilterUtils filterUtils = FilterUtils.getInstance();
-		try {
-			tradeOffers = filterUtils.getFilteredTradeOffers(tradeOffers);
-		} catch(NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
+			tradeOffers = filterUtils.getFilteredTradeOffers(tradeOffers, seeker);
 		
 		// if no matching TradeOffer was found return null
 		if(tradeOffers.size() == 0) return null;
@@ -189,8 +326,16 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 */
 	public boolean deleteTradeOffer(TradeOffer tradeOffer) {
 		if(tradeOffer == null) return false;
-		log.info("Successfully deleted tradeoffer with ID: {} of student: %d", tradeOffer.getId());
+		log.info("Successfully deleted tradeoffer with ID: {} of student: {}", tradeOffer.getId(), tradeOffer
+				.getOfferer()
+				.getAuthenticationInformation()
+				.getUsername());
+		
+		tradeOffer.getOfferer().removeTradeOffer(tradeOffer);
 		tradeOfferRepository.delete(tradeOffer);
+		
+		tradeOfferTopicMessageSender.notifyAllRemovedTradeOffer(tradeOffer);
+		
 		return true;
 	}
 	
@@ -221,7 +366,12 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 			return new NotFoundException(seekId);
 		}));
 		log.info(String.format("Successfully created new Tradeoffer for Student: %d with offer/seek: %d/%d", studentId, offerId, seekId));
-		return tradeOfferRepository.save(tradeoffer);
+		
+		TradeOffer newTradeOffer = tradeOfferRepository.save(tradeoffer);
+		
+		tradeOfferTopicMessageSender.notifyAllNewTradeOffer(newTradeOffer);
+		
+		return newTradeOffer;
 	}
 	
 	/**
@@ -231,7 +381,8 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 	 */
 	@Override
 	public List<TradeOffer> getAll() {
-		return tradeOfferRepository.findAll();
+		
+		return tradeOfferRepository.findAllByInstantTrade(false);
 	}
 	
 	/**
@@ -267,37 +418,4 @@ public class TradeOfferService implements RestService<TradeOffer, Long> {
 		log.info(String.format("Successfully saved Tradeoffer with ID: %d", dbItem.getId()));
 	}
 	
-	/**
-	 * Method to deleta a {@link TradeOffer} by id
-	 *
-	 * @param aLong id of item to delete
-	 *
-	 * @throws IllegalArgumentException if item couldnt be found
-	 */
-	@Override
-	public void delete(Long aLong) throws IllegalArgumentException {
-		tradeOfferRepository.delete(tradeOfferRepository.findById(aLong).orElseThrow());
-	}
-	
-	/**
-	 * Method to update a given {@link TradeOffer}
-	 *
-	 * @param aLong  item to lookup (update)
-	 * @param update item with updated values
-	 *
-	 * @return true if successful
-	 *
-	 * @throws IllegalArgumentException if item couldnt be looked up
-	 */
-	@Override
-	public boolean update(Long aLong, TradeOffer update) throws IllegalArgumentException {
-		log.info(String.format("Updating TradeOffer: %d", aLong));
-		var dbItem = tradeOfferRepository.findById(aLong).orElseThrow(() -> {
-			log.info(String.format("ERROR Updating TradeOffer: %d", aLong));
-			throw new IllegalArgumentException();
-		});
-		BeanUtils.copyProperties(update, dbItem, "id");
-		log.info(String.format("Successfully updated Tradeoffer: %d", aLong));
-		return true;
-	}
 }

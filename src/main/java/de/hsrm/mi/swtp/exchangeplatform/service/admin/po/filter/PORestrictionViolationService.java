@@ -1,6 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter;
 
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation.UserOccupancyViolationMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.RestrictionType;
@@ -19,14 +19,20 @@ import java.util.Map;
 @Slf4j
 public class PORestrictionViolationService {
 
-	Map<Long, UserOccupancyViolation> userOccupancyViolations;
-	PersonalConnectionManager personalConnectionManager;
+	Map<Long, UserOccupancyViolationMessage> userOccupancyViolations;
 	PersonalMessageSender personalMessageSender;
 
 	/** Add a new violation for a given {@link User student object}. A pre-existing violation entry will be extended with the given arguments. */
+	public void setViolations(PORestrictionFilterResult result) {
+		final User student = result.getStudent();
+		final Long studentId = student.getId();
+		this.userOccupancyViolations.put(studentId, this.createViolations(result));
+	}
+	
+	/** Add a new violation for a given {@link User student object}. A pre-existing violation entry will be extended with the given arguments. */
 	public void addViolation(User student, RestrictionType restrictionType, Object value) {
 		final Long studentId = student.getId();
-		final UserOccupancyViolation violationFromMap = this.userOccupancyViolations.getOrDefault(studentId, null);
+		final UserOccupancyViolationMessage violationFromMap = this.userOccupancyViolations.getOrDefault(studentId, null);
 		
 		if(violationFromMap == null) {
 			// violations for under key studentId does not exist
@@ -37,33 +43,47 @@ public class PORestrictionViolationService {
 		this.userOccupancyViolations.put(studentId, extendViolation(violationFromMap, restrictionType, value));
 	}
 	
-	/** Creates a new {@link UserOccupancyViolation} instance. */
-	private UserOccupancyViolation createViolation(User student, RestrictionType restrictionType, Object value) {
+	/** Creates a new {@link UserOccupancyViolationMessage} instance. */
+	private UserOccupancyViolationMessage createViolations(PORestrictionFilterResult result) {
+		Map<RestrictionType, Object> violations = new HashMap<>();
+		result.getMessages().forEach(violations::put);
+		
+		return UserOccupancyViolationMessage.builder()
+											.student(result.getStudent())
+											.violations(violations)
+											.build();
+	}
+	
+	/** Creates a new {@link UserOccupancyViolationMessage} instance. */
+	private UserOccupancyViolationMessage createViolation(User student, RestrictionType restrictionType, Object value) {
 		Map<RestrictionType, Object> violation = new HashMap<>();
 		violation.put(restrictionType, value);
-		return UserOccupancyViolation.builder()
-									 .student(student)
-									 .violations(violation)
-									 .build();
+		return UserOccupancyViolationMessage.builder()
+											.student(student)
+											.violations(violation)
+											.build();
 	}
 	
-	/** Extends given {@link UserOccupancyViolation} instance by adding a (new) {@link RestrictionType} and its corresponding value. */
-	private UserOccupancyViolation extendViolation(UserOccupancyViolation original, RestrictionType restrictionType, Object value) {
+	/** Extends given {@link UserOccupancyViolationMessage} instance by adding a (new) {@link RestrictionType} and its corresponding value. */
+	private UserOccupancyViolationMessage extendViolation(UserOccupancyViolationMessage original, RestrictionType restrictionType, Object value) {
 		Map<RestrictionType, Object> violation = original.getViolations();
 		violation.put(restrictionType, value);
-		return UserOccupancyViolation.builder()
-									 .student(original.getStudent())
-									 .violations(violation)
-									 .build();
+		return UserOccupancyViolationMessage.builder()
+											.student(original.getStudent())
+											.violations(violation)
+											.build();
 	}
 	
-	/** Calls {@link de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalConnectionManager#send(de.hsrm.mi.swtp.exchangeplatform.model.data.User, java.lang.String)} to notify all students with violations. */
+	/** Calls {@link de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager#send(de.hsrm.mi.swtp.exchangeplatform.model.data.User, java.lang.String)} to notify all students with violations. */
 	public void notifyUsersWithViolations() {
-		for(UserOccupancyViolation userOccupancyViolation : this.userOccupancyViolations.values()) {
-			log.info(" // SEND VIOLATIONS TO STUDENT ==> " +userOccupancyViolation.getStudent().getAuthenticationInformation().getUsername());
-			personalMessageSender.send(userOccupancyViolation);
-//			personalMessageSender.send(userOccupancyViolation, "Violation detected. Please make sure you.");
+		log.info("┌ › SENDING VIOLATION MESSAGES");
+		
+		for(UserOccupancyViolationMessage userOccupancyViolationMessage : this.userOccupancyViolations.values()) {
+			log.info("├ › › › SEND VIOLATIONS TO STUDENT: " + userOccupancyViolationMessage.getStudent().getAuthenticationInformation().getUsername());
+			personalMessageSender.send(userOccupancyViolationMessage);
 		}
+		
+		log.info("└ › FINISHED SENDING VIOLATION MESSAGES");
 	}
 	
 }

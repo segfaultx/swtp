@@ -16,7 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -35,7 +34,7 @@ public class PORestController {
 
 	@GetMapping
 	@PreAuthorize("hasRole('ADMIN')")
-	@Operation(description = "get all POs", operationId = "getAllPOs")
+	@Operation(description = "get all POs", operationId = "getAllPOs", tags = {"pruefungsordnung"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved POs"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed fetch request") })
@@ -46,7 +45,7 @@ public class PORestController {
 
 	@GetMapping("/{poId}")
 	@PreAuthorize("hasRole('ADMIN')")
-	@Operation(description = "get po by id", operationId = "getPOById")
+	@Operation(description = "get po by id", operationId = "getPOById", tags = {"pruefungsordnung"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully retrieved POs"),
 							@ApiResponse(responseCode = "403", description = "unauthorized fetch attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed fetch request") })
@@ -57,12 +56,12 @@ public class PORestController {
 
 	@PutMapping(consumes = { MediaType.APPLICATION_JSON_VALUE })
 	@PreAuthorize("hasRole('ADMIN')")
-	@Operation(description = "update a po", operationId = "updatePO")
+	@Operation(description = "update a po", operationId = "updatePO", tags = {"pruefungsordnung"})
 	@ApiResponses(value = { @ApiResponse(responseCode = "200", description = "successfully updated PO"),
 							@ApiResponse(responseCode = "403", description = "unauthorized update attempt"),
 							@ApiResponse(responseCode = "400", description = "malformed update request"),
 							@ApiResponse(responseCode = "409", description = "the exchangeplatform is still active. it needs to be inactive before updating any po settings.") })
-	public ResponseEntity<PO> updatePOById(@RequestBody PO po, BindingResult bindingResult) throws NotFoundException, ExchangeplatformStillActiveException {
+	public ResponseEntity<PO> updatePOById(@RequestBody PO po) throws NotFoundException, ExchangeplatformStillActiveException {
 		// will only perform update if changes to restrictions are existent
 		poUpdateService.update(po);
 		return ResponseEntity.ok(poService.getById(po.getId()));

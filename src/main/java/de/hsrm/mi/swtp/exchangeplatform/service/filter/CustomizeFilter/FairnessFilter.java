@@ -1,23 +1,31 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.filter.CustomizeFilter;
 
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.filter.Filter;
+import lombok.AccessLevel;
+import lombok.experimental.FieldDefaults;
 
+import java.security.Principal;
 import java.util.Comparator;
 import java.util.List;
 
 /**
  * Class which implements a filter based on a fairness point system
  */
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FairnessFilter implements Filter {
+	
+	String filterName = "FairnessFilter";
+	
 	/**
 	 * sorted Tradeoffer list based on the amount of "fairness points" the students have
 	 * @param offers list of TradeOffers
 	 * @return sorted list of TradeOffers
 	 */
 	@Override
-	public List<TradeOffer> filter(List<TradeOffer> offers) {
-		/// sort by comparing the offeres "fairness points"
+	public List<TradeOffer> doFilter(List<TradeOffer> offers, User seeker) {
+		/// sort by comparing the offerers "fairness points"
 		offers.sort(new Comparator<TradeOffer>() {
 			@Override
 			public int compare(TradeOffer o1, TradeOffer o2) {
@@ -36,5 +44,10 @@ public class FairnessFilter implements Filter {
 		});
 		/// sorted list
 		return offers;
+	}
+	
+	@Override
+	public String getFilterName() {
+		return filterName;
 	}
 }

@@ -1,9 +1,12 @@
 package de.hsrm.mi.swtp.exchangeplatform.service.admin;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.ForceTradeSuccessfulMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
-import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
+import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,6 +24,8 @@ public class DefaultAdminTradeService implements AdminTradeService {
 	
 	UserRepository studentRepository;
 	TimeslotRepository timeslotRepository;
+	PersonalMessageSender personalMessageSender;
+	TimeslotTopicManager timeslotTopicManager;
 	
 	/**
 	 * Method to asssign a new timeslot to a given student
@@ -51,6 +56,17 @@ public class DefaultAdminTradeService implements AdminTradeService {
 		});
 		student.getTimeslots().add(timeslot);
 		studentRepository.save(student);
+		
+		// notify user who is assigned to timeslots
+		personalMessageSender.send(studentRepository.getOne(studentId),
+								   ForceTradeSuccessfulMessage.builder()
+															  .newTimeslot(timeslot)
+															  .oldTimeslotId(ownedTimeslot)
+															  .topic(timeslotTopicManager.getTopic(timeslot.getId()))
+															  .build());
+		
+		log.info("FORCE TRADING...SUCCESS");
+		
 		return timeslot;
 	}
 }

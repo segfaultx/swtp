@@ -1,34 +1,153 @@
 package de.hsrm.mi.swtp.exchangeplatform.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.jayway.jsonpath.JsonPath;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
+import de.hsrm.mi.swtp.exchangeplatform.model.rest.ModuleRequestBody;
 import de.hsrm.mi.swtp.exchangeplatform.repository.ModuleRepository;
-import de.hsrm.mi.swtp.exchangeplatform.repository.UserRepository;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.ModuleService;
+import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 
-import static org.springframework.test.util.AssertionErrors.assertNotNull;
+import javax.transaction.Transactional;
+import java.util.LinkedHashMap;
+import java.util.List;
+
+import static java.util.stream.Collectors.toList;
+import static org.springframework.test.util.AssertionErrors.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class ModuleRestControllerTest extends BaseRestTest {
 	@Autowired
 	ModuleRepository moduleRepository;
 	
+	@Autowired
+	ModuleService moduleService;
+	
+	@Autowired
+	UserService userService;
+	
 	@Test
 	void testById() throws Exception {
 		var mod = moduleRepository.findAll().get(0);
- 		var token = getLoginToken("dscha001", "dscha001");
-		var result = mockMvc.perform(get("/api/v1/modules/" + mod.getId())
-									.header("Authorization", "Bearer " + token))
-				.andExpect(status().isOk())
-				.andReturn()
-				.getResponse().getContentAsString();
+		var token = getLoginToken("dscha001", "dscha001");
+		var result = mockMvc.perform(get("/api/v1/modules/" + mod.getId()).header("Authorization", "Bearer " + token))
+							.andExpect(status().isOk())
+							.andReturn()
+							.getResponse()
+							.getContentAsString();
 		assertNotNull("GetAll null", result);
 	}
 	
 	@Test
 	void testGetByIdUnauthorized() throws Exception {
 		var mod = moduleRepository.findAll().get(0);
-		mockMvc.perform(get("/api/v1/modules/" + mod.getId()))
-			   .andExpect(status().isUnauthorized());
+		mockMvc.perform(get("/api/v1/modules/" + mod.getId())).andExpect(status().isUnauthorized());
+	}
+	@Test
+	@Transactional
+	void testGetModulesForStudent() throws Exception{
+		var usr = userService.getByUsername("dscha001").orElseThrow();
+		var token = getLoginToken("dscha001", "dscha001");
+		var result = new ObjectMapper().readValue(mockMvc.perform(get("/api/v1/modules/modulesforstudent/" + usr.getId())
+									.header("Authorization", "Bearer "+ token))
+											 .andExpect(status().isOk())
+											 .andReturn()
+											 .getResponse()
+											 .getContentAsString(),
+												 List.class);
+		var ids =moduleService.lookUpAvailableModulesForStudent(usr)
+							   .stream()
+							   .map(Timeslot::getId)
+							   .collect(toList());
+		for (var item: result){
+			LinkedHashMap convertedItem = (LinkedHashMap) item;
+			long modId = Long.valueOf(convertedItem.get("id").toString());
+			assertTrue("Module contained in list", ids.contains(modId));
+		}
+	}
+	
+	@Test
+	void testUnauthorizedGetModulesForStudent() throws Exception {
+		var usr = userService.getByUsername("dscha001").orElseThrow();
+		var token = getLoginToken("wwuse001", "wwuse001");
+		mockMvc.perform(get("/api/v1/modules/modulesforstudent/"+usr.getId())
+					   .header("Authorization", "Bearer " + token))
+			   .andExpect(status().isForbidden());
+	}
+	
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	@Transactional
+	void testJoinAppointment() throws Exception {
+		var usr = userService.getByUsername("wwuse001").orElseThrow();
+		var mod = usr.getTimeslots().get(0).getModule();
+		moduleService.removeStudentFromModule(mod, usr);
+		ModuleRequestBody moduleRequestBody = new ModuleRequestBody();
+		moduleRequestBody.setStudentId(usr.getId());
+		moduleRequestBody.setModuleId(mod.getId());
+		var joinedmod = mockMvc.perform(post("/api/v1/modules/join")
+					   .contentType(MediaType.APPLICATION_JSON)
+					   .content(new ObjectMapper().writeValueAsString(moduleRequestBody)))
+			   .andExpect(status().isOk())
+			   .andReturn()
+			   .getResponse()
+			   .getContentAsString();
+		var result = Long.valueOf(JsonPath.read(joinedmod, "$.id").toString());
+		assertEquals("Module joined equals", result ,mod.getId());
+	}
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	void testJoinAppointmentBadRequest() throws Exception {
+		var usr = userService.getByUsername("dscha001").orElseThrow();
+		mockMvc.perform(post("/api/v1/modules/join"))
+			   .andExpect(status().isBadRequest());
+	}
+	
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	@Transactional
+	void testJoinAppointmentUserIsAlreadyAttendee() throws Exception {
+		var usr = userService.getByUsername("wwuse001").orElseThrow();
+		var modId = usr.getTimeslots().get(0).getModule().getId();
+		ModuleRequestBody moduleRequestBody = new ModuleRequestBody();
+		moduleRequestBody.setStudentId(usr.getId());
+		moduleRequestBody.setModuleId(modId);
+		mockMvc.perform(post("/api/v1/modules/join")
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(new ObjectMapper().writeValueAsString(moduleRequestBody)))
+			   .andExpect(status().isOk());
+		// TODO: fill attendees properly in DB Initiator
+		mockMvc.perform(post("/api/v1/modules/join") // dirty fix
+								.contentType(MediaType.APPLICATION_JSON)
+								.content(new ObjectMapper().writeValueAsString(moduleRequestBody)))
+			   .andExpect(status().isBadRequest());
+	}
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	@Transactional
+	void testLeaveAppointment() throws Exception {
+		var usr = userService.getByUsername("dscha001").orElseThrow();
+		var mod = usr.getTimeslots().get(0).getModule();
+		moduleService.addAttendeeToModule(mod, usr);
+		ModuleRequestBody moduleRequestBody = new ModuleRequestBody();
+		moduleRequestBody.setStudentId(usr.getId());
+		moduleRequestBody.setModuleId(mod.getId());
+		mockMvc.perform(post("/api/v1/modules/leave")
+					   .contentType(MediaType.APPLICATION_JSON)
+					   .content(new ObjectMapper().writeValueAsString(moduleRequestBody)))
+			   .andExpect(status().isAccepted());
+	}
+	
+	@Test
+	@WithMockUser(roles = "MEMBER")
+	void testLeaveAppointmentBadRequest() throws Exception {
+		mockMvc.perform(post("/api/v1/modules/leave"))
+			   .andExpect(status().isBadRequest());
 	}
 }
