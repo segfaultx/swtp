@@ -4,12 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.PersonalQueueManager;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveModuleSuccessfulMessage;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveTimeslotSuccessfulMessage;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.Message;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferSuccessfulMessage;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.*;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.violation.UserOccupancyViolationMessage;
+import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.service.rest.UserService;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -104,6 +101,20 @@ public class PersonalMessageSender {
 							 return session.createTextMessage("{}");
 						 });
 		log.info("SEND TO ONLINE USER::" + queue.getQualifiedName() + "::MSG=" + leaveModuleSuccessfulMessage);
+	}
+	
+	public void send(User student, JoinModuleSuccessfulMessage joinModuleSuccessfulMessage) {
+		final ActiveMQQueue queue = personalQueueManager.getPersonalQueue(student, true);
+		jmsTemplate.send(queue,
+						 session -> {
+							 try {
+								 return session.createTextMessage(objectMapper.writeValueAsString(joinModuleSuccessfulMessage));
+							 } catch(JsonProcessingException e) {
+								 e.printStackTrace();
+							 }
+							 return session.createTextMessage("{}");
+						 });
+		log.info("SEND TO ONLINE USER::" + queue.getQualifiedName() + "::MSG=" + joinModuleSuccessfulMessage);
 	}
 	
 	public void send(User student, LeaveTimeslotSuccessfulMessage leaveTimeslotSuccessfulMessage) {

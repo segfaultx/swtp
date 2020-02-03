@@ -2,6 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.service.rest;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.UserIsAlreadyAttendeeException;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.JoinModuleSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.LeaveModuleSuccessfulMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Module;
@@ -59,6 +60,11 @@ public class ModuleService {
 		module.getAttendees().add(student);
 		save(module);
 		log.info(String.format("SUCCESS: Student %s added to appointment %s", student.getStudentNumber(), module.getId()));
+		
+		sender.send(student, JoinModuleSuccessfulMessage.builder()
+														.module(module)
+														.time(LocalTime.now())
+														.build());
 	}
 	
 	public void removeStudentFromModule(Module module, User student) throws NotFoundException {
