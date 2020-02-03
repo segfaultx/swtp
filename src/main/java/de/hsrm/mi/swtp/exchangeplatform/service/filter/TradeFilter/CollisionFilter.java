@@ -23,11 +23,7 @@ public class CollisionFilter implements Filter {
 	
 	String filterName = "CollisionFilter";
 	
-	@Autowired
-	UserRepository userRepository;
-	
-	public CollisionFilter(UserRepository userRepository) {this.userRepository = userRepository;}
-	{}
+
 	/**
 	 * checks if a students timetable collides with the given TradeOffers (prohibiting a future trade unless resolved)
 	 * @param offers list of TradeOffers
