@@ -131,4 +131,18 @@ public class PersonalMessageSender {
 		log.info("SEND TO ONLINE USER::" + queue.getQualifiedName() + "::MSG=" + leaveTimeslotSuccessfulMessage);
 	}
 	
+	public void send(User student, JoinTimeslotSuccessfulMessage leaveTimeslotSuccessfulMessage) {
+		final ActiveMQQueue queue = personalQueueManager.getPersonalQueue(student, true);
+		jmsTemplate.send(queue,
+						 session -> {
+							 try {
+								 return session.createTextMessage(objectMapper.writeValueAsString(leaveTimeslotSuccessfulMessage));
+							 } catch(JsonProcessingException e) {
+								 e.printStackTrace();
+							 }
+							 return session.createTextMessage("{}");
+						 });
+		log.info("SEND TO ONLINE USER::" + queue.getQualifiedName() + "::MSG=" + leaveTimeslotSuccessfulMessage);
+	}
+	
 }
