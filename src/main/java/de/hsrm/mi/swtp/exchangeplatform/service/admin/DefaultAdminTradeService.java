@@ -2,7 +2,10 @@ package de.hsrm.mi.swtp.exchangeplatform.service.admin;
 
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.AdminStudentStatusChangeMessage;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po.ForceTradeSuccessfulMessage;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.enums.MessageType;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.AdminTopicMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.sender.PersonalMessageSender;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
 import de.hsrm.mi.swtp.exchangeplatform.repository.TimeslotRepository;
@@ -25,6 +28,7 @@ public class DefaultAdminTradeService implements AdminTradeService {
 	UserRepository studentRepository;
 	TimeslotRepository timeslotRepository;
 	PersonalMessageSender personalMessageSender;
+	AdminTopicMessageSender adminTopicMessageSender;
 	TimeslotTopicManager timeslotTopicManager;
 	
 	/**
@@ -64,6 +68,12 @@ public class DefaultAdminTradeService implements AdminTradeService {
 															  .oldTimeslotId(ownedTimeslot)
 															  .topic(timeslotTopicManager.getTopic(timeslot.getId()))
 															  .build());
+		
+		AdminStudentStatusChangeMessage adminMessage = AdminStudentStatusChangeMessage.builder()
+																					  .messageType(MessageType.FORCED_TRADE_OFFER)
+																					  .student(student)
+																					  .build();
+		adminTopicMessageSender.send(adminMessage);
 		
 		log.info("FORCE TRADING...SUCCESS");
 		
