@@ -46,6 +46,7 @@ public class CustomPythonFilter implements Filter {
 		ScriptEngineManager manager = new ScriptEngineManager();
 		ScriptEngine py = manager.getEngineByName("python");
 		py.put("offers", offers);
+		py.put("seeker", seeker);
 		try{
 			py.eval(pythonCode);
 		}catch(ScriptException ex){
