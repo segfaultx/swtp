@@ -1,5 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.event.admin.po;
 
+import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionProcessor;
 import de.hsrm.mi.swtp.exchangeplatform.service.admin.po.filter.PORestrictionProcessorExecutor;
 import de.hsrm.mi.swtp.exchangeplatform.utils.LoggingFormat;
 import lombok.AccessLevel;
@@ -9,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
+/**
+ * Listens for the {@link PORestrictionProcessorEvent}. When the event has been called the {@link PORestrictionProcessor} will be executed.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor

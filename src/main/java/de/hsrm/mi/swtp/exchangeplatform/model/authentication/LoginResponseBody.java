@@ -1,6 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.model.authentication;
 
-import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.dynamicdestination.PersonalQueue;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import lombok.AccessLevel;
 import lombok.Builder;

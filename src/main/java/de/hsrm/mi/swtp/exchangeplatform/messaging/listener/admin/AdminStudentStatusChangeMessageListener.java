@@ -13,6 +13,9 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+/**
+ * A simple {@link MessageListener} for listening to the "ExchangeplatformAdminsTopic" - mainly for debugging purposes.
+ */
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Component
@@ -20,6 +23,9 @@ import javax.jms.TextMessage;
 @RequiredArgsConstructor
 public class AdminStudentStatusChangeMessageListener implements MessageListener {
 	
+	/**
+	 * Is the Topic name of the admins-specific topic.
+	 */
 	public final static String TOPICNAME = "ExchangeplatformAdminsTopic";
 	
 	@Override

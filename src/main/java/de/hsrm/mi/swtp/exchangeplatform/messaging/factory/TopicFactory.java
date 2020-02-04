@@ -1,6 +1,6 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.factory;
 
-import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TopicCreationDTO;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.dynamicdestination.DynamicTopic;
 import lombok.Builder;
 import org.apache.activemq.ActiveMQConnectionFactory;
 import org.apache.activemq.command.ActiveMQTopic;
@@ -48,10 +48,10 @@ public class TopicFactory {
 	 *
 	 * @return a {@link Topic}.
 	 */
-	public TopicCreationDTO createTopic(final TopicConnection topicConnection, final String topicName) throws JMSException {
+	public DynamicTopic createTopic(final TopicConnection topicConnection, final String topicName) throws JMSException {
 		TopicSession session = topicConnection.createTopicSession(false, Session.AUTO_ACKNOWLEDGE);
 		Topic topic = session.createTopic(topicName);
-		return TopicCreationDTO.builder().topicSession(session).topic((ActiveMQTopic) topic).build();
+		return DynamicTopic.builder().topicSession(session).topic((ActiveMQTopic) topic).build();
 	}
 	
 }

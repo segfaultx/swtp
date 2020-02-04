@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TradeOfferTopicManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TradeOfferCRUDMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.TradeOffer;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.experimental.FieldDefaults;
@@ -15,13 +14,13 @@ import org.springframework.stereotype.Component;
 import javax.jms.Topic;
 
 /**
- * A simple class which will provide methods for sending messages to a specific personal queue of a {@link User}.
+ * A simple class which will provide methods for sending messages to a {@link TradeOfferTopicManager#getTopic(Long)}.
  */
 @Slf4j
 @Component("tradeOfferTopicMessageSender")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TradeOfferTopicMessageSender {
+public class TradeOfferTopicMessageSender implements MessageSender {
 	
 	TradeOfferTopicManager tradeOfferTopicManager;
 	JmsTemplate jmsTopicTemplate;

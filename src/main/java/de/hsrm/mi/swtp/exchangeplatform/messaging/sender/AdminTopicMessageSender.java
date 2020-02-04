@@ -21,7 +21,7 @@ import javax.jms.Topic;
 @Component("adminTopicMessageSender")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AdminTopicMessageSender {
+public class AdminTopicMessageSender implements MessageSender {
 	
 	POTopicManager poTopicManager;
 	JmsTemplate jmsTopicTemplate;

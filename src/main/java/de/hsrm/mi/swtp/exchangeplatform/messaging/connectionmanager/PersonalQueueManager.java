@@ -1,8 +1,7 @@
 package de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.exceptions.notfound.NotFoundException;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.PersonalQueue;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.dynamicdestination.PersonalQueue;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.enums.TypeOfUsers;
 import lombok.AccessLevel;
@@ -19,18 +18,19 @@ import java.util.Optional;
 
 /**
  * Manages {@link PersonalQueue personal queues}.
- * Can create a queue for each logged {@link User} and close those when the user goes offline - and of course manages them.
+ * Can create a {@link Queue} wrapped inside a {@link PersonalQueue} for each logged {@link User} and close those when the user goes offline - and of course manages them.
+ *
+ * @see DestinationManager
  */
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @RequiredArgsConstructor
 @Component
-public class PersonalQueueManager {
+public class PersonalQueueManager implements DestinationManager {
 	final String FORMAT = "usr:%s-%s";
 	
 	Map<String, PersonalQueue> personalQueueMap;
 	ActiveMQConnectionFactory connectionFactory;
-	ObjectMapper objectMapper;
 	
 	/**
 	 * Creates a new connection with a session and {@link ActiveMQQueue} for the logged in {@link User}.
@@ -130,8 +130,7 @@ public class PersonalQueueManager {
 	public ActiveMQQueue getQueue(Long userId) {
 		try {
 			return this.getQueue(this.getUserById(userId));
-		}
-		catch(NotFoundException e) {
+		} catch(NotFoundException e) {
 			return null;
 		}
 	}
@@ -140,7 +139,7 @@ public class PersonalQueueManager {
 	 * Sends a message to the dynamically created {@link Queue} of a {@link User}.
 	 * If the {@link User} has no {@link PersonalQueue} in the {@link #personalQueueMap} nothing happens.
 	 *
-	 * @param user {@link User}
+	 * @param user    {@link User}
 	 * @param message the message which is to be sent to the {@link User}
 	 */
 	public void send(User user, String message) throws JMSException {

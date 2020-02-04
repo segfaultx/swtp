@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.connectionmanager.TimeslotTopicManager;
 import de.hsrm.mi.swtp.exchangeplatform.messaging.message.TimeslotUpdateMessage;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.Timeslot;
-import de.hsrm.mi.swtp.exchangeplatform.model.data.User;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.NonNull;
@@ -19,13 +18,13 @@ import javax.jms.Topic;
 import javax.jms.TopicSession;
 
 /**
- * A simple class which will provide methods for sending messages to a specific personal queue of a {@link User}.
+ * A simple class which will provide methods for sending messages to a {@link TimeslotTopicManager#getTopic(Long)}.
  */
 @Slf4j
 @Component("timeslotTopicMessageSender")
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class TimeslotTopicMessageSender {
+public class TimeslotTopicMessageSender implements MessageSender {
 	
 	TimeslotTopicManager timeslotTopicManager;
 	ObjectMapper objectMapper;

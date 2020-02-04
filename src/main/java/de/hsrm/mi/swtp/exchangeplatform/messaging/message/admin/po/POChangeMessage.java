@@ -2,7 +2,7 @@ package de.hsrm.mi.swtp.exchangeplatform.messaging.message.admin.po;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import de.hsrm.mi.swtp.exchangeplatform.messaging.message.MessageType;
+import de.hsrm.mi.swtp.exchangeplatform.messaging.message.enums.MessageType;
 import de.hsrm.mi.swtp.exchangeplatform.model.data.PO;
 import de.hsrm.mi.swtp.exchangeplatform.model.serializer.admin.po.POChangeMessageSerializer;
 import io.swagger.v3.oas.annotations.media.Schema;

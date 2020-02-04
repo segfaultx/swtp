@@ -13,6 +13,9 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+/**
+ * A simple {@link MessageListener} for listening to the "TradeOffersTopic" - mainly for debugging purposes.
+ */
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Component
@@ -20,6 +23,9 @@ import javax.jms.TextMessage;
 @RequiredArgsConstructor
 public class TradeOffersMessageListener implements MessageListener {
 	
+	/**
+	 * Is the Topic name of the tradeoffer-specific topic.
+	 */
 	public final static String TOPICNAME = "TradeOffersTopic";
 	
 	@Override

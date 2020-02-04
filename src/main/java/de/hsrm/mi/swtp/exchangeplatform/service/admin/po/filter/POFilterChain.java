@@ -10,6 +10,10 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A simple class which allows the creation of a list of {@link AbstractPOFilter} instances.
+ * Will provide a method which allows processing of a single student of a PO -> {@link #processAllForStudent(PO, User)}.
+ */
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class POFilterChain {
@@ -21,6 +25,11 @@ public class POFilterChain {
 		this.filterList = new ArrayList<>();
 	}
 	
+	/**
+	 * Adds a {@link AbstractPOFilter} instance to the {@link #filterList chain}.
+	 *
+	 * @param poFilter is the instance which is to be added to the chain.
+	 */
 	public void appendFilter(final AbstractPOFilter poFilter) {
 		this.filterList.add(poFilter);
 	}
@@ -39,6 +48,7 @@ public class POFilterChain {
 		return result;
 	}
 	
+	/** Clears the {@link #filterList chain} */
 	public void flush() {
 		this.filterList.clear();
 	}
