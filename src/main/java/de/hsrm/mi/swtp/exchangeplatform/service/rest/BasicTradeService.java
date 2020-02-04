@@ -9,8 +9,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
-
 /**
  * Basic Tradeservice implementation
  * @author amatus, Dennis S.
@@ -41,11 +39,12 @@ public class BasicTradeService implements TradeService {
 		}
 		
 		try {
-			timeslotService.addAttendeeToTimeslot(timeslot1, student1);
-			timeslotService.addAttendeeToTimeslot(timeslot2, student2);
 			
 			timeslotService.removeAttendeeFromTimeslot(timeslot2, student1);
 			timeslotService.removeAttendeeFromTimeslot(timeslot1, student2);
+			
+			timeslotService.addAttendeeToTimeslot(timeslot1, student1);
+			timeslotService.addAttendeeToTimeslot(timeslot2, student2);
 			
 		} catch(Exception e) {
 			log.info("Something went wrong");
