@@ -65,10 +65,13 @@ public class PORestriction implements Model {
 		
 		@Override
 		public boolean canAllocate(User user, Module module) {
-			return (user.getCompletedModules()
-					   .stream()
-					   .map(Module::getCreditPoints)
-					   .reduce(0L, Long::sum)+module.getCreditPoints()) <= maxCP;
+			var erg = (user.getTimeslots()
+						   .stream()
+						   .map(Timeslot::getModule)
+						   .distinct()
+						   .map(Module::getCreditPoints)
+						   .reduce(0L, Long::sum)+module.getCreditPoints());
+			return  erg <= maxCP;
 		}
 		
 		@Override
