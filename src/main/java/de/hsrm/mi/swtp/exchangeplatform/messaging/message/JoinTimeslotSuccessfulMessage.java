@@ -17,7 +17,7 @@ import java.time.LocalTime;
 public class JoinTimeslotSuccessfulMessage extends Message {
 	
 	@JsonProperty("type")
-	MessageType messageType = MessageType.LEAVE_TIMESLOT_SUCCESS;
+	MessageType messageType = MessageType.JOIN_TIMESLOT_SUCCESS;
 	
 	@JsonProperty(value = "message", defaultValue = "Eintritt in Timeslot war erfolgreich.")
 	String message = "Eintritt in Timeslot %swar erfolgreich.";

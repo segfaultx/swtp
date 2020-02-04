@@ -232,7 +232,9 @@ public class TimeslotService {
 	}
 	
 	public void checkLeftOverCapacity(final Module module) {
+		log.info("CHECKING FOR CAPACITY");
 		if(!this.hasCapacityLeft(module)) {
+			log.info("SENDING FULL MESSAGE");
 			moduleTopicMessageSender.notifyAllModuleFull(module);
 		}
 	}
@@ -246,6 +248,7 @@ public class TimeslotService {
 		Long leftCapacity = 0L;
 		
 		for(final Timeslot timeslot : module.getTimeslots()) {
+			if(timeslot.getTimeSlotType().equals(TypeOfTimeslots.VORLESUNG)) continue;
 			Integer timeslotLeftCapacity = timeslot.getCapacity() - timeslot.getAttendees().size();
 			// if there are more attendees than there is capacity don't add the negative value of timeslotLeftCapacity
 			leftCapacity += timeslotLeftCapacity < 0 ? 0L : timeslotLeftCapacity;

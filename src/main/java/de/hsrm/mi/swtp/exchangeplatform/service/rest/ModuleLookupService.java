@@ -53,12 +53,13 @@ public class ModuleLookupService {
 		List<Timeslot> out = new ArrayList<>();
 		List<Module> copyRemainingModules = new ArrayList<>(remainingModules);
 		for(Module module : remainingModules){
-			for(Timeslot ts : module.getTimeslots()){
-				if((ts.getTimeSlotType() != TypeOfTimeslots.VORLESUNG) && timeslotService.hasCollisions(ts, usr.getTimeslots())){
+			var allPracticalTimeslots = module.getTimeslots()
+											  .stream()
+											  .filter(item -> item.getTimeSlotType()!= TypeOfTimeslots.VORLESUNG)
+											  .collect(toList());
+				if(allPracticalTimeslots.stream().allMatch(timeslot -> timeslotService.hasCollisions(timeslot, usr.getTimeslots()))){
 					copyRemainingModules.remove(module);
-					break;
 				}
-			}
 		}
 		remainingModules = copyRemainingModules;
 		
