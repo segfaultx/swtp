@@ -246,9 +246,6 @@ public class DBInitiator implements ApplicationRunner {
 		// END Modul Animation
 		//END SEMESTER 4
 		
-		// Capacity 1
-		Module cap1Module = moduleFactory.createModule("Capacity 1", "CAP", 9999L, po2017, 1L);
-		
 		
 		
 		// START ROOM D12
@@ -266,9 +263,6 @@ public class DBInitiator implements ApplicationRunner {
 		//Start ROOM D14
 		Room d14 = roomFactory.createRoom("D14");
 		var d14_out = roomRepository.save(d14);
-		
-		Room cap1 = roomFactory.createRoom("CAP1");
-		var cap_out = roomRepository.save(cap1);
 		
 		//START TIMESLOTS SEMESTER 1
 		
@@ -546,14 +540,6 @@ public class DBInitiator implements ApplicationRunner {
 		
 		//END TIMESLOTS SEMESTER 4
 		
-		// Capacity 1 Timeslot
-		Timeslot cap1Timeslot1 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, "A", cap1Module, LocalTime.of(10, 0), cap1);
-		cap1Timeslot1.setCapacity(1);
-		Timeslot cap1Timeslot2 = timeslotFactory.createTimeslotPraktikum(DayOfWeek.MONDAY, "B", cap1Module, LocalTime.of(11,45), cap1);
-		cap1Timeslot2.setCapacity(1);
-		Timeslot cap1TimeslotVorlesung = timeslotFactory.createTimeslotVorlesung(DayOfWeek.MONDAY, cap1Module, LocalTime.of(8, 15), cap1);
-		cap1TimeslotVorlesung.setCapacity(10);
-		
 		// SAVE Lecturers first so attendees can reference them
 		// KRECHEL
 		var krechel_out = userRepository.save(krechel);
@@ -576,10 +562,6 @@ public class DBInitiator implements ApplicationRunner {
 		prog3Vorlesung.setUser(weitz_out);
 		prog3Praktikum.setUser(weitz_out);
 		prog3Praktikum2.setUser(weitz_out);
-		
-		cap1TimeslotVorlesung.setUser(weitz_out);
-		cap1Timeslot1.setUser(weitz_out);
-		cap1Timeslot2.setUser(weitz_out);
 		
 		//REICHENHAUER
 		var reichenhauer_out = userRepository.save(reichenhauer);
@@ -703,15 +685,6 @@ public class DBInitiator implements ApplicationRunner {
 		
 		d13_out.setTimeslots(toSaveD13);
 		
-		//CAP
-		List<Timeslot> toSaveCAP = new ArrayList<>();
-		toSaveCAP.add(cap1Timeslot1);
-		toSaveCAP.add(cap1Timeslot2);
-		toSaveCAP.add(cap1TimeslotVorlesung);
-		
-		cap_out.setTimeslots(toSaveCAP);
-		
-		
 		// START ADD TIMESLOTS DENNIS
 		List<Timeslot> dennisTimeslots = new ArrayList<>();
 		dennisTimeslots.add(afsUebung);
@@ -722,8 +695,6 @@ public class DBInitiator implements ApplicationRunner {
 		dennisTimeslots.add(swtPraktikum);
 		dennisTimeslots.add(adsVorlesung);
 		dennisTimeslots.add(adsPraktikum2);
-		dennisTimeslots.add(cap1TimeslotVorlesung);
-		dennisTimeslots.add(cap1Timeslot1);
 
 		// END ADD TIMESLOTS DENNIS
 		
@@ -739,8 +710,7 @@ public class DBInitiator implements ApplicationRunner {
 		chandlerTimeslots.add(adsPraktikum2);
 		chandlerTimeslots.add(prog3Vorlesung);
 		chandlerTimeslots.add(prog3Praktikum3);
-		chandlerTimeslots.add(cap1TimeslotVorlesung);
-		chandlerTimeslots.add(cap1Timeslot2);
+		
 		// END ADD TIMESLOTS CHANDLER
 		
 		// START ADD TIMESLOTS WILLI
